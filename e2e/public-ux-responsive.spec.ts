@@ -23,6 +23,36 @@ async function visit(page: import('@playwright/test').Page, path: string) {
 
 test.describe('xArtists public accessibility, local built frontend only', () => {
   for (const width of [390, 1440]) {
+    test('NFT Factory guided flow at '+width+'px: create, verify and publish remain clear', async ({ page }) => {
+      await page.setViewportSize({ width, height: 844 })
+      await page.emulateMedia({ reducedMotion: 'reduce' })
+      await visit(page, '/create/nft-factory')
+      const factory = page.locator('[data-testid="nft-factory-paper"]')
+      await expect(factory).toBeVisible()
+      const steps = page.getByRole('navigation', { name: 'Étapes de création NFT' })
+      await expect(steps.getByRole('button')).toHaveCount(3)
+      await expect(steps.getByRole('button', { name: /1\. Créer/ })).toHaveAttribute('aria-current', 'step')
+      await expect(page.getByRole('heading', { name: '1. Imaginez votre collection' })).toBeVisible()
+      await expect(page.getByRole('heading', { name: 'Déclaration des droits' })).toHaveCount(0)
+      await expect(page.getByText('Réglages avancés (agents, paramètres, devis simulé)')).toBeVisible()
+      await expect(page.getByRole('button', { name: /Payer et générer/ })).toHaveCount(0)
+      await steps.getByRole('button', { name: /2\. Vérifier/ }).click()
+      await expect(page.getByRole('heading', { name: '2. Vérifiez votre œuvre' })).toBeVisible()
+      await expect(page.getByRole('checkbox', { name: /Je confirme disposer des droits/ })).toBeVisible()
+      await expect(page.getByLabel(/Votre photo, vidéo ou sculpture 3D/)).toBeVisible()
+      await expect(page.getByRole('button', { name: 'Vérifier mon fichier' })).toBeDisabled()
+      await steps.getByRole('button', { name: /3\. Publier/ }).click()
+      await expect(page.getByRole('heading', { name: '3. Préparez votre publication' })).toBeVisible()
+      await expect(page.getByText(/Publication non disponible ici/)).toBeVisible()
+      await expect(page.getByRole('link', { name: 'Poursuivre dans Creator Studio' })).toBeVisible()
+      await expect(page.getByRole('button', { name: /Déployer mon SC/ })).toHaveCount(0)
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)
+      expect(overflow, 'NFT Factory overflow at '+width+'px').toBeLessThanOrEqual(12)
+      await page.screenshot({ animations: 'disabled', path: 'artifacts/ux-mobile/nft-factory-publish-'+width+'.png' })
+    })
+  }
+
+  for (const width of [390, 1440]) {
     test(`optional TRO and RWA detail opens by keyboard at ${width}px`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 })
       await page.emulateMedia({ reducedMotion: 'reduce' })
@@ -271,9 +301,13 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
       await visit(page, '/nft-factory/')
       await expect(page.locator('.xa-nft-factory')).toBeVisible()
       await page.getByLabel('Mode de design').selectOption('layers')
-      const rights = page.locator('.xa-nft-factory input[type="checkbox"]').first()
+      await expect(page.locator('.xa-nft-variant-row').first()).toBeVisible()
+      const steps = page.getByRole('navigation', { name: 'Étapes de création NFT' })
+      await steps.getByRole('button', { name: /2\. Vérifier/ }).click()
+      const rights = page.getByRole('checkbox', { name: /Je confirme disposer des droits/ })
       await expect(rights).toBeVisible()
       expect(await rights.evaluate(el => el.getBoundingClientRect().width)).toBeLessThan(32)
+      await steps.getByRole('button', { name: /1\. Créer/ }).click()
       await expect(page.locator('.xa-nft-variant-row').first()).toBeVisible()
       const offscreen = await page.locator('.xa-nft-factory').evaluate(el =>
         [...el.querySelectorAll('input, textarea, select, button, .card, .xa-nft-layer-row, .xa-nft-variant-row')]
