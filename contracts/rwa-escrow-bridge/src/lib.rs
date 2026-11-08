@@ -45,7 +45,7 @@ pub trait RwaEscrowBridge {
         self.attestor().set(&attestor);
     }
 
-    #[endpoint(upgrade)]
+    #[upgrade]
     fn upgrade(&self) {
         self.require_owner();
     }
