@@ -438,4 +438,18 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
   })
 
 
+  test('canonical Studio deep link has its light-first styles before any wallet action',async({page})=>{
+    for(const path of ['/create/studio/','/studio/']){
+      await page.setViewportSize({width:390,height:844})
+      await visit(page,path)
+      await expect(page.locator('.xa-creator-studio')).toBeVisible()
+      await expect(page.locator('.xa-creator-studio .xa-studio-steps')).toHaveCSS('display','grid')
+      await expect(page.locator('[data-mainnet-journey="studio"]')).toBeVisible()
+      await expect(page.locator('.xa-not-found')).toHaveCount(0)
+      const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)
+      expect(overflow,'studio direct link '+path).toBeLessThanOrEqual(12)
+    }
+  })
+
+
 })
