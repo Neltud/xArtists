@@ -42,7 +42,7 @@ Genesis packs are **planned one-time purchases**, associated with limited-editio
 - **Genesis pack payments:** **closed on both crypto and fiat rails** in the web checkout. The UI displays €110 / €75 / €50 as a catalogue only; the last recorded smart-contract prices are **1 / 5 / 2.5 EGLD** (8 November snapshot), not a real-time quote. Existing NFTs have empty media URIs. PayBox payment → authenticated IPN → NFT entitlement → refund proof remains **unconfirmed**.
 - **Public financial launch:** **NO-GO until capability-specific human approval and evidence**. No claim of yield, investment performance or guaranteed gains.
 
-For the latest source-backed status, see [Release 0.130.0 — 8 November](docs/RELEASE_2026-11-08_PUBLIC.md), [Design/UX review](docs/audits/DESIGN_REVIEW_2026-11-08.md), [8 November chain-readiness evidence](docs/ops/AGENTS_PACK_STEP2_FRONTEND_NO_GO_2026-11-08.md), and [launch audit (2 November)](docs/LAUNCH_AUDIT_2026-11-02.md). Historical operations are not current launch authorisations.
+For the latest source-backed status, see [Release 0.130.0 — 8 November](docs/RELEASE_2026-11-08_PUBLIC.md), [Design/UX review](docs/presentation/revue-design-2026-11-08.md), [8 November chain-readiness evidence](docs/ops/AGENTS_PACK_STEP2_FRONTEND_NO_GO_2026-11-08.md), and [launch audit (2 November)](docs/LAUNCH_AUDIT_2026-11-02.md). Historical operations are not current launch authorisations.
 
 
 ## Design & accessibility — 8 November review
