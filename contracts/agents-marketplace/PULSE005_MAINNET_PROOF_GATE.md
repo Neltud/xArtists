@@ -79,3 +79,14 @@ and time-stamped independent reads. Any source change invalidates the manifest,
 metadata hash, proof and owner transaction preflight. Use the raw decoded
 32-byte metadata SHA-256 value for the future smart contract call; do not pass
 the literal hex characters.
+
+
+### Metadata linkage constraint
+
+The verifier additionally requires the final `metadata.json` to declare
+`name: "Genesis Pulse #005"`, `image: "ipfs://<recto CID>/recto.png"`
+and `animation_url: "ipfs://<MP4 CID>/animation.mp4"` with byte-for-byte
+matching CIDs from the signed source manifest. This prevents a correctly pinned
+metadata file from advertising a different front image or animation.
+`verso.png` remains a separate verified URI passed on-chain, and the
+artist's licensing and consent statements are still subject to human review.
