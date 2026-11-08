@@ -40,3 +40,42 @@ Operator repeatable read-only evidence endpoints:
 - `https://api.multiversx.com/nfts/XAIPLS-2cf72b-05`
 
 **Improved GO interpretation:** the creator role and four indexed NFT nonces are now provisionally corroborated, but this **does not** establish future nonce availability, deployed code upgrade safety, CIDs, artist signed authorization, or successful delivery. Re-run the same sources with block height and independent gateway at the moment of any proposed mainnet transaction. Never automatically upgrade or mint from this report.
+
+
+## Exact-byte dual-gateway preflight tool (2026-11-08)
+
+A new fail-closed, **read-only** script is available at
+`contracts/agents-marketplace/scripts/pulse005_ipfs_readback.mjs`
+with unit coverage at `contracts/agents-marketplace/tests/pulse005_ipfs_readback.test.mjs`.
+
+Provide a local JSON manifest that names exactly four final source files
+(`recto.png`, `verso.png`, `animation.mp4`, `metadata.json`), each with a
+real **CIDv1 DAG-PB SHA2-256 directory root CID** and the source file's
+64-character lowercase SHA-256 hex. Avoid copying example/test CIDs into live metadata.
+
+Example invocation **after actual pinning**, from the owner-controlled workstation:
+
+```bash
+node contracts/agents-marketplace/scripts/pulse005_ipfs_readback.mjs \
+  --manifest /secure/pulse005-manifest.json \
+  --directory /secure/pulse005-final \
+  --gateway https://gateway-one.example/ipfs \
+  --gateway https://gateway-two.example/ipfs
+```
+
+The example gateway names are placeholders, **not real gateways**.
+Select two truly independent real gateways with valid HTTPS endpoints, and audit
+their operators; two different hostnames are not sufficient proof of
+independent infrastructure.
+
+The script validates CID structure, source file hash and size, metadata JSON
+syntax, and byte-for-byte equality of every file via both gateways. It rejects
+a deceptive HTML 200 page, missing bytes, differing hashes or reused gateway
+hosts. It does not pin anything, verify IPFS pin permanence, authorize a
+MultiversX upgrade, grant rights, or sign/mint a token.
+
+A successful real run must be accompanied by both providers' **pin receipts**
+and time-stamped independent reads. Any source change invalidates the manifest,
+metadata hash, proof and owner transaction preflight. Use the raw decoded
+32-byte metadata SHA-256 value for the future smart contract call; do not pass
+the literal hex characters.
