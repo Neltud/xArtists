@@ -1,8 +1,85 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-08T12:48:43.581Z",
+  "updatedAt": "2026-11-08T19:20:50.637Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1794165650105",
+      "timestamp": "19:20",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.00 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1794144780000",
+      "timestamp": "13:33",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1794142671000",
+      "timestamp": "12:57",
+      "source": "CoinTelegraph",
+      "title": "Binance France emails announce closure of its users’ accounts on Dec. 31",
+      "link": "https://cointelegraph.com/news/binance-france-emails-announce-closure-of-its-users-accounts-on-dec-31?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1794131328000",
+      "timestamp": "09:48",
+      "source": "CoinTelegraph",
+      "title": "Amsterdam protesters break into Microsoft data center construction site: Report",
+      "link": "https://cointelegraph.com/news/amsterdam-data-center-protesters-break-into-construction-site-report?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1794125576000",
+      "timestamp": "08:12",
+      "source": "CoinTelegraph",
+      "title": "Binance’s finance chief Kaiser Ng to leave company, report says",
+      "link": "https://cointelegraph.com/news/binances-finance-chief-kaiser-ng-to-leave-company-report-says?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1794060960000",
+      "timestamp": "14:16",
+      "source": "CoinTelegraph",
+      "title": "Ex-FBI counterintelligence agent stole almost $2.5M in crypto",
+      "link": "https://cointelegraph.com/news/ex-fbi-counterintelligence-agent-stole-almost-25m-in-crypto?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1794058200000",
+      "timestamp": "13:30",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin holders have received eCash — What can you do with it?",
+      "link": "https://cointelegraph.com/magazine/bitcoin-holders-have-received-ecash-what-can-you-with-it?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1794142559000",
+      "timestamp": "12:55",
+      "source": "CoinDesk",
+      "title": "These Finland homes get free heat from bitcoin miners (as long as BTC stays above $70,000)",
+      "link": "https://www.coindesk.com/markets/2026/11/08/these-finland-homes-get-free-heat-from-bitcoin-miners-as-long-as-btc-stays-above-usd70-000"
+    },
+    {
+      "id": "rss-CoinDesk-1-1794078796000",
+      "timestamp": "19:13",
+      "source": "CoinDesk",
+      "title": "Binance users in some European countries told to pull crypto before fees kick in, with accounts closing by year end",
+      "link": "https://www.coindesk.com/business/2026/11/07/binance-users-in-some-european-countries-told-to-pull-crypto-before-fees-kick-in-with-accounts-closing-by-year-end"
+    },
+    {
+      "id": "rss-CoinDesk-2-1794073006000",
+      "timestamp": "17:36",
+      "source": "CoinDesk",
+      "title": "U.S. Treasury moves to cut off crypto exchange MEXC over $16 billion in alleged illicit flows",
+      "link": "https://www.coindesk.com/business/2026/11/07/u-s-treasury-moves-to-cut-off-crypto-exchange-mexc-over-usd16-billion-in-alleged-illicit-flows"
+    },
+    {
+      "id": "rss-CoinDesk-3-1794070260000",
+      "timestamp": "16:51",
+      "source": "CoinDesk",
+      "title": "Gnosis Pay breach exposes card numbers, home addresses and linked crypto wallets",
+      "link": "https://www.coindesk.com/business/2026/11/07/gnosis-pay-breach-exposes-card-numbers-home-addresses-and-linked-crypto-wallets"
+    },
     {
       "id": "egld-1794142123148",
       "timestamp": "12:48",
@@ -11,67 +88,11 @@
       "link": "https://explorer.multiversx.com/"
     },
     {
-      "id": "rss-CoinTelegraph-0-1794131328000",
-      "timestamp": "09:48",
-      "source": "CoinTelegraph",
-      "title": "Amsterdam protesters break into Microsoft data center construction site: Report",
-      "link": "https://cointelegraph.com/news/amsterdam-data-center-protesters-break-into-construction-site-report?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1794125576000",
-      "timestamp": "08:12",
-      "source": "CoinTelegraph",
-      "title": "Binance’s finance chief Kaiser Ng to leave company, report says",
-      "link": "https://cointelegraph.com/news/binances-finance-chief-kaiser-ng-to-leave-company-report-says?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1794061320000",
-      "timestamp": "14:22",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1794060960000",
-      "timestamp": "14:16",
-      "source": "CoinTelegraph",
-      "title": "Ex-FBI counterintelligence agent stole almost $2.5M in crypto",
-      "link": "https://cointelegraph.com/news/ex-fbi-counterintelligence-agent-stole-almost-25m-in-crypto?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1794058200000",
-      "timestamp": "13:30",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin holders have received eCash — What can you do with it?",
-      "link": "https://cointelegraph.com/magazine/bitcoin-holders-have-received-ecash-what-can-you-with-it?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
       "id": "rss-CoinTelegraph-5-1794049847000",
       "timestamp": "11:10",
       "source": "CoinTelegraph",
       "title": "US sanctions Canadian money-exchange firms over Iran ties",
       "link": "https://cointelegraph.com/news/us-sanctions-canadian-money-exchange-firms-over-iran-ties?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1794078796000",
-      "timestamp": "19:13",
-      "source": "CoinDesk",
-      "title": "Binance users in some European countries told to pull crypto before fees kick in, with accounts closing by year end",
-      "link": "https://www.coindesk.com/business/2026/11/07/binance-users-in-some-european-countries-told-to-pull-crypto-before-fees-kick-in-with-accounts-closing-by-year-end"
-    },
-    {
-      "id": "rss-CoinDesk-1-1794073006000",
-      "timestamp": "17:36",
-      "source": "CoinDesk",
-      "title": "U.S. Treasury moves to cut off crypto exchange MEXC over $16 billion in alleged illicit flows",
-      "link": "https://www.coindesk.com/business/2026/11/07/u-s-treasury-moves-to-cut-off-crypto-exchange-mexc-over-usd16-billion-in-alleged-illicit-flows"
-    },
-    {
-      "id": "rss-CoinDesk-2-1794070260000",
-      "timestamp": "16:51",
-      "source": "CoinDesk",
-      "title": "Gnosis Pay breach exposes card numbers, home addresses and linked crypto wallets",
-      "link": "https://www.coindesk.com/business/2026/11/07/gnosis-pay-breach-exposes-card-numbers-home-addresses-and-linked-crypto-wallets"
     },
     {
       "id": "rss-CoinDesk-3-1793995758000",
@@ -177,27 +198,6 @@
       "source": "CoinTelegraph",
       "title": "US 401(k) proposal leaves door open to altcoins, but hurdles remain",
       "link": "https://cointelegraph.com/news/us-401k-proposal-leaves-door-open-altcoins-hurdles?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1793990865000",
-      "timestamp": "18:47",
-      "source": "CoinTelegraph",
-      "title": "Russia finalizes crypto trading rules ahead of Nov. 17 rollout",
-      "link": "https://cointelegraph.com/news/russia-finalizes-crypto-trading-rules-november-rollout?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "egld-1793991327313",
-      "timestamp": "18:55",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.27 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1793989362000",
-      "timestamp": "18:22",
-      "source": "CoinTelegraph",
-      "title": "Strive buys 15,124 Bitcoin in October, closes in on top treasury holders",
-      "link": "https://cointelegraph.com/news/strive-buys-bitcoin-october-top-btc-corporate-holders?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
