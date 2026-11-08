@@ -16,9 +16,15 @@ Exemple de **fixture, pas un cours de marché** : à 12 EUR/EGLD, 110 € donnen
 
 ### Écart actuel
 
-`getPackPrice`, relu le 28 octobre, retourne 10 / 5 / 2,5 EGLD. Le serveur fiat fixe 110 / 75 / 50 €. Ces rails ne représentent donc pas encore une offre de même valeur.
+`getPackPrice`, relu le **8 novembre 2026**, retourne **1 / 5 / 2,5 EGLD** (Pulse / Yield / Sentinel). La documentation du 28 octobre indiquant 10 EGLD pour Pulse est **obsolète**. Le catalogue fiat affiche **110 / 75 / 50 €**. Ces rails ne correspondent pas à une même cotation et ne sont **pas disponibles au paiement public**. Les anciens repères 33 / 22,5 / 15 EGLD ne sont pas des montants SC payables.
 
 Le endpoint de devis lit encore le taux dans le body. Il ne signe pas le devis, ne l'enregistre pas, ne le lie pas à un buyer et ne le consomme pas dans le paiement. Les calculs réussis ne prouvent pas une cotation exécutable. L'expiration invalide est aussi à fermer.
+
+### Disponibilité commerciale et URI
+
+Le site v0.130.0 du 8 novembre a déployé un verrou global : les achats packs via crypto **et fiat** sont suspendus. Les NFT Pulse, Yield et Sentinel déjà indexés possèdent des champs URI vides, avec une miniature générique ; le minter ne possède que le rôle `ESDTRoleNFTCreate`. Il reste à pinner les médias sur IPFS, vérifier leur contenu sur deux passerelles indépendantes, auditer la mise à jour des URI et prouver le transfert NFT + droits au bon acheteur.
+
+En MultiversX, `isPayable=false` régit les **transferts directs au compte du contrat** et n'empêche pas en soi un endpoint `#[payable("EGLD")]` de recevoir son paiement. Ne pas déclencher un upgrade payable-only sur la base de ce flag. Voir la [documentation MultiversX](https://docs.multiversx.com/developers/developer-reference/sc-payments/).
 
 ### Contrat de devis à implémenter
 
