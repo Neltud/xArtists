@@ -60,3 +60,10 @@ Le front **ne doit pas** proposer `resolveDispute` tant que :
 - **Limite de sécurité :** ce vérificateur ne lie PAS la clé publique à une adresse MultiversX bech32 ; le champ admin n'est qu'une chaîne validée. Il ne vérifie ni le contexte exact de signature wallet, ni la session serveur, ni l'anti-replay persistant. Ne jamais l'utiliser pour un endpoint admin ou un privilège propriétaire.
 - Commande de test : `node --test apps/frontend/tests/admin-auth-message.test.mjs apps/frontend/tests/admin-auth-signature-test.test.mjs`.
 - Prochaine étape : vérifier les vecteurs officiels de signature wallet, décoder l'adresse bech32 avec un SDK audité, comparer la clé publique, valider domaine et chaîne, puis consommer atomiquement le nonce dans un stockage durable avec session authentifiée.
+
+## 2026-11-08 — liaison clé publique / adresse, uniquement offline
+
+- `adminAuthAddressBindingTest.mjs` encode et décode les adresses `erd1` avec checksum Bech32 et compare les 32 octets de la clé publique Ed25519 au contenu de l'adresse.
+- Les tests `admin-auth-address-binding.test.mjs` créent des clés éphémères, vérifient checksum, signature, altération du message et erreur d'adresse.
+- **Aucun privilège admin activé.** Cette primitive de test n'est pas une validation de protocole wallet MultiversX officiel, de session, de nonce durable, ni de multisig. Ne pas l'exposer comme authentification de production.
+- Avant tout usage réel : vecteurs de test officiels SDK, confirmation du préfixage/domaine exact des signatures wallet, gestion multisig et challenge serveur atomique avec TTL.
