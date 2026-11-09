@@ -7,6 +7,7 @@ import crypto from 'node:crypto'
 import {
   payboxConfig,
   payboxCheckoutEnabled,
+  payboxCheckoutStoreReady,
   createPayboxSession,
   verifyPayboxIpn,
   verifyPayboxRsaSignature,
@@ -63,8 +64,33 @@ test('new PayBox sessions are NO-GO by default even with production merchant cre
   assert.equal(payboxCheckoutEnabled(merchant), false)
   assert.equal(payboxCheckoutEnabled({ ...merchant, PAYBOX_CHECKOUT_ENABLED: 'true' }), false)
   assert.equal(payboxCheckoutEnabled({ ...merchant, PAYBOX_CHECKOUT_ENABLED: '0' }), false)
-  assert.equal(payboxCheckoutEnabled({ ...merchant, PAYBOX_CHECKOUT_ENABLED: '1' }), true)
+  assert.equal(payboxCheckoutEnabled({ ...merchant, PAYBOX_CHECKOUT_ENABLED: '1' }), false)
+  assert.equal(payboxCheckoutEnabled({ ...merchant, PAYBOX_CHECKOUT_ENABLED: '1', DATABASE_URL: '  ' }), false)
+  assert.equal(payboxCheckoutEnabled({ ...merchant, PAYBOX_CHECKOUT_ENABLED: '1', DATABASE_URL: 'postgres://localhost/fixture' }), true)
   assert.equal(payboxCheckoutEnabled({ PAYBOX_CHECKOUT_ENABLED: '1' }), false)
+})
+
+test('new PayBox session requires fresh reachable PostgreSQL orders table', async () => {
+  const options = []
+  const good = await payboxCheckoutStoreReady(async opts => {
+    options.push(opts)
+    return { ok: true, backend: 'postgres', table_ready: true }
+  })
+  assert.equal(good, true)
+  assert.deepEqual(options, [{ fresh: true }])
+
+  const negative = [
+    { ok: false, backend: 'postgres', table_ready: true },
+    { ok: true, backend: 'file', table_ready: true },
+    { ok: true, backend: 'postgres', table_ready: false },
+    { ok: true, backend: 'postgres' },
+    null,
+  ]
+  for (const status of negative) {
+    assert.equal(await payboxCheckoutStoreReady(async () => status), false)
+  }
+  assert.equal(await payboxCheckoutStoreReady(async () => { throw new Error('db_down') }), false)
+  assert.equal(await payboxCheckoutStoreReady(), false)
 })
 
 test('IPN policy is SHA_256 / 2048 with no SHA1 fallback', () => {

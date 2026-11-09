@@ -54,8 +54,26 @@ export function payboxConfig(env = process.env) {
  * existing orders remain handled even while new checkout is disabled.
  */
 export function payboxCheckoutEnabled(env = process.env) {
+  // Never open new paid sessions against the ephemeral, single-host file ledger.
+  // Existing signed IPNs remain accepted by the separate webhook route.
   return payboxConfig(env).ready &&
-    String(env.PAYBOX_CHECKOUT_ENABLED || '').trim() === '1'
+    String(env.PAYBOX_CHECKOUT_ENABLED || '').trim() === '1' &&
+    Boolean(String(env.DATABASE_URL || '').trim())
+}
+
+/**
+ * Every new paid session must prove the durable order store can be reached
+ * and that its required table exists. An env URL alone is NOT a DB health
+ * check. This read-only probe does not create or migrate schemas.
+ */
+export async function payboxCheckoutStoreReady(probe) {
+  if (typeof probe !== 'function') return false
+  try {
+    const status = await probe({ fresh: true })
+    return status?.ok === true && status?.backend === 'postgres' && status?.table_ready === true
+  } catch {
+    return false
+  }
 }
 
 export function signPayboxHmac(message, hmacKeyHex) {
