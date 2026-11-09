@@ -1,0 +1,34 @@
+name: IPFS dual pin status + readback audit (offline)
+
+on:
+  pull_request:
+    paths:
+      - 'services/access-api/src/ipfsPinAudit.mjs'
+      - 'services/access-api/tests/ipfs-pin-audit.test.mjs'
+      - 'services/access-api/scripts/audit-studio-ipfs-pins.mjs'
+      - 'services/access-api/src/ipfsReadback.mjs'
+      - '.github/workflows/ipfs-dual-pin-audit.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'services/access-api/src/ipfsPinAudit.mjs'
+      - 'services/access-api/tests/ipfs-pin-audit.test.mjs'
+      - 'services/access-api/scripts/audit-studio-ipfs-pins.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mock-only-ipfs-pin-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify IPFS readback and independent pin-status safety gates
+        run: |
+          node --test services/access-api/tests/ipfs-readback.test.mjs \
+            services/access-api/tests/ipfs-pin-audit.test.mjs

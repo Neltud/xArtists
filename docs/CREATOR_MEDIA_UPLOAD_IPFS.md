@@ -94,6 +94,56 @@ La sortie `ok:true` signifie uniquement que **deux services de récupération HT
 
 Références : [IPFS Foundation — passerelles publiques](https://docs.ipfs.tech/concepts/public-utilities/), [IPFS Foundation — transition des gateways (août 2026)](https://blog.ipfs.tech/2026-08-beyond-sponsored-gateways/), [IPFS — pins et récupération](https://docs.ipfs.tech/quickstart/pin/).
 
+## Audit supplémentaire : deux systèmes déclarant conserver le CID (#402)
+
+Le vérificateur de passerelles décrit ci-dessus **existe déjà** ; la nouvelle commande
+`npm run audit:studio:ipfs` ajoute **deux interrogations authentifiées distinctes**
+sur des CIDs **déjà publiés** : Pinata `GET /data/pinList` (statut `pinned`)
+et votre nœud Kubo administré séparément `POST /api/v0/pin/ls?type=recursive`.
+Elle exécute ensuite le téléchargement intégral par les deux passerelles publiques,
+avec vérification de la longueur et du SHA-256 des originaux.
+
+Le manifeste d'entrée est **le même** que pour `verify:studio:ipfs`
+(`assets: [{mediaUri, sha256, bytes}]`). Ne jamais déclarer un CID factice ou
+réutiliser un SHA d'un autre fichier. Une même racine CID est vérifiée une seule
+fois auprès des deux services de pin, même si plusieurs fichiers s'y trouvent.
+
+**Configuration privilégiée pour un nœud Kubo IPFS hébergé séparément sur OVHcloud :**
+garder l'API RPC Kubo sur `127.0.0.1` côté serveur, non exposée à Internet.
+Depuis une machine opérateur autorisée, ouvrir un tunnel SSH local vers ce
+service, puis exécuter la commande de vérification dans une session sécurisée :
+
+```sh
+# Session opérateur privée seulement ; ne pas copier vos secrets dans GitHub.
+ssh -N -L 5001:127.0.0.1:5001 <operator>@<secondary-kubo-host>
+# Dans un second terminal, configurer PINATA_JWT par le coffre de secrets.
+export IPFS_PIN_AUDIT_ENABLED=1
+export IPFS_SECONDARY_RPC_URL=http://127.0.0.1:5001
+export IPFS_SECONDARY_LOCAL_TUNNEL_APPROVED=1
+cd services/access-api
+npm run audit:studio:ipfs -- /chemin/prive/public-media-manifest.json
+```
+
+Pour un proxy RPC distant `https://`, il faut **une authentification serveur**
+et des noms d'hôtes explicitement autorisés dans `IPFS_SECONDARY_ALLOWED_HOSTS` ;
+définir aussi `IPFS_SECONDARY_RPC_BEARER` depuis le coffre privé. Le client
+refuse HTTP distant, IP literals distantes, redirections, URL avec userinfo,
+chemins arbitraires ou proxy sans jeton. **Ne jamais publier directement
+l'API Kubo sur Internet.** Ce test ne fait aucun `pin/add`, `pin/rm`, upload,
+écriture SQL, signature ou transfert.
+
+Le reçu est volontairement limité : `twoPinSystemsReported` signifie seulement
+que **deux API administrées séparément** disent posséder un pin récursif du CID
+et `gatewayByteReadbackVerified` que deux services HTTPS ont livré les octets
+attendus lors du test. Même si `ok:true`, les drapeaux
+`independentPinProvidersVerified`, `independentBackupsVerified`,
+`restoreTestVerified` et `nftMintVerified` restent **false**. Il faut
+une preuve d'isolation OVH/Pinata, une sauvegarde hors site et un **test de
+restauration** avant d'affirmer une durabilité indépendante ou de clore #402.
+
+Références d'API : [Pinata pinList](https://github.com/PinataCloud/docs/blob/main/pinata-api-ipfs.yaml),
+[Kubo pin/ls](https://docs.ipfs.tech/reference/kubo/rpc/).
+
 ## Marketplace V3
 
 Le parcours public distingue désormais trois rayons :
