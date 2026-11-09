@@ -10,7 +10,8 @@
     "preflight:studio:ipfs": "node scripts/check-studio-ipfs.mjs",
     "verify:studio:ipfs": "node scripts/verify-studio-ipfs-readback.mjs",
     "audit:studio:ipfs": "node scripts/audit-studio-ipfs-pins.mjs",
-    "verify:studio:ipfs:restore": "node scripts/verify-studio-ipfs-restore.mjs"
+    "verify:studio:ipfs:restore": "node scripts/verify-studio-ipfs-restore.mjs",
+    "ops:domain:check": "node scripts/check-xartists-domain.mjs"
   },
   "dependencies": {
     "@multiversx/sdk-core": "13.17.2",
