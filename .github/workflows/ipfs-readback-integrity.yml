@@ -5,6 +5,9 @@ on:
     paths:
       - 'services/access-api/src/ipfsReadback.mjs'
       - 'services/access-api/tests/ipfs-readback.test.mjs'
+      - 'services/access-api/src/ipfsRestoreIntegrity.mjs'
+      - 'services/access-api/tests/ipfs-restore-integrity.test.mjs'
+      - 'services/access-api/scripts/verify-studio-ipfs-restore.mjs'
       - '.github/workflows/ipfs-readback-integrity.yml'
   workflow_dispatch:
 
@@ -20,4 +23,4 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - run: node --test services/access-api/tests/ipfs-readback.test.mjs
+      - run: node --test services/access-api/tests/ipfs-readback.test.mjs services/access-api/tests/ipfs-restore-integrity.test.mjs
