@@ -63,7 +63,9 @@ test('new PayBox sessions are NO-GO by default even with production merchant cre
   assert.equal(payboxCheckoutEnabled(merchant), false)
   assert.equal(payboxCheckoutEnabled({ ...merchant, PAYBOX_CHECKOUT_ENABLED: 'true' }), false)
   assert.equal(payboxCheckoutEnabled({ ...merchant, PAYBOX_CHECKOUT_ENABLED: '0' }), false)
-  assert.equal(payboxCheckoutEnabled({ ...merchant, PAYBOX_CHECKOUT_ENABLED: '1' }), true)
+  assert.equal(payboxCheckoutEnabled({ ...merchant, PAYBOX_CHECKOUT_ENABLED: '1' }), false)
+  assert.equal(payboxCheckoutEnabled({ ...merchant, PAYBOX_CHECKOUT_ENABLED: '1', DATABASE_URL: '  ' }), false)
+  assert.equal(payboxCheckoutEnabled({ ...merchant, PAYBOX_CHECKOUT_ENABLED: '1', DATABASE_URL: 'postgres://localhost/fixture' }), true)
   assert.equal(payboxCheckoutEnabled({ PAYBOX_CHECKOUT_ENABLED: '1' }), false)
 })
 
