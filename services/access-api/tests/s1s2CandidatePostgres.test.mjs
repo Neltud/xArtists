@@ -97,6 +97,8 @@ test('PostgreSQL candidate ledger: unique PSP/tx/NFT, correlated S1/S2, immutabl
     const discounted = await fixture(8, { amount: 1, tx: hash('8'), token: '08' })
     const missingStatus = await fixture(9, { tx: hash('9'), token: '09' })
     const missingMicroFlag = await fixture(10, { tx: hash('0'), token: '0a' })
+    const refundedButPaid = await fixture(11, { tx: hash('1'), token: '0b' })
+    const chargebackButPaid = await fixture(12, { tx: hash('2'), token: '0c' })
 
     // No migration is run during production startup. CI applies only to its
     // disposable localhost PostgreSQL service after synthetic parent tables.
@@ -132,6 +134,17 @@ test('PostgreSQL candidate ledger: unique PSP/tx/NFT, correlated S1/S2, immutabl
       [missingMicroFlag.orderId],
     )
     await rejectCode(insert(missingMicroFlag), '23514')
+    // Provider dispute flags invalidate the proof even while status='paid'.
+    await pool.query(
+      `UPDATE paybox_orders SET payload=jsonb_set(payload, '{refunded}', 'true'::jsonb)
+       WHERE order_id=$1`, [refundedButPaid.orderId],
+    )
+    await pool.query(
+      `UPDATE paybox_orders SET payload=jsonb_set(payload, '{chargeback}', 'true'::jsonb)
+       WHERE order_id=$1`, [chargebackButPaid.orderId],
+    )
+    await rejectCode(insert(refundedButPaid), '23514')
+    await rejectCode(insert(chargebackButPaid), '23514')
     await rejectCode(insert({ ...concurrent, orderId: 'unknown_parent' }), '23514')
     await rejectCode(insert({ ...concurrent, provider: first.provider }), '23514')
 
@@ -200,6 +213,18 @@ test('PostgreSQL candidate ledger: unique PSP/tx/NFT, correlated S1/S2, immutabl
     }
     assert.equal(await verifyConsistency(first.orderId), true)
     assert.equal(await verifyConsistency(concurrent.orderId), true)
+    await pool.query(
+      `UPDATE paybox_orders SET payload=jsonb_set(payload, '{chargeback}', 'true'::jsonb)
+       WHERE order_id=$1`, [first.orderId],
+    )
+    assert.equal(await verifyConsistency(first.orderId), false,
+      'paid-but-chargeback candidate must never remain current')
+    await pool.query(
+      `UPDATE paybox_orders SET payload=jsonb_set(payload, '{chargeback}', 'false'::jsonb)
+       WHERE order_id=$1`, [first.orderId],
+    )
+    assert.equal(await verifyConsistency(first.orderId), true,
+      'restored consistent snapshot is still candidate only, never delivery')
     await pool.query(
       `UPDATE paybox_orders SET status='refunded',
         payload=jsonb_set(payload, '{status}', '"refunded"'::jsonb),
