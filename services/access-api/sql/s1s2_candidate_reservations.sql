@@ -67,6 +67,10 @@ BEGIN
      o.payload->>'amount_cents' IS DISTINCT FROM NEW.amount_cents::text OR
      o.payload->>'server_confirmed' IS DISTINCT FROM 'true' OR
      o.payload->>'payment_verified' IS DISTINCT FROM 'true' OR
+     -- A dispute flag can arrive before a status transition. Missing flags
+     -- are legacy false, but any non-false payload must fail closed.
+     COALESCE(o.payload->>'refunded','false') IS DISTINCT FROM 'false' OR
+     COALESCE(o.payload->>'chargeback','false') IS DISTINCT FROM 'false' OR
      o.payload->>'delivery_verified' IS DISTINCT FROM 'false' OR
      o.payload->>'delivery' IS DISTINCT FROM 'pending' OR
      o.payload->>'delivered_at' IS NOT NULL OR
@@ -130,6 +134,8 @@ SELECT r.order_id,
          AND o.payload->>'status' = 'paid'
          AND o.payload->>'server_confirmed' = 'true'
          AND o.payload->>'payment_verified' = 'true'
+         AND COALESCE(o.payload->>'refunded','false') = 'false'
+         AND COALESCE(o.payload->>'chargeback','false') = 'false'
          AND o.payload->>'delivery_verified' = 'false'
          AND o.payload->>'delivery' = 'pending'
          AND o.payload->>'delivered_at' IS NULL
