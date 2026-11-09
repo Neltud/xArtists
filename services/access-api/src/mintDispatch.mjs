@@ -323,7 +323,8 @@ export function resolveLiveInputs(cfg) {
   return { live_mint: 'true', confirm: 'LIVE_MINT_MAINNET', mode: 'live' }
 }
 
-export async function dispatchMintOnPayment(input, env = process.env, fetchImpl = fetch) {
+// Internal only: external modules must pass the verified order through maybeDispatchMintAfterPaid.
+async function dispatchMintOnPayment(input, env = process.env, fetchImpl = fetch) {
   const cfg = mintDispatchConfig(env)
   if (!cfg.enabled) {
     return { ok: false, skipped: true, reason: 'mint_dispatch_disabled_or_no_token' }
