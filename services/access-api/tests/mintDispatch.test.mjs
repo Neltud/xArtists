@@ -145,6 +145,64 @@ describe('assertPaymentAllowsMint', () => {
   })
 })
 
+
+describe('P0 payment snapshot hardening before mint dispatch', () => {
+  const paid = {
+    server_confirmed: true, payment_verified: true, status: 'paid',
+    provider_tx_id: 'pbx_tx_123', pack_id: 'sentinel', amount_cents: 5000,
+    currency: 'EUR', order_id: 'xa_secure_1',
+    buyer_address: 'erd1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq6gqag2',
+    delivery_verified: false, delivery: 'pending', delivered_at: null,
+  }
+
+  it('accepts only exact authoritative prices for all three packs', () => {
+    for (const [pack_id, amount_cents] of [['pulse', 11000], ['yield', 7500], ['sentinel', 5000]]) {
+      assert.equal(assertPaymentAllowsMint({ ...paid, pack_id, amount_cents }).ok, true)
+      assert.equal(assertPaymentAllowsMint({ ...paid, pack_id, amount_cents: amount_cents - 1 }).reason, 'catalog_amount_mismatch')
+      assert.equal(assertPaymentAllowsMint({ ...paid, pack_id, amount_cents: amount_cents + 1 }).reason, 'catalog_amount_mismatch')
+    }
+  })
+
+  it('blocks forged paid flags, refunds, delivery replay and malformed references', () => {
+    const cases = [
+      [{ status: 'created' }, 'order_not_paid'],
+      [{ status: 'redirected' }, 'order_not_paid'],
+      [{ status: 'refunded' }, 'order_not_paid'],
+      [{ status: 'mint_queued' }, 'order_not_paid'],
+      [{ refunded: true }, 'order_refunded_or_already_delivered'],
+      [{ chargeback: true }, 'order_refunded_or_already_delivered'],
+      [{ delivery_verified: true }, 'order_refunded_or_already_delivered'],
+      [{ delivery: 'confirmed' }, 'order_refunded_or_already_delivered'],
+      [{ delivered_at: '2026-11-09T10:00:00Z' }, 'order_refunded_or_already_delivered'],
+      [{ provider_tx_id: '' }, 'missing_or_invalid_provider_tx_id'],
+      [{ provider_tx_id: 'bad provider tx' }, 'missing_or_invalid_provider_tx_id'],
+      [{ amount_cents: 1 }, 'catalog_amount_mismatch'],
+      [{ amount_cents: 5000.5 }, 'catalog_amount_mismatch'],
+      [{ currency: 'USD' }, 'currency_mismatch'],
+      [{ currency: undefined }, 'currency_mismatch'],
+      [{ order_id: '../bad' }, 'invalid_order_id'],
+      [{ order_id: 'x'.repeat(65) }, 'invalid_order_id'],
+    ]
+    for (const [change, reason] of cases) {
+      assert.equal(assertPaymentAllowsMint({ ...paid, ...change }).reason, reason, JSON.stringify(change))
+    }
+  })
+
+  it('rejects non-paid amounts before any GitHub dispatch or mint job write', async () => {
+    let calls = 0
+    for (const change of [{ amount_cents: 1 }, { status: 'created' }, { delivery_verified: true }]) {
+      const result = await maybeDispatchMintAfterPaid({ ...paid, ...change }, envBase(), async () => {
+        calls += 1
+        return { status: 204 }
+      })
+      assert.equal(result.skipped, true)
+      assert.equal(result.ok, false)
+    }
+    assert.equal(calls, 0)
+    assert.equal(fs.existsSync(jobsPath), false)
+  })
+})
+
 describe('resolveLiveInputs', () => {
   it('dry_run by default', () => {
     assert.equal(resolveLiveInputs(mintDispatchConfig(envBase())).live_mint, 'false')
