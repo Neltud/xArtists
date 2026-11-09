@@ -97,11 +97,10 @@ export function Home(){
 }
 
 export function GroupPage({group}:{group:Group}){
- const c=useCopy()
+ const c=useCopy(),{lang}=useI18n()
  const [q,setQ]=useState('')
- const needle=q.trim().toLowerCase()
  const list=modules.filter(m=>m.group===group&&
-  [c(m.label),c(m.group),...m.tags].join(' ').toLowerCase().includes(needle)).sort((a,b)=>stageRank(a.id)-stageRank(b.id))
+  matchesModuleSearch(q,[c(m.label),c(m.group),...m.tags,m.path,...m.aliases],lang)).sort((a,b)=>stageRank(a.id)-stageRank(b.id))
  return <div className={`xa-container xa-group-page group-${group}`}>
   <div className="xa-page-intro">
    <div><div className="xa-breadcrumb"><Link to="/">xArtists</Link><Icon name="chevron" size={12}/><span>{c(group)}</span></div>
@@ -111,9 +110,9 @@ export function GroupPage({group}:{group:Group}){
    </div>
   </div>
   <div className="xa-directory-head">
-   <h2>{c('modules')}<span>{list.length}</span></h2>
+   <h2>{c('modules')}<span role="status" aria-live="polite" aria-atomic="true">{list.length}</span></h2>
    <label className="xa-filter-search"><Icon name="search" size={17}/>
-    <input value={q} onChange={e=>setQ(e.target.value)} placeholder={c('search')} aria-label={c('search')}/>
+    <input type="search" value={q} onChange={e=>setQ(e.target.value)} placeholder={c('search')} aria-label={c('search')}/>
    </label>
   </div>
   {PUBLIC_STAGE_ORDER.map(stage=>{const items=list.filter(m=>publicStage(m.id)===stage);return items.length?<section key={stage} className="xa-public-stage-section"><div className="xa-stage-heading"><h2>{c(stage==='browse'?'stageBrowse':stage==='preview'?'stagePreview':'stageRoadmap')}</h2><p>{c(stage==='browse'?'roadmapNowLead':stage==='preview'?'roadmapPreviewLead':'roadmapFutureLead')}</p></div><div className="xa-module-grid">{items.map((m,k)=><ModuleCard key={m.id} module={m} index={k}/>)}</div></section>:null})}
