@@ -13,7 +13,7 @@ import { createChallenge, verifySignedChallenge, requireSiwx, erdToPubkey } from
 import { createSimpleIntentService } from './liaSimple.mjs'
 import { moonpayConfig, signMoonpayUrl } from './moonpay.mjs'
 import {
-  payboxConfig, payboxCheckoutEnabled, createPayboxSession, verifyPayboxIpn, extractRawSignedData, resolveIpnAuthenticatedSource, IPN_POLICY,
+  payboxConfig, payboxCheckoutEnabled, payboxCheckoutStoreReady, createPayboxSession, verifyPayboxIpn, extractRawSignedData, resolveIpnAuthenticatedSource, IPN_POLICY,
 } from './paybox.mjs'
 import {
   createOrder, getOrder, getOrderForBuyer, applyIpn, markRedirected, newOrderId, resolveArtistBeneficiary,
@@ -598,6 +598,12 @@ async function handleRequest(req, res) {
           ok: false, error: 'paybox_not_configured', pack_id: pack.id, amount_cents: pack.price_cents,
           message: 'Paybox System merchant credentials missing. Fail-closed.',
         })
+        return
+      }
+      // Check actual storage immediately before creating a paid session.
+      // A configured DATABASE_URL or an old cached /health result is not proof.
+      if (!(await payboxCheckoutStoreReady(probeOrdersStore))) {
+        json(res, 503, { ok: false, error: 'paybox_order_store_not_ready' })
         return
       }
       let artist = null
