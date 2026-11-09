@@ -257,6 +257,28 @@ export const AGENT_PACK_SC_SNAPSHOT = {
   commerceGo: false,
 } as const
 
+/**
+ * Verified public MultiversX API readback, scoped to NFT MEDIA ONLY.
+ * Observed 2026-11-09. Not a live subscription or a price quote.
+ * https://api.multiversx.com/collections/<ticker>/nfts?size=20
+ *
+ * All six indexed pack NFTs return uris: [""]. The Pulse #005 token
+ * is absent. This evidence must never turn on a commercial mint gate.
+ */
+export const AGENT_PACK_MEDIA_SNAPSHOT = {
+  observedDate: '2026-11-09',
+  source: 'MultiversX public mainnet collection NFT index',
+  isLive: false,
+  commerceGo: false,
+  packs: {
+    pulse: { indexed: 4, nonEmptyMediaUris: 0, nonce5Present: false },
+    yield: { indexed: 1, nonEmptyMediaUris: 0 },
+    sentinel: { indexed: 1, nonEmptyMediaUris: 0 },
+  },
+  indexedTotal: 6,
+  mediaReadyTotal: 0,
+} as const
+
 export const AGENT_PACKS_EUR = {
   pulse: { id: 'pulse', name: 'Pulse Pack (Gold)', priceEur: 110, priceCents: 11000 },
   yield: { id: 'yield', name: 'Yield Pack (Silver)', priceEur: 75, priceCents: 7500 },
