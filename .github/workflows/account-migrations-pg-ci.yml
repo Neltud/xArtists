@@ -1,0 +1,59 @@
+name: Walletless account schema — disposable PostgreSQL proof
+
+on:
+  pull_request:
+    paths:
+      - 'services/access-api/migrations/20261109_xa_accounts_v1.sql'
+      - 'services/access-api/migrations/20261109_xa_wallet_link_challenges.sql'
+      - 'services/access-api/tests/accountMigrationsPostgres.test.mjs'
+      - '.github/workflows/account-migrations-pg-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'services/access-api/migrations/20261109_xa_accounts_v1.sql'
+      - 'services/access-api/migrations/20261109_xa_wallet_link_challenges.sql'
+      - 'services/access-api/tests/accountMigrationsPostgres.test.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  walletless-pg-sandbox-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: xartists_account_probe
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d xartists_account_probe"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 20
+    env:
+      TEST_XA_ACCOUNT_DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/xartists_account_probe
+      ALLOW_EPHEMERAL_XA_ACCOUNT_PG_TEST: '1'
+      MINT_LIVE_ENABLED: '0'
+      PAYBOX_CHECKOUT_ENABLED: '0'
+      STRIPE_LIVE_CHECKOUT_ENABLED: '0'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: services/access-api/package-lock.json
+      - name: Install API dependencies without lifecycle scripts
+        working-directory: services/access-api
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Prove account constraints, walletless subscriptions and anti-replay on ephemeral PG
+        working-directory: services/access-api
+        run: node --test tests/accountMigrationsPostgres.test.mjs
+      - name: No real OIDC, Stripe, wallet signing or mint
+        run: echo 'Only disposable localhost PostgreSQL. Production Neon migrations and auth remain OFF.' >> "$GITHUB_STEP_SUMMARY"

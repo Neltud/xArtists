@@ -28,3 +28,28 @@ Status: DRAFT / NO-GO. This branch adds domain logic and an additive SQL schema 
 ## Manual migration rehearsal
 
 Use a disposable PostgreSQL database with a least-privilege migration role, and apply `services/access-api/migrations/20261109_xa_accounts_v1.sql` only after review. Verify uniqueness, foreign keys, replay conflict behavior, subscription expiration and that legacy payment/mint tables are unchanged. This SQL has not been applied to any database by this PR.
+
+## Vérification automatisée sur PostgreSQL jetable (2026-11-09)
+
+Le workflow `Walletless account schema — disposable PostgreSQL proof`
+vérifie les deux migrations `20261109_xa_accounts_v1.sql` et
+`20261109_xa_wallet_link_challenges.sql` avec PostgreSQL 16 **local à CI**.
+Il vérifie la création d'un compte sans wallet, l'indépendance de l'abonnement
+fiat et des NFT, les contraintes d'identité et d'adresse wallet uniques,
+l'expiration du défi SIWX et l'anti-rejeu des événements Stripe. Deux exécutions
+des migrations sur la base CI montrent leur rejouabilité à blanc.
+
+**Ce test n'installe pas de login réel.** Il n'exécute aucun OIDC, aucune
+signature SIWX, aucun webhook Stripe réel, ni aucun DDL sur Neon ou Render.
+L'accès commercial doit rester OFF tant que le fournisseur d'identité,
+les JWT vérifiés, les migrations du bon DSN, la sécurité des cookies,
+le PSP signé et les parcours de renouvellement/remboursement n'ont pas été
+évalués et approuvés par l'opérateur.
+
+Commande CI :
+
+```sh
+ALLOW_EPHEMERAL_XA_ACCOUNT_PG_TEST=1 \\
+TEST_XA_ACCOUNT_DATABASE_URL=postgres://postgres:postgres@127.0.0.1:5432/xartists_account_probe \\
+node --test services/access-api/tests/accountMigrationsPostgres.test.mjs
+```
