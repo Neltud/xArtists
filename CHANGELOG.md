@@ -1,5 +1,25 @@
 # Changelog — xArtists
 
+## [0.131.0](https://github.com/Neltud/xArtists/compare/v0.130.0...v0.131.0) (2026-11-09)
+
+
+### Features
+
+* **creator:** ship local rights and trailer evidence handoff, paper-only ([2da7518](https://github.com/Neltud/xArtists/commit/2da75185bbb099d4de4fb88131b1c214dd62a593))
+* **ux:** simplify NFT Factory into three guided beginner steps ([1d38050](https://github.com/Neltud/xArtists/commit/1d38050c335fad4edafa15897854c261d7e8b835))
+
+
+### Bug Fixes
+
+* **museum:** publish mobile joystick clearance and accessible gallery controls ([f210ad9](https://github.com/Neltud/xArtists/commit/f210ad927bb448ec7da814c606b459ec37365917))
+* **packs:** ship truthful mainnet pricing and fail-closed fiat/crypto checkout ([c00f138](https://github.com/Neltud/xArtists/commit/c00f13888d88ccfbb05275a4fa7d9f97715ab812))
+* **ux:** consistent section search and accessible result count ([#464](https://github.com/Neltud/xArtists/issues/464)) ([80d25f1](https://github.com/Neltud/xArtists/commit/80d25f1a01c026cd503483913f68097085cd45b7))
+
+
+### Documentation
+
+* **release:** update GitBook, README and pack discovery UX review ([3fef707](https://github.com/Neltud/xArtists/commit/3fef70733282a09064e8e354005f4a194b1f2ffd))
+
 ## [0.130.0](https://github.com/Neltud/xArtists/compare/v0.129.1...v0.130.0) (2026-11-08)
 
 > **Release scope:** source and UI preview milestone only. A version tag does not activate live minting, checkout, RWA escrow transfers, LIA real trading or an authenticated paid plugin download; those functions require separate verified release gates.
