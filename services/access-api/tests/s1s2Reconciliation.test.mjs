@@ -102,6 +102,8 @@ test('S1 must be authentic verified, paid, non-refundable and EXACT server catal
   const bad = [
     f => { f.order.status = 'redirected' },
     f => { f.order.status = 'refunded' },
+    f => { f.order.refunded = true },
+    f => { f.order.chargeback = true },
     f => { f.order.server_confirmed = false },
     f => { f.order.payment_verified = false },
     f => { f.order.amount_cents = 1; f.mintJob.amount_cents = 1 },
@@ -159,13 +161,22 @@ test('duplicate PSP transaction, NFT or tx in ledger must block candidate before
     f => f.ordersSnapshot.push({ order_id: 'other_order', provider_tx_id: f.order.provider_tx_id }),
     f => f.jobsSnapshot.push({ order_id: 'other_order', chain_tx_hash: TX }),
     f => f.jobsSnapshot.push({ order_id: 'other_order', nft_identifier: NFT }),
+    f => f.jobsSnapshot.push({ order_id: 'other_order', provider_tx_id: f.order.provider_tx_id }),
     f => f.ordersSnapshot.splice(0),
     f => f.jobsSnapshot.splice(0),
     f => f.ordersSnapshot.push({ ...f.order }),
     f => { f.ordersSnapshot[0] = { ...f.order, amount_cents: 1 } },
     f => { f.ordersSnapshot[0] = { ...f.order, server_confirmed: false } },
+    f => { f.ordersSnapshot[0] = { ...f.order, refunded: true } },
+    f => { f.ordersSnapshot[0] = { ...f.order, chargeback: true } },
+    f => { f.ordersSnapshot[0] = { ...f.order, currency: 'USD' } },
+    f => { f.ordersSnapshot[0] = { ...f.order, delivery: 'simulated' } },
+    f => { f.ordersSnapshot[0] = { ...f.order, delivered_at: '2026-11-09T15:00:00.000Z' } },
     f => { f.jobsSnapshot[0] = { ...f.mintJob, mode: 'dry_run' } },
     f => { f.jobsSnapshot[0] = { ...f.mintJob, nft_identifier: 'OTHER-123456-01' } },
+    f => { f.jobsSnapshot[0] = { ...f.mintJob, micro_price: true } },
+    f => { f.jobsSnapshot[0] = { ...f.mintJob, github_dispatch_accepted: false } },
+    f => { f.jobsSnapshot[0] = { ...f.mintJob, pack_id: 'pulse' } },
   ]) {
     const f = fixture()
     reuse(f)

@@ -108,6 +108,7 @@ test('payment revocation or a missing PSP binding invalidates a stored confirmat
     {server_confirmed:false},{payment_verified:false},{server_confirmed:'true'},
     {payment_verified:'true'},{provider_tx_id:null},{provider_tx_id:''},
     {provider_tx_id:'id with spaces'},
+    {refunded:true},{chargeback:true},
   ]) {
     const result=publicOrderDelivery({...storedProof(),...patch})
     assert.equal(result.delivery_verified,false,JSON.stringify(patch))
@@ -139,4 +140,35 @@ test('coherent stored proof is presented across paid and mint lifecycle states w
     })
     assert.equal(JSON.stringify(row),before)
   }
+})
+
+test('duplicate signed IPN never permits re-dispatch when paid order was disputed or already delivered', async () => {
+  await withTestLedger(async filename => {
+    const id = 'xa_delivery_revoked_replay'
+    await createOrder({
+      order_id:id,pack_id:'sentinel',amount_cents:5000,buyer_address:BUYER,
+    })
+    await applyIpn({
+      order_id:id,amount_cents:5000,error_code:'00000',provider_tx_id:'psp_revoked_replay',
+    })
+    for(const patch of [
+      {refunded:true}, {chargeback:true},
+      {delivery_verified:true}, {delivery:'confirmed'},
+      {delivered_at:'2026-11-09T19:00:00.000Z'},
+    ]) {
+      const ledger=JSON.parse(fs.readFileSync(filename,'utf8'))
+      ledger.orders[id]={
+        ...ledger.orders[id],
+        refunded:false,chargeback:false,
+        delivery_verified:false,delivery:'pending',delivered_at:null,
+        ...patch,
+      }
+      fs.writeFileSync(filename,JSON.stringify(ledger)+'\n')
+      const repeated=await applyIpn({
+        order_id:id,amount_cents:5000,error_code:'00000',provider_tx_id:'psp_revoked_replay',
+      })
+      assert.equal(repeated.duplicate,true)
+      assert.equal(repeated.dispatch_eligible,false,'must not dispatch twice for '+JSON.stringify(patch))
+    }
+  })
 })

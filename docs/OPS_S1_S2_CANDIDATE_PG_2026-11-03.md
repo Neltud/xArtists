@@ -102,3 +102,24 @@ n'est livrée dans cette suite.
 Le Go actuel concerne la vitrine et les contrôles techniques, pas
 l'encaissement ni la livraison NFT. Suivi :
 [issue #281](https://github.com/Neltud/xArtists/issues/281).
+
+## Mise à jour P0 — contestations PSP et rejouement inter-commandes (2026-11-09)
+
+Un statut `paid` et des flags initiaux `server_confirmed` et `payment_verified`
+ne suffisent plus si une contestation ultérieure a inscrit `refunded:true` ou
+`chargeback:true` dans la même commande. Le candidat S1/S2 refuse ces deux
+flags même si `status` n'a pas encore évolué en `refunded`, et compare les
+champs de contrôle à ceux de l'instantané serveur.
+
+Le ledger candidat et sa vue de cohérence rejettent aussi ces indicateurs
+**avant** une éventuelle transition de statut. Le vérificateur exclut toute
+réutilisation d'un identifiant de transaction PSP entre mint jobs distincts,
+en plus des doublons NFT et hash on-chain. `publicOrderDelivery` ne présente
+plus comme vérifié un NFT dont le règlement aurait été contesté ; les IPN
+signés rejoués ne re-déclenchent pas un envoi déjà livré ou révoqué.
+
+Ce correctif est **strictement conservateur** : les tests PostgreSQL utilisent
+une base locale jetable et le SQL doit être appliqué uniquement après revue
+sur le DSN opérationnel correct, avec sauvegarde et décision opérateur.
+Aucune API ne commet `delivery_verified:true` ni ne certifie un PSP ou une
+finalité blockchain ; la délivrance atomique de production reste bloquée.

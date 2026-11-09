@@ -351,7 +351,7 @@ export async function getOrderForBuyer(orderId, requester) {
  */
 export function publicOrderDelivery(order) {
   const invalidated = [ORDER_STATUS.REFUNDED, ORDER_STATUS.CANCELLED, ORDER_STATUS.REFUSED]
-    .includes(order?.status)
+    .includes(order?.status) || order?.refunded === true || order?.chargeback === true
   const paidLifecycle = [ORDER_STATUS.PAID, ORDER_STATUS.MINT_QUEUED,
     ORDER_STATUS.MINT_CONFIRMED, ORDER_STATUS.ACTIVE].includes(order?.status)
   const paymentBound = paidLifecycle && order?.server_confirmed === true &&
@@ -366,7 +366,8 @@ export function publicOrderDelivery(order) {
   const validDate = Number.isFinite(deliveredAt) && new Date(deliveredAt).toISOString() ===
     order.delivered_at.replace(/(?:\.(\d{1,3}))?Z$/, (_, fraction = '') => '.' + fraction.padEnd(3, '0') + 'Z')
   const verified = Boolean(
-    paymentBound && order?.delivery_verified === true && order.delivery === 'confirmed' &&
+    !invalidated && paymentBound &&
+    order?.delivery_verified === true && order.delivery === 'confirmed' &&
     typeof order.chain_tx_hash === 'string' && /^[0-9a-f]{64}$/i.test(order.chain_tx_hash) &&
     nft && /[1-9a-f]/i.test(nft[1]) && validDate &&
     deliveredAt <= Date.now() + 60_000,
@@ -408,6 +409,11 @@ export async function applyIpn(ipn) {
             String(ipn.provider_tx_id) !== String(order.provider_tx_id)) {
           return { ok: false, reason: 'provider_tx_mismatch' }
         }
+        // Capture evidence of a prior delivery BEFORE any legacy cleanup.
+        // Clearing a stale delivered_at must never re-open dispatch eligibility.
+        const hadDeliveryMarker =
+          order.delivery_verified === true || order.delivery === 'confirmed' ||
+          order.delivered_at != null
         // Repair legacy simulated delivery only on a verified duplicate IPN.
         if (order.delivery === 'simulated') {
           order.delivery = 'pending'
@@ -423,7 +429,11 @@ export async function applyIpn(ipn) {
           status: order.status,
           delivery: publicOrderDelivery(order).delivery,
           server_confirmed: true,
-          dispatch_eligible: true,
+          // Duplicate PSP callbacks cannot re-dispatch revoked/delivered NFTs.
+          dispatch_eligible:
+            order.refunded !== true && order.chargeback !== true &&
+            !hadDeliveryMarker && order.delivery_verified !== true &&
+            order.delivery !== 'confirmed' && order.delivered_at == null,
         }
       }
       if (!['created', 'redirected'].includes(order.status)) {
