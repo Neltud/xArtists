@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - 'services/access-api/src/s1s2Reconciliation.mjs'
+      - 'services/access-api/src/orders.mjs'
+      - 'services/access-api/tests/paybox_delivery_proof.test.mjs'
       - 'services/access-api/tests/s1s2Reconciliation.test.mjs'
       - 'services/access-api/src/mvxReceiptVerifier.mjs'
       - 'services/access-api/src/quote.mjs'
@@ -13,6 +15,8 @@ on:
     branches: [main]
     paths:
       - 'services/access-api/src/s1s2Reconciliation.mjs'
+      - 'services/access-api/src/orders.mjs'
+      - 'services/access-api/tests/paybox_delivery_proof.test.mjs'
       - 'services/access-api/tests/s1s2Reconciliation.test.mjs'
       - 'services/access-api/src/mvxReceiptVerifier.mjs'
       - 'services/access-api/src/quote.mjs'
@@ -45,5 +49,5 @@ jobs:
           set -euo pipefail
           node --check services/access-api/src/s1s2Reconciliation.mjs
           node --check services/access-api/tests/s1s2Reconciliation.test.mjs
-          node --test services/access-api/tests/mvxReceiptVerifier.test.mjs services/access-api/tests/s1s2Reconciliation.test.mjs
+          node --test services/access-api/tests/mvxReceiptVerifier.test.mjs services/access-api/tests/s1s2Reconciliation.test.mjs services/access-api/tests/paybox_delivery_proof.test.mjs
           echo "Only read-only candidate verification; NO PayBox charge, NFT mint, transfer, delivery mutation or mainnet RPC." >> "$GITHUB_STEP_SUMMARY"
