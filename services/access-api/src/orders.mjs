@@ -351,7 +351,7 @@ export async function getOrderForBuyer(orderId, requester) {
  */
 export function publicOrderDelivery(order) {
   const invalidated = [ORDER_STATUS.REFUNDED, ORDER_STATUS.CANCELLED, ORDER_STATUS.REFUSED]
-    .includes(order?.status)
+    .includes(order?.status) || order?.refunded === true || order?.chargeback === true
   const paidLifecycle = [ORDER_STATUS.PAID, ORDER_STATUS.MINT_QUEUED,
     ORDER_STATUS.MINT_CONFIRMED, ORDER_STATUS.ACTIVE].includes(order?.status)
   const paymentBound = paidLifecycle && order?.server_confirmed === true &&
@@ -423,7 +423,11 @@ export async function applyIpn(ipn) {
           status: order.status,
           delivery: publicOrderDelivery(order).delivery,
           server_confirmed: true,
-          dispatch_eligible: true,
+          // Duplicate PSP callbacks cannot re-dispatch revoked/delivered NFTs.
+          dispatch_eligible:
+            order.refunded !== true && order.chargeback !== true &&
+            order.delivery_verified !== true && order.delivery !== 'confirmed' &&
+            order.delivered_at == null,
         }
       }
       if (!['created', 'redirected'].includes(order.status)) {
