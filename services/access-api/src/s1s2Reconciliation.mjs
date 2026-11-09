@@ -38,6 +38,7 @@ export function verifyOrderReceiptBindings({
       !TX_ID.test(String(order.provider_tx_id || '')) ||
       order.status !== 'paid' || order.server_confirmed !== true ||
       order.payment_verified !== true ||
+      order.refunded === true || order.chargeback === true ||
       order.delivery_verified === true || order.delivery === 'confirmed' ||
       order.delivered_at || order.status === 'refunded' ||
       order.currency !== 'EUR' ||
@@ -86,6 +87,14 @@ export function verifyOrderReceiptBindings({
       sameOrder[0].pack_id !== order.pack_id ||
       sameOrder[0].buyer_address !== order.buyer_address ||
       sameOrder[0].delivery_verified !== order.delivery_verified ||
+      sameOrder[0].refunded !== order.refunded ||
+      sameOrder[0].chargeback !== order.chargeback ||
+      sameOrder[0].currency !== order.currency ||
+      sameOrder[0].delivery !== order.delivery ||
+      sameOrder[0].delivered_at !== order.delivered_at ||
+      sameJob[0].github_dispatch_accepted !== mintJob.github_dispatch_accepted ||
+      sameJob[0].micro_price !== mintJob.micro_price ||
+      sameJob[0].pack_id !== mintJob.pack_id ||
       sameJob[0].chain_tx_hash !== mintJob.chain_tx_hash ||
       sameJob[0].provider_tx_id !== mintJob.provider_tx_id ||
       sameJob[0].status !== mintJob.status ||
@@ -101,8 +110,9 @@ export function verifyOrderReceiptBindings({
   }
   if (jobsSnapshot.some(j => j?.order_id !== order.order_id &&
       ((String(j?.chain_tx_hash || '').toLowerCase() === receipt.txHash.toLowerCase()) ||
-       j?.nft_identifier === nftIdentifier))) {
-    return blocked('chain_tx_or_nft_reused')
+       j?.nft_identifier === nftIdentifier ||
+       j?.provider_tx_id === order.provider_tx_id))) {
+    return blocked('chain_tx_nft_or_provider_tx_reused')
   }
   return { candidate_verified: true, delivery_verified: false, nft_identifier: nftIdentifier }
 }
