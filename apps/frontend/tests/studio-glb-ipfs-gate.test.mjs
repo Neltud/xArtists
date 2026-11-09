@@ -37,3 +37,13 @@ test('GLB publication submits same-session poster before immutable metadata',()=
   assert.match(ui,/!modelEnabled\|\|!posterFile/)
   assert.match(ui,/Image de couverture obligatoire/)
 })
+
+test('Pinata reported pin never claims verified archival replication or automatic mint',()=> {
+  assert.match(ui,/Pinata a annoncé l’épinglage/)
+  assert.match(ui,/Preuve de conservation non certifiée/)
+  assert.match(ui,/seconde copie chez un autre fournisseur IPFS/)
+  assert.match(ui,/empreintes SHA-256/)
+  assert.match(ui,/Le NFT n'est PAS encore minté/)
+  assert.match(ui,/onReady\(result\)/)
+  assert.doesNotMatch(ui,/Média et métadonnées épinglés sur IPFS\. Le NFT/)
+})
