@@ -323,6 +323,52 @@ describe('idempotency', () => {
 })
 
 describe('guards', () => {
+  it('rejects forged/direct dispatch with valid GitHub token before any job or network access', async () => {
+    let calls = 0
+    const input = Object.freeze({
+      packId: 'sentinel',
+      buyer: 'erd1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq6gqag2',
+      orderId: 'xa_direct_fake',
+      amountCents: 5000,
+      providerTxId: 'fake_psp'
+    })
+    for(const forged of [input, {...input}, null, 'something']){
+      const result = await dispatchMintOnPayment(forged, envBase(), async () => {
+        calls++
+        return { status: 204 }
+      })
+      assert.deepEqual(result, {
+        ok: false, skipped: true, reason: 'unverified_payment_intent',
+      })
+    }
+    assert.equal(calls, 0)
+    assert.equal(fs.existsSync(jobsPath), false)
+  })
+
+  it('LIVE never dispatches from a caller-supplied paid-looking object without canonical PostgreSQL S1 row', async () => {
+    let calls = 0
+    const fabricated = {
+      server_confirmed: true, payment_verified: true, status: 'paid',
+      order_id: 'xa_live_without_ledger',
+      provider_tx_id: 'fake_signed_psp',
+      pack_id: 'sentinel',
+      buyer_address: 'erd1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq6gqag2',
+      amount_cents: 5000,currency: 'EUR',
+    }
+    const liveEnv = envBase({
+      MINT_DRY_RUN: '0',MINT_LIVE_ENABLED: '1',
+      MINT_MAINNET_CONFIRM: 'LIVE_MINT_MAINNET',
+    })
+    const result = await maybeDispatchMintAfterPaid(fabricated,liveEnv,async () => {
+      calls++
+      return {status:204}
+    })
+    assert.equal(result.reason,'live_paid_order_store_not_verified')
+    assert.equal(result.skipped,true)
+    assert.equal(calls,0)
+    assert.equal(fs.existsSync(jobsPath),false)
+  })
+
   it('disabled without token', async () => {
     const r = await dispatchMintOnPayment(
       {

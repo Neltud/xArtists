@@ -89,3 +89,24 @@ Pour l'exploitation :
 [`GO_OPERATOR_CHECKLIST.md`](GO_OPERATOR_CHECKLIST.md) et
 [`MINT_OIDC_DISPATCH.md`](MINT_OIDC_DISPATCH.md).
 Suivi principal : [issue #281](https://github.com/Neltud/xArtists/issues/281).
+
+## Durcissement supplémentaire du dispatch (2026-11-09)
+
+- `dispatchMintOnPayment` ne reçoit plus de droit de dispatch via un simple objet
+  `{packId,buyer,orderId}` : il faut un ticket interne à usage unique émis
+  **seulement** après le contrôle `assertPaymentAllowsMint`.
+- Lorsque des flags opérateurs demandent **LIVE**, le dispatch exige maintenant
+  une lecture fraîche, **sans écriture**, de la ligne source `public.paybox_orders`
+  sur le `DATABASE_URL` de l'API elle-même. Les colonnes SQL et le JSON doivent
+  concorder, être réellement `paid`, au montant catalogue exact, avec les deux
+  preuves S1 et sans remboursement, contestation ou livraison antérieure.
+- Une absence de PostgreSQL, une table introuvable ou un objet artificiel bloque
+  avant toute requête GitHub, création de job ou transaction.
+- La lecture n'est **pas une transaction atomique couvrant toute la fenêtre
+  PSP→mint** : une révocation après la lecture est encore possible. Ne jamais
+  interpréter ce préflight comme un feu vert à la vente. Revalidation PSP,
+  verrouillage transactionnel, preuve NFT on-chain et commit idempotent S2
+  restent à implémenter et faire auditer.
+
+Les flags de production restent `MINT_LIVE_ENABLED=false`,
+`MINT_DRY_RUN=true`. Aucun secret ni opération mainnet n'est impliqué.
