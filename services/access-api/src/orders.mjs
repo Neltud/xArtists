@@ -366,7 +366,8 @@ export function publicOrderDelivery(order) {
   const validDate = Number.isFinite(deliveredAt) && new Date(deliveredAt).toISOString() ===
     order.delivered_at.replace(/(?:\.(\d{1,3}))?Z$/, (_, fraction = '') => '.' + fraction.padEnd(3, '0') + 'Z')
   const verified = Boolean(
-    paymentBound && order?.delivery_verified === true && order.delivery === 'confirmed' &&
+    !invalidated && paymentBound &&
+    order?.delivery_verified === true && order.delivery === 'confirmed' &&
     typeof order.chain_tx_hash === 'string' && /^[0-9a-f]{64}$/i.test(order.chain_tx_hash) &&
     nft && /[1-9a-f]/i.test(nft[1]) && validDate &&
     deliveredAt <= Date.now() + 60_000,
