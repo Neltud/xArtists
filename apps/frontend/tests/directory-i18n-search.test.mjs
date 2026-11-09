@@ -1,6 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import {readFileSync} from 'node:fs'
+import {transform} from 'esbuild'
 
 const read = path => readFileSync(new URL(path,import.meta.url),'utf8')
 const copy = read('../src/experience/locale.ts')
@@ -65,4 +66,19 @@ test('filter controls are keyboard accessible and fit 360px width',()=>{
   assert.match(css,/@media \(max-width: 560px\)/)
   assert.match(directory,/input type="search"/)
   assert.doesNotMatch(directory+guide,/sendTransaction\(|placeOrder\(|VITE_LIA_LIVE_TRADING\s*=\s*1/)
+})
+
+// Group search must share the accent-insensitive, alias-aware matcher with the directory.
+test('section search preserves Unicode folding and legacy route discovery',async()=>{
+  const compiled=await transform(normalize,{loader:'ts',format:'esm',target:'es2022'})
+  const {matchesModuleSearch}=await import('data:text/javascript;base64,'+Buffer.from(compiled.code).toString('base64'))
+  assert.equal(matchesModuleSearch('musee',['Musée'],'fr'),true)
+  assert.equal(matchesModuleSearch('CREATION',['Création'],'fr'),true)
+  assert.equal(matchesModuleSearch('nft-factory',['Distributeurs','/create/nft-factory'],'fr'),true)
+  assert.equal(matchesModuleSearch('absent',['Musée','/explore/museum'],'fr'),false)
+  const section=directory.split('export function GroupPage(')[1].split('export function Directory(')[0]
+  assert.match(section,/matchesModuleSearch\\(q,\\[c\\(m\\.label\\),c\\(m\\.group\\),\\.\\.\\.m\\.tags,m\\.path,\\.\\.\\.m\\.aliases\\],lang\\)/)
+  assert.match(section,/type="search"/)
+  assert.match(section,/aria-live="polite" aria-atomic="true"/)
+  assert.doesNotMatch(section,/toLowerCase\\(\\)\\.includes\\(needle\\)/)
 })
