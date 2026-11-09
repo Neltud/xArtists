@@ -3,7 +3,7 @@
  *
  * Sprint 2 P0 + review fixes:
  * - dry_run DEFAULT
- * - payment: server_confirmed|payment_verified ONLY (no status=paid legacy)
+ * - payment: BOTH verified flags, PAID status, exact EUR catalogue amount
  * - idempotency: file lock OR Postgres advisory lock (DATABASE_URL)
  * - GitHub 204 ≠ mint confirmed
  */
@@ -12,6 +12,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import crypto from 'node:crypto'
+import { PACK_FIAT_CENTS } from './quote.mjs'
 
 const PACK_IDS = new Set(['pulse', 'yield', 'sentinel'])
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -272,29 +273,38 @@ export function assertPaymentAllowsMint(order) {
   if (order.server_confirmed !== true || order.payment_verified !== true) {
     return { ok: false, reason: 'payment_not_server_verified' }
   }
-  if (order.status === 'refunded' || order.status === 'cancelled' || order.status === 'refused') {
-    return { ok: false, reason: 'order_invalidating_status', status: order.status }
+  // Both signed-provider flags MUST refer to a still-paid, not refunded order.
+  // A previously confirmed delivery must never create a new mint dispatch.
+  if (order.status !== 'paid') {
+    return { ok: false, reason: 'order_not_paid' }
   }
-  if (!order.provider_tx_id) {
-    return { ok: false, reason: 'missing_provider_tx_id' }
+  if (order.refunded === true || order.chargeback === true ||
+      order.delivery_verified === true || order.delivery === 'confirmed' ||
+      order.delivered_at != null) {
+    return { ok: false, reason: 'order_refunded_or_already_delivered' }
   }
-  if (!Number.isInteger(order.amount_cents) || order.amount_cents <= 0) {
-    return { ok: false, reason: 'invalid_amount' }
-  }
-  if (order.currency && String(order.currency).toUpperCase() !== 'EUR') {
-    return { ok: false, reason: 'currency_mismatch' }
+  const providerTx = String(order.provider_tx_id || '')
+  if (!/^[A-Za-z0-9_\\-:.]{1,128}$/.test(providerTx)) {
+    return { ok: false, reason: 'missing_or_invalid_provider_tx_id' }
   }
   const pack = String(order.pack_id || order.packId || '').toLowerCase()
   if (!PACK_IDS.has(pack)) {
     return { ok: false, reason: 'invalid_pack' }
+  }
+  if (!Number.isSafeInteger(order.amount_cents) ||
+      order.amount_cents !== PACK_FIAT_CENTS[pack]) {
+    return { ok: false, reason: 'catalog_amount_mismatch' }
+  }
+  if (order.currency !== 'EUR') {
+    return { ok: false, reason: 'currency_mismatch' }
   }
   const buyer = String(order.buyer_address || order.buyer || '').trim()
   if (!/^erd1[a-z0-9]{58}$/.test(buyer)) {
     return { ok: false, reason: 'invalid_buyer' }
   }
   const orderId = String(order.order_id || order.id || '').trim()
-  if (!orderId) {
-    return { ok: false, reason: 'missing_order_id' }
+  if (!/^[A-Za-z0-9_-]{1,64}$/.test(orderId)) {
+    return { ok: false, reason: 'invalid_order_id' }
   }
   return { ok: true, pack, buyer, orderId, amount_cents: order.amount_cents }
 }
