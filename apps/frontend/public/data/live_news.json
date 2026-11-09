@@ -1,8 +1,85 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-09T00:34:21.779Z",
+  "updatedAt": "2026-11-09T10:56:01.952Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1794221761546",
+      "timestamp": "10:56",
+      "source": "EGLD",
+      "title": "Cotation publique · $2.95 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1794218620000",
+      "timestamp": "10:03",
+      "source": "CoinTelegraph",
+      "title": "BTC price eyes $73K amid Nvidia volatility: Three things to know in Bitcoin this week",
+      "link": "https://cointelegraph.com/markets/btc-price-nvidia-volatility-three-things-bitcoin-this-week?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1794214817000",
+      "timestamp": "09:00",
+      "source": "CoinTelegraph",
+      "title": "Binance, Tether and Trump crypto firms face Senate records deadline",
+      "link": "https://cointelegraph.com/news/binance-tether-wlfi-senate-crypto-investigation-records-deadline?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1794212255000",
+      "timestamp": "08:17",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin ETFs shed $1.3B in biggest weekly outflow since late June",
+      "link": "https://cointelegraph.com/markets/bitcoin-etfs-13b-biggest-weekly-outflow-late-june?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1794203093000",
+      "timestamp": "05:44",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1794202568000",
+      "timestamp": "05:36",
+      "source": "CoinTelegraph",
+      "title": "Zcash devs propose another block time cut days after NU7 upgrade",
+      "link": "https://cointelegraph.com/news/zcash-developers-propose-20-second-blocks-nu7-upgrade?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1794196988000",
+      "timestamp": "04:03",
+      "source": "CoinTelegraph",
+      "title": "tBTC bridge partially resumes as $120M Aave reserve remains frozen",
+      "link": "https://cointelegraph.com/news/tbtc-bridge-resumes-aave-120m-reserve-frozen?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1794207281000",
+      "timestamp": "06:54",
+      "source": "CoinDesk",
+      "title": "SpaceX proposes a $24 billion Texas supercomputer worth 17 times its bitcoin pile",
+      "link": "https://www.coindesk.com/markets/2026/11/09/spacex-proposes-a-usd24-billion-texas-supercomputer-worth-17-times-its-bitcoin-pile"
+    },
+    {
+      "id": "rss-CoinDesk-1-1794206205000",
+      "timestamp": "06:36",
+      "source": "CoinDesk",
+      "title": "Solana moves to scrap the transaction feature used in the $270 million Drift hack",
+      "link": "https://www.coindesk.com/tech/2026/11/09/solana-moves-to-scrap-the-transaction-feature-used-in-the-usd270-million-drift-hack"
+    },
+    {
+      "id": "rss-CoinDesk-2-1794201414000",
+      "timestamp": "05:16",
+      "source": "CoinDesk",
+      "title": "Two rival Ethereum proposals aim to stop Glamsterdam breaking old contracts",
+      "link": "https://www.coindesk.com/tech/2026/11/09/two-rival-ethereum-proposals-aim-to-stop-glamsterdam-breaking-old-contracts"
+    },
+    {
+      "id": "rss-CoinDesk-3-1794200079000",
+      "timestamp": "04:54",
+      "source": "CoinDesk",
+      "title": "Binance's bitcoin mining pool finds just one block in a week as shutdown nears",
+      "link": "https://www.coindesk.com/tech/2026/11/09/binance-s-bitcoin-mining-pool-finds-just-one-block-in-a-week-as-shutdown-nears"
+    },
     {
       "id": "egld-1794184461247",
       "timestamp": "00:34",
@@ -16,13 +93,6 @@
       "source": "CoinTelegraph",
       "title": "Vitalik ‘pivots’ ETH to store of value, crypto suffers after US midterms: Hodler’s Digest",
       "link": "https://cointelegraph.com/magazine/vitaliks-pivots-to-eth-as-a-store-of-value-us-election-weighs-on-crypto-hodlers-digest?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1794144780000",
-      "timestamp": "13:33",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "rss-CoinTelegraph-2-1794142671000",
@@ -128,76 +198,6 @@
       "source": "CoinDesk",
       "title": "Apple, Meta reject OKX–ICE tokenized stock plans, leaving crypto firms as the ones to watch",
       "link": "https://www.coindesk.com/policy/2026/11/06/apple-meta-reject-okx-ice-tokenized-stock-plans-leaving-crypto-firms-as-the-ones-to-watch"
-    },
-    {
-      "id": "egld-1794112692639",
-      "timestamp": "04:38",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.04 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1794042635000",
-      "timestamp": "09:10",
-      "source": "CoinTelegraph",
-      "title": "Suspicious prediction market activity seen before election poll release: NYT",
-      "link": "https://cointelegraph.com/news/suspicious-prediction-market-activity-seen-before-election-poll-release-nyt?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1794037524000",
-      "timestamp": "07:45",
-      "source": "CoinTelegraph",
-      "title": "Nvidia may face a more hostile post-election Washington: Report",
-      "link": "https://cointelegraph.com/news/nvidia-may-be-facing-a-more-hostile-post-election-washington-report?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "egld-1794086923467",
-      "timestamp": "21:28",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.10 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinDesk-3-1793986948000",
-      "timestamp": "17:42",
-      "source": "CoinDesk",
-      "title": "U.S. prediction markets regulator issues demand that clashes directly with courts",
-      "link": "https://www.coindesk.com/policy/2026/11/06/u-s-prediction-markets-regulator-issues-demand-that-clashes-directly-with-courts"
-    },
-    {
-      "id": "egld-1794072486766",
-      "timestamp": "17:28",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.13 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinDesk-2-1793978798000",
-      "timestamp": "15:26",
-      "source": "CoinDesk",
-      "title": "The crypto industry has found new ways to grow. Making money from them is another story",
-      "link": "https://www.coindesk.com/markets/2026/11/05/the-crypto-industry-has-found-new-ways-to-grow-making-money-from-them-is-another-story"
-    },
-    {
-      "id": "rss-CoinDesk-3-1793975629000",
-      "timestamp": "14:33",
-      "source": "CoinDesk",
-      "title": "Thailand moves to block Bitget as crypto exchange's local acquisition faces uncertainty",
-      "link": "https://www.coindesk.com/business/2026/11/05/thailand-moves-to-block-bitget-as-crypto-exchange-s-local-acquisition-faces-uncertainty"
-    },
-    {
-      "id": "egld-1794044323959",
-      "timestamp": "09:38",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.16 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1793999125000",
-      "timestamp": "21:05",
-      "source": "CoinTelegraph",
-      "title": "US Treasury cuts off MEXC over alleged $16B in illicit transactions",
-      "link": "https://cointelegraph.com/news/us-treasury-bans-mexc-over-alleged-16b-illicit-transactions?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
