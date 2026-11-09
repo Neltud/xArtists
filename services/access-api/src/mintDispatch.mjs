@@ -328,6 +328,44 @@ export function resolveLiveInputs(cfg) {
   return { live_mint: 'true', confirm: 'LIVE_MINT_MAINNET', mode: 'live' }
 }
 
+/**
+ * A synthetic in-memory order object may exercise dry-run CI only.
+ * For a LIVE dispatch, require a fresh, read-only row from this service's
+ * exact PostgreSQL DATABASE_URL. This is a pre-dispatch cross-check, NOT an
+ * atomic PSP+mint settlement (refund race after read still possible).
+ */
+async function livePaidOrderMatchesStore(input, env) {
+  if (!usePostgresJobs(env)) return false
+  try {
+    const p = await getPool(env)
+    const found = await p.query({
+      text: `SELECT status, provider_tx_id, pack_id, amount_cents, buyer_address, payload
+             FROM public.paybox_orders WHERE order_id=$1`,
+      values: [input.orderId],
+      query_timeout: 3_000,
+    })
+    if (found.rowCount !== 1) return false
+    const row = found.rows[0]
+    const stored = row?.payload
+    const verified = assertPaymentAllowsMint(stored)
+    return verified.ok &&
+      verified.orderId === input.orderId &&
+      verified.pack === input.packId &&
+      verified.buyer === input.buyer &&
+      stored.provider_tx_id === input.providerTxId &&
+      stored.amount_cents === input.amountCents &&
+      stored.order_id === input.orderId &&
+      row.status === 'paid' &&
+      row.provider_tx_id === input.providerTxId &&
+      row.pack_id === input.packId &&
+      row.buyer_address === input.buyer &&
+      row.amount_cents === input.amountCents
+  } catch {
+    // Never leak DSN, provider IDs, customer addresses or PostgreSQL errors.
+    return false
+  }
+}
+
 export async function dispatchMintOnPayment(input, env = process.env, fetchImpl = fetch) {
   // Fail before ALL GitHub calls and mint-job writes for direct untrusted callers.
   // Keep this export for legacy compatibility but deny raw strings/objects.
@@ -346,6 +384,9 @@ export async function dispatchMintOnPayment(input, env = process.env, fetchImpl 
   if (!orderId) return { ok: false, reason: 'missing_order_id' }
 
   const live = resolveLiveInputs(cfg)
+  if (live.mode === 'live' && !(await livePaidOrderMatchesStore(input, env))) {
+    return { ok: false, skipped: true, reason: 'live_paid_order_store_not_verified' }
+  }
   const edition = String(input.edition ?? '1')
 
   const reservation = await withMintJobLock(
