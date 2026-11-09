@@ -1,0 +1,33 @@
+name: Mainnet packs media truth (snapshot safety)
+
+on:
+  pull_request:
+    paths:
+      - 'apps/frontend/public/data/contracts.json'
+      - 'apps/frontend/src/config/agentPacks.ts'
+      - 'apps/frontend/src/pages/Agents.tsx'
+      - 'apps/frontend/tests/packs-onchain-media-snapshot.test.mjs'
+      - '.github/workflows/mainnet-packs-media-truth.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'apps/frontend/public/data/contracts.json'
+      - 'apps/frontend/src/config/agentPacks.ts'
+      - 'apps/frontend/src/pages/Agents.tsx'
+      - 'apps/frontend/tests/packs-onchain-media-snapshot.test.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot-no-go:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Dated read-only NFT media snapshot cannot enable pack commerce
+        run: node --test apps/frontend/tests/packs-onchain-media-snapshot.test.mjs
