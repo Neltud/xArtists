@@ -25,6 +25,7 @@ function fixture(orderId) {
   return {
     order_id: orderId,
     server_confirmed: true,
+    payment_verified: true,
     status: 'paid',
     provider_tx_id: 'fixture_' + orderId,
     pack_id: 'sentinel',

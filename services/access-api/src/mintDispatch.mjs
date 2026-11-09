@@ -261,7 +261,7 @@ export async function withMintJobLock(orderId, fn, env = process.env) {
 
 /**
  * Strict payment gate.
- * ONLY server_confirmed === true OR payment_verified === true.
+ * BOTH server_confirmed === true AND payment_verified === true.
  * status=paid alone is NEVER sufficient (even with provider fields).
  * Those fields must be set by authenticated IPN path which also sets the flag.
  */
@@ -269,7 +269,7 @@ export function assertPaymentAllowsMint(order) {
   if (!order || typeof order !== 'object') {
     return { ok: false, reason: 'missing_order' }
   }
-  if (order.server_confirmed !== true && order.payment_verified !== true) {
+  if (order.server_confirmed !== true || order.payment_verified !== true) {
     return { ok: false, reason: 'payment_not_server_verified' }
   }
   if (order.status === 'refunded' || order.status === 'cancelled' || order.status === 'refused') {

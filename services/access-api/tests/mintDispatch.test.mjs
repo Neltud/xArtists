@@ -68,7 +68,7 @@ describe('assertPaymentAllowsMint', () => {
     assert.equal(r.reason, 'payment_not_server_verified')
   })
 
-  it('accepts server_confirmed with provider_tx', () => {
+  it('rejects server_confirmed alone even with provider_tx', () => {
     const r = assertPaymentAllowsMint({
       server_confirmed: true,
       status: 'paid',
@@ -79,10 +79,11 @@ describe('assertPaymentAllowsMint', () => {
       currency: 'EUR',
       order_id: 'xa_test_1',
     })
-    assert.equal(r.ok, true)
+    assert.equal(r.ok, false)
+    assert.equal(r.reason, 'payment_not_server_verified')
   })
 
-  it('accepts payment_verified flag', () => {
+  it('rejects payment_verified alone', () => {
     const r = assertPaymentAllowsMint({
       payment_verified: true,
       provider_tx_id: 'tx-2',
@@ -90,6 +91,18 @@ describe('assertPaymentAllowsMint', () => {
       buyer_address: 'erd1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq6gqag2',
       amount_cents: 11000,
       order_id: 'xa_test_2',
+    })
+    assert.equal(r.ok, false)
+    assert.equal(r.reason, 'payment_not_server_verified')
+  })
+
+  it('accepts only when both flags are true', () => {
+    const r = assertPaymentAllowsMint({
+      server_confirmed: true, payment_verified: true,
+      status: 'paid', provider_tx_id: 'tx-both',
+      pack_id: 'sentinel',
+      buyer_address: 'erd1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq6gqag2',
+      amount_cents: 5000, currency: 'EUR', order_id: 'xa_both',
     })
     assert.equal(r.ok, true)
   })
@@ -194,6 +207,7 @@ describe('resolveLiveInputs', () => {
 describe('idempotency', () => {
   const order = {
     server_confirmed: true,
+    payment_verified: true,
     status: 'paid',
     provider_tx_id: 'tx-abc',
     pack_id: 'sentinel',
