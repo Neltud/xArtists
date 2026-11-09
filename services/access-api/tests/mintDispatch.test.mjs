@@ -323,6 +323,28 @@ describe('idempotency', () => {
 })
 
 describe('guards', () => {
+  it('rejects forged/direct dispatch with valid GitHub token before any job or network access', async () => {
+    let calls = 0
+    const input = Object.freeze({
+      packId: 'sentinel',
+      buyer: 'erd1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq6gqag2',
+      orderId: 'xa_direct_fake',
+      amountCents: 5000,
+      providerTxId: 'fake_psp'
+    })
+    for(const forged of [input, {...input}, null, 'something']){
+      const result = await dispatchMintOnPayment(forged, envBase(), async () => {
+        calls++
+        return { status: 204 }
+      })
+      assert.deepEqual(result, {
+        ok: false, skipped: true, reason: 'unverified_payment_intent',
+      })
+    }
+    assert.equal(calls, 0)
+    assert.equal(fs.existsSync(jobsPath), false)
+  })
+
   it('disabled without token', async () => {
     const r = await dispatchMintOnPayment(
       {
