@@ -77,8 +77,8 @@ test('section search preserves Unicode folding and legacy route discovery',async
   assert.equal(matchesModuleSearch('nft-factory',['Distributeurs','/create/nft-factory'],'fr'),true)
   assert.equal(matchesModuleSearch('absent',['Musée','/explore/museum'],'fr'),false)
   const section=directory.split('export function GroupPage(')[1].split('export function Directory(')[0]
-  assert.match(section,/matchesModuleSearch\\(q,\\[c\\(m\\.label\\),c\\(m\\.group\\),\\.\\.\\.m\\.tags,m\\.path,\\.\\.\\.m\\.aliases\\],lang\\)/)
+  assert.ok(section.includes("matchesModuleSearch(q,[c(m.label),c(m.group),...m.tags,m.path,...m.aliases],lang)"))
   assert.match(section,/type="search"/)
   assert.match(section,/aria-live="polite" aria-atomic="true"/)
-  assert.doesNotMatch(section,/toLowerCase\\(\\)\\.includes\\(needle\\)/)
+  assert.ok(!section.includes('.toLowerCase().includes(needle)'))
 })
