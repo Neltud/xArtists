@@ -9,7 +9,6 @@ import {
   mintDispatchConfig,
   resolveLiveInputs,
   maybeDispatchMintAfterPaid,
-  dispatchMintOnPayment,
   getMintJob,
   markMintJobConfirmed,
   MINT_JOB_STATUS,
@@ -323,19 +322,21 @@ describe('idempotency', () => {
 })
 
 describe('guards', () => {
-  it('disabled without token', async () => {
-    const r = await dispatchMintOnPayment(
+  it('disabled without token, even for a genuinely validated paid order', async () => {
+    const r = await maybeDispatchMintAfterPaid(
       {
-        packId: 'sentinel',
-        buyer: 'erd1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq6gqag2',
-        orderId: 'xa_x',
+        server_confirmed: true, payment_verified: true,
+        status: 'paid', provider_tx_id: 'test_tx',
+        pack_id: 'sentinel', currency: 'EUR', amount_cents: 5000,
+        buyer_address: 'erd1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq6gqag2',
+        order_id: 'xa_x',
       },
       { MINT_DISPATCH_ENABLED: '1', MINT_JOBS_PATH: jobsPath },
     )
     assert.equal(r.skipped, true)
+    assert.equal(r.reason, 'mint_dispatch_disabled_or_no_token')
   })
 })
-
 
 describe('S2 confirmation cannot be inferred from job data', () => {
   it('rejects hash and NFT identifier even after mocked HTTP 204, preserving pending delivery', async () => {
