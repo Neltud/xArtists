@@ -54,8 +54,11 @@ export function payboxConfig(env = process.env) {
  * existing orders remain handled even while new checkout is disabled.
  */
 export function payboxCheckoutEnabled(env = process.env) {
+  // Never open new paid sessions against the ephemeral, single-host file ledger.
+  // Existing signed IPNs remain accepted by the separate webhook route.
   return payboxConfig(env).ready &&
-    String(env.PAYBOX_CHECKOUT_ENABLED || '').trim() === '1'
+    String(env.PAYBOX_CHECKOUT_ENABLED || '').trim() === '1' &&
+    Boolean(String(env.DATABASE_URL || '').trim())
 }
 
 export function signPayboxHmac(message, hmacKeyHex) {
