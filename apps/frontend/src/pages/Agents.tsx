@@ -5,7 +5,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import PackCheckout from '../components/PackCheckout'
 import PackOpenTheater from '../components/PackOpenTheater'
 import Pack3DCockpit from '../components/packs/Pack3DCockpit'
-import { AGENT_PACKS, AGENT_PACK_SC_SNAPSHOT, PACK_EDITION, PACK_VISUAL, type PackId } from '../config/agentPacks'
+import { AGENT_PACKS, AGENT_PACK_SC_SNAPSHOT, AGENT_PACK_MEDIA_SNAPSHOT, PACK_EDITION, PACK_VISUAL, type PackId } from '../config/agentPacks'
 import { PACK_COLLECTIONS } from '../config/packNftMetadata'
 
 const PACKS = AGENT_PACKS
@@ -39,6 +39,19 @@ export default function Agents() {
             'Packs d’accès (signaux / salles) en découverte — pas un fonds, pas d’APY promis. Catalogue 110 / 75 / 50 €. Les ventes et les livraisons NFT sont suspendues.',
           )}
         </p>
+        <div role="status" className="rounded-xl border border-amber-500/30 bg-amber-500/[0.06] p-3 text-xs leading-relaxed text-[color:var(--xa-text-secondary)]">
+          <p className="font-semibold text-[color:var(--xa-text)]">
+            {xaRender('Médias NFT mainnet non prêts · achats suspendus')}
+          </p>
+          <p className="mt-1">
+            {xaRender(`Relevé public du ${AGENT_PACK_MEDIA_SNAPSHOT.observedDate} (non temps réel) : ${AGENT_PACK_MEDIA_SNAPSHOT.indexedTotal} NFT Pulse/Yield/Sentinel indexés, ${AGENT_PACK_MEDIA_SNAPSHOT.mediaReadyTotal} URI média renseignée. Pulse #005 non émis.`)}
+          </p>
+          <a href="https://api.multiversx.com/collections/XAIPLS-2cf72b/nfts?size=20"
+            target="_blank" rel="noopener noreferrer"
+            className="mt-1 inline-block underline underline-offset-2 text-[color:var(--xa-accent)]">
+            {xaRender('Contrôler les NFT Pulse sur MultiversX')}
+          </a>
+        </div>
         <div className="flex flex-wrap gap-2 text-[11px] text-[color:var(--xa-text-muted)]">
           <span className="rounded-full border border-[color:var(--xa-border)] px-2 py-0.5">{xaRender('Pulse 333')}</span>
           <span className="rounded-full border border-[color:var(--xa-border)] px-2 py-0.5">{xaRender('Yield 500')}</span>
@@ -99,6 +112,9 @@ export default function Agents() {
                     {xaRender(String(p.signalIntensity))} · {xaRender(p.features.actionsPerWeek)}
                   </p>
                 </button>
+                <p className="text-[11px] text-[color:var(--xa-text-muted)]">
+                  {xaRender(`NFT indexés : ${AGENT_PACK_MEDIA_SNAPSHOT.packs[p.id].indexed} · URI média valides : ${AGENT_PACK_MEDIA_SNAPSHOT.packs[p.id].nonEmptyMediaUris}`)}
+                </p>
                 <Link
                   to={`/packs/${p.id}`}
                   className="block text-center text-[11px] text-[color:var(--xa-accent)] underline"
