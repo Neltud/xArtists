@@ -409,6 +409,11 @@ export async function applyIpn(ipn) {
             String(ipn.provider_tx_id) !== String(order.provider_tx_id)) {
           return { ok: false, reason: 'provider_tx_mismatch' }
         }
+        // Capture evidence of a prior delivery BEFORE any legacy cleanup.
+        // Clearing a stale delivered_at must never re-open dispatch eligibility.
+        const hadDeliveryMarker =
+          order.delivery_verified === true || order.delivery === 'confirmed' ||
+          order.delivered_at != null
         // Repair legacy simulated delivery only on a verified duplicate IPN.
         if (order.delivery === 'simulated') {
           order.delivery = 'pending'
@@ -427,8 +432,8 @@ export async function applyIpn(ipn) {
           // Duplicate PSP callbacks cannot re-dispatch revoked/delivered NFTs.
           dispatch_eligible:
             order.refunded !== true && order.chargeback !== true &&
-            order.delivery_verified !== true && order.delivery !== 'confirmed' &&
-            order.delivered_at == null,
+            !hadDeliveryMarker && order.delivery_verified !== true &&
+            order.delivery !== 'confirmed' && order.delivered_at == null,
         }
       }
       if (!['created', 'redirected'].includes(order.status)) {
