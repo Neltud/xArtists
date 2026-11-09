@@ -9,7 +9,8 @@
     "test": "node --test tests/*.test.mjs",
     "preflight:studio:ipfs": "node scripts/check-studio-ipfs.mjs",
     "verify:studio:ipfs": "node scripts/verify-studio-ipfs-readback.mjs",
-    "audit:studio:ipfs": "node scripts/audit-studio-ipfs-pins.mjs"
+    "audit:studio:ipfs": "node scripts/audit-studio-ipfs-pins.mjs",
+    "verify:studio:ipfs:restore": "node scripts/verify-studio-ipfs-restore.mjs"
   },
   "dependencies": {
     "@multiversx/sdk-core": "13.17.2",

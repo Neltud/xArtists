@@ -144,6 +144,53 @@ restauration** avant d'affirmer une durabilité indépendante ou de clore #402.
 Références d'API : [Pinata pinList](https://github.com/PinataCloud/docs/blob/main/pinata-api-ipfs.yaml),
 [Kubo pin/ls](https://docs.ipfs.tech/reference/kubo/rpc/).
 
+## Contrôle hors ligne des fichiers récupérés après sauvegarde (#402)
+
+Les tests de pins et de deux passerelles ne prouvent pas la présence d'une sauvegarde
+**restaurable**. Après une récupération réelle menée par un opérateur, le script
+`verify:studio:ipfs:restore` contrôle localement que les fichiers récupérés ont
+exactement les longueurs et empreintes SHA-256 du manifeste établi **avant**
+la sauvegarde. Le manifeste est identique à celui des lectures IPFS et porte
+`assets: [{mediaUri,sha256,bytes}]`.
+
+Sur un hôte privé, isolé du système à sauvegarder, disposer les fichiers
+récupérés sous la forme suivante :
+
+```text
+RECOVERY_ROOT/
+  bafy.../
+    recto.png
+    verso.png
+    animation.mp4
+    metadata.json
+```
+
+Pour un URI nu `ipfs://CID` sans nom de fichier, stocker l'objet récupéré
+dans `RECOVERY_ROOT/CID/__ipfs_root_blob__`. Aucune donnée source ni CID
+n'est généré par le script.
+
+```sh
+cd services/access-api
+npm run verify:studio:ipfs:restore -- \
+  /chemin/prive/public-media-manifest.json /chemin/prive/RECOVERY_ROOT
+```
+
+La lecture est **locale et sans mutation** : 12 fichiers au plus,
+48 MiB par fichier, budget total 192 MiB, contrôle du format CID,
+taille, SHA-256, et refus des liens symboliques qui pourraient sortir du
+répertoire contrôlé. Le résultat contient des indices d'actifs et
+des codes de vérification ; il ne divulgue ni chemins, ni CID, ni noms
+de fichiers. Toute pièce manquante ou altérée rend `ok:false`.
+
+Même si `recoveredByteIntegrityVerified:true`, les champs
+`independentBackupVerified`, `backupSourceAttested`,
+`independentStorageVerified`, `recoveryDrillVerified` et
+`nftMintVerified` restent toujours **false**. Pour certifier un exercice
+de restauration, il faut en plus une preuve d'origine et de séparation
+du support, une politique de rétention, la chaîne de conservation,
+un test daté documenté et la validation de l'opérateur responsable.
+Aucune exécution simulée en CI ne suffit pour clôturer #402.
+
 ## Marketplace V3
 
 Le parcours public distingue désormais trois rayons :
