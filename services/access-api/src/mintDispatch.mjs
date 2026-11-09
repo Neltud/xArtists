@@ -28,6 +28,11 @@ export const MINT_JOB_STATUS = Object.freeze({
   RECONCILIATION_REQUIRED: 'reconciliation_required',
 })
 
+// Non-exported, one-use object-identity tickets. No caller can manufacture a
+// dispatch payload directly; only assertPaymentAllowsMint() may issue a ticket.
+// This is an internal call-boundary guard, NOT PSP settlement certification.
+const verifiedPaymentIntents = new WeakSet()
+
 const BLOCK_REDISPATCH = new Set([
   MINT_JOB_STATUS.DISPATCHING,
   MINT_JOB_STATUS.SUBMITTED,
@@ -324,6 +329,11 @@ export function resolveLiveInputs(cfg) {
 }
 
 export async function dispatchMintOnPayment(input, env = process.env, fetchImpl = fetch) {
+  // Fail before ALL GitHub calls and mint-job writes for direct untrusted callers.
+  // Keep this export for legacy compatibility but deny raw strings/objects.
+  if (!input || typeof input !== 'object' || !verifiedPaymentIntents.delete(input)) {
+    return { ok: false, skipped: true, reason: 'unverified_payment_intent' }
+  }
   const cfg = mintDispatchConfig(env)
   if (!cfg.enabled) {
     return { ok: false, skipped: true, reason: 'mint_dispatch_disabled_or_no_token' }
@@ -480,18 +490,16 @@ export async function maybeDispatchMintAfterPaid(order, env = process.env, fetch
   if (!gate.ok) {
     return { ok: false, skipped: true, reason: gate.reason }
   }
-  return dispatchMintOnPayment(
-    {
-      packId: gate.pack,
-      buyer: gate.buyer,
-      orderId: gate.orderId,
-      edition: order.edition || 1,
-      providerTxId: order.provider_tx_id,
-      amountCents: gate.amount_cents,
-    },
-    env,
-    fetchImpl,
-  )
+  const intent = Object.freeze({
+    packId: gate.pack,
+    buyer: gate.buyer,
+    orderId: gate.orderId,
+    edition: order.edition || 1,
+    providerTxId: order.provider_tx_id,
+    amountCents: gate.amount_cents,
+  })
+  verifiedPaymentIntents.add(intent)
+  return dispatchMintOnPayment(intent, env, fetchImpl)
 }
 
 /**
