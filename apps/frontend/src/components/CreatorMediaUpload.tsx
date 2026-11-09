@@ -231,11 +231,12 @@ export default function CreatorMediaUpload({title,onReady}:Props){
         {pending?'Publication média + métadonnées IPFS…':'Publier sur IPFS et préparer le mint'}
       </button>
       {file?.type==='model/gltf-binary'&&!modelEnabled&&<p role="status" className="text-xs text-amber-200">Publication du GLB verrouillée : le backend exige le drapeau séparé STUDIO_GLB_UPLOAD_ENABLED=1. Le média n’est pas envoyé.</p>}
-      {pinned&&!stale&&<div role="status" className="space-y-1 rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-2 text-xs text-emerald-100">
-        <p className="font-semibold">Média et métadonnées épinglés sur IPFS. Le NFT n'est PAS encore minté.</p>
+      {pinned&&!stale&&<div role="status" className="space-y-1 rounded-lg border border-amber-500/30 bg-amber-500/5 p-2 text-xs text-amber-100">
+        <p className="font-semibold">Pinata a annoncé l’épinglage du média et des métadonnées. Le NFT n'est PAS encore minté.</p>
         <p className="break-all">Média : {pinned.mediaUri}</p>
         <p className="break-all">Métadonnées : {pinned.metadataUri}</p>
-        <p>Étape suivante : vérifier la collection et signer le mint dans votre wallet.</p>
+        <p>Preuve de conservation non certifiée : le retour Pinata ne démontre ni récupération indépendante des octets, ni seconde copie chez un autre fournisseur IPFS, ni archivage.</p>
+        <p>Avant une signature mainnet, vérifier les fichiers et leurs empreintes SHA-256 sur des passerelles indépendantes ainsi que la collection, le destinataire et les frais. Un mint reste une action distincte signée dans votre wallet.</p>
       </div>}
       {needsReconciliation&&<p role="status" className="text-xs text-amber-200">
         Publication suspendue pour ce fichier : une réponse Pinata est incertaine.
