@@ -1,9 +1,9 @@
 {
   "chain": "mainnet",
   "chain_id": "1",
-  "updated": "2026-11-08",
+  "updated": "2026-11-09",
   "probed_at": "2026-11-08T18:36:01Z",
-  "chain_note": "Re-probe 2026-11-08. All product SC codeHashes match prior registry. agents_marketplace isPayable=false (direct transfers only; buyPack payable endpoint may accept EGLD). Pack commerce NO-GO: empty URI, media and quote proof pending. nft_marketplace isPayable=true with ASFT holding. slot_casino isPayable=false by design. No rwa-escrow-bridge address registered. Pulse XAIPLS nonces 1-4 indexed, URI empty, #005 absent. Labels SC_DEPLOYED_HASH_OK ≠ COMMERCE_ENABLED. LIA_LIVE_TRADING remains gated off in app/API. This file is truth/config only — not a commercial go-live.",
+  "chain_note": "Re-probe 2026-11-08. All product SC codeHashes match prior registry. agents_marketplace isPayable=false (direct transfers only; buyPack payable endpoint may accept EGLD). Pack commerce NO-GO: empty URI, media and quote proof pending. nft_marketplace isPayable=true with ASFT holding. slot_casino isPayable=false by design. No rwa-escrow-bridge address registered. Pulse XAIPLS nonces 1-4 indexed, URI empty, #005 absent. Labels SC_DEPLOYED_HASH_OK ≠ COMMERCE_ENABLED. LIA_LIVE_TRADING remains gated off in app/API. This file is truth/config only — not a commercial go-live. Scoped 2026-11-09 Pulse/Yield/Sentinel media readback: all 6 indexed NFT URIs empty, Pulse #005 absent, SC minter still NFTCreate-only; other SC code hashes and prices retain their earlier readback timestamps.",
   "addresses": {
     "venue_split": "erd1qqqqqqqqqqqqqpgqvy4qejg6lds00hy829nwmyxktrdqsuq3vhxq2vje2y",
     "nft_marketplace": "erd1qqqqqqqqqqqqqpgqx0araa285cdepdsfe8s23mer30r3dh9lvhxqq8txmm",
@@ -53,39 +53,96 @@
     "slot_casino": "BLOCKED_NOT_PAYABLE_BY_DESIGN"
   },
   "balances_egld_probe": {
-    "venue_split": 0.0,
+    "venue_split": 0,
     "nft_marketplace": 0.0175,
     "agents_marketplace": 0.033,
-    "nft_staking": 0.0,
-    "tro_staking": 0.0,
-    "tro_staking_legacy": 0.0,
-    "tro_governance": 0.0,
-    "agent_stake_escrow": 0.0,
-    "treasury_splitter": 0.0,
+    "nft_staking": 0,
+    "tro_staking": 0,
+    "tro_staking_legacy": 0,
+    "tro_governance": 0,
+    "agent_stake_escrow": 0,
+    "treasury_splitter": 0,
     "slot_casino": 0.5,
     "probed": "2026-11-08T18:36:01Z",
     "lia_ops_egld": 0.005341715,
     "lia_ops_nonce": 117,
     "lia_ops_address": "erd1kex0pvp9dng8j76sgsejkyx86nhxuqk24my6wnha8dga9mymvhxqvl8v0g",
     "nft_marketplace_nfts_held": 1,
-    "nft_marketplace_nft_ids": ["ASFT-a6273a-01"]
+    "nft_marketplace_nft_ids": [
+      "ASFT-a6273a-01"
+    ]
   },
   "flags_live": {
-    "venue_split": {"isPayable": false, "isPayableBySmartContract": false, "isUpgradeable": true, "codeHash_match": true},
-    "nft_marketplace": {"isPayable": true, "isPayableBySmartContract": true, "isUpgradeable": true, "codeHash_match": true},
-    "agents_marketplace": {"isPayable": false, "isPayableBySmartContract": false, "isUpgradeable": true, "codeHash_match": true},
-    "nft_staking": {"isPayable": false, "isPayableBySmartContract": false, "isUpgradeable": true, "codeHash_match": true},
-    "tro_staking": {"isPayable": false, "isPayableBySmartContract": false, "isUpgradeable": true, "codeHash_match": true},
-    "tro_staking_legacy": {"isPayable": false, "isPayableBySmartContract": false, "isUpgradeable": true, "codeHash_match": true},
-    "tro_governance": {"isPayable": false, "isPayableBySmartContract": false, "isUpgradeable": true, "codeHash_match": true},
-    "agent_stake_escrow": {"isPayable": false, "isPayableBySmartContract": false, "isUpgradeable": true, "codeHash_match": true},
-    "treasury_splitter": {"isPayable": false, "isPayableBySmartContract": false, "isUpgradeable": true, "codeHash_match": true},
-    "slot_casino": {"isPayable": false, "isPayableBySmartContract": false, "isUpgradeable": true, "codeHash_match": true}
+    "venue_split": {
+      "isPayable": false,
+      "isPayableBySmartContract": false,
+      "isUpgradeable": true,
+      "codeHash_match": true
+    },
+    "nft_marketplace": {
+      "isPayable": true,
+      "isPayableBySmartContract": true,
+      "isUpgradeable": true,
+      "codeHash_match": true
+    },
+    "agents_marketplace": {
+      "isPayable": false,
+      "isPayableBySmartContract": false,
+      "isUpgradeable": true,
+      "codeHash_match": true
+    },
+    "nft_staking": {
+      "isPayable": false,
+      "isPayableBySmartContract": false,
+      "isUpgradeable": true,
+      "codeHash_match": true
+    },
+    "tro_staking": {
+      "isPayable": false,
+      "isPayableBySmartContract": false,
+      "isUpgradeable": true,
+      "codeHash_match": true
+    },
+    "tro_staking_legacy": {
+      "isPayable": false,
+      "isPayableBySmartContract": false,
+      "isUpgradeable": true,
+      "codeHash_match": true
+    },
+    "tro_governance": {
+      "isPayable": false,
+      "isPayableBySmartContract": false,
+      "isUpgradeable": true,
+      "codeHash_match": true
+    },
+    "agent_stake_escrow": {
+      "isPayable": false,
+      "isPayableBySmartContract": false,
+      "isUpgradeable": true,
+      "codeHash_match": true
+    },
+    "treasury_splitter": {
+      "isPayable": false,
+      "isPayableBySmartContract": false,
+      "isUpgradeable": true,
+      "codeHash_match": true
+    },
+    "slot_casino": {
+      "isPayable": false,
+      "isPayableBySmartContract": false,
+      "isUpgradeable": true,
+      "codeHash_match": true
+    }
   },
   "pulse_collection": {
     "collection": "XAIPLS-2cf72b",
     "indexed_count": 4,
-    "nonces": [4, 3, 2, 1],
+    "nonces": [
+      4,
+      3,
+      2,
+      1
+    ],
     "empty_uri_count": 4,
     "nonce_5_present": false
   },
@@ -109,15 +166,67 @@
     "agent_stake_escrow": "erd1qqqqqqqqqqqqqpgqzyvwldu6jq8w6ry6s856dl0uy7g0v37vvhxqndvzr3"
   },
   "verification": {
-    "agents_marketplace": "SC_DEPLOYED_HASH_OK · isPayable=false · pack EGLD intake blocked at protocol · not commerce GO",
+    "agents_marketplace": "SC_DEPLOYED_HASH_OK (scoped 09/11 readback) · isPayable=false only blocks direct transfers, not necessarily EGLD at payable endpoint · 6 existing pack NFT URIs empty · PUBLIC NO-GO",
     "nft_marketplace": "SC_DEPLOYED_HASH_OK · isPayable=true · listing inventory must be reviewed before buyNft UX claims",
     "rwa_escrow_bridge": "NOT_REGISTERED · PR #430 draft only · mainnet NO-GO",
-    "pulse_005": "NOT_MINTED · URI empty on 1-4 · PR #407 draft · mainnet mint NO-GO"
+    "pulse_005": "NOT_MINTED (09/11 public NFT index 4 Pulse #001-#004) · no URI on existing 4 · SC NFTCreate role only · #407 draft · mainnet NO-GO"
   },
   "app_gates_note": {
     "lia_live_trading": "OFF on Pages build-info and Render health",
     "mint_live_enabled": false,
     "studio_media_upload": "off",
     "paybox_checkout_enabled": false
+  },
+  "pack_collection_media_readback": {
+    "observed_date": "2026-11-09",
+    "evidence_kind": "public_mainnet_rest_readonly_not_live_quote",
+    "sources": {
+      "pulse": "https://api.multiversx.com/collections/XAIPLS-2cf72b/nfts?size=20",
+      "yield": "https://api.multiversx.com/collections/XAIYLD-987e24/nfts?size=20",
+      "sentinel": "https://api.multiversx.com/collections/XAISNT-3d8a6b/nfts?size=20",
+      "role": "https://api.multiversx.com/accounts/erd1qqqqqqqqqqqqqpgqgawa0p5y09f0e68pwaa50zm47jl9jxcwvhxqgdqwsg/roles/collections?size=30"
+    },
+    "total_nfts_indexed": 6,
+    "total_nonempty_media_uris": 0,
+    "collections": {
+      "pulse": {
+        "ticker": "XAIPLS-2cf72b",
+        "count": 4,
+        "nonces": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "nonempty_uris": 0,
+        "nonce_5_present": false
+      },
+      "yield": {
+        "ticker": "XAIYLD-987e24",
+        "count": 1,
+        "nonces": [
+          1
+        ],
+        "nonempty_uris": 0
+      },
+      "sentinel": {
+        "ticker": "XAISNT-3d8a6b",
+        "count": 1,
+        "nonces": [
+          1
+        ],
+        "nonempty_uris": 0
+      }
+    },
+    "agents_minter_sc_role": [
+      "ESDTRoleNFTCreate"
+    ],
+    "can_add_uri": false,
+    "can_update_attributes": false,
+    "code_hash_reverified": "igm9oUpgad+QO2cQqhphuLZuicEBNR7jdcQHk8YEe00=",
+    "independent_ipfs_pins_verified": false,
+    "media_repair_transaction_sent": false,
+    "genesis_005_mint_verified": false,
+    "public_pack_commerce_released": false
   }
 }
