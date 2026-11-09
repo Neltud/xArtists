@@ -1,0 +1,32 @@
+name: Public domain RDAP DNS mail readiness (offline policy)
+
+on:
+  pull_request:
+    paths:
+      - 'services/access-api/src/domainReadiness.mjs'
+      - 'services/access-api/tests/domainReadiness.test.mjs'
+      - 'services/access-api/scripts/check-xartists-domain.mjs'
+      - '.github/workflows/public-domain-mail-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'services/access-api/src/domainReadiness.mjs'
+      - 'services/access-api/tests/domainReadiness.test.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  offline-domain-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify domain hold and email launch gate fail closed
+        run: node --test services/access-api/tests/domainReadiness.test.mjs
+      - name: Never configure real DNS or claim real mailbox
+        run: echo 'Only offline tests; live DNS query is operator-only through npm run ops:domain:check.' >> "$GITHUB_STEP_SUMMARY"
