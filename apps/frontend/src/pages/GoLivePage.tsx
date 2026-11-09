@@ -24,6 +24,7 @@ import {
   canBuyAgent,
 } from '../config/scStatus'
 import { asText, formatRCE } from '../lib/safeRender'
+import PaperIntentPanel from '../components/PaperIntentPanel'
 import { fetchMarketPayable } from '../lib/marketPayable'
 import { fetchOnChainMarketListings, type OnChainListing } from '../lib/marketChain'
 
@@ -124,6 +125,7 @@ export default function GoLivePage() {
           <Link className="btn-secondary inline-flex min-h-[44px] items-center px-4 text-sm" to="/lia">LIA · Paper</Link>
         </nav>
       </header>
+      <PaperIntentPanel />
       <button type="button" onClick={() => setShowDiagnostics(v => !v)} aria-expanded={showDiagnostics}
         aria-controls="xa-operator-diagnostics"
         className="btn-secondary inline-flex min-h-[44px] items-center px-4 text-sm">

@@ -1,5 +1,19 @@
 # ACTIVE_CONTEXT — xArtists (live system state)
 
+**Last updated:** 2026-11-09
+**Branch:** `main`
+**Posture:** site public **LIVE** · trading autonome **NON** · packs **suspendus** · Paybox **fail-closed**
+
+Sonde publique 2026-11-09T06:45:00Z (`api.multiversx.com`) : epoch **2288** · EGLD **2,96 USD** · mcap **92,17 MUSD** · APR **9,11 %** · refreshRate **600** · $TRO `TRO-94c925` supply **476224** · comptes **557** · tx **2820**. Agents SC solde **0,033 EGLD**, codeHash inchangé. Marketplace, slot, treasury et wallet LIA Ops **non re-sondés** ici.
+
+Upbit notice `207379109` toujours en vigueur jusqu’au **16–20 nov 2026**. Pas de levée au 9 nov. Ne pas signer LIA Ops.
+
+Le détail du 1er novembre ci-dessous reste l’historique ops (rafale du 30 oct). Il ne décrit plus le prix ni l’epoch courants. Analyse du jour : `docs/ANALYSE_DAPP_2026-11-09.md`.
+
+---
+
+# Historique — contexte du 1er novembre 2026
+
 **Last updated:** 2026-11-01  
 **Branch:** `main`  
 **Bundle:** `0.126.0` via `static.yml` · workflow `VITE_LIA_LIVE_TRADING` défaut **0** · Paybox UI fail-closed · **not** a trading go-live
