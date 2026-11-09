@@ -284,7 +284,7 @@ export function assertPaymentAllowsMint(order) {
     return { ok: false, reason: 'order_refunded_or_already_delivered' }
   }
   const providerTx = String(order.provider_tx_id || '')
-  if (!/^[A-Za-z0-9_\\-:.]{1,128}$/.test(providerTx)) {
+  if (!/^[A-Za-z0-9_:.-]{1,128}$/.test(providerTx)) {
     return { ok: false, reason: 'missing_or_invalid_provider_tx_id' }
   }
   const pack = String(order.pack_id || order.packId || '').toLowerCase()
