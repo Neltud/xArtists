@@ -115,3 +115,28 @@ re-check on chain before any separate operator-approved operation.
 ## E. Non-goals
 
 LIA trade · Solana bridge · Studio/Physical prod without separate GO
+
+## Domaine officiel et email — statut externe critique du 09/11/2026
+
+Le registre RDAP public (`https://rdap.org/domain/xartists.art`) indique
+`client hold` pour `xartists.art` (expiration enregistrée au **15/10/2027**),
+avec serveurs déclarés `dns107.ovh.net` et `ns107.ovh.net`.
+Une résolution publique Google (`https://dns.google/resolve?name=xartists.art&type=MX`)
+retourne `Status:3` / **NXDOMAIN**. Le statut `client hold` bloque la
+publication DNS et donc la réception email du domaine ; corriger uniquement
+MX/SPF/DKIM/DMARC n'est pas suffisant avant levée du hold.
+
+**Opération externe** : se connecter à OVH via profil navigateur sécurisé,
+consulter la cause exacte de ce statut (validation, administratif, autre,
+sans présumer du motif) et faire lever `client hold` par le registrar.
+Après restauration de la délégation DNS, vérifier les MX, SPF, DKIM,
+DMARC et la réception **et** l'envoi réel avec `hello@xartists.art`.
+Ne pas envoyer d'email commercial sur cette adresse avant preuve.
+
+Depuis `services/access-api`, la commande `npm run ops:domain:check`
+interroge **uniquement** RDAP et DNS Google en lecture publique, renvoie des
+indicateurs anonymisés sans contacts ni IP. Elle ne prouve jamais la réception
+ou l'envoi : `email_send_receive_verified=false` et
+`domain_release_ready=false` tant qu'un test externe certifié n'a pas lieu.
+Le CI de cette commande n'utilise que des réponses simulées ; pas de DNS
+modifié, de connexion OVH ou de secret.
