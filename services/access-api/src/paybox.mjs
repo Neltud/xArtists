@@ -61,6 +61,21 @@ export function payboxCheckoutEnabled(env = process.env) {
     Boolean(String(env.DATABASE_URL || '').trim())
 }
 
+/**
+ * Every new paid session must prove the durable order store can be reached
+ * and that its required table exists. An env URL alone is NOT a DB health
+ * check. This read-only probe does not create or migrate schemas.
+ */
+export async function payboxCheckoutStoreReady(probe) {
+  if (typeof probe !== 'function') return false
+  try {
+    const status = await probe({ fresh: true })
+    return status?.ok === true && status?.backend === 'postgres' && status?.table_ready === true
+  } catch {
+    return false
+  }
+}
+
 export function signPayboxHmac(message, hmacKeyHex) {
   const key = Buffer.from(String(hmacKeyHex).replace(/\s+/g, ''), 'hex')
   if (key.length < 8) {
