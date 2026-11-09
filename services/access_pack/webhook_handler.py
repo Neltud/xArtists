@@ -163,6 +163,15 @@ def enqueue_mint(job: MintJob) -> dict[str, Any]:
     Pre-flight: write mint intent only (ACCESS_MINT_MODE=paper|live).
     """
     mode = os.environ.get("ACCESS_MINT_MODE", "paper").lower()
+    # No production minter or confirmed-chain delivery exists in this adapter.
+    # Fail closed before writing a mint intent when live mode is requested.
+    if mode != "paper":
+        return {
+            "status": "failed",
+            "tx_hash": None,
+            "nft_identifier": None,
+            "error": "live_nft_delivery_not_certified",
+        }
     intent = {
         "op": "mintMembership",
         "to": job.buyer_address,
