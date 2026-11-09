@@ -1,8 +1,8 @@
 /**
  * Agent packs — on-chain buy → 1 ESDT NFT in buyer wallet.
  * Canonical endpoint: buyPack@<enum 01|02|03>.
- * buyAgentAction = secondary listing (EGLD only, NO NFT transfer) — opt-in via
- * VITE_AGENT_PACK_BUY_ENDPOINT=buyAgentAction + VITE_AGENT_PACK_LISTINGS.
+ * buyAgentAction is a separate listing payment (NO NFT delivery). The pack
+ * checkout must NEVER silently switch to that endpoint, even with env flags.
  * Paper mint: DEV only (audit S-02).
  */
 import { useCallback, useState } from 'react'
@@ -24,10 +24,8 @@ import { projectSale } from '../config/revenueSplitter'
 import { transactionMonitor } from '../services/transactionMonitor'
 import { waitForPackNft } from '../services/nftService'
 import { useWallet } from '../context/WalletContext'
-
-function egldToAtomic(egld: number): string {
-  return BigInt(Math.round(egld * 1e18)).toString()
-}
+import {egldTextToWei} from '../lib/egldExactAmount.mjs'
+import {getFreshPackPriceAtomic, requireExactPackQuoteAgreement} from '../lib/agentPackVmQuote.mjs'
 
 function numToHex(n: number | bigint): string {
   const h = BigInt(n).toString(16)
@@ -36,24 +34,7 @@ function numToHex(n: number | bigint): string {
 
 const PACK_ENUM: Record<PackId, number> = { pulse: 1, yield: 2, sentinel: 3 }
 
-function packListingIds(): Partial<Record<PackId, number>> {
-  try {
-    const raw = (import.meta.env.VITE_AGENT_PACK_LISTINGS as string | undefined) || ''
-    const out: Partial<Record<PackId, number>> = {}
-    for (const part of raw.split(',')) {
-      const [k, v] = part.split(':').map(s => s.trim())
-      if (k === 'pulse' || k === 'yield' || k === 'sentinel') {
-        const n = Number(v)
-        if (Number.isFinite(n) && n >= 0) out[k] = n
-      }
-    }
-    return out
-  } catch {
-    return {}
-  }
-}
-
-/** Default buyPack. Only force listing path when explicitly configured. */
+/** Invalid pack checkout override: buyAgentAction never delivers a pack NFT. */
 function forceListingBuy(): boolean {
   try {
     const ep = (import.meta.env.VITE_AGENT_PACK_BUY_ENDPOINT as string | undefined)?.trim()
@@ -100,14 +81,15 @@ export function useAgentPackTx() {
    * Prefer buyPack for pack access NFTs.
    */
   const buyAgentListing = useCallback(
-    async (listingId: number, priceEgld: number) => {
+    async (listingId: number, priceEgldText: string) => {
       setError(null)
       if (!canBuyAgent()) {
         const msg = 'Agents SC gated — paper only'
         setError(msg)
         throw new Error(msg)
       }
-      if (!(listingId >= 0) || !(priceEgld > 0)) throw new Error('listing / prix invalide')
+      if (!Number.isSafeInteger(listingId) || listingId < 0) throw new Error('listing invalide')
+      const exactAmount = egldTextToWei(priceEgldText)
       const receiver = agentsMarketplaceReceiverOrThrow()
       setPending(true)
       empireTxStart(`Buy agent listing #${listingId}`)
@@ -116,7 +98,7 @@ export function useAgentPackTx() {
           [
             {
               receiver,
-              value: egldToAtomic(priceEgld),
+              value: exactAmount,
               data: `buyAgentAction@${numToHex(listingId)}`,
               gasLimit: 25_000_000,
               chainID: '1',
@@ -159,14 +141,12 @@ export function useAgentPackTx() {
       setError(null)
       const pack = AGENT_PACKS.find(p => p.id === id)
       if (!pack) throw new Error('Pack inconnu')
-      const price = pack.priceEgld.list
-      const listings = packListingIds()
-      const listingId = listings[id]
-
-      // Opt-in only: never default pack purchase to buyAgentAction (no NFT)
-      if (forceListingBuy() && listingId != null && canBuyAgent()) {
-        const sid = await buyAgentListing(listingId, price)
-        return { mode: 'listing' as const, sessionId: sid, packId: id }
+      // A VITE env override must never turn "purchase pack NFT" into an
+      // EGLD listing payment which does not deliver an NFT.
+      if (forceListingBuy()) {
+        const msg = 'buyAgentAction ne livre pas de NFT pack : achat suspendu.'
+        setError(msg)
+        throw new Error(msg)
       }
 
       if (!canBuyAgent()) {
@@ -181,13 +161,19 @@ export function useAgentPackTx() {
       const data = `buyPack@${numToHex(PACK_ENUM[id])}`
 
       setPending(true)
-      empireTxStart(`buyPack ${id}`)
       try {
+        // Fresh read-only VM query and exact decimal comparison BEFORE any
+        // signing prompt. Marketing list values are NOT contract quotes.
+        const priceAtomic = requireExactPackQuoteAgreement(
+          await getFreshPackPriceAtomic(receiver, PACK_ENUM[id]),
+          String(pack.priceEgld.list),
+        )
+        empireTxStart(`buyPack ${id}`)
         const res = await send(
           [
             {
               receiver,
-              value: egldToAtomic(price),
+              value: priceAtomic,
               data,
               gasLimit: 30_000_000,
               chainID: '1',
@@ -222,15 +208,21 @@ export function useAgentPackTx() {
         if (import.meta.env.DEV) markPackOwned(id)
         return { mode: 'buyPack' as const, sessionId: sid, packId: id, data }
       } catch (e) {
-        const msg = e instanceof Error ? e.message : 'buyPack failed'
+        const code = e instanceof Error ? e.message : 'buyPack failed'
+        const msg =
+          code === 'pack_onchain_price_disagrees_with_catalog'
+            ? 'Prix EGLD du contrat différent du catalogue : achat suspendu.'
+            : code === 'pack_onchain_quote_unavailable'
+            ? 'Prix du contrat indisponible : aucun paiement envoyé.'
+            : code
         setError(msg)
         empireTxError(msg)
-        throw e
+        throw new Error(msg)
       } finally {
         setPending(false)
       }
     },
-    [send, buyAgentListing, mintPaper, address],
+    [send, mintPaper, address],
   )
 
   const mintOnChain = useCallback(async (id: PackId) => buyPack(id), [buyPack])
