@@ -13,6 +13,7 @@ export const ARTPRICE_SOURCE = Object.freeze({
   provider: 'Artprice by Artmarket.com',
   official_site: 'https://fr.artprice.com/',
   terms: 'https://fr.artprice.com/block/cgv?modal=true',
+  contemporary_report_2026: 'https://fr.artprice.com/artprice-reports/le-marche-de-lart-contemporain-2026',
   market_report_2025:
     'https://fr.artprice.com/artprice-news/13751/le-rapport-mondial-du-marche-de-l-art-2025-par-artprice-la-reprise-tant-attendue-semble-avoir-commence',
 })
@@ -32,7 +33,8 @@ export function artpriceReadiness() {
     artprice_partner: false,
     data: [],
     official_source: ARTPRICE_SOURCE.official_site,
-    official_report: ARTPRICE_SOURCE.market_report_2025,
+    official_report: ARTPRICE_SOURCE.contemporary_report_2026,
+    official_report_2025: ARTPRICE_SOURCE.market_report_2025,
     authorization_required: 'signed_artprice_data_license_with_explicit_api_and_redistribution_scope',
     disclaimer: 'Market report link only. No official Artprice price, auction result, appraisal or resale license is claimed.',
   }
