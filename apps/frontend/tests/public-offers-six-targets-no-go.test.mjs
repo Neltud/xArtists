@@ -8,6 +8,7 @@ const offers = read('../src/pages/CommercialLaunchPage.tsx')
 const pack = read('../src/pages/PackLandingPage.tsx')
 const agents = read('../src/pages/Agents.tsx')
 const shelf = read('../src/components/packs/GenesisPackShelf.tsx')
+const studio = read('../src/pages/StudioPage.tsx')
 
 test('approved commercial targets keep Pulse/Yield/Sentinel order and close all checkouts', () => {
   assert.ok(targets.indexOf("id: 'pulse', targetEgld: '33'") < targets.indexOf("id: 'yield', targetEgld: '22'"))
@@ -58,4 +59,11 @@ test('Genesis shelf and Agents discovery show only target EGLD and have no publi
   assert.match(agents, /politique 2/)
   assert.match(shelf, /Plafond cible · non payable/)
   assert.match(shelf, /bg-white dark:bg-zinc-900/)
+})
+
+test('creator Studio keeps its own workflow but does not expose obsolete Genesis PackCheckout', () => {
+  assert.doesNotMatch(studio, /PackCheckout|startPackPayment|pack\.priceEur\.list/)
+  assert.match(studio, /to="\/offres"/)
+  assert.match(studio, /33 \/ 22 \/ 11 EGLD/)
+  assert.match(studio, /abonnements Stripe sans wallet ne contiennent aucun NFT/)
 })
