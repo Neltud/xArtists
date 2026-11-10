@@ -1,8 +1,85 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-10T16:48:24.850Z",
+  "updatedAt": "2026-11-10T22:52:23.832Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1794351143301",
+      "timestamp": "22:52",
+      "source": "EGLD",
+      "title": "Cotation publique · $2.96 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1794348287000",
+      "timestamp": "22:04",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1794346480000",
+      "timestamp": "21:34",
+      "source": "CoinTelegraph",
+      "title": "Can crypto trust firms compete with banks in US derivatives settlements?",
+      "link": "https://cointelegraph.com/news/crypto-trust-firms-compete-banks-us-derivatives-settlements?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1794345876000",
+      "timestamp": "21:24",
+      "source": "CoinTelegraph",
+      "title": "Across Protocol warns users to avoid app amid reports of drained wallets",
+      "link": "https://cointelegraph.com/news/across-protocol-warns-avoid-app-drained-wallets?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1794344864000",
+      "timestamp": "21:07",
+      "source": "CoinTelegraph",
+      "title": "Ava Labs exec says NYSE deal marks end of blockchain’s ‘general purpose era’",
+      "link": "https://cointelegraph.com/interview/ava-labs-nyse-general-purpose-chains?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1794342362000",
+      "timestamp": "20:26",
+      "source": "CoinTelegraph",
+      "title": "Kimber Digital Securities gains broker-dealer status for tokenized assets",
+      "link": "https://cointelegraph.com/news/kimber-digital-securities-broker-dealer-tokenization?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1794334327000",
+      "timestamp": "18:12",
+      "source": "CoinTelegraph",
+      "title": "Mercado Bitcoin to resume cash withdrawals after $49M hack",
+      "link": "https://cointelegraph.com/news/pix-withdrawals-resume-mercado-bitcoin-hack?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1794342993000",
+      "timestamp": "20:36",
+      "source": "CoinDesk",
+      "title": "Warren: What is White House doing to prevent a repeat of teleprompter's Trump bets?",
+      "link": "https://www.coindesk.com/policy/2026/11/10/warren-what-is-white-house-doing-to-prevent-a-repeat-of-teleprompter-s-trump-bets"
+    },
+    {
+      "id": "rss-CoinDesk-1-1794341708000",
+      "timestamp": "20:15",
+      "source": "CoinDesk",
+      "title": "Former NYSE president says stock issuers hold the key to tokenization as Bullish builds its platform",
+      "link": "https://www.coindesk.com/business/2026/11/10/former-nyse-president-says-stock-issuers-hold-the-key-to-tokenization-as-bullish-builds-its-platform"
+    },
+    {
+      "id": "rss-CoinDesk-2-1794331942000",
+      "timestamp": "17:32",
+      "source": "CoinDesk",
+      "title": "Goldman Sachs, Citi among banks said to commit $270 million to stablecoin venture",
+      "link": "https://www.coindesk.com/business/2026/11/10/goldman-sachs-citi-among-banks-said-to-commit-usd270-million-to-stablecoin-venture"
+    },
+    {
+      "id": "rss-CoinDesk-3-1794330442000",
+      "timestamp": "17:07",
+      "source": "CoinDesk",
+      "title": "Crypto is now teamed up with U.S. government in two legal battles over perps",
+      "link": "https://www.coindesk.com/news-analysis/2026/11/10/crypto-teams-up-with-u-s-government-to-defend-stock-perps-in-legal-fight"
+    },
     {
       "id": "egld-1794329304392",
       "timestamp": "16:48",
@@ -23,13 +100,6 @@
       "source": "CoinTelegraph",
       "title": "Poland’s lower house backs sanctions bill covering crypto freezes",
       "link": "https://cointelegraph.com/news/poland-bill-freeze-sanctions-crypto-assets?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1794317677000",
-      "timestamp": "13:34",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "rss-CoinTelegraph-3-1794317400000",
@@ -128,76 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Formation Securities plans Solana stock trading venue under SEC exemption",
       "link": "https://cointelegraph.com/news/formation-securities-solana-stock-trading-venue-sec-exemption?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1794264987000",
-      "timestamp": "22:56",
-      "source": "CoinDesk",
-      "title": "Securitize pushes into $6 trillion asset-backed finance market with River One acquisition",
-      "link": "https://www.coindesk.com/business/2026/11/09/securitize-pushes-into-usd6-trillion-asset-backed-finance-market-with-river-one-acquisition"
-    },
-    {
-      "id": "rss-CoinDesk-1-1794252975000",
-      "timestamp": "19:36",
-      "source": "CoinDesk",
-      "title": "Robinhood backs tokenization of its stock on OKX–ICE platform even as most companies opt out",
-      "link": "https://www.coindesk.com/business/2026/11/09/robinhood-backs-tokenization-of-its-stock-on-okx-ice-platform-even-as-most-companies-opt-out"
-    },
-    {
-      "id": "rss-CoinDesk-2-1794241185000",
-      "timestamp": "16:19",
-      "source": "CoinDesk",
-      "title": "A Bitcoin block just neared a 2015 transaction record, but paid only $180 in fees",
-      "link": "https://www.coindesk.com/tech/2026/11/09/a-bitcoin-block-just-neared-a-2015-transaction-record-but-paid-only-usd180-in-fees"
-    },
-    {
-      "id": "rss-CoinDesk-3-1794237605000",
-      "timestamp": "15:20",
-      "source": "CoinDesk",
-      "title": "Google’s AI chip push adds more pressure on Nvidia",
-      "link": "https://www.coindesk.com/markets/2026/11/09/google-s-ai-chip-push-adds-more-pressure-on-nvidia"
-    },
-    {
-      "id": "egld-1794261447697",
-      "timestamp": "21:57",
-      "source": "EGLD",
-      "title": "Cotation publique · $2.98 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1794248729000",
-      "timestamp": "18:25",
-      "source": "CoinTelegraph",
-      "title": "Mercado Bitcoin begins post-hack reopening without a timeline for withdrawals",
-      "link": "https://cointelegraph.com/news/mercado-bitcoin-reopening-withdrawals-hack-suspended?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1794246515000",
-      "timestamp": "17:48",
-      "source": "CoinTelegraph",
-      "title": "PNC Bank tests turning USDC payments into dollar deposits",
-      "link": "https://cointelegraph.com/news/pnc-bank-launches-usdc-payment-pilot-coinbase?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1794246062000",
-      "timestamp": "17:41",
-      "source": "CoinTelegraph",
-      "title": "Avalanche’s AVAX leads crypto gains following NYSE tokenization deal",
-      "link": "https://cointelegraph.com/news/avalanche-avax-crypto-nyse-tokenization-deal?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-3-1794236444000",
-      "timestamp": "15:00",
-      "source": "CoinDesk",
-      "title": "North Korean hackers are creating memecoins to wash loot from $6.3 billion Binance hack",
-      "link": "https://www.coindesk.com/business/2026/11/09/north-korean-hackers-are-creating-memecoins-to-wash-loot-from-usd6-3-billion-binance-hack"
-    },
-    {
-      "id": "egld-1794221761546",
-      "timestamp": "10:56",
-      "source": "EGLD",
-      "title": "Cotation publique · $2.95 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
     }
   ]
 }
