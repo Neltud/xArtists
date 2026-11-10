@@ -2,11 +2,10 @@ import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phra
 /** Packs Agents — Genesis limited · œuvres série Tuduri. */
 import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import PackCheckout from '../components/PackCheckout'
-import PackOpenTheater from '../components/PackOpenTheater'
 import Pack3DCockpit from '../components/packs/Pack3DCockpit'
 import { AGENT_PACKS, AGENT_PACK_SC_SNAPSHOT, AGENT_PACK_MEDIA_SNAPSHOT, PACK_EDITION, PACK_VISUAL, type PackId } from '../config/agentPacks'
 import { PACK_COLLECTIONS } from '../config/packNftMetadata'
+import { GENESIS_TARGETS_BY_ID } from '../config/commercialTargets'
 
 const PACKS = AGENT_PACKS
 
@@ -20,9 +19,7 @@ function limitsFor(id: PackId): string[] {
 export default function Agents() {
   const [params] = useSearchParams()
   const [selected, setSelected] = useState<PackId | null>(null)
-  const [theater, setTheater] = useState<PackId | null>(null)
   const active = PACKS.find(p => p && p.id === selected) || null
-  const theaterPack = PACKS.find(p => p && p.id === theater) || null
 
   useEffect(() => {
     const q = params.get('pack')
@@ -36,7 +33,7 @@ export default function Agents() {
         <h1 className="section-title display">{xaRender('Pulse · Yield · Sentinel')}</h1>
         <p className="section-lead text-[color:var(--xa-text-secondary)]">
           {xaRender(
-            'Packs d’accès (signaux / salles) en découverte — pas un fonds, pas d’APY promis. Catalogue 110 / 75 / 50 €. Les ventes et les livraisons NFT sont suspendues.',
+            'Packs Genesis NFT en découverte — pas un fonds, pas d’APY promis. Objectifs/plafonds Pulse 33, Yield 22, Sentinel 11 EGLD ; prix de contrat différents. Les ventes et livraisons restent suspendues.',
           )}
         </p>
         <div role="status" className="rounded-xl border border-amber-500/30 bg-amber-500/[0.06] p-3 text-xs leading-relaxed text-[color:var(--xa-text-secondary)]">
@@ -93,8 +90,8 @@ export default function Agents() {
                   <div className="mt-3 flex items-end justify-between">
                     <div>
                       <p className="text-xl tabular-nums text-[color:var(--xa-text)]">
-                        {xaRender(String(p.priceEur.list))}{' '}
-                        <span className="text-sm text-[color:var(--xa-text-muted)]">{xaRender('€')}</span>
+                        {xaRender(GENESIS_TARGETS_BY_ID[p.id].targetEgld)}{' '}
+                        <span className="text-sm text-[color:var(--xa-text-muted)]">{xaRender('EGLD · plafond cible')}</span>
                       </p>
                       <p className="text-[12px] mt-1 text-[color:var(--xa-text-secondary)]">
                         {xaRender(`Relevé SC 08/11 : ${AGENT_PACK_SC_SNAPSHOT.pricesEgld[p.id]} EGLD · vente fermée`)}
@@ -196,7 +193,7 @@ export default function Agents() {
             </div>
 
             <Pack3DCockpit packId={active.id} showIntents={false} />
-            <PackCheckout packId={active.id} onPaperDone={id => setTheater(id)} onClear={() => setSelected(null)} />
+            <p role="status" className="rounded-xl border border-amber-500/25 p-3 text-xs text-[color:var(--xa-text-secondary)]">Vente NFT indisponible : prix contractuels non alignés, base EUR du devis non définie, politique 2 (devis frais à la signature) non mise en service. Aucun wallet, checkout, paiement ou mint déclenché par cette fiche.</p>
             <div className="flex flex-wrap gap-3 text-[12px]">
               <Link to={`/packs/${active.id}`} className="text-[color:var(--xa-accent)] underline">
                 {xaRender('Page produit →')}
@@ -209,7 +206,6 @@ export default function Agents() {
         ),
       )}
 
-      {xaRender(theaterPack && <PackOpenTheater pack={theaterPack} open onClose={() => setTheater(null)} />)}
 
       <div className="rounded-xl border border-[color:var(--xa-border)] px-3 py-3 text-[11px] text-[color:var(--xa-text-muted)] space-y-1">
         <p className="font-medium text-[color:var(--xa-text-secondary)]">{xaRender('Rappel flux')}</p>
