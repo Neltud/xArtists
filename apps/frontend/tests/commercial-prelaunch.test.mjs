@@ -16,11 +16,17 @@ test('public /offres route and /offers alias are discoverable',()=>{
   assert.match(home,/to="\/offres"/)
 })
 
-test('catalogue has only the three approved fixed EUR list prices',()=>{
-  for(const pattern of [/id:'pulse', price:110/,/id:'yield', price:75/,/id:'sentinel', price:50/]){
-    assert.match(page,pattern)
+test('catalogue displays approved subscription targets and dated non-executable Genesis targets',()=>{
+  const targets=read('src/config/commercialTargets.ts')
+  for(const pattern of [/id: 'pulse', targetEgld: '33'/,/id: 'yield', targetEgld: '22'/,/id: 'sentinel', targetEgld: '11'/]){
+    assert.match(targets,pattern)
   }
-  assert.doesNotMatch(page,/price:200|price:12|price:15|price:18/)
+  for(const pattern of [/sku: 'fiat_379', price: '3,79'/,/sku: 'fiat_579', price: '5,79'/,/sku: 'fiat_979', price: '9,79'/]){
+    assert.match(targets,pattern)
+  }
+  assert.match(page,/GENESIS_PREVIEW/)
+  assert.match(page,/MAINSTREAM_PREVIEW/)
+  assert.doesNotMatch(page,/price:110|price:75|price:50|10 € \/|Whop subscriptions are separate/)
 })
 
 test('prelaunch discovery page cannot take money, mint or record an order',()=>{
@@ -39,7 +45,7 @@ test('prelaunch discovery page cannot take money, mint or record an order',()=>{
   assert.match(page,/publicNote/)
   assert.match(page,/x\.com\/tudurioriginal/)
   assert.match(page,/no orders or payments are accepted/)
-  assert.match(page,/achats publics et la livraison/)
+  assert.match(page,/aucune commande ni paiement accepté sur cette page/)
 })
 
 test('all contact CTA are inquiries, not promises of purchase or delivery',()=>{
