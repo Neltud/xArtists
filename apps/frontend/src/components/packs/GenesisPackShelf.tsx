@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { AGENT_PACKS, PACK_VISUAL, PACK_EDITION } from '../../config/agentPacks'
+import { GENESIS_TARGETS_BY_ID } from '../../config/commercialTargets'
 import { useCopy } from '../../experience/state'
 import { localizeChild as xaLocalize, renderChild as xaRender } from '../../i18n/phraseRuntime'
 import GenesisCard3D from './GenesisCard3D'
@@ -36,42 +37,42 @@ export default function GenesisPackShelf() {
           return (
             <article
               key={pack.id}
-              className="xa-genesis-card flex flex-col overflow-hidden rounded-2xl border bg-black/30"
-              style={{ borderColor: visual.border, boxShadow: visual.glow }}
+              className="xa-genesis-card xa-genesis-polished flex min-w-0 flex-col overflow-hidden rounded-2xl border bg-white dark:bg-zinc-900"
+              style={{ borderColor: visual.border }}
             >
-              <div className="p-3 pb-0">
+              <div className="p-4 pb-0">
                 <GenesisCard3D
                   autoRotate={false}
                   id={pack.id}
                   sampleEdition={1}
                 />
               </div>
-              <div className="flex flex-1 flex-col gap-2 p-3">
+              <div className="flex flex-1 flex-col gap-3 p-4">
                 <div className="xa-genesis-card-head flex items-center justify-between gap-2">
                   <h3 className="text-base font-semibold" style={{ color: visual.accent }}>
                     {pack.name}
                   </h3>
                   <span
-                    className="rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider"
+                    className="xa-genesis-tier rounded-full border px-2.5 py-1 text-xs font-semibold uppercase tracking-wider"
                     style={{ color: visual.accent, background: visual.accentSoft }}
                   >
                     {pack.tierLabel}
                   </span>
                 </div>
-                <p className="xa-genesis-series text-[12px] text-zinc-400">{edition.seriesName}</p>
-                <p className="text-[11px] text-zinc-500">{xaRender(visual.mediaMotif)}</p>
+                <p className="xa-genesis-series text-sm leading-6 text-zinc-600 dark:text-zinc-300">{edition.seriesName}</p>
+                <p className="text-sm leading-6 text-zinc-600 dark:text-zinc-300">{xaRender(visual.mediaMotif)}</p>
                 <div className="xa-genesis-price mt-1 flex items-baseline gap-2">
-                  <strong className="text-lg tabular-nums text-white">{pack.priceEur.list} €</strong>
-                  <span className="text-[12px] text-zinc-500">Catalogue indicatif</span>
+                  <strong className="text-xl font-semibold tabular-nums text-zinc-900 dark:text-white">{GENESIS_TARGETS_BY_ID[pack.id].targetEgld} EGLD</strong>
+                  <span className="text-sm leading-6 text-zinc-700 dark:text-zinc-300">Plafond cible · non payable</span>
                 </div>
-                <p className="xa-genesis-cap text-[12px]" style={{ color: visual.accent }}>
+                <p className="xa-genesis-cap text-sm leading-6" style={{ color: visual.accent }}>
                   <strong className="tabular-nums">{edition.maxSupply}</strong>
                   {' '}
                   {xaLocalize('max')} · {xaRender(edition.scarcity)}
                 </p>
                 <Link
                   to={`/packs/${pack.id}`}
-                  className="mt-auto inline-flex min-h-[44px] items-center justify-center rounded-xl border text-[13px] font-medium"
+                  className="xa-genesis-discover mt-auto inline-flex min-h-[44px] items-center justify-center rounded-xl border px-3 py-2 text-sm font-semibold"
                   style={{
                     borderColor: visual.border,
                     color: visual.accent,
@@ -86,9 +87,9 @@ export default function GenesisPackShelf() {
         })}
       </div>
 
-      <p className="mt-3 text-[11px] text-zinc-600">
+      <p className="mt-5 text-sm leading-7 text-zinc-700 dark:text-zinc-300">
         {xaLocalize(
-          'Aperçus visuels et numéros d’édition illustratifs, non mintés. Prix de catalogue non contractuels. Paiements et mint SFT publics désactivés (paper-first).',
+          'Aperçus visuels et numéros d’édition illustratifs, non mintés. Plafonds commerciaux 33 / 22 / 11 EGLD, pas des devis ni des prix de contrat. Paiements et mint SFT publics désactivés ; politique de devis EUR/EGLD non opérationnelle.',
         )}
       </p>
     </section>

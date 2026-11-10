@@ -1,0 +1,258 @@
+/*
+ * Visual regression pass 2026-11-10 — discovery surfaces only.
+ *
+ * Constrained to /offres, Genesis detail, Agents discovery, Genesis shelf and
+ * Creator Studio. No transaction state, contract call, feature flag or app
+ * navigation is changed here. Light-first, dark still explicitly supported.
+ */
+
+:is(.xa-offers-page, .xa-pack-detail, .xa-agents-discovery, .xa-creator-studio) {
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+:is(.xa-offers-page, .xa-pack-detail, .xa-agents-discovery, .xa-creator-studio)
+:is(h1, h2, h3) {
+  text-wrap: balance;
+}
+
+:is(.xa-offers-page, .xa-pack-detail, .xa-agents-discovery, .xa-creator-studio)
+:is(p, li) {
+  overflow-wrap: anywhere;
+}
+
+/* Local, consistent surface language — no shadows over translucent text. */
+.xa-offers-page .xa-offers-hero,
+.xa-offers-page .xa-offers-card,
+.xa-offers-page .xa-offers-steps,
+.xa-offers-page .xa-offers-trust,
+.xa-pack-detail .xa-pack-info-card,
+.xa-agents-discovery .xa-agent-choice,
+.xa-agents-discovery .xa-agent-selected,
+.xa-creator-studio > .xa-studio-workflow,
+.xa-creator-studio > section.xa-studio-workflow,
+.xa-genesis-grid .xa-genesis-polished {
+  border-radius: 20px;
+  border-color: var(--xa-border);
+  box-shadow: 0 2px 12px rgba(20, 31, 24, 0.045);
+}
+
+.xa-offers-page .xa-offers-hero {
+  background: var(--xa-surface);
+  box-shadow: 0 3px 18px rgba(20, 31, 24, 0.035);
+}
+
+.xa-offers-page .xa-offers-card {
+  background: var(--xa-surface);
+  min-width: 0;
+  min-height: 100%;
+}
+
+.xa-offers-page .xa-offers-steps {
+  background: var(--xa-surface-hover);
+}
+
+.xa-offers-page .xa-offers-trust {
+  background: var(--xa-surface);
+}
+
+.xa-offers-page .xa-offers-card h3,
+.xa-pack-detail strong,
+.xa-genesis-grid .xa-genesis-price strong {
+  font-variant-numeric: tabular-nums;
+}
+
+.xa-offers-page .xa-offers-card p,
+.xa-offers-page .xa-offers-steps p {
+  line-height: 1.65;
+}
+
+.xa-offers-page .xa-offers-link,
+.xa-pack-detail .xa-pack-discover,
+.xa-genesis-grid .xa-genesis-discover {
+  border-color: var(--xa-border-strong);
+  color: var(--xa-text);
+  background: var(--xa-bg-elevated);
+  text-decoration: none;
+}
+
+.xa-offers-page :is(a, button):focus-visible,
+.xa-pack-detail :is(a, button):focus-visible,
+.xa-agents-discovery :is(a, button):focus-visible,
+.xa-creator-studio :is(a, button, input, textarea, select):focus-visible,
+.xa-genesis-grid a:focus-visible {
+  outline: 3px solid var(--xa-accent);
+  outline-offset: 3px;
+}
+
+.xa-offers-page .xa-offers-link:hover,
+.xa-pack-detail .xa-pack-discover:hover,
+.xa-genesis-grid .xa-genesis-discover:hover {
+  background: var(--xa-surface-hover);
+}
+
+/* Keep status copy readable and visually unavailable, never like a pay CTA. */
+html[data-theme="light"] .xa-offers-page .xa-offers-status,
+html[data-theme="light"] .xa-pack-detail .xa-pack-status,
+html[data-theme="light"] .xa-agents-discovery .xa-agent-notice {
+  color: #634412;
+  border-color: #dcc18d;
+  background: #fff9ed;
+}
+
+html[data-theme="dark"] .xa-offers-page .xa-offers-status,
+html[data-theme="dark"] .xa-pack-detail .xa-pack-status,
+html[data-theme="dark"] .xa-agents-discovery .xa-agent-notice {
+  color: #fae9c8;
+  border-color: #70582b;
+  background: #2b251c;
+}
+
+.xa-pack-detail .xa-pack-header {
+  padding-block: 8px;
+}
+
+.xa-pack-detail .xa-pack-info-card,
+.xa-agents-discovery .xa-agent-selected {
+  background: var(--xa-surface);
+  padding: clamp(17px, 2.8vw, 26px);
+}
+
+.xa-pack-detail .xa-pack-info-card :is(ul, p),
+.xa-agents-discovery .xa-agent-selected :is(ul, p) {
+  line-height: 1.65;
+}
+
+.xa-pack-detail .xa-pack-info-card ul li,
+.xa-agents-discovery .xa-agent-selected ul li {
+  margin-block: 4px;
+}
+
+.xa-pack-detail .xa-pack-tier,
+.xa-agents-discovery .xa-agent-tier,
+.xa-genesis-grid .xa-genesis-tier {
+  border-color: var(--xa-border-strong) !important;
+  background: var(--xa-surface-hover) !important;
+}
+
+.xa-agents-discovery .xa-agent-choice {
+  background: var(--xa-surface);
+  color: var(--xa-text);
+  padding: 20px;
+  box-shadow: 0 2px 12px rgba(20, 31, 24, 0.04);
+}
+
+.xa-agents-discovery .xa-agent-choice:hover {
+  background: var(--xa-surface-hover);
+}
+
+.xa-agents-discovery .xa-agent-choice[aria-pressed="true"] {
+  border-color: var(--xa-border-strong) !important;
+  box-shadow: 0 0 0 2px var(--xa-accent-soft);
+}
+
+.xa-genesis-grid .xa-genesis-polished {
+  padding: 0;
+  background: var(--xa-surface);
+  box-shadow: 0 3px 15px rgba(20, 31, 24, 0.045) !important;
+}
+
+/* Studio had white headings and black inputs on the default light surface. */
+.xa-creator-studio > .xa-studio-workflow,
+.xa-creator-studio > section.xa-studio-workflow,
+.xa-creator-studio > section.xa-studio-surface {
+  background: var(--xa-surface);
+  color: var(--xa-text);
+  padding: clamp(17px, 3vw, 26px);
+}
+
+.xa-creator-studio .xa-studio-workflow h2 {
+  color: var(--xa-text);
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+.xa-creator-studio .xa-studio-workflow label {
+  color: var(--xa-text-secondary);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.xa-creator-studio .xa-studio-workflow :is(input:not([type="checkbox"]):not([type="radio"]),textarea,select) {
+  min-width: 0;
+  max-width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--xa-border-strong);
+  border-radius: 12px;
+  background: var(--xa-bg-elevated);
+  color: var(--xa-text);
+}
+
+.xa-creator-studio .xa-studio-workflow :is(input,textarea)::placeholder {
+  color: var(--xa-text-muted);
+  opacity: 1;
+}
+
+html[data-theme="light"] .xa-creator-studio .btn-primary:not(:disabled) {
+  color: #ffffff;
+}
+
+html[data-theme="dark"] .xa-creator-studio .btn-primary:not(:disabled) {
+  color: #10120f;
+}
+
+.xa-creator-studio .xa-studio-workflow .btn-secondary {
+  border-color: var(--xa-border-strong);
+  color: var(--xa-text);
+}
+
+/* Thumb cards and narrow form labels must not overflow on mobile. */
+.xa-creator-studio :is(.grid, .grid > *, .card, label, input, textarea) {
+  min-width: 0;
+}
+
+@media (max-width: 640px) {
+  .xa-offers-page .xa-offers-actions > :is(a, button) {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .xa-offers-page .xa-offers-card {
+    padding: 22px 20px;
+  }
+
+  .xa-pack-detail .xa-pack-info-card,
+  .xa-agents-discovery .xa-agent-selected,
+  .xa-creator-studio > .xa-studio-workflow,
+  .xa-creator-studio > section.xa-studio-workflow,
+.xa-creator-studio > section.xa-studio-surface {
+    padding: 20px 16px;
+  }
+
+  .xa-agents-discovery .xa-agent-choice {
+    min-height: 0;
+  }
+
+  .xa-genesis-grid .xa-genesis-polished {
+    border-radius: 18px;
+  }
+
+  .xa-creator-studio .xa-studio-workflow :is(.btn-primary,.btn-secondary) {
+    min-height: 44px;
+    max-width: 100%;
+    white-space: normal;
+    text-align: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .xa-offers-page *,
+  .xa-pack-detail *,
+  .xa-agents-discovery *,
+  .xa-creator-studio *,
+  .xa-genesis-grid .xa-genesis-polished * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

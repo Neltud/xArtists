@@ -7,7 +7,6 @@ import { useUserAccount } from '../hooks/useUserAccount'
 import { useStudioMintTx } from '../hooks/useStudioMintTx'
 import { requestOpenConnect } from '../lib/walletEvents'
 import { canListBuyNft, canBuyAgent } from '../config/scStatus'
-import PackCheckout from '../components/PackCheckout'
 import PhysicalNftCertifier from '../components/PhysicalNftCertifier'
 import CreatorMediaUpload from '../components/CreatorMediaUpload'
 import ArtworkTurntableLab from '../components/ArtworkTurntableLab'
@@ -120,11 +119,11 @@ export default function StudioPage() {
   }
 
   return (
-    <div className="xa-creator-studio animate-fade-in space-y-6 max-w-3xl mx-auto pb-16">
+    <div className="xa-creator-studio animate-fade-in mx-auto max-w-3xl space-y-8 px-4 pb-28 pt-6 sm:px-7">
       <header className="space-y-1">
         <p className="section-label">{xaRender("Création")}</p>
         <h1 className="section-title display text-2xl">{xaRender("Creator Studio")}</h1>
-        <p className="text-sm text-zinc-400">
+        <p className="text-sm leading-7 text-[color:var(--xa-text-secondary)]">
           {xaRender("Prépare ton œuvre, publie-la sur IPFS, puis crée ton NFT avec la signature de ton propre wallet. Aucun mint automatique. ")}</p>
       </header>
 
@@ -137,65 +136,65 @@ export default function StudioPage() {
         <li><strong>4 · Signature</strong><span>Contrôle les frais et confirme dans ton wallet.</span></li>
       </ol>
 
-      <section className="card xa-studio-workflow space-y-3">
-        <h2 className="text-sm font-semibold text-white">
+      <section className="card xa-studio-workflow space-y-4">
+        <h2 className="text-sm font-semibold text-[color:var(--xa-text)]">
           {xaRender("Mes collections (")}{xaRender(ownedCollections.length)})
         </h2>
         {xaRender(!connected ? (
           <button type="button" className="btn-primary text-sm" onClick={requestOpenConnect}>
             {xaRender("Connecter wallet ")}</button>
         ) : ownedCollections.length === 0 ? (
-          <p className="text-[13px] text-zinc-500">
+          <p className="text-sm text-[color:var(--xa-text-secondary)]">
             {xaRender("Aucune collection NFT détectée sur ce wallet — crée-en une ci-dessous. ")}</p>
         ) : (
-          <div className="max-h-40 overflow-y-auto space-y-1.5 rounded-xl border border-white/10 p-2">
+          <div className="max-h-40 overflow-y-auto space-y-1.5 rounded-xl border border-[color:var(--xa-border)] p-2">
             {xaRender(ownedCollections.map(c => (
               <button
                 key={c.id}
                 type="button"
                 onClick={() => selectExisting(c.id)}
-                className={`w-full text-left rounded-lg px-3 py-2 text-[12px] border transition ${
+                className={`w-full text-left rounded-lg px-3 py-2 text-sm border transition ${
                   activeCollectionId === c.id
-                    ? 'border-emerald-400/50 bg-emerald-500/10 text-white'
-                    : 'border-transparent hover:bg-white/5 text-zinc-300'
+                    ? 'border-emerald-400/50 bg-emerald-500/10 text-[color:var(--xa-text)]'
+                    : 'border-transparent hover:bg-[color:var(--xa-surface-hover)] text-zinc-300'
                 }`}
               >
                 <span className="mono font-medium">{xaRender(c.id)}</span>
-                <span className="text-zinc-500"> · {xaRender(c.count)} {xaRender(" NFT")}</span>
+                <span className="text-[color:var(--xa-text-secondary)]"> · {xaRender(c.count)} {xaRender(" NFT")}</span>
               </button>
             )))}
           </div>
         ))}
-        <label className="block text-[12px] text-zinc-500">
+        <label className="block text-sm text-[color:var(--xa-text-secondary)]">
           {xaRender("Ou coller un token id (TICKER-xxxxxx) ")}<input
             value={tokenIdInput}
             onChange={e => setTokenIdInput(e.target.value.trim())}
             placeholder={xaLocalize("XART-abc123")}
-            className="mt-1 w-full rounded-lg border border-white/10 bg-zinc-950 px-2 py-1.5 text-sm text-white mono"
+            className="mt-1 w-full rounded-lg border border-[color:var(--xa-border)] bg-[color:var(--xa-bg-elevated)] px-2 py-1.5 text-sm text-[color:var(--xa-text)] mono"
           />
         </label>
         {xaRender(activeCollectionId && (
-          <p className="text-[12px] text-emerald-300/90 mono">{xaRender("Active : ")}{xaRender(activeCollectionId)}</p>
+          <p className="text-sm text-emerald-900 dark:text-emerald-200 mono">{xaRender("Active : ")}{xaRender(activeCollectionId)}</p>
         ))}
       </section>
 
       <section className="card xa-studio-workflow space-y-3">
-        <h2 className="text-sm font-semibold text-white">{xaRender("Nouvelle collection (optionnel)")}</h2>
+        <h2 className="text-sm font-semibold text-[color:var(--xa-text)]">{xaRender("Nouvelle collection (optionnel)")}</h2>
         {xaRender(connected && (
-          <p className="text-[12px] text-zinc-500 mono truncate">{xaRender(asText(address))}</p>
+          <p className="text-sm text-[color:var(--xa-text-secondary)] mono truncate">{xaRender(asText(address))}</p>
         ))}
-        <label className="block text-[12px] text-zinc-500">
+        <label className="block text-sm text-[color:var(--xa-text-secondary)]">
           {xaRender("Nom ")}<input
             value={name}
             onChange={e => setName(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-white/10 bg-zinc-950 px-2 py-1.5 text-sm text-white"
+            className="mt-1 w-full rounded-lg border border-[color:var(--xa-border)] bg-[color:var(--xa-bg-elevated)] px-2 py-1.5 text-sm text-[color:var(--xa-text)]"
           />
         </label>
-        <label className="block text-[12px] text-zinc-500">
+        <label className="block text-sm text-[color:var(--xa-text-secondary)]">
           {xaRender("Ticker (A-Z 3–10) ")}<input
             value={ticker}
             onChange={e => setTicker(e.target.value.toUpperCase())}
-            className="mt-1 w-full rounded-lg border border-white/10 bg-zinc-950 px-2 py-1.5 text-sm text-white"
+            className="mt-1 w-full rounded-lg border border-[color:var(--xa-border)] bg-[color:var(--xa-bg-elevated)] px-2 py-1.5 text-sm text-[color:var(--xa-text)]"
           />
         </label>
         <div className="flex flex-wrap gap-2">
@@ -215,14 +214,14 @@ export default function StudioPage() {
           >
             {xaRender("Autoriser la création NFT ")}</button>
         </div>
-        <p className="text-[11px] text-zinc-600">
+        <p className="text-xs text-[color:var(--xa-text-secondary)]">
           {xaRender("Après issue : récupère le token id sur l’explorer (TICKER-xxxxxx), colle-le ci-dessus, puis rôle + mint. ")}</p>
       </section>
 
       <ArtworkTurntableLab />
 
       <section className="card xa-studio-workflow space-y-3">
-        <h2 className="text-sm font-semibold text-white">{xaRender("Préparer et créer mon NFT")}</h2>
+        <h2 className="text-sm font-semibold text-[color:var(--xa-text)]">{xaRender("Préparer et créer mon NFT")}</h2>
         <label className="block text-sm font-medium" htmlFor="xa-studio-nft-name">
           Nom de l’œuvre à publier
         </label>
@@ -230,7 +229,7 @@ export default function StudioPage() {
           id="xa-studio-nft-name"
           value={nftName}
           onChange={e => setNftName(e.target.value)}
-          className="w-full rounded-lg border border-white/10 bg-zinc-950 px-2 py-1.5 text-sm text-white"
+          className="w-full rounded-lg border border-[color:var(--xa-border)] bg-[color:var(--xa-bg-elevated)] px-2 py-1.5 text-sm text-[color:var(--xa-text)]"
           placeholder={xaLocalize("Nom de l’œuvre")}
           maxLength={50}
         />
@@ -238,16 +237,16 @@ export default function StudioPage() {
           setPinnedMedia(pin)
           setNftMediaUri(pin?.mediaUri || '')
         }} />
-        <label className="block text-[12px] text-zinc-400">
+        <label className="block text-sm text-[color:var(--xa-text-secondary)]">
           2. URI média IPFS/HTTPS (automatique après upload, ou saisie manuelle)
           <input
             value={nftMediaUri}
             onChange={e => {setNftMediaUri(e.target.value);setPinnedMedia(null)}}
-            className="mt-1 w-full rounded-lg border border-white/10 bg-zinc-950 px-3 py-2 text-xs text-white"
+            className="mt-1 w-full rounded-lg border border-[color:var(--xa-border)] bg-[color:var(--xa-bg-elevated)] px-3 py-2 text-xs text-[color:var(--xa-text)]"
             placeholder="ipfs://bafy.../artwork.png"
           />
         </label>
-        <p className="text-[11px] text-amber-200">Un fichier sélectionné seul ne suffit pas : le mint exige un upload IPFS confirmé ou une URL déjà hébergée. Vérifie la collection, le rôle NFTCreate et les détails dans xPortal avant la signature.</p>
+        <p className="text-xs text-amber-900 dark:text-amber-100">Un fichier sélectionné seul ne suffit pas : le mint exige un upload IPFS confirmé ou une URL déjà hébergée. Vérifie la collection, le rôle NFTCreate et les détails dans xPortal avant la signature.</p>
         <button
           type="button"
           className="btn-secondary text-sm"
@@ -256,18 +255,18 @@ export default function StudioPage() {
         >
           {xaRender(mint.pending ? 'Signature…' : 'Signer la création NFT')}
         </button>
-        {mint.lastTx && <p className="break-all text-xs text-cyan-200">Session / Tx : {mint.lastTx}
+        {mint.lastTx && <p className="break-all text-xs text-cyan-900 dark:text-cyan-100">Session / Tx : {mint.lastTx}
           {/^[a-f0-9]{64}$/i.test(mint.lastTx) && <a
             href={'https://explorer.multiversx.com/transactions/' + mint.lastTx}
             target="_blank" rel="noopener noreferrer" className="ml-2 underline">Voir Explorer</a>}
         </p>}
-        {xaRender(mint.error && <p className="text-[12px] text-amber-200/90">{xaRender(asText(mint.error))}</p>)}
+        {xaRender(mint.error && <p className="text-sm text-amber-900 dark:text-amber-100">{xaRender(asText(mint.error))}</p>)}
       </section>
 
       <section className="card xa-studio-workflow space-y-3">
-        <h2 className="text-sm font-semibold text-white">{xaRender("Mes NFT (")}{xaRender(owned.length)})</h2>
+        <h2 className="text-sm font-semibold text-[color:var(--xa-text)]">{xaRender("Mes NFT (")}{xaRender(owned.length)})</h2>
         {xaRender(connected && owned.length === 0 && (
-          <p className="text-[13px] text-zinc-500">{xaRender("Aucun NFT — mint ou importe une collection.")}</p>
+          <p className="text-sm text-[color:var(--xa-text-secondary)]">{xaRender("Aucun NFT — mint ou importe une collection.")}</p>
         ))}
         <ul className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-72 overflow-y-auto">
           {xaRender(owned.map(n => (
@@ -276,21 +275,21 @@ export default function StudioPage() {
                 type="button"
                 onClick={() => setPicked(n.id)}
                 className={`w-full text-left rounded-xl border p-2 ${
-                  picked === n.id ? 'border-violet-400/50 bg-violet-500/10' : 'border-white/10'
+                  picked === n.id ? 'border-violet-400/50 bg-violet-500/10' : 'border-[color:var(--xa-border)]'
                 }`}
               >
                 {xaRender(n.thumb ? (
                   <img
                     src={n.thumb}
                     alt=""
-                    className="w-full aspect-square object-cover rounded-lg mb-1.5 bg-zinc-900"
+                    className="w-full aspect-square object-cover rounded-lg mb-1.5 bg-[color:var(--xa-surface-hover)]"
                     loading="lazy"
                   />
                 ) : (
-                  <div className="w-full aspect-square rounded-lg mb-1.5 bg-zinc-900" />
+                  <div className="w-full aspect-square rounded-lg mb-1.5 bg-[color:var(--xa-surface-hover)]" />
                 ))}
-                <p className="text-[11px] text-zinc-200 truncate">{xaRender(asText(n.name))}</p>
-                <p className="text-[9px] text-zinc-600 mono truncate">{xaRender(n.collection)}</p>
+                <p className="text-xs text-[color:var(--xa-text)] truncate">{xaRender(asText(n.name))}</p>
+                <p className="text-xs text-[color:var(--xa-text-secondary)] mono truncate">{xaRender(n.collection)}</p>
               </button>
             </li>
           )))}
@@ -311,19 +310,24 @@ export default function StudioPage() {
         </div>
       </section>
 
-      <section className="card space-y-3 border border-fuchsia-500/20 bg-fuchsia-500/[0.04]">
-        <h2 className="text-sm font-semibold text-white">{xaRender("Certification Phygital")}</h2>
-        <p className="text-[12px] text-zinc-500 leading-relaxed">
-          {xaRender("Photo HD → hash SHA-256 local → certificats CoA / CoP. Réévaluation future via intention LIA ")}<code className="text-[9px] text-zinc-400"> PHYGITAL_REEVAL</code>.
+      <section className="card xa-studio-surface space-y-4 border border-[color:var(--xa-border)] bg-[color:var(--xa-surface)]">
+        <h2 className="text-sm font-semibold text-[color:var(--xa-text)]">{xaRender("Certification Phygital")}</h2>
+        <p className="text-sm text-[color:var(--xa-text-secondary)] leading-relaxed">
+          {xaRender("Photo HD → hash SHA-256 local → certificats CoA / CoP. Réévaluation future via intention LIA ")}<code className="text-xs text-[color:var(--xa-text-secondary)]"> PHYGITAL_REEVAL</code>.
         </p>
         <PhysicalNftCertifier />
       </section>
 
-      <section className="card space-y-3">
-        <h2 className="text-sm font-semibold text-white">
+      <section className="card xa-studio-surface space-y-4">
+        <h2 className="text-sm font-semibold text-[color:var(--xa-text)]">
           {xaRender("Packs Agent IA")}{xaRender(agentMint ? '' : ' · bientôt on-chain')}
         </h2>
-        <PackCheckout />
+        <p role="status" className="mt-3 text-xs leading-6 text-[color:var(--xa-text-secondary)]">
+          Découverte uniquement : les packs Genesis ne sont pas en vente. Les objectifs 33 / 22 / 11 EGLD ne sont pas des devis, et les abonnements Stripe sans wallet ne contiennent aucun NFT.
+        </p>
+        <Link to="/offres" className="mt-3 inline-flex min-h-[44px] items-center rounded-xl border border-[color:var(--xa-border)] px-4 py-2 text-xs text-[color:var(--xa-text)]">
+          Comparer les offres et leur disponibilité
+        </Link>
       </section>
     </div>
   )

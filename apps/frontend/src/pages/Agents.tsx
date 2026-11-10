@@ -2,11 +2,10 @@ import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phra
 /** Packs Agents — Genesis limited · œuvres série Tuduri. */
 import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import PackCheckout from '../components/PackCheckout'
-import PackOpenTheater from '../components/PackOpenTheater'
 import Pack3DCockpit from '../components/packs/Pack3DCockpit'
 import { AGENT_PACKS, AGENT_PACK_SC_SNAPSHOT, AGENT_PACK_MEDIA_SNAPSHOT, PACK_EDITION, PACK_VISUAL, type PackId } from '../config/agentPacks'
 import { PACK_COLLECTIONS } from '../config/packNftMetadata'
+import { GENESIS_TARGETS_BY_ID } from '../config/commercialTargets'
 
 const PACKS = AGENT_PACKS
 
@@ -20,9 +19,7 @@ function limitsFor(id: PackId): string[] {
 export default function Agents() {
   const [params] = useSearchParams()
   const [selected, setSelected] = useState<PackId | null>(null)
-  const [theater, setTheater] = useState<PackId | null>(null)
   const active = PACKS.find(p => p && p.id === selected) || null
-  const theaterPack = PACKS.find(p => p && p.id === theater) || null
 
   useEffect(() => {
     const q = params.get('pack')
@@ -30,16 +27,16 @@ export default function Agents() {
   }, [params])
 
   return (
-    <div className="xa-page animate-fade-in space-y-6 pb-20 max-w-4xl mx-auto">
-      <header className="space-y-2 border-b border-[color:var(--xa-border)] pb-5">
+    <div className="xa-page xa-agents-discovery animate-fade-in mx-auto max-w-4xl space-y-8 px-4 pb-28 pt-6 sm:px-7">
+      <header className="space-y-4 border-b border-[color:var(--xa-border)] pb-7">
         <p className="section-label">{xaRender('Genesis · Limited')}</p>
         <h1 className="section-title display">{xaRender('Pulse · Yield · Sentinel')}</h1>
         <p className="section-lead text-[color:var(--xa-text-secondary)]">
           {xaRender(
-            'Packs d’accès (signaux / salles) en découverte — pas un fonds, pas d’APY promis. Catalogue 110 / 75 / 50 €. Les ventes et les livraisons NFT sont suspendues.',
+            'Packs Genesis NFT en découverte — pas un fonds, pas d’APY promis. Objectifs/plafonds Pulse 33, Yield 22, Sentinel 11 EGLD ; prix de contrat différents. Les ventes et livraisons restent suspendues.',
           )}
         </p>
-        <div role="status" className="rounded-xl border border-amber-500/30 bg-amber-500/[0.06] p-3 text-xs leading-relaxed text-[color:var(--xa-text-secondary)]">
+        <div role="status" className="xa-agent-notice rounded-xl border border-amber-400/60 bg-amber-50 p-4 text-sm leading-7 text-amber-950 dark:border-amber-700 dark:bg-amber-950/30 dark:text-amber-100">
           <p className="font-semibold text-[color:var(--xa-text)]">
             {xaRender('Médias NFT mainnet non prêts · achats suspendus')}
           </p>
@@ -52,7 +49,7 @@ export default function Agents() {
             {xaRender('Contrôler les NFT Pulse sur MultiversX')}
           </a>
         </div>
-        <div className="flex flex-wrap gap-2 text-[11px] text-[color:var(--xa-text-muted)]">
+        <div className="flex flex-wrap gap-2 text-xs text-[color:var(--xa-text-muted)]">
           <span className="rounded-full border border-[color:var(--xa-border)] px-2 py-0.5">{xaRender('Pulse 333')}</span>
           <span className="rounded-full border border-[color:var(--xa-border)] px-2 py-0.5">{xaRender('Yield 500')}</span>
           <span className="rounded-full border border-[color:var(--xa-border)] px-2 py-0.5">{xaRender('Sentinel 777')}</span>
@@ -62,7 +59,7 @@ export default function Agents() {
         </div>
       </header>
 
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-3">
         {xaRender(
           PACKS.map(p => {
             const col = PACK_COLLECTIONS[p.id]
@@ -74,50 +71,51 @@ export default function Agents() {
                 <button
                   type="button"
                   onClick={() => setSelected(p.id)}
-                  className="card text-left card-play transition active:scale-[0.98] w-full"
-                  style={{ borderColor: isSel ? vis.border : undefined, boxShadow: isSel ? vis.glow : undefined }}
+                  className="card xa-agent-choice w-full min-h-[220px] text-left card-play transition-colors"
+                  aria-pressed={isSel}
+                  style={{ borderColor: isSel ? vis.border : undefined }}
                 >
                   <div className="flex items-center justify-between gap-1">
                     <p className="text-[15px] font-semibold text-[color:var(--xa-text)]">
                       {xaRender(p.icon)} {xaRender(p.name)}
                     </p>
                     <span
-                      className="text-[11px] font-bold uppercase tracking-wide rounded-full px-2 py-1 border"
+                      className="xa-agent-tier rounded-full border px-2.5 py-1 text-xs font-bold uppercase tracking-wide"
                       style={{ borderColor: vis.border, color: vis.accent, background: vis.accentSoft }}
                     >
                       {xaRender(p.tierLabel)}
                     </span>
                   </div>
-                  <p className="text-[10px] mono mt-1 text-[color:var(--xa-text-muted)]">{xaRender(col?.ticker)}</p>
-                  <p className="text-[12px] mt-1.5 leading-snug text-[color:var(--xa-text-secondary)]">{xaRender(p.tagline)}</p>
+                  <p className="mt-2 break-all font-mono text-xs leading-5 text-[color:var(--xa-text-secondary)]">{xaRender(col?.ticker)}</p>
+                  <p className="mt-2 text-sm leading-6 text-[color:var(--xa-text-secondary)]">{xaRender(p.tagline)}</p>
                   <div className="mt-3 flex items-end justify-between">
                     <div>
                       <p className="text-xl tabular-nums text-[color:var(--xa-text)]">
-                        {xaRender(String(p.priceEur.list))}{' '}
-                        <span className="text-sm text-[color:var(--xa-text-muted)]">{xaRender('€')}</span>
+                        {xaRender(GENESIS_TARGETS_BY_ID[p.id].targetEgld)}{' '}
+                        <span className="text-sm text-[color:var(--xa-text-muted)]">{xaRender('EGLD · plafond cible')}</span>
                       </p>
-                      <p className="text-[12px] mt-1 text-[color:var(--xa-text-secondary)]">
+                      <p className="text-sm mt-1 text-[color:var(--xa-text-secondary)]">
                         {xaRender(`Relevé SC 08/11 : ${AGENT_PACK_SC_SNAPSHOT.pricesEgld[p.id]} EGLD · vente fermée`)}
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-[12px] font-semibold tabular-nums" style={{ color: vis.accent }}>
+                      <p className="text-sm font-semibold tabular-nums" style={{ color: vis.accent }}>
                         {xaRender(String(ed.maxSupply))}
                       </p>
-                      <p className="text-[9px] uppercase tracking-wider text-[color:var(--xa-text-muted)]">{xaRender('max')}</p>
+                      <p className="text-xs uppercase tracking-wider text-[color:var(--xa-text-muted)]">{xaRender('max')}</p>
                     </div>
                   </div>
-                  <p className="text-[10px] mt-2 text-[color:var(--xa-text-muted)]">
+                  <p className="text-xs mt-2 text-[color:var(--xa-text-muted)]">
                     {xaRender('Signaux ×')}
                     {xaRender(String(p.signalIntensity))} · {xaRender(p.features.actionsPerWeek)}
                   </p>
                 </button>
-                <p className="text-[11px] text-[color:var(--xa-text-muted)]">
+                <p className="text-xs text-[color:var(--xa-text-muted)]">
                   {xaRender(`NFT indexés : ${AGENT_PACK_MEDIA_SNAPSHOT.packs[p.id].indexed} · URI média valides : ${AGENT_PACK_MEDIA_SNAPSHOT.packs[p.id].nonEmptyMediaUris}`)}
                 </p>
                 <Link
                   to={`/packs/${p.id}`}
-                  className="block text-center text-[11px] text-[color:var(--xa-accent)] underline"
+                  className="block text-center text-xs text-[color:var(--xa-accent)] underline"
                 >
                   {xaLocalize('Page produit →')}
                 </Link>
@@ -130,20 +128,20 @@ export default function Agents() {
       {xaRender(
         active && (
           <section
-            className="card space-y-4"
-            style={{ borderColor: PACK_VISUAL[active.id].border, boxShadow: PACK_VISUAL[active.id].glow }}
+            className="card xa-agent-selected space-y-5"
+            style={{ borderColor: PACK_VISUAL[active.id].border }}
           >
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <h2 className="text-sm font-semibold text-[color:var(--xa-text)]">
                   {xaRender(active.icon)} {xaRender(active.name)}{' '}
-                  <span className="text-[10px] font-normal text-[color:var(--xa-text-muted)]">{xaRender(active.tierLabel)}</span>
+                  <span className="text-xs font-normal text-[color:var(--xa-text-muted)]">{xaRender(active.tierLabel)}</span>
                 </h2>
-                <p className="text-[11px] mono mt-0.5 text-[color:var(--xa-text-muted)]">
+                <p className="text-xs mono mt-0.5 text-[color:var(--xa-text-muted)]">
                   {xaRender(PACK_COLLECTIONS[active.id]?.ticker)} · {xaRender(active.seriesName)}
                 </p>
                 <p className="text-[13px] mt-1 text-[color:var(--xa-text-secondary)]">{xaRender(active.activity)}</p>
-                <p className="text-[11px] mt-1 text-[color:var(--xa-text-muted)]">
+                <p className="text-xs mt-1 text-[color:var(--xa-text-muted)]">
                   {xaRender('Œuvre :')} {xaRender(PACK_VISUAL[active.id].mediaMotif)}
                 </p>
               </div>
@@ -157,15 +155,15 @@ export default function Agents() {
                 <p className="text-lg font-bold tabular-nums" style={{ color: PACK_VISUAL[active.id].accent }}>
                   {xaRender(String(active.maxSupply))}
                 </p>
-                <p className="text-[9px] uppercase tracking-widest text-[color:var(--xa-text-muted)]">
+                <p className="text-xs uppercase tracking-widest text-[color:var(--xa-text-muted)]">
                   {xaRender('édition max')}
                 </p>
               </div>
             </div>
 
-            <div className="grid sm:grid-cols-2 gap-3 text-[12px]">
+            <div className="grid sm:grid-cols-2 gap-3 text-sm">
               <div>
-                <p className="text-[10px] uppercase text-[color:var(--xa-text-muted)] mb-1">{xaRender('Inclus')}</p>
+                <p className="text-xs uppercase text-[color:var(--xa-text-muted)] mb-1">{xaRender('Inclus')}</p>
                 <ul className="space-y-1 text-[color:var(--xa-text-secondary)]">
                   {xaRender(active.entitlements.map(e => (
                     <li key={e}>✓ {xaRender(e)}</li>
@@ -173,7 +171,7 @@ export default function Agents() {
                 </ul>
               </div>
               <div>
-                <p className="text-[10px] uppercase text-[color:var(--xa-text-muted)] mb-1">{xaRender('Limites')}</p>
+                <p className="text-xs uppercase text-[color:var(--xa-text-muted)] mb-1">{xaRender('Limites')}</p>
                 <ul className="space-y-1 text-[color:var(--xa-text-muted)]">
                   {xaRender(limitsFor(active.id).map(e => (
                     <li key={e}>— {xaRender(e)}</li>
@@ -187,7 +185,7 @@ export default function Agents() {
                 active.strategies.map(s => (
                   <span
                     key={s}
-                    className="rounded-full border border-[color:var(--xa-border)] px-2 py-0.5 text-[10px] mono text-[color:var(--xa-text-muted)]"
+                    className="rounded-full border border-[color:var(--xa-border)] px-2 py-0.5 text-xs mono text-[color:var(--xa-text-muted)]"
                   >
                     {xaRender(s)}
                   </span>
@@ -196,8 +194,8 @@ export default function Agents() {
             </div>
 
             <Pack3DCockpit packId={active.id} showIntents={false} />
-            <PackCheckout packId={active.id} onPaperDone={id => setTheater(id)} onClear={() => setSelected(null)} />
-            <div className="flex flex-wrap gap-3 text-[12px]">
+            <p role="status" className="xa-agent-notice rounded-xl border border-amber-400/60 bg-amber-50 p-4 text-sm leading-7 text-amber-950 dark:border-amber-700 dark:bg-amber-950/30 dark:text-amber-100">Vente NFT indisponible : prix contractuels non alignés, base EUR du devis non définie, politique 2 (devis frais à la signature) non mise en service. Aucun wallet, checkout, paiement ou mint déclenché par cette fiche.</p>
+            <div className="flex flex-wrap gap-3 text-sm">
               <Link to={`/packs/${active.id}`} className="text-[color:var(--xa-accent)] underline">
                 {xaRender('Page produit →')}
               </Link>
@@ -209,9 +207,8 @@ export default function Agents() {
         ),
       )}
 
-      {xaRender(theaterPack && <PackOpenTheater pack={theaterPack} open onClose={() => setTheater(null)} />)}
 
-      <div className="rounded-xl border border-[color:var(--xa-border)] px-3 py-3 text-[11px] text-[color:var(--xa-text-muted)] space-y-1">
+      <div className="rounded-xl border border-[color:var(--xa-border)] bg-[color:var(--xa-surface)] px-4 py-4 text-sm leading-7 text-[color:var(--xa-text-secondary)] space-y-2">
         <p className="font-medium text-[color:var(--xa-text-secondary)]">{xaRender('Rappel flux')}</p>
         <p>{xaRender('Parcours prévu (non actif) : choisir un pack → signer via wallet → paiement vérifié → NFT livré → accès confirmé.')}</p>
         <p>{xaRender('Pulse débloque hub CC + TCA + LIA full. Yield / Sentinel = salle dédiée.')}</p>
