@@ -1,15 +1,13 @@
 /**
- * Page produit miroir Whop — /packs/:packId
- * Achat unique + œuvre SFT Genesis (COMMERCIAL_MODEL). Membership TCA = produit distinct.
+ * Genesis NFT pack detail — /packs/:packId. Public discovery only.
+ * Owner price targets are not a quote, executable checkout, or contract price.
+ * Mainstream EUR service memberships are separate and do NOT include NFTs.
  */
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
-import PackCheckout from '../components/PackCheckout'
-import PackOpenTheater from '../components/PackOpenTheater'
 import Pack3DCockpit from '../components/packs/Pack3DCockpit'
 import GenesisCard3D from '../components/packs/GenesisCard3D'
 import {
-  AGENT_PACKS,
   AGENT_PACK_SC_SNAPSHOT,
   PACK_COMMERCIAL,
   PACK_EDITION,
@@ -18,6 +16,7 @@ import {
   type PackId,
 } from '../config/agentPacks'
 import { PACK_COLLECTIONS } from '../config/packNftMetadata'
+import { GENESIS_TARGETS_BY_ID } from '../config/commercialTargets'
 import { localizeChild as xaLocalize, renderChild as xaRender } from '../i18n/phraseRuntime'
 
 function limitsFor(id: PackId): string[] {
@@ -30,7 +29,6 @@ function limitsFor(id: PackId): string[] {
 export default function PackLandingPage() {
   const { packId } = useParams<{ packId: string }>()
   const pack = useMemo(() => getPack(packId || ''), [packId])
-  const [theater, setTheater] = useState<PackId | null>(null)
 
   if (!pack || !packId || !['pulse', 'yield', 'sentinel'].includes(packId)) {
     return <Navigate to="/intelligence/agents" replace />
@@ -40,13 +38,13 @@ export default function PackLandingPage() {
   const vis = PACK_VISUAL[id]
   const ed = PACK_EDITION[id]
   const col = PACK_COLLECTIONS[id]
-  const theaterPack = AGENT_PACKS.find(p => p.id === theater) || null
   const sample =
     id === 'pulse' ? 47 : id === 'yield' ? 112 : 3
+  const target = GENESIS_TARGETS_BY_ID[id]
 
   return (
-    <div className="xa-page animate-fade-in space-y-8 pb-24 max-w-3xl mx-auto">
-      <nav className="text-[12px] text-[color:var(--xa-text-muted)] flex flex-wrap gap-1 items-center">
+    <div className="xa-page xa-pack-detail animate-fade-in mx-auto max-w-3xl space-y-9 px-4 pb-28 pt-5 sm:px-7 sm:pt-8">
+      <nav aria-label="Fil d’Ariane" className="flex flex-wrap items-center gap-2 text-sm leading-6 text-[color:var(--xa-text-secondary)]">
         <Link to="/" className="hover:underline">
           xArtists
         </Link>
@@ -58,26 +56,26 @@ export default function PackLandingPage() {
         <span style={{ color: vis.accent }}>{pack.name}</span>
       </nav>
 
-      <header className="space-y-3">
-        <p className="section-label">{xaRender('Genesis · one-time · miroir Whop')}</p>
+      <header className="xa-pack-header space-y-4">
+        <p className="section-label">{xaRender('Genesis · NFT · achat unique · vente fermée')}</p>
         <h1 className="section-title display flex flex-wrap items-center gap-2">
           <span>{xaRender(pack.icon)}</span>
           <span>{xaRender(pack.name)}</span>
           <span
-            className="text-[11px] font-semibold uppercase tracking-wider rounded-full border px-2 py-0.5"
+            className="xa-pack-tier rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide"
             style={{ borderColor: vis.border, color: vis.accent, background: vis.accentSoft }}
           >
             {pack.tierLabel}
           </span>
         </h1>
         <p className="section-lead text-[color:var(--xa-text-secondary)]">{xaRender(pack.tagline)}</p>
-        <div className="flex flex-wrap gap-3 items-baseline">
-          <strong className="text-3xl tabular-nums text-[color:var(--xa-text)]">{pack.priceEur.list} €</strong>
-          <span className="text-[14px] text-[color:var(--xa-text-muted)]">
-            Relevé SC du 08/11 : {AGENT_PACK_SC_SNAPSHOT.pricesEgld[id]} EGLD · vente fermée
+        <div className="flex flex-wrap items-baseline gap-x-4 gap-y-2">
+          <strong className="text-3xl tabular-nums text-[color:var(--xa-text)]">{target.targetEgld} EGLD</strong>
+          <span className="max-w-xl text-sm leading-6 text-[color:var(--xa-text-secondary)]">
+            Plafond cible, pas un devis. Relevé contrat du 08/11 : {AGENT_PACK_SC_SNAPSHOT.pricesEgld[id]} EGLD · vente fermée
           </span>
         </div>
-        <p className="text-[12px] text-[color:var(--xa-text-muted)]">
+        <p className="text-sm leading-6 text-[color:var(--xa-text-secondary)]">
           {xaRender(ed.seriesName)} · max{' '}
           <span className="tabular-nums font-semibold" style={{ color: vis.accent }}>
             {ed.maxSupply}
@@ -89,14 +87,14 @@ export default function PackLandingPage() {
 
       <div className="mx-auto w-full max-w-sm px-2">
         <GenesisCard3D id={id} sampleEdition={sample} />
-        <p className="mt-2 text-center text-[12px] text-[color:var(--xa-text-muted)]">
+        <p className="mt-3 text-center text-sm leading-6 text-[color:var(--xa-text-secondary)]">
           {xaRender(vis.mediaMotif)} · {xaRender(col?.ticker || '')} · recto peinture · verso HUD
         </p>
       </div>
 
-      <section className="grid sm:grid-cols-2 gap-4 text-[13px]">
-        <div className="card space-y-2">
-          <p className="text-[10px] uppercase tracking-wider text-[color:var(--xa-text-muted)]">
+      <section className="grid gap-4 text-sm leading-6 sm:grid-cols-2">
+        <div className="card xa-pack-info-card space-y-3">
+          <p className="text-xs font-semibold uppercase tracking-wider text-[color:var(--xa-text-secondary)]">
             {xaLocalize('Inclus')}
           </p>
           <ul className="space-y-1.5 text-[color:var(--xa-text-secondary)]">
@@ -105,8 +103,8 @@ export default function PackLandingPage() {
             ))}
           </ul>
         </div>
-        <div className="card space-y-2">
-          <p className="text-[10px] uppercase tracking-wider text-[color:var(--xa-text-muted)]">
+        <div className="card xa-pack-info-card space-y-3">
+          <p className="text-xs font-semibold uppercase tracking-wider text-[color:var(--xa-text-secondary)]">
             {xaLocalize('Limites')}
           </p>
           <ul className="space-y-1.5 text-[color:var(--xa-text-muted)]">
@@ -117,31 +115,29 @@ export default function PackLandingPage() {
         </div>
       </section>
 
-      <p role="status" className="rounded-xl border border-amber-300/25 bg-amber-300/[0.06] px-4 py-3 text-[12px] text-[color:var(--xa-text-secondary)]">
-        {xaRender('Packs Genesis : vente suspendue. Le prix en euros est un catalogue, le relevé EGLD est historique et non payable. Aucun paiement ni NFT livré par cet aperçu.')}
+      <p role="status" className="xa-pack-status rounded-xl border border-amber-400/60 bg-amber-50 px-4 py-4 text-sm leading-7 text-amber-950 dark:border-amber-700 dark:bg-amber-950/30 dark:text-amber-100">
+        {xaRender('Packs Genesis : vente suspendue. 33 / 22 / 11 EGLD sont des plafonds de devis commerciaux, pas des prix écrits dans les contrats ni des montants à payer. La politique retenue est un devis EUR/EGLD frais à la signature (TTL prévu 180 secondes) mais sa base EUR n’est pas encore définie. Aucun paiement ni NFT livré.')}
       </p>
 
       <Pack3DCockpit packId={id} showIntents={false} />
 
-      <section className="card space-y-3" style={{ borderColor: vis.border }}>
-        <h2 className="text-sm font-semibold text-[color:var(--xa-text)]">{xaLocalize('Checkout dApp')}</h2>
-        <p className="text-[12px] text-[color:var(--xa-text-muted)]">
-          {xaLocalize(
-            'Parcours prévu : paiement authentifié, mint et livraison SFT, puis Mes Packs. Actuellement : simulation uniquement, aucun achat réel.',
-          )}
+      <section className="card xa-pack-info-card space-y-3">
+        <h2 className="text-base font-semibold text-[color:var(--xa-text)]">Achat Genesis indisponible</h2>
+        <p className="text-sm leading-7 text-[color:var(--xa-text-secondary)]">
+          Une future acquisition nécessitera un wallet MultiversX, un devis frais et une signature distincte,
+          ainsi qu’une preuve de livraison on-chain. Aucun paiement, simulation d’achat ou ordre n’est lancé ici.
         </p>
-        <PackCheckout packId={id} onPaperDone={pid => setTheater(pid)} onClear={() => undefined} />
+        <Link to="/offres" className="xa-pack-discover inline-flex min-h-[44px] items-center justify-center rounded-xl border border-[color:var(--xa-border-strong)] px-4 py-2 text-sm font-semibold text-[color:var(--xa-text)]">
+          Voir les offres disponibles à la découverte
+        </Link>
       </section>
 
-      <section className="card space-y-2">
-        <h2 className="text-sm font-semibold">{xaLocalize('Whop · abonnement TCA distinct')}</h2>
-        <p className="text-[12px] text-[color:var(--xa-text-muted)]">
-          {xaLocalize(
-            'Les abonnements mensuels Whop donnent accès aux services du plan TCA. Ils ne sont pas un moyen de régler ce pack Genesis, ne comprennent pas ce NFT et ne livrent aucun droit on-chain Genesis.',
-          )}
-        </p>
-        <p className="text-[12px] text-[color:var(--xa-text-muted)]">
-          {xaLocalize('Le paiement et le mint Genesis sont soumis au statut de disponibilité et aux conditions du checkout dApp.')}
+      <section className="card xa-pack-info-card space-y-3">
+        <h2 className="text-sm font-semibold">Abonnements mainstream · services seulement</h2>
+        <p className="text-sm leading-7 text-[color:var(--xa-text-secondary)]">
+          Trois mensualités Stripe prévues : 3,79 €, 5,79 € et 9,79 € TTC.
+          Elles sont accessibles sans wallet après authentification, ne contiennent aucun NFT,
+          ne déclenchent aucun mint et ne donnent aucun pack Genesis. Souscription fermée.
         </p>
         <a
           href="https://xartists.gitbook.io/xartists/"
@@ -149,13 +145,13 @@ export default function PackLandingPage() {
           rel="noopener noreferrer"
           className="inline-flex min-h-[44px] items-center rounded-xl border border-[color:var(--xa-border)] px-4 text-[13px] text-[color:var(--xa-text-secondary)]"
         >
-          Guide officiel · offres &amp; disponibilité →
+          Guide officiel · offres &amp; disponibilité
         </a>
       </section>
 
-      <p className="text-[11px] text-[color:var(--xa-text-muted)] leading-relaxed">
+      <p className="text-sm leading-7 text-[color:var(--xa-text-secondary)]">
         {xaLocalize(
-          'Abonnement TCA Membership = produit Whop séparé (services périodiques, sans NFT Genesis). Packs = propriété durable.',
+          'Abonnements Stripe mainstream = services périodiques sans NFT, distincts des œuvres Genesis. Aucun paiement n’est actif.',
         )}{' '}
         <Link to="/intelligence/agents" className="text-[color:var(--xa-accent)] underline">
           {xaLocalize('Tous les packs')}
@@ -166,7 +162,6 @@ export default function PackLandingPage() {
         </Link>
       </p>
 
-      {theaterPack && <PackOpenTheater pack={theaterPack} open onClose={() => setTheater(null)} />}
     </div>
   )
 }
