@@ -1,3 +1,5 @@
+> **ARCHIVE HISTORIQUE (2 novembre 2026)** : ce tableau reflète l'ancien périmètre. Depuis le 10 novembre, les canaux marchands tiers sont retirés du parcours actif. Voir [retrait et nouvelles sources Artprice](ARTPRICE_OFFICIAL_LICENSING_2026-11-10.md). Ne pas suivre les étapes d'activation ci-dessous.
+
 # Sprint GO — Audit d'avancement
 
 **Horodatage:** 2026-11-02 20:33 CET  
