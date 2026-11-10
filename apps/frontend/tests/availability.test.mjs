@@ -7,11 +7,11 @@ import { loadSource, frontend } from './load-source.mjs'
 import { fallbackHtml, publicRoutes, publicAvailabilityPlugin, commercialSeoHtml } from '../scripts/publicAvailability.mjs'
 
 test('commercial /offres and /offers static HTML have truthful crawler-readable SEO and social cards', () => {
-  const template = '<html><head><title>Generic xArtists</title><meta name="description" content="generic" /><meta property="og:title" content="generic" /><meta property="og:url" content="https://neltud.github.io/xArtists/" /><link rel="canonical" href="https://neltud.github.io/xArtists/" /></head><body>sites-v3-release</body></html>'
+  const template = '<html><head><title>Generic xArtists</title><meta name="description" content="generic" /><meta property="og:title" content="generic" /><meta property="og:url" content="https://xartists.art/" /><link rel="canonical" href="https://xartists.art/" /></head><body>sites-v3-release</body></html>'
   const fr = commercialSeoHtml(template, '/offres')
   const en = commercialSeoHtml(template, '/offers')
   for (const html of [fr, en]) {
-    assert.match(html, /https:\/\/neltud\.github\.io\/xArtists\/offres\//)
+    assert.match(html, /https:\/\/xartists\.art\/offres\//)
     assert.match(html, /name="robots" content="index, follow"/)
     assert.match(html, /property="og:description"/)
     assert.match(html, /name="twitter:description"/)
@@ -87,7 +87,7 @@ test('Vite CSS/JS preload errors ask for explicit full reload, not a React-only 
   for (const message of [
     'Unable to preload CSS for /xArtists/assets/TroCrosschainPage-B21Qc--r.css',
     'Unable to preload JS for /xArtists/assets/OldPage-aaaa.js',
-    'Failed to fetch dynamically imported module: https://neltud.github.io/xArtists/assets/OldPage.js',
+    'Failed to fetch dynamically imported module: https://xartists.art/assets/OldPage.js',
     'Loading chunk 17 failed',
     'Importing a module script failed.',
     'ChunkLoadError: Loading chunk 12 failed.',
@@ -105,10 +105,10 @@ test('Vite CSS/JS preload errors ask for explicit full reload, not a React-only 
 
 test('PWA manifest declares real PNG dimensions and keeps shortcuts inside its scope', async () => {
   const manifest = JSON.parse(await fs.readFile(path.join(frontend, 'public/manifest.webmanifest'), 'utf8'))
-  assert.equal(manifest.id, '/xArtists/')
+  assert.equal(manifest.id, '/')
   assert.equal(manifest.start_url, manifest.scope)
   for (const icon of manifest.icons) {
-    const bytes = await fs.readFile(path.join(frontend, 'public', icon.src.replace('/xArtists/', '')))
+    const bytes = await fs.readFile(path.join(frontend, 'public', icon.src.replace(/^\//, '')))
     assert.equal(bytes.subarray(0, 8).toString('hex'), '89504e470d0a1a0a')
     assert.equal(`${bytes.readUInt32BE(16)}x${bytes.readUInt32BE(20)}`, icon.sizes)
   }

@@ -3,7 +3,7 @@ import { readFileSync, realpathSync, statSync } from 'node:fs'
 import { resolve, sep } from 'node:path'
 import { pathToFileURL } from 'node:url'
 
-const BASE = '/xArtists/'
+const BASE = '/'
 const REQUIRED_ROUTES = ['/', '/marketplace', '/auction', '/tro/sale', '/finance/tro/sale', '/offres', '/offers']
 
 /** Verify the final upload directory, including Vite's lazy JS/CSS dependency graph. */

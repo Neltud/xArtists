@@ -18,7 +18,7 @@ writeFileSync('dist/build-info.json', JSON.stringify({
   version_source: '.release-please-manifest.json',
   source_sha: sha,
   presentation_source_sha: '8a607c8831234fe738a091a5a4caf325811c1b5b',
-  base_url: '/xArtists/',
+  base_url: release.base_path,
   lia_live_trading: release.lia_live_trading,
   public_route_count: release.routes.length,
   built_at: new Date().toISOString(),

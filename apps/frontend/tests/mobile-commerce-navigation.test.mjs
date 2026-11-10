@@ -52,7 +52,7 @@ test('Marketplace and Auctions always reachable through real module routes, menu
 test('static deployment prepares and verifies actual public market and auction URLs', () => {
   assert.match(deploy, /_site\/marketplace\/index\.html/)
   assert.match(deploy, /_site\/auction\/index\.html/)
-  assert.ok(deploy.includes('https://neltud.github.io/xArtists/$page/'))
+  assert.ok(deploy.includes('https://xartists.art/$page/'))
   assert.match(deploy, /for page in marketplace auction; do/)
   assert.doesNotMatch(deploy, /cp _site\/index\.html _site\/404\.html/)
 })

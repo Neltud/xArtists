@@ -7,7 +7,7 @@ await build({entryPoints:['src/experience/locale.ts','src/i18n/dictionaries.ts']
 const {copy,order,text}=await import('../.sites-runtime/verify/experience/locale.js?'+Date.now());for(const [key,values] of Object.entries(copy)){assert(values.length===8,key);assert(values.every(x=>typeof x==='string'&&x.length),key)}
 const {DICTS}=await import('../.sites-runtime/verify/i18n/dictionaries.js?'+Date.now());for(const lang of order){assert(DICTS[lang],`missing locale ${lang}`);for(const [key,raw] of Object.entries(DICTS[lang]))assert(catalogue[raw.replace(/\s+/g,' ').trim()],`untranslated dictionary ${lang} ${key}: ${raw}`)}
 assert.notEqual(catalogue['Connecter ton wallet MultiversX'][1],catalogue['Connecter ton wallet MultiversX'][0]);assert(/[\u0600-\u06ff]/.test(text('ar','heroTop')),'missing Arabic');assert(/[\u4e00-\u9fff]/.test(text('zh','heroTop')),'missing Chinese');
-const publicBase='/xArtists/';
+const publicBase='/';
 if(fs.existsSync('dist/index.html')){const html=fs.readFileSync('dist/index.html','utf8');for(const match of html.matchAll(/(?:src|href)="(\/(?!\/)[^"#]+)"/g))assert(fs.existsSync(path.join('dist',match[1].split('?')[0].replace(new RegExp('^'+publicBase),''))),`missing static entry ${match[1]}`);assert(html.includes(publicBase+'assets/'),'missing GitHub Pages deployment base');const manifest=JSON.parse(fs.readFileSync('dist/manifest.webmanifest','utf8'));assert(manifest.start_url===publicBase);assert(manifest.scope===publicBase)}
 console.log(`Verified ${Object.keys(catalogue).length} distinct phrases (${sourceRows} rows), ${Object.keys(copy).length} interface keys, 8 complete locales, placeholders and static assets.`)
 if(fs.existsSync('dist/dapp-release.json')){

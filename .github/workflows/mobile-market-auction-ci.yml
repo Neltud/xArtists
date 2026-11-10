@@ -64,6 +64,6 @@ jobs:
         run: |
           test -s dist/marketplace/index.html
           test -s dist/auction/index.html
-          grep -q '/xArtists/assets/' dist/marketplace/index.html
-          grep -q '/xArtists/assets/' dist/auction/index.html
+          grep -q '/assets/' dist/marketplace/index.html
+          grep -q '/assets/' dist/auction/index.html
           echo 'Browse-only routes are built. No auction, sale, checkout, or mint enabled.'

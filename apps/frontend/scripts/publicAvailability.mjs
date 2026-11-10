@@ -38,7 +38,7 @@ export function commercialSeoHtml(html, route) {
   const description = english
     ? 'Explore the xArtists House, Museum and Pulse, Yield, Sentinel AI packs. Enquiries open; public payment and Genesis NFT minting are not yet available.'
     : 'Découvrez la Maison xArtists, son musée et les packs IA Pulse, Yield et Sentinel. Demandes de présentation ouvertes ; paiement et mint NFT non activés.'
-  const canonical = 'https://neltud.github.io/xArtists/offres/'
+  const canonical = 'https://xartists.art/offres/'
   const meta = (attribute, name, value) => {
     const tag = '<meta ' + attribute + '="' + name + '" content="' + value + '" />'
     const pattern = new RegExp('<meta\\b(?=[^>]*\\b' + attribute + '="' + name + '")[^>]*>', 'i')

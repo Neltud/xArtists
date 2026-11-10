@@ -79,7 +79,7 @@ test('direct campaign URLs are prebuilt as HTTP 200 entrypoints on GitHub Pages'
   const generator = read('scripts/publicAvailability.mjs')
   assert.match(generator, /commercialSeoHtml\(html, route\)/)
   assert.ok(wf.includes('test -s "_site/$page/index.html"'))
-  assert.ok(wf.includes('"https://neltud.github.io/xArtists/$page/"'))
+  assert.ok(wf.includes('"https://xartists.art/$page/"'))
   assert.match(wf,/Public campaign deep link \$page did not pass HTTP 200 check/)
 })
 

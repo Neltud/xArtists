@@ -1,10 +1,10 @@
 {
-  "id": "/xArtists/",
+  "id": "/",
   "name": "xArtists — Art & Intelligence",
   "short_name": "xArtists",
   "description": "Art, NFT and creative intelligence on MultiversX.",
-  "start_url": "/xArtists/",
-  "scope": "/xArtists/",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#10120f",
   "theme_color": "#cdf58b",
@@ -16,19 +16,19 @@
   ],
   "icons": [
     {
-      "src": "/xArtists/icons/icon-192.png",
+      "src": "/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/xArtists/icons/icon-512.png",
+      "src": "/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/xArtists/icons/icon-512.png",
+      "src": "/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
@@ -37,20 +37,20 @@
   "shortcuts": [
     {
       "name": "Explore",
-      "url": "/xArtists/explore/",
+      "url": "/explore/",
       "icons": [
         {
-          "src": "/xArtists/icons/icon-192.png",
+          "src": "/icons/icon-192.png",
           "sizes": "192x192"
         }
       ]
     },
     {
       "name": "Wallet",
-      "url": "/xArtists/workspace/wallet/",
+      "url": "/workspace/wallet/",
       "icons": [
         {
-          "src": "/xArtists/icons/icon-192.png",
+          "src": "/icons/icon-192.png",
           "sizes": "192x192"
         }
       ]

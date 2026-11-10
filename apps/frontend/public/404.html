@@ -4,13 +4,13 @@
     <meta charset="UTF-8" />
     <title>xArtists</title>
     <script>
-      var path = location.pathname.replace(/^\/xArtists\/?/, '') || '';
+      var path = location.pathname.replace(/^\//, '') || '';
       var search = location.search || '';
-      location.replace('/xArtists/#/' + path.replace(/^\//, '') + search);
+      location.replace('/#/' + path.replace(/^\//, '') + search);
     </script>
-    <meta http-equiv="refresh" content="0;url=/xArtists/#/" />
+    <meta http-equiv="refresh" content="0;url=/#/" />
   </head>
   <body>
-    <p><a href="/xArtists/#/">xArtists</a></p>
+    <p><a href="/#/">xArtists</a></p>
   </body>
 </html>

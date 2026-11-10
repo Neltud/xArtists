@@ -15,7 +15,7 @@ export const LEGAL_ENTITY = {
   country: 'France',
   addressLine: 'FRANCE',
   github: 'https://github.com/Neltud/xArtists',
-  dapp: 'https://neltud.github.io/xArtists/',
+  dapp: 'https://xartists.art/',
   contact: 'Issues GitHub · Neltud/xArtists',
   contactEmail: '',
   hoster: 'GitHub Pages (GitHub, Inc.) — contenu statique',

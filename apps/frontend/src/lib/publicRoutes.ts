@@ -20,7 +20,8 @@ export function restoredPublicUrl(href: string, base: string): string | null {
     return null
   }
   if (target.origin !== current.origin || !target.pathname.startsWith(root.pathname)) return null
-  if (target.pathname.startsWith(root.pathname + 'assets/')) return null
+  // Works for both the legacy /xArtists/ project path and the custom-domain / root.
+  if (target.pathname.startsWith(new URL('assets/', root).pathname)) return null
   target.searchParams.delete('_xa_route')
   return target.pathname + target.search + target.hash
 }

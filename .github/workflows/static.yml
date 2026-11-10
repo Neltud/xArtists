@@ -98,6 +98,8 @@ jobs:
           # Fail-closed paper default. Repo var =1 only after explicit GO.
           VITE_LIA_LIVE_TRADING: ${{ vars.VITE_LIA_LIVE_TRADING || '0' }}
           VITE_ACCESS_API_BASE: ${{ vars.VITE_ACCESS_API_BASE || 'https://xartists-access-api.onrender.com' }}
+          # The existing GitHub Pages custom domain (configured separately in Settings → Pages).
+          VITE_DAPP_URL: https://xartists.art/
           VITE_MOONPAY_API_KEY: ${{ vars.VITE_MOONPAY_API_KEY || secrets.VITE_MOONPAY_API_KEY }}
           # Fail-closed. Preprod Paybox is not a public checkout until A-E2E (IPN) is green.
           VITE_PAYBOX_ENABLED: ${{ vars.VITE_PAYBOX_ENABLED || 'false' }}
@@ -221,6 +223,35 @@ jobs:
     needs: build
     if: github.ref == 'refs/heads/main'
     steps:
+      # Read-only custom-domain and DNS guard; no configuration changes.
+      - name: Verify xartists.art Pages ownership and public DNS before deploying
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cname="$(curl -fsSL --max-time 15 \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/pages" | jq -r '.cname // ""')"
+          if [ "$cname" != "xartists.art" ]; then
+            echo "::error::Pages domain not xartists.art"; exit 1
+          fi
+          records="$(dig +short xartists.art A)"
+          for ip in 185.199.108.153 185.199.109.153 185.199.110.153 185.199.111.153; do
+            if ! grep -Fxq "$ip" <<< "$records"; then
+              echo "::error::Missing GitHub Pages apex A $ip"; exit 1
+            fi
+          done
+          if grep -Ev '^185\.199\.(108|109|110|111)\.153$' <<< "$records" | grep -q .; then
+            echo "::error::Unexpected apex A"; exit 1
+          fi
+          if [ -n "$(dig +short xartists.art AAAA)" ]; then
+            echo "::error::Unexpected apex AAAA"; exit 1
+          fi
+          www="$(dig +short www.xartists.art CNAME | tr '[:upper:]' '[:lower:]')"
+          if [ "$www" != "neltud.github.io." ]; then
+            echo "::error::www must point to neltud.github.io."; exit 1
+          fi
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
@@ -232,7 +263,7 @@ jobs:
           for attempt in 1 2 3 4 5 6 7 8 9 10 11 12; do
             status=$(curl -sS -L --max-time 20 -H 'Cache-Control: no-cache' \
               -o /tmp/xartists-live-build-info.json -w '%{http_code}' \
-              "https://neltud.github.io/xArtists/build-info.json?sha=${GITHUB_SHA}&attempt=${attempt}") || status=000
+              "https://xartists.art/build-info.json?sha=${GITHUB_SHA}&attempt=${attempt}") || status=000
             if [ "$status" = 200 ] && jq -e --arg sha "$GITHUB_SHA" \
               '.source_sha == $sha and .renderer == "sites-v3" and
                (.release_version | type == "string") and
@@ -256,8 +287,8 @@ jobs:
           for pack in pulse yield sentinel; do
             ok=0
             for attempt in 1 2 3 4 5 6; do
-              status=$(curl -sS -L --max-time 20 -o /tmp/xartists-product.html -w '%{http_code}' "https://neltud.github.io/xArtists/packs/$pack/")
-              if [ "$status" = 200 ] && grep -q '/xArtists/assets/' /tmp/xartists-product.html; then
+              status=$(curl -sS -L --max-time 20 -o /tmp/xartists-product.html -w '%{http_code}' "https://xartists.art/packs/$pack/")
+              if [ "$status" = 200 ] && grep -q '/assets/' /tmp/xartists-product.html; then
                 echo "Verified $pack direct link HTTP 200 and Vite asset reference"
                 ok=1
                 break
@@ -275,8 +306,8 @@ jobs:
           for page in offres offers; do
             ok=0
             for attempt in 1 2 3 4 5 6; do
-              status=$(curl -sS -L --max-time 20 -o /tmp/xartists-commercial.html -w '%{http_code}' "https://neltud.github.io/xArtists/$page/")
-              if [ "$status" = 200 ] && grep -q '/xArtists/assets/' /tmp/xartists-commercial.html; then
+              status=$(curl -sS -L --max-time 20 -o /tmp/xartists-commercial.html -w '%{http_code}' "https://xartists.art/$page/")
+              if [ "$status" = 200 ] && grep -q '/assets/' /tmp/xartists-commercial.html; then
                 echo "Verified $page campaign deep link HTTP 200 and Vite asset reference"
                 ok=1
                 break
@@ -295,8 +326,8 @@ jobs:
           for page in marketplace auction; do
             ok=0
             for attempt in 1 2 3 4 5 6; do
-              status=$(curl -sS -L --max-time 20 -o /tmp/xartists-commerce.html -w '%{http_code}' "https://neltud.github.io/xArtists/$page/")
-              if [ "$status" = 200 ] && grep -q '/xArtists/assets/' /tmp/xartists-commerce.html; then
+              status=$(curl -sS -L --max-time 20 -o /tmp/xartists-commerce.html -w '%{http_code}' "https://xartists.art/$page/")
+              if [ "$status" = 200 ] && grep -q '/assets/' /tmp/xartists-commerce.html; then
                 echo "Verified public $page deep link HTTP 200 and Vite assets"
                 ok=1
                 break
@@ -314,8 +345,8 @@ jobs:
           for page in tro/sale finance/tro/sale; do
             ok=0
             for attempt in 1 2 3 4 5 6; do
-              status=$(curl -sS -L --max-time 20 -o /tmp/xartists-tro.html -w '%{http_code}' "https://neltud.github.io/xArtists/$page/")
-              if [ "$status" = 200 ] && grep -q '/xArtists/assets/' /tmp/xartists-tro.html; then
+              status=$(curl -sS -L --max-time 20 -o /tmp/xartists-tro.html -w '%{http_code}' "https://xartists.art/$page/")
+              if [ "$status" = 200 ] && grep -q '/assets/' /tmp/xartists-tro.html; then
                 echo "Verified $page direct URL HTTP 200 and Vite asset reference"
                 ok=1
                 break
