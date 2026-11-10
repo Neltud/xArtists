@@ -19,7 +19,7 @@ icon: palette
 {% step %}
 ### Connecter son propre portefeuille
 
-Ouvrez le [Studio xArtists](https://neltud.github.io/xArtists/studio). Utilisez votre wallet artiste **xPortal ou Web Wallet** connecté à MultiversX mainnet. Vous restez propriétaire de votre collection et contrôlez les signatures. Ne communiquez jamais votre seed phrase, PEM ou clé privée.
+Ouvrez le [Studio xArtists](https://xartists.art/studio). Utilisez votre wallet artiste **xPortal ou Web Wallet** connecté à MultiversX mainnet. Vous restez propriétaire de votre collection et contrôlez les signatures. Ne communiquez jamais votre seed phrase, PEM ou clé privée.
 {% endstep %}
 
 {% step %}
@@ -80,7 +80,7 @@ La page [État du produit](etat-du-produit.md) détaille les disponibilités. Le
 
 Le **Creator Studio V3** permet désormais de sélectionner un fichier **JPG/JPEG, PNG, WebP (jusqu'à 16 Mo) ou MP4 (jusqu'à 48 Mo)** directement dans la dApp, de voir un aperçu, puis de préparer sa publication IPFS avant la création du NFT.
 
-Ce parcours a été intégré par la [PR #273](https://github.com/Neltud/xArtists/pull/273), fusionnée et contrôlée par la CI, avec une [nouvelle Marketplace](https://neltud.github.io/xArtists/marketplace) séparant art numérique, œuvres physiques et packs IA.
+Ce parcours a été intégré par la [PR #273](https://github.com/Neltud/xArtists/pull/273), fusionnée et contrôlée par la CI, avec une [nouvelle Marketplace](https://xartists.art/marketplace) séparant art numérique, œuvres physiques et packs IA.
 
 ### Comment cela fonctionne
 
@@ -97,36 +97,31 @@ Ce parcours a été intégré par la [PR #273](https://github.com/Neltud/xArtist
 
 Le [guide technique complet est sur GitHub](https://github.com/Neltud/xArtists/blob/main/docs/CREATOR_MEDIA_UPLOAD_IPFS.md).
 
-### Nouvelle Marketplace et canaux commerciaux
+### Marketplace et sources d'information officielles
 
-La [Marketplace xArtists](https://neltud.github.io/xArtists/marketplace) sépare désormais :
+La [Marketplace xArtists](https://xartists.art/marketplace) distingue :
 
-* **Art numérique** : NFT d'artistes, photo, image, vidéo MP4, avec recherche et tri quand des offres vérifiées sont indexées.
-* **Œuvres physiques / RWA** : certificat, suivi logistique Shopify et réception de l'acheteur, quand le service est activé.
-* **Packs IA** : Pulse, Yield et Sentinel ; droits d'accès distincts des œuvres.
+* **Art numérique** : œuvres et NFT d'artistes, sans achat direct non certifié.
+* **Œuvres physiques / RWA** : dossier de provenance et éventuel certificat ; logistique et paiement marchand tiers retirés du parcours public.
+* **Packs IA** : Pulse, Yield et Sentinel ; leurs droits d'accès ne se confondent pas avec les œuvres.
+* **Références marché** : un accès externe aux [rapports officiels Artprice par Artmarket.com](https://fr.artprice.com/artprice-news/13751/le-rapport-mondial-du-marche-de-l-art-2025-par-artprice-la-reprise-tant-attendue-semble-avoir-commence).
 
-**Etsy** peut être étudié pour des **œuvres physiques originales éligibles** selon ses règles de créativité, d'expédition et de vendeur. **Etsy interdit la vente et l'achat de NFT**, et une vente Etsy ne doit pas être redirigée vers un paiement xArtists. Aucune annonce Etsy n'a été publiée automatiquement.
+Le site ne stocke ni n'affiche les cours d'artistes, comparables, adjudications ou prix Artprice payants : leur intégration nécessite une **licence B2B signée autorisant l'usage et la redistribution**. Un abonnement individuel ne suffit pas. Les CGV Artprice interdisent l'extraction automatisée non autorisée.
 
-Les workflows de code sont vérifiés, mais **la mise en vente contractuelle et les achats réels restent désactivés** lorsque le contrat Marketplace n'a pas son codehash validé. Il ne faut ni créer de faux prix ni confondre catalogue et marché live.
+**Disponibilité** : ventes NFT, paiements publics et mint restent bloqués indépendamment de la consultation du catalogue.
 
-**Qualité technique vérifiée :** les [PR #274](https://github.com/Neltud/xArtists/pull/274), [#275](https://github.com/Neltud/xArtists/pull/275) et [#276](https://github.com/Neltud/xArtists/pull/276) sont fusionnées. Le frontend est passé de **76 à 0 erreur TypeScript** et les tests `npm ci`, `npm run typecheck`, `npm run build`, E2E et sécurité ont réussi en CI. [L'issue #271 est résolue et clôturée](https://github.com/Neltud/xArtists/issues/271). Cela ne signifie pas que l'upload automatique IPFS ni les achats NFT sont activés : les gates Pinata/serveur et smart contract restent indépendants.
+## Œuvres physiques et NFT : provenance (lecture seule)
 
-## Œuvres physiques et NFT : suivi de livraison (nouveau)
+Le module phygital conserve une distinction nette entre une **œuvre tangible**, son historique de garde et un éventuel NFT MultiversX. Le fournisseur de vente physique utilisé dans les anciennes maquettes est retiré de la dApp : plus d'interface de commande, de webhook actif ou de suivi marchand.
 
-xArtists développe également un module de **provenance phygitale** : il associe les informations d'une œuvre tangible à un dossier de suivi, un SKU Shopify unique et, si l'artiste le souhaite, un NFT MultiversX **vérifiable sur le réseau**.
+La [page RWA](https://xartists.art/rwa) explique cette limite et oriente vers la préparation d'une œuvre dans le Studio. Les dossiers historiques conservent leur valeur d'audit ; aucune nouvelle livraison, confirmation d'acheteur, conversion fiat ni transfert NFT ne résulte de ce module.
 
-Ce module a été intégré au code le **2 novembre 2026**, dans la [PR #270](https://github.com/Neltud/xArtists/pull/270), avec des tests API, une interface sur la [page RWA](https://neltud.github.io/xArtists/rwa) et un guide technique dans [GitHub](https://github.com/Neltud/xArtists/blob/main/docs/PHYSICAL_ART_SHOPIFY_FULFILLMENT.md).
+### Préparer une future chaîne de provenance
 
-> **Important : la vente et la livraison physiques ne sont pas encore ouvertes commercialement.** Le service est désactivé côté API tant que les secrets marchand, les webhooks Shopify et une base PostgreSQL durable ne sont pas configurés et testés. La boutique Shopify est encore en période d'essai. Aucun premier colis, réception d'acheteur ni expertise IA de l'état d'une œuvre n'a été confirmé en production.
-
-### Comment une œuvre physique sera suivie
-
-1. **L'artiste enregistre son œuvre**, une photo originale dont une empreinte cryptographique est calculée, et éventuellement son identifiant NFT. Le fichier photo lui-même reste sous son contrôle ; il doit conserver l'original.
-2. **Un marchand publie un produit physique Shopify** avec le SKU donné et le stock correct, après accord sur le prix, l'assurance, le transport et les conditions de vente.
-3. **Une commande effectivement payée** est rapprochée du dossier grâce à un webhook Shopify signé. Un panier, un paiement en attente ou une commande remboursée ne valent pas vente confirmée.
-4. **Le transporteur indique l'expédition puis la livraison.** Ces événements ne suffisent pas à prouver l'acceptation par l'acheteur.
-5. **L'acheteur confirme lui-même sa réception**, après connexion et signature avec son wallet, ou signale un dommage ou une non-réception avec une empreinte de sa photographie.
-6. **Une demande de réévaluation** peut déclencher une revue humaine avec historique et preuves ; le premier niveau ne fournit qu'un triage déterministe, sans expertise IA ni estimation de valeur certifiée.
+1. Conserver les **photographies originales**, auteur, dimensions, médium et preuves de droits.
+2. Fournir au besoin des empreintes cryptographiques et des informations de propriété, distinctes d'un prix public.
+3. Vérifier séparément toute création/détention NFT sur un explorateur et toute réception de l'œuvre matérielle.
+4. Confier toute expertise d'authenticité ou de condition à un professionnel compétent ; l'IA ne la certifie pas.
 
 ### NFT et propriété : ce qu'il faut savoir
 
