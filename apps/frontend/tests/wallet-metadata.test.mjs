@@ -25,5 +25,5 @@ test('WalletConnect uses real bundled xArtists assets and absolute HTTPS URLs', 
 })
 
 test('Browser favicon references an existing official icon rather than a placeholder', () => {
-  assert.match(index, /rel="icon"[^>]+href="\/xArtists\/icons\/icon-192\.png"/)
+  assert.match(index, /rel="icon"[^>]+href="\/icons\/icon-192\.png"/)
 })
