@@ -79,10 +79,8 @@ test('wrong issuer, audience, expiry, clock skew and future nbf are denied', asy
     { iat: sec + 31 }, { iat: 'recent' },
     { nbf: sec + 1 }, { nbf: 'future' },
   ]) await denied(verify, signed(claims))
-  const missingExpiry = { ...baseClaims }; delete missingExpiry.exp
-  const missingSub = { ...baseClaims }; delete missingSub.sub
-  await denied(verify, signed(missingExpiry))
-  await denied(verify, signed(missingSub))
+  await denied(verify, signed({ exp: undefined }))
+  await denied(verify, signed({ sub: undefined }))
 })
 test('unverified email, banned user, missing email or conflicting subject are denied', async () => {
   const { verify } = makeVerifier()
