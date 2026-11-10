@@ -8,6 +8,8 @@ import { getAccessApiBase } from '../../lib/stripe'
  */
 const ART_PRICE_OFFICIAL_REPORT =
   'https://fr.artprice.com/artprice-news/13751/le-rapport-mondial-du-marche-de-l-art-2025-par-artprice-la-reprise-tant-attendue-semble-avoir-commence'
+const ART_PRICE_CONTEMPORARY_2026 =
+  'https://fr.artprice.com/artprice-reports/le-marche-de-lart-contemporain-2026'
 const ART_PRICE_OFFICIAL_SITE = 'https://fr.artprice.com/'
 
 export default function ArtpriceOfficialPanel() {
@@ -51,6 +53,10 @@ export default function ArtpriceOfficialPanel() {
             'Connexion aux données Artprice indisponible ou non certifiée. Aucune cote affichée.'}
       </p>
       <div className="mt-5 flex flex-wrap gap-3">
+        <a href={ART_PRICE_CONTEMPORARY_2026} target="_blank" rel="noopener noreferrer"
+          className="inline-flex min-h-[44px] items-center justify-center rounded-xl border border-zinc-300 bg-zinc-50 px-4 py-2 text-sm font-semibold text-zinc-900 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100">
+          Lire le rapport officiel Artprice 2026
+        </a>
         <a href={ART_PRICE_OFFICIAL_REPORT} target="_blank" rel="noopener noreferrer"
           className="inline-flex min-h-[44px] items-center justify-center rounded-xl border border-zinc-300 bg-zinc-50 px-4 py-2 text-sm font-semibold text-zinc-900 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100">
           Lire le rapport officiel Artprice 2025
