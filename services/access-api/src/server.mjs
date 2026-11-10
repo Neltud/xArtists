@@ -27,6 +27,7 @@ import { oidcMintPullEnabled, verifyGitHubOidc, eligibleOidcOrders, claimOidcMin
 import { loadOrders } from './orders.mjs'
 import { troBridgeStatus } from './troBridgeStatus.mjs'
 import { createOpenSeaPreviewService } from './openseaPreview.mjs'
+import { artpriceReadiness } from './artpriceLicensed.mjs'
 import { tryHandleAuction, auctionPublicConfig } from './auctionHttp.mjs'
 import {studioMediaConfig,mediaJwt,mediaActor,readCreatorMedia,
   uploadStudioMedia,pinStudioMetadata} from './creatorMedia.mjs'
@@ -176,6 +177,9 @@ async function handleRequest(req, res) {
       orders_backend: process.env.DATABASE_URL ? 'postgres' : 'file',
       physical_works: physicalConfig().enabled ? 'configured' : 'off',
       physical_store: physicalConfig().storage,
+      artprice_data_license_verified: false,
+      artprice_records_enabled: false,
+      retired_commerce_providers_enabled: false,
       studio_media_upload:studioMediaConfig().enabled ? 'pinata_ipfs' : 'off',
       tro_solana_bridge:'off',
       opensea_preview_configured: Boolean(process.env.OPEN_SEA_API_KEY),
@@ -188,6 +192,20 @@ async function handleRequest(req, res) {
   }
 
 
+
+  // Artprice by Artmarket.com: official source metadata only.
+  // Paid results and artist-index feeds require a written data-license grant.
+  // No proxy, scraper, importer, invented price or Artprice API endpoint.
+  if (pth === '/v1/artprice/status') {
+    if (req.method !== 'GET') { json(res, 405, { ok: false, error: 'method_not_allowed' }); return }
+    json(res, 200, artpriceReadiness())
+    return
+  }
+  if (pth === '/v1/artprice/records') {
+    json(res, 403, { ok: false, error: 'artprice_written_license_required',
+      licensed: false, data: [], record_count: 0 })
+    return
+  }
 
   // Separate operational dependency check: /health intentionally stays fast
   // and does not pretend that DATABASE_URL guarantees a working database.
