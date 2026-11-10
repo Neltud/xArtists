@@ -7,7 +7,6 @@ import { useUserAccount } from '../hooks/useUserAccount'
 import { useStudioMintTx } from '../hooks/useStudioMintTx'
 import { requestOpenConnect } from '../lib/walletEvents'
 import { canListBuyNft, canBuyAgent } from '../config/scStatus'
-import PackCheckout from '../components/PackCheckout'
 import PhysicalNftCertifier from '../components/PhysicalNftCertifier'
 import CreatorMediaUpload from '../components/CreatorMediaUpload'
 import ArtworkTurntableLab from '../components/ArtworkTurntableLab'
@@ -323,7 +322,12 @@ export default function StudioPage() {
         <h2 className="text-sm font-semibold text-white">
           {xaRender("Packs Agent IA")}{xaRender(agentMint ? '' : ' · bientôt on-chain')}
         </h2>
-        <PackCheckout />
+        <p role="status" className="mt-3 text-xs leading-6 text-[color:var(--xa-text-secondary)]">
+          Découverte uniquement : les packs Genesis ne sont pas en vente. Les objectifs 33 / 22 / 11 EGLD ne sont pas des devis, et les abonnements Stripe sans wallet ne contiennent aucun NFT.
+        </p>
+        <Link to="/offres" className="mt-3 inline-flex min-h-[44px] items-center rounded-xl border border-[color:var(--xa-border)] px-4 py-2 text-xs text-[color:var(--xa-text)]">
+          Comparer les offres et leur disponibilité
+        </Link>
       </section>
     </div>
   )
