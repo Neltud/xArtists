@@ -5,6 +5,7 @@
 ## Sources vérifiables
 
 - [Artprice officiel](https://fr.artprice.com/) — société éditrice **Artmarket.com**.
+- [Rapport 2026 du marché de l'art contemporain publié par Artprice](https://fr.artprice.com/artprice-reports/le-marche-de-lart-contemporain-2026) : analyse publique de la période juillet 2025–juin 2026, sans copie de la base détaillée.
 - [Rapport mondial du marché de l'art 2025 publié par Artprice](https://fr.artprice.com/artprice-news/13751/le-rapport-mondial-du-marche-de-l-art-2025-par-artprice-la-reprise-tant-attendue-semble-avoir-commence) : lien externe, pas de reproduction du contenu.
 - [CGV/conditions d'utilisation Artprice](https://fr.artprice.com/block/cgv?modal=true) : limitations de requêtes automatisées, fouille de données, algorithmes, IA et réutilisation.
 - [Communiqué de licence B2B de 2023 sur Euronext](https://live.euronext.com/sites/default/files/company_press_releases/attachments/2023/09/19/cpr05_actus_81806_FR0000074783.pdf) : Artprice évoque une **API B2B pour l'index des artistes** et un contrat séparé de renvoi/affiliation vers les bases de données payantes. **Le montant indicatif publié en 2023 n'est pas un devis actuel.**
