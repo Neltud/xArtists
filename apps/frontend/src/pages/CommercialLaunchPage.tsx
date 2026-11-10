@@ -1,85 +1,108 @@
 /**
- * xArtists /offres — non-transactional commercial discovery.
+ * xArtists /offres — non-transactional commercial discovery only.
  *
- * Public catalog and public issue-form enquiry only (no email collection):
  * NO checkout, payment collection, reservation, order, wallet, mint,
  * NFT certificate, automatic access or entitlement in this page.
+ * This page does not implement or link any payment provider checkout.
  */
 import { Link } from 'react-router-dom'
 import { useI18n } from '../i18n/I18nContext'
 
-const PACKS = [
-  { id:'pulse', price:110, cap:333, theme:'from-lime-300/15', motif:'⚡' },
-  { id:'yield', price:75, cap:500, theme:'from-slate-300/15', motif:'◈' },
-  { id:'sentinel', price:50, cap:777, theme:'from-violet-300/15', motif:'◇' },
+// Owner-selected commercial TARGETS, not VM quotes or Stripe Prices.
+// Actual contract readback 2026-11-08: 1 / 5 / 2.5 EGLD. Any price mismatch
+// blocks purchases and must never be corrected by silently overpaying.
+export const GENESIS_PREVIEW = [
+  { id: 'pulse', targetEgld: '33', observedEgld: '1', cap: 333, motif: '⚡' },
+  { id: 'yield', targetEgld: '22', observedEgld: '5', cap: 500, motif: '◈' },
+  { id: 'sentinel', targetEgld: '11', observedEgld: '2,5', cap: 777, motif: '◇' },
+] as const
+
+// Walletless, service-only monthly proposals. Labels are placeholders pending
+// owner naming, legal VAT/terms and certified Stripe subscription onboarding.
+export const MAINSTREAM_PREVIEW = [
+  { sku: 'fiat_379', price: '3,79', level: 1 },
+  { sku: 'fiat_579', price: '5,79', level: 2 },
+  { sku: 'fiat_979', price: '9,79', level: 3 },
 ] as const
 
 const COPY = {
   fr: {
-    kicker:'xArtists · Ouverture des demandes',
-    title:'Une nouvelle façon d’explorer l’art et l’intelligence.',
-    lead:'La Maison xArtists présente ses créations, ses expériences et ses trois packs IA. Découvrez le catalogue et demandez une présentation. Les achats publics et la livraison des NFT Genesis ne sont pas encore ouverts.',
-    signal:'Catalogue public · aucune commande ni paiement accepté sur cette page',
-    badge:'Tarif catalogue indicatif · achat unique prévu',
-    intro:'Les trois packs Genesis',
-    detail:'Découvrir le pack',
-    enquiry:'Demande publique de présentation',
-    descriptions:{
-      pulse:'Tableaux de bord, signaux et outils de pilotage IA à découvrir en mode démonstration. Aucun gain financier promis.',
-      yield:'Découverte d’outils d’observation DeFi et d’analyse, sans placement ni rendement garanti.',
-      sentinel:'Veille, alertes et garde-fous pour explorer les risques et les signaux.',
-    },
-    delivery:'Édition limitée prévue, sous réserve de la validation des smart contracts, du paiement et de la livraison. Afficher un prix ne crée pas un droit à livraison.',
-    how:'Comment rejoindre le lancement ?',
-    step1:'Explorez le musée et les packs. Les démonstrations sont sans achat.',
-    step2:'Déposez une demande de présentation dans un ticket GitHub public (compte GitHub requis). Ne communiquez aucune adresse email, téléphone, clé, adresse de portefeuille ou information confidentielle.',
-    step3:'Une offre ferme, ses conditions, le paiement et la livraison ne seront disponibles qu’après vérification et annonce officielle.',
-    contact:'Demande publique sur GitHub',
-    social:'Actualités xArtists sur X',
-    publicNote:'Le ticket GitHub est visible par tous. Aucune donnée personnelle, clé privée ou commande ne doit y être publiée.',
-    artist:'Vous êtes artiste ? Découvrir le Studio',
-    museum:'Visiter le Musée',
-    whop:'Abonnements Whop : offre distincte',
-    whopCopy:'Les éventuels abonnements TCA/Whop sont des services mensuels indépendants des packs Genesis. Aucun abonnement Whop ni NFT n’est inclus dans une demande de présentation.',
-    trust:'Transparence avant toute vente',
-    trustCopy:'Les NFT ne prouvent pas automatiquement la propriété d’une œuvre physique. Les évaluations IA et les scores de similarité ne sont pas des certificats. Le trading LIA reste en mode paper et aucun rendement n’est garanti.',
-    status:'Contact public via GitHub uniquement tant que la messagerie du domaine n’est pas vérifiée. Paiements publics, revendication NFT sur mainnet, enchères et ventes physiques : non activés.',
-    docs:'Conditions et état des fonctionnalités',
+    kicker: 'xArtists · Offres en préparation',
+    title: 'Explorer l’art. Choisir des services simples.',
+    lead: 'Deux univers bien séparés : des abonnements aux services xArtists en euros, sans wallet ni NFT, et des œuvres numériques Genesis à découvrir sur MultiversX.',
+    signal: 'Catalogue de présentation · aucune commande ni paiement accepté sur cette page',
+    warning: 'Ces prix sont des objectifs, pas des devis exécutables. Aucun abonnement ni achat NFT n’est actuellement ouvert.',
+    servicesTitle: 'Services xArtists — sans wallet',
+    servicesLead: 'Trois niveaux mensuels prévus via Stripe Nelsonprods. Les tarifs TTC/HT, services détaillés, conditions et noms définitifs sont encore à valider.',
+    level: 'Niveau',
+    perMonth: 'par mois',
+    servicesTag: 'Abonnement EUR · services uniquement',
+    servicesWhat: 'Services numériques xArtists ; détail du niveau à confirmer avant ouverture.',
+    servicesNoNft: 'Sans NFT, sans pack Genesis, sans mint et sans portefeuille crypto obligatoire.',
+    servicesOff: 'Souscription indisponible · aucun paiement actif',
+    genesisTitle: 'Genesis — œuvres NFT sur MultiversX',
+    genesisLead: 'Trois éditions NFT à achat unique envisagé par signature du wallet. Les prix ci-dessous ne sont pas les montants actuellement appliqués par les contrats.',
+    genesisTag: 'Prix EGLD cible · non payable',
+    genesisWhat: 'Édition Genesis à découvrir. Achat unique NFT uniquement après preuve on-chain et livraison vérifiée.',
+    observed: 'Dernier prix de contrat relevé le 08/11 :',
+    mismatch: 'Écart contrat / objectif : vente bloquée',
+    packDetails: 'Découvrir l’œuvre',
+    enquiry: 'Demande publique de présentation',
+    how: 'Comment découvrir xArtists aujourd’hui ?',
+    step1: 'Visitez le musée et les pages des packs, sans achat et sans portefeuille.',
+    step2: 'Pour présenter un projet ou proposer un partenariat, ouvrez une demande GitHub publique. Compte GitHub requis.',
+    step3: 'Ne partagez jamais votre e-mail, téléphone, wallet, clé, commande ou information personnelle dans ce ticket public.',
+    contact: 'Faire une demande publique',
+    publicNote: 'Le ticket GitHub est visible par tous. Pas de données personnelles ni de demande de paiement.',
+    social: 'Actualités sur X',
+    museum: 'Visiter le Musée',
+    studio: 'Explorer le Studio',
+    trust: 'Informations importantes',
+    trustCopy: 'Un NFT ne prouve pas automatiquement la propriété juridique d’une œuvre physique. Les analyses IA ne sont aucun certificat d’authenticité. LIA reste en mode démonstration : aucun rendement financier garanti.',
+    oldModel: 'Anciennes offres Whop et anciens prix des packs en euros : références historiques, non proposées ici.',
+    status: 'Contact public provisoire via GitHub tant que la messagerie du domaine n’est pas certifiée. Paiements publics, mint, ventes NFT et enchères : fermés.',
+    docs: 'Documentation et conditions',
   },
   en: {
-    kicker:'xArtists · Enquiries now open',
-    title:'A new way to explore art and intelligence.',
-    lead:'The xArtists House showcases its creations, experiences and three AI packs. Explore the catalog and request an introduction. Public purchases and Genesis NFT delivery are not yet available.',
-    signal:'Public catalog · no orders or payments are accepted on this page',
-    badge:'Indicative catalog price · planned one-time purchase',
-    intro:'The three Genesis packs',
-    detail:'Explore the pack',
-    enquiry:'Public introduction request',
-    descriptions:{
-      pulse:'Explore AI dashboards, signals and tools in demonstration mode. No financial returns are promised.',
-      yield:'Discover DeFi observation and analysis tools, not an investment or guaranteed yield.',
-      sentinel:'Monitoring, alerts and safeguards for exploring risks and signals.',
-    },
-    delivery:'A limited edition is planned, subject to validation of the smart contracts, payment and delivery. A displayed price creates no delivery entitlement.',
-    how:'How to join the launch',
-    step1:'Explore the museum and packs. Demonstrations do not require a purchase.',
-    step2:'Use the public GitHub issue form to request an introduction or propose a partnership (GitHub login required). Do not share email, phone, wallet details, private keys or confidential information.',
-    step3:'A binding offer, its terms, payment and delivery will be made available only after verification and an official announcement.',
-    contact:'Public enquiry on GitHub',
-    social:'xArtists updates on X',
-    publicNote:'GitHub issues are visible to everyone. Never post personal data, private keys or a payment order.',
-    artist:'Are you an artist? Discover the Studio',
-    museum:'Visit the Museum',
-    whop:'Whop subscriptions are separate',
-    whopCopy:'Any TCA/Whop subscription is a separate monthly service, not a Genesis pack. Requesting an introduction does not include any Whop membership or NFT.',
-    trust:'Transparency before any sale',
-    trustCopy:'An NFT does not automatically confer legal title to physical art. AI assessments and visual similarity scores are not authenticity certificates. LIA trading remains in paper mode. No financial return is guaranteed.',
-    status:'Public contact via GitHub only until the domain email is verified. Public payments, mainnet NFT claims, auctions and physical-art purchases remain disabled.',
-    docs:'Terms and feature availability',
+    kicker: 'xArtists · Offers in preparation',
+    title: 'Explore art. Discover simple services.',
+    lead: 'Two distinct paths: xArtists service subscriptions in euros without a wallet or NFTs, and Genesis digital artworks to explore on MultiversX.',
+    signal: 'Discovery catalogue · no orders or payments are accepted on this page',
+    warning: 'These are target prices, not executable quotes. No subscription or NFT purchase is currently available.',
+    servicesTitle: 'xArtists services — no wallet needed',
+    servicesLead: 'Three proposed monthly tiers via Stripe Nelsonprods. Tax treatment, precise services, terms and final names are not yet confirmed.',
+    level: 'Tier',
+    perMonth: 'per month',
+    servicesTag: 'EUR subscription · services only',
+    servicesWhat: 'xArtists digital services; exact tier features to be confirmed before release.',
+    servicesNoNft: 'No NFT, no Genesis pack, no mint and no crypto wallet required.',
+    servicesOff: 'Subscriptions unavailable · no live payments',
+    genesisTitle: 'Genesis — NFT artworks on MultiversX',
+    genesisLead: 'Three proposed limited NFT editions, each requiring a separately signed wallet transaction. The targets below do not match the contract prices currently observed.',
+    genesisTag: 'EGLD price target · not payable',
+    genesisWhat: 'Explore a Genesis edition. NFT purchase only after on-chain evidence and confirmed delivery.',
+    observed: 'Last observed contract price on Nov 8:',
+    mismatch: 'Contract / target mismatch: sales blocked',
+    packDetails: 'Explore the artwork',
+    enquiry: 'Public introduction request',
+    how: 'How can you explore xArtists now?',
+    step1: 'Visit the museum and pack pages without purchase or a wallet.',
+    step2: 'To introduce a project or partnership, use the public GitHub request form. GitHub login required.',
+    step3: 'Never share your email, phone, wallet, keys, order or personal information in that public ticket.',
+    contact: 'Submit a public enquiry',
+    publicNote: 'GitHub issues are public. Do not post personal information or payment details.',
+    social: 'Updates on X',
+    museum: 'Visit the Museum',
+    studio: 'Explore the Studio',
+    trust: 'Important information',
+    trustCopy: 'An NFT does not automatically prove legal ownership of physical art. AI assessments are not authenticity certificates. LIA remains in demonstration mode. No financial return is guaranteed.',
+    oldModel: 'Former Whop plans and the old euro-priced NFT catalogue are historical references, not current offers.',
+    status: 'Public contact is temporarily via GitHub until domain email delivery is certified. Public payments, mint, NFT sales and auctions are disabled.',
+    docs: 'Documentation and terms',
   },
 } as const
 
-// Dedicated public, non-binding issue form; no PII or payment capture.
+// Public issue form only — never capture or transmit personal/payment data.
 const PUBLIC_INTAKE_URL = 'https://github.com/Neltud/xArtists/issues/new?template=commercial-introduction.yml'
 const PUBLIC_SOCIAL_URL = 'https://x.com/tudurioriginal'
 
@@ -88,80 +111,81 @@ export default function CommercialLaunchPage() {
   const c = lang === 'fr' ? COPY.fr : COPY.en
 
   return (
-    <main className="mx-auto w-full max-w-6xl space-y-10 px-4 pb-24 pt-8 text-zinc-100 sm:px-7 sm:pt-14">
-      <section className="relative overflow-hidden rounded-[2rem] border border-amber-100/20 bg-gradient-to-br from-[#201c17] via-[#131820] to-[#080b10] px-6 py-10 sm:px-12 sm:py-16">
-        <div aria-hidden="true" className="pointer-events-none absolute -right-12 -top-24 h-80 w-80 rounded-full bg-amber-100/[0.05] blur-3xl" />
-        <p className="relative text-xs font-semibold uppercase tracking-[0.2em] text-amber-200">{c.kicker}</p>
-        <h1 className="relative mt-6 max-w-3xl font-serif text-4xl leading-tight text-white sm:text-6xl">{c.title}</h1>
-        <p className="relative mt-6 max-w-2xl text-sm leading-7 text-zinc-300 sm:text-base">{c.lead}</p>
-        <p role="status" className="relative mt-6 max-w-2xl rounded-xl border border-amber-200/25 bg-amber-100/[0.06] px-4 py-3 text-sm text-amber-100">{c.signal}</p>
-        <div className="relative mt-8 flex flex-wrap gap-3">
-          <a href={PUBLIC_INTAKE_URL} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-[44px] items-center rounded-full bg-amber-100 px-6 py-3 text-sm font-semibold text-zinc-950 hover:bg-white">{c.contact}</a>
-          <a href={PUBLIC_SOCIAL_URL} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-[44px] items-center rounded-full border border-amber-100/40 px-6 py-3 text-sm text-amber-100 hover:bg-amber-100/10">{c.social}</a>
-          <Link to="/museum" className="inline-flex min-h-[44px] items-center rounded-full border border-white/25 px-6 py-3 text-sm text-white hover:bg-white/10">{c.museum}</Link>
+    <main className="mx-auto w-full max-w-6xl space-y-10 px-4 pb-24 pt-8 text-zinc-900 dark:text-zinc-100 sm:px-7 sm:pt-14">
+      <header className="rounded-[2rem] border border-zinc-200 bg-white px-6 py-10 shadow-sm dark:border-zinc-700 dark:bg-zinc-900 sm:px-12 sm:py-14">
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-zinc-600 dark:text-zinc-300">{c.kicker}</p>
+        <h1 className="mt-4 max-w-3xl font-serif text-4xl leading-tight sm:text-5xl">{c.title}</h1>
+        <p className="mt-5 max-w-3xl text-base leading-7 text-zinc-700 dark:text-zinc-300">{c.lead}</p>
+        <p role="status" className="mt-5 max-w-3xl rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-950 dark:border-amber-700 dark:bg-amber-950/30 dark:text-amber-100">{c.signal}</p>
+        <div className="mt-7 flex flex-wrap gap-3">
+          <a className="inline-flex min-h-[44px] items-center rounded-full bg-zinc-900 px-5 py-3 text-sm font-semibold text-white hover:bg-zinc-700 dark:bg-white dark:text-zinc-950" href="#commercial-services">{c.servicesTitle}</a>
+          <a className="inline-flex min-h-[44px] items-center rounded-full border border-zinc-300 px-5 py-3 text-sm font-semibold dark:border-zinc-600" href="#commercial-genesis">{c.genesisTitle}</a>
+          <Link className="inline-flex min-h-[44px] items-center rounded-full border border-zinc-300 px-5 py-3 text-sm font-semibold dark:border-zinc-600" to="/museum">{c.museum}</Link>
         </div>
-        <p className="relative mt-4 max-w-2xl text-xs leading-5 text-amber-200/85">{c.publicNote}</p>
-      </section>
+      </header>
 
-      <section aria-labelledby="commercial-packs">
-        <h2 id="commercial-packs" className="font-serif text-3xl text-white">{c.intro}</h2>
+      <section id="commercial-services" aria-labelledby="services-heading" className="scroll-mt-24">
+        <p className="text-xs font-semibold uppercase tracking-widest text-zinc-600 dark:text-zinc-400">Stripe · EUR</p>
+        <h2 id="services-heading" className="mt-2 font-serif text-3xl">{c.servicesTitle}</h2>
+        <p className="mt-3 max-w-3xl text-sm leading-6 text-zinc-600 dark:text-zinc-300">{c.servicesLead}</p>
         <div className="mt-6 grid gap-4 md:grid-cols-3">
-          {PACKS.map(pack => (
-            <article key={pack.id} className={'rounded-3xl border border-white/10 bg-gradient-to-b ' + pack.theme + ' to-[#0c1015] p-6'}>
-              <span aria-hidden="true" className="text-3xl text-amber-100">{pack.motif}</span>
-              <h3 className="mt-4 font-serif text-3xl capitalize text-white">{pack.id}</h3>
-              <p className="mt-2 text-3xl font-semibold tabular-nums text-white">{pack.price} €</p>
-              <p className="mt-1 text-xs leading-5 text-zinc-400">{c.badge}</p>
-              <p className="mt-5 min-h-24 text-sm leading-6 text-zinc-300">{c.descriptions[pack.id]}</p>
-              <p className="mt-3 text-xs leading-5 text-zinc-400">{c.delivery}</p>
-              <div className="mt-5 flex flex-col gap-2">
-                <Link to={'/packs/' + pack.id} className="inline-flex min-h-[44px] items-center justify-center rounded-xl border border-white/20 px-4 py-2 text-sm hover:bg-white/10">{c.detail}</Link>
-                <a href={PUBLIC_INTAKE_URL} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-[44px] items-center justify-center rounded-xl bg-amber-100 px-4 py-2 text-sm font-semibold text-zinc-950 hover:bg-white">{c.enquiry}</a>
-              </div>
+          {MAINSTREAM_PREVIEW.map(tier => (
+            <article key={tier.sku} data-sku={tier.sku} className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
+              <p className="text-xs font-semibold uppercase tracking-widest text-zinc-600 dark:text-zinc-400">{c.level} {tier.level}</p>
+              <h3 className="mt-3 text-4xl font-semibold tabular-nums">{tier.price} €</h3>
+              <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">{c.perMonth}</p>
+              <p className="mt-4 text-sm font-semibold text-zinc-800 dark:text-zinc-100">{c.servicesTag}</p>
+              <p className="mt-3 text-sm leading-6 text-zinc-600 dark:text-zinc-300">{c.servicesWhat}</p>
+              <p className="mt-4 rounded-xl bg-zinc-100 px-3 py-3 text-sm leading-6 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-100">{c.servicesNoNft}</p>
+              <p role="status" className="mt-5 text-sm font-semibold text-amber-800 dark:text-amber-200">{c.servicesOff}</p>
             </article>
           ))}
         </div>
       </section>
 
-      <section aria-labelledby="club-news" className="rounded-3xl border border-amber-100/25 bg-[#171a20] p-6 sm:p-9">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-amber-200">xArtists Club + News</p>
-        <h2 id="club-news" className="mt-3 font-serif text-3xl text-white">10 € / {lang === 'fr' ? 'mois' : 'month'}</h2>
-        <p className="mt-3 max-w-3xl text-sm leading-7 text-zinc-300">{lang === 'fr'
-          ? 'Abonnement numérique hors blockchain, sans NFT. Accès pendant chaque période mensuelle effectivement payée : xArtists TV News, actualités du monde de l’art, magazine et critiques, événements NFT et rencontres, curateurs et veille des ventes et enchères avec liens vers Artprice.'
-          : 'Off-chain digital subscription, without an NFT. Access for each successfully paid monthly period: xArtists TV News, art world news, magazine reviews, NFT events and meetings, curators, and art sales and auctions coverage linking to Artprice.'}</p>
-        <p role="status" className="mt-4 text-sm font-semibold text-amber-200">{lang === 'fr'
-          ? 'Offre annoncée, souscription indisponible : aucun paiement ni droit d’accès activé sur cette page.'
-          : 'Offer preview only: subscription checkout is unavailable and no payment or access is activated on this page.'}</p>
-        <p className="mt-2 text-xs leading-6 text-zinc-400">{lang === 'fr'
-          ? 'Distinct des packs NFT Genesis et de TCA/Whop. Aucun NFT, mint, wallet ou transaction on-chain. Les conditions de renouvellement, d’annulation et de fourniture seront publiées avant ouverture.'
-          : 'Separate from Genesis NFT packs and TCA/Whop. No NFT, mint, wallet or on-chain transaction. Renewal, cancellation and delivery terms will be published before launch.'}</p>
+      <section id="commercial-genesis" aria-labelledby="genesis-heading" className="scroll-mt-24">
+        <p className="text-xs font-semibold uppercase tracking-widest text-zinc-600 dark:text-zinc-400">MultiversX · EGLD</p>
+        <h2 id="genesis-heading" className="mt-2 font-serif text-3xl">{c.genesisTitle}</h2>
+        <p className="mt-3 max-w-3xl text-sm leading-6 text-zinc-600 dark:text-zinc-300">{c.genesisLead}</p>
+        <div className="mt-6 grid gap-4 md:grid-cols-3">
+          {GENESIS_PREVIEW.map(pack => (
+            <article key={pack.id} className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
+              <span aria-hidden="true" className="text-3xl">{pack.motif}</span>
+              <h3 className="mt-4 font-serif text-2xl capitalize">{pack.id}</h3>
+              <p className="mt-2 text-4xl font-semibold tabular-nums">{pack.targetEgld} EGLD</p>
+              <p className="mt-1 text-xs leading-5 text-zinc-600 dark:text-zinc-300">{c.genesisTag}</p>
+              <p className="mt-4 text-sm leading-6 text-zinc-600 dark:text-zinc-300">{c.genesisWhat}</p>
+              <p className="mt-3 text-xs leading-5 text-zinc-600 dark:text-zinc-400">{c.observed} {pack.observedEgld} EGLD</p>
+              <p role="status" className="mt-2 text-sm font-semibold text-amber-800 dark:text-amber-200">{c.mismatch}</p>
+              <Link to={'/packs/' + pack.id} className="mt-5 inline-flex min-h-[44px] items-center rounded-xl border border-zinc-300 px-4 py-2 text-sm font-semibold dark:border-zinc-600">{c.packDetails}</Link>
+            </article>
+          ))}
+        </div>
       </section>
 
-      <section aria-labelledby="commercial-how" className="rounded-3xl border border-white/10 bg-white/[0.035] p-6 sm:p-9">
-        <h2 id="commercial-how" className="font-serif text-2xl text-white">{c.how}</h2>
-        <ol className="mt-5 grid gap-5 text-sm leading-7 text-zinc-300 md:grid-cols-3">
+      <section className="rounded-3xl border border-zinc-200 bg-zinc-50 p-6 dark:border-zinc-700 dark:bg-zinc-900 sm:p-9" aria-labelledby="commercial-how">
+        <h2 id="commercial-how" className="font-serif text-2xl">{c.how}</h2>
+        <ol className="mt-5 grid gap-5 text-sm leading-7 text-zinc-700 dark:text-zinc-300 md:grid-cols-3">
           {[c.step1, c.step2, c.step3].map((step, i) => (
-            <li key={step}><span className="mr-2 font-semibold text-amber-200">0{i+1}.</span>{step}</li>
+            <li key={step}><span className="mr-2 font-semibold">0{i + 1}.</span>{step}</li>
           ))}
         </ol>
-        <div className="mt-8 flex flex-wrap gap-5 text-sm">
-          <Link to="/studio" className="text-amber-100 underline underline-offset-4">{c.artist}</Link>
-          <Link to="/museum" className="text-amber-100 underline underline-offset-4">{c.museum}</Link>
+        <p className="mt-6 text-sm font-semibold text-zinc-800 dark:text-zinc-100">{c.warning}</p>
+        <div className="mt-5 flex flex-wrap gap-3">
+          <a href={PUBLIC_INTAKE_URL} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-[44px] items-center rounded-full bg-zinc-900 px-5 py-3 text-sm font-semibold text-white dark:bg-white dark:text-zinc-950">{c.contact}</a>
+          <a href={PUBLIC_SOCIAL_URL} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-[44px] items-center rounded-full border border-zinc-300 px-5 py-3 text-sm dark:border-zinc-600">{c.social}</a>
+          <Link to="/studio" className="inline-flex min-h-[44px] items-center rounded-full border border-zinc-300 px-5 py-3 text-sm dark:border-zinc-600">{c.studio}</Link>
         </div>
+        <p className="mt-4 text-xs leading-5 text-zinc-600 dark:text-zinc-400">{c.publicNote}</p>
       </section>
 
-      <section className="grid gap-5 md:grid-cols-2">
-        <div className="rounded-3xl border border-white/10 p-6">
-          <h2 className="font-serif text-xl text-white">{c.whop}</h2>
-          <p className="mt-3 text-sm leading-7 text-zinc-300">{c.whopCopy}</p>
-        </div>
-        <div className="rounded-3xl border border-white/10 p-6">
-          <h2 className="font-serif text-xl text-white">{c.trust}</h2>
-          <p className="mt-3 text-sm leading-7 text-zinc-300">{c.trustCopy}</p>
-        </div>
-      </section>
-      <p className="text-sm leading-7 text-amber-100">{c.status}</p>
-      <a href="https://xartists.gitbook.io/xartists/" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-[44px] items-center text-sm text-zinc-300 underline underline-offset-4">{c.docs}</a>
+      <aside className="rounded-2xl border border-zinc-200 p-6 text-sm leading-6 text-zinc-700 dark:border-zinc-700 dark:text-zinc-300">
+        <h2 className="font-semibold text-zinc-900 dark:text-white">{c.trust}</h2>
+        <p className="mt-2">{c.trustCopy}</p>
+        <p className="mt-2">{c.oldModel}</p>
+        <p className="mt-3 font-semibold">{c.status}</p>
+        <a href="https://xartists.gitbook.io/xartists/" target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex min-h-[44px] items-center underline underline-offset-4">{c.docs}</a>
+      </aside>
     </main>
   )
 }
