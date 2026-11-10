@@ -29,7 +29,7 @@ Les six validations de catégorie (site public, prix, wallets, IPFS/PostgreSQL, 
 | **Fiat mainstream, sans NFT** | **3,79 €**, **5,79 €**, **9,79 € par mois** ; SKU internes `fiat_379`, `fiat_579`, `fiat_979` | **Stripe Nelsonprods choisi**, configuration et preuves sandbox seulement, **aucune session payante** | Produits/prix récurrents non créés dans ce lot ; vérification e-mail/OIDC, mapping client, factures payées signées, période, refund/révocation et DB exigés |
 | **MoonPay** | Acquisition d'EGLD par l'utilisateur, hors abonnement | Rampe crypto distincte | Acheter de l'EGLD ne prouve ni achat NFT, ni droit de service |
 | **PayBox** | Option carte à évaluer indépendamment | Contrat/PSP distinct de Stripe, aucun abonnement supposé | Récurrence, IPN et durabilité juridique/technique à certifier par rail |
-| **Finance Computer** | **Qualification uniquement** | Rôle à préciser avec Martin, **aucun partenariat ni intégration présumés** | Mail/contrat/API non vérifiés dans la boîte Gmail connectée ; aucun badge ni checkout |
+| **Finance Computer** | **Qualification uniquement** | Site officiel https://www.financecomputer.com présentant paiements/comptes/cartes en marque blanche et rails xMoney/MultiversX, mais **aucun partenariat ni intégration xArtists présumés** | Mail/contrat/API non vérifiés dans la boîte Gmail connectée ; aucun badge ni checkout |
  
 Le propriétaire s'occupe personnellement du domaine `xartists.art`, à recontrôler après correction du registraire. Les montants EUR ne sont pas qualifiés TTC ou HT ; TVA, CGV, services inclus, essais et résiliation restent à arbitrer. Les anciens tarifs `29 €/mois`, `290 €/an`, `33 / 22,5 / 15 EGLD` et l'ancien catalogue Genesis en EUR ne doivent pas alimenter un checkout.
 
