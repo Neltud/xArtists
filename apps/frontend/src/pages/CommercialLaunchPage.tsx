@@ -95,59 +95,59 @@ export default function CommercialLaunchPage() {
   const c = lang === 'fr' ? COPY.fr : COPY.en
 
   return (
-    <main className="mx-auto w-full max-w-6xl space-y-10 px-4 pb-24 pt-8 text-zinc-900 dark:text-zinc-100 sm:px-7 sm:pt-14">
-      <header className="rounded-[2rem] border border-zinc-200 bg-white px-6 py-10 shadow-sm dark:border-zinc-700 dark:bg-zinc-900 sm:px-12 sm:py-14">
+    <main className="xa-offers-page mx-auto w-full max-w-6xl space-y-12 px-4 pb-28 pt-8 text-zinc-900 dark:text-zinc-100 sm:px-7 sm:pt-14">
+      <header className="xa-offers-hero rounded-3xl border border-zinc-200 bg-white px-5 py-9 dark:border-zinc-700 dark:bg-zinc-900 sm:px-12 sm:py-14">
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-zinc-600 dark:text-zinc-300">{c.kicker}</p>
-        <h1 className="mt-4 max-w-3xl font-serif text-4xl leading-tight sm:text-5xl">{c.title}</h1>
+        <h1 className="mt-4 max-w-3xl font-serif text-3xl leading-tight sm:text-5xl">{c.title}</h1>
         <p className="mt-5 max-w-3xl text-base leading-7 text-zinc-700 dark:text-zinc-300">{c.lead}</p>
-        <p role="status" className="mt-5 max-w-3xl rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-950 dark:border-amber-700 dark:bg-amber-950/30 dark:text-amber-100">{c.signal}</p>
-        <div className="mt-7 flex flex-wrap gap-3">
+        <p role="status" className="xa-offers-status mt-6 max-w-3xl rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-950 dark:border-amber-700 dark:bg-amber-950/30 dark:text-amber-100">{c.signal}</p>
+        <div className="xa-offers-actions mt-7 flex flex-wrap gap-3">
           <a className="inline-flex min-h-[44px] items-center rounded-full bg-zinc-900 px-5 py-3 text-sm font-semibold text-white hover:bg-zinc-700 dark:bg-white dark:text-zinc-950" href="#commercial-services">{c.servicesTitle}</a>
           <a className="inline-flex min-h-[44px] items-center rounded-full border border-zinc-300 px-5 py-3 text-sm font-semibold dark:border-zinc-600" href="#commercial-genesis">{c.genesisTitle}</a>
           <Link className="inline-flex min-h-[44px] items-center rounded-full border border-zinc-300 px-5 py-3 text-sm font-semibold dark:border-zinc-600" to="/museum">{c.museum}</Link>
         </div>
       </header>
 
-      <section id="commercial-services" aria-labelledby="services-heading" className="scroll-mt-24">
+      <section id="commercial-services" aria-labelledby="services-heading" className="xa-offers-section scroll-mt-24">
         <p className="text-xs font-semibold uppercase tracking-widest text-zinc-600 dark:text-zinc-400">Stripe · EUR</p>
         <h2 id="services-heading" className="mt-2 font-serif text-3xl">{c.servicesTitle}</h2>
         <p className="mt-3 max-w-3xl text-sm leading-6 text-zinc-600 dark:text-zinc-300">{c.servicesLead}</p>
-        <div className="mt-6 grid gap-4 md:grid-cols-3">
+        <div className="mt-6 grid auto-rows-fr gap-4 md:grid-cols-3">
           {MAINSTREAM_PREVIEW.map(tier => (
-            <article key={tier.sku} data-sku={tier.sku} className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
+            <article key={tier.sku} data-sku={tier.sku} className="xa-offers-card flex min-w-0 flex-col rounded-3xl border border-zinc-200 bg-white p-5 dark:border-zinc-700 dark:bg-zinc-900 sm:p-6">
               <p className="text-xs font-semibold uppercase tracking-widest text-zinc-600 dark:text-zinc-400">{c.level} {tier.level}</p>
-              <h3 className="mt-3 text-4xl font-semibold tabular-nums">{tier.price} €</h3>
+              <h3 className="mt-3 text-3xl font-semibold tabular-nums sm:text-4xl">{tier.price} €</h3>
               <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">{c.perMonth}</p>
               <p className="mt-4 text-sm font-semibold text-zinc-800 dark:text-zinc-100">{c.servicesTag}</p>
               <p className="mt-3 text-sm leading-6 text-zinc-600 dark:text-zinc-300">{c.servicesWhat}</p>
               <p className="mt-4 rounded-xl bg-zinc-100 px-3 py-3 text-sm leading-6 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-100">{c.servicesNoNft}</p>
-              <p role="status" className="mt-5 text-sm font-semibold text-amber-800 dark:text-amber-200">{c.servicesOff}</p>
+              <p role="status" className="mt-auto pt-5 text-sm font-semibold leading-6 text-amber-900 dark:text-amber-200">{c.servicesOff}</p>
             </article>
           ))}
         </div>
       </section>
 
-      <section id="commercial-genesis" aria-labelledby="genesis-heading" className="scroll-mt-24">
+      <section id="commercial-genesis" aria-labelledby="genesis-heading" className="xa-offers-section scroll-mt-24">
         <p className="text-xs font-semibold uppercase tracking-widest text-zinc-600 dark:text-zinc-400">MultiversX · EGLD</p>
         <h2 id="genesis-heading" className="mt-2 font-serif text-3xl">{c.genesisTitle}</h2>
         <p className="mt-3 max-w-3xl text-sm leading-6 text-zinc-600 dark:text-zinc-300">{c.genesisLead}</p>
-        <div className="mt-6 grid gap-4 md:grid-cols-3">
+        <div className="mt-6 grid auto-rows-fr gap-4 md:grid-cols-3">
           {GENESIS_PREVIEW.map(pack => (
-            <article key={pack.id} className="rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
+            <article key={pack.id} className="xa-offers-card flex min-w-0 flex-col rounded-3xl border border-zinc-200 bg-white p-5 dark:border-zinc-700 dark:bg-zinc-900 sm:p-6">
               <span aria-hidden="true" className="text-3xl">{pack.motif}</span>
               <h3 className="mt-4 font-serif text-2xl capitalize">{pack.id}</h3>
-              <p className="mt-2 text-4xl font-semibold tabular-nums">{pack.targetEgld} EGLD</p>
-              <p className="mt-1 text-xs leading-5 text-zinc-600 dark:text-zinc-300">{c.genesisTag}</p>
+              <p className="mt-2 text-3xl font-semibold tabular-nums sm:text-4xl">{pack.targetEgld} EGLD</p>
+              <p className="mt-2 text-sm leading-6 text-zinc-600 dark:text-zinc-300">{c.genesisTag}</p>
               <p className="mt-4 text-sm leading-6 text-zinc-600 dark:text-zinc-300">{c.genesisWhat}</p>
-              <p className="mt-3 text-xs leading-5 text-zinc-600 dark:text-zinc-400">{c.observed} {pack.observedEgld} EGLD</p>
-              <p role="status" className="mt-2 text-sm font-semibold text-amber-800 dark:text-amber-200">{c.mismatch}</p>
-              <Link to={'/packs/' + pack.id} className="mt-5 inline-flex min-h-[44px] items-center rounded-xl border border-zinc-300 px-4 py-2 text-sm font-semibold dark:border-zinc-600">{c.packDetails}</Link>
+              <p className="mt-4 text-sm leading-6 text-zinc-600 dark:text-zinc-300">{c.observed} {pack.observedEgld} EGLD</p>
+              <p role="status" className="mt-2 mb-5 text-sm font-semibold leading-6 text-amber-900 dark:text-amber-200">{c.mismatch}</p>
+              <Link to={'/packs/' + pack.id} className="xa-offers-link mt-auto inline-flex min-h-[44px] items-center justify-center rounded-xl border border-zinc-300 px-4 py-2 text-sm font-semibold text-zinc-900 dark:border-zinc-600 dark:text-white">{c.packDetails}</Link>
             </article>
           ))}
         </div>
       </section>
 
-      <section className="rounded-3xl border border-zinc-200 bg-zinc-50 p-6 dark:border-zinc-700 dark:bg-zinc-900 sm:p-9" aria-labelledby="commercial-how">
+      <section className="xa-offers-steps rounded-3xl border border-zinc-200 bg-zinc-50 p-5 dark:border-zinc-700 dark:bg-zinc-900 sm:p-9" aria-labelledby="commercial-how">
         <h2 id="commercial-how" className="font-serif text-2xl">{c.how}</h2>
         <ol className="mt-5 grid gap-5 text-sm leading-7 text-zinc-700 dark:text-zinc-300 md:grid-cols-3">
           {[c.step1, c.step2, c.step3].map((step, i) => (
@@ -163,7 +163,7 @@ export default function CommercialLaunchPage() {
         <p className="mt-4 text-xs leading-5 text-zinc-600 dark:text-zinc-400">{c.publicNote}</p>
       </section>
 
-      <aside className="rounded-2xl border border-zinc-200 p-6 text-sm leading-6 text-zinc-700 dark:border-zinc-700 dark:text-zinc-300">
+      <aside className="xa-offers-trust rounded-3xl border border-zinc-200 p-5 text-sm leading-7 text-zinc-700 dark:border-zinc-700 dark:text-zinc-300 sm:p-7">
         <h2 className="font-semibold text-zinc-900 dark:text-white">{c.trust}</h2>
         <p className="mt-2">{c.trustCopy}</p>
         <p className="mt-2">{c.oldModel}</p>
