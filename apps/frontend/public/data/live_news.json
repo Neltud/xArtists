@@ -1,35 +1,91 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-09T21:57:28.048Z",
+  "updatedAt": "2026-11-10T06:03:12.893Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1794261447697",
-      "timestamp": "21:57",
+      "id": "egld-1794290592566",
+      "timestamp": "06:03",
       "source": "EGLD",
-      "title": "Cotation publique · $2.98 (API MultiversX economics)",
+      "title": "Cotation publique · $2.97 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
-      "id": "rss-CoinTelegraph-0-1794258000000",
+      "id": "rss-CoinTelegraph-0-1794287158000",
+      "timestamp": "05:05",
+      "source": "CoinTelegraph",
+      "title": "Crypto exchanges need hard dollar caps on hot wallets, CertiK says",
+      "link": "https://cointelegraph.com/news/crypto-exchanges-need-dollar-caps-on-hot-wallets-certik?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1794279894000",
+      "timestamp": "03:04",
+      "source": "CoinTelegraph",
+      "title": "OpenAI builds kill switch to stop rogue agents within 35 seconds",
+      "link": "https://cointelegraph.com/news/openai-builds-kill-switch-stop-rogue-agents?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1794271359000",
+      "timestamp": "00:42",
+      "source": "CoinTelegraph",
+      "title": "HIVE, MARA mine more Bitcoin but earn less as crypto prices fall",
+      "link": "https://cointelegraph.com/markets/hives-bitcoin-output-jumps-49-but-mining-revenue-falls?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1794258000000",
       "timestamp": "21:00",
       "source": "CoinTelegraph",
       "title": "Should you leave Australia to avoid paying 47% tax on crypto gains?",
       "link": "https://cointelegraph.com/magazine/should-you-leave-australia-to-avoid-47-tax-on-crypto-gains?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-1-1794255994000",
+      "id": "rss-CoinTelegraph-4-1794255994000",
       "timestamp": "20:26",
       "source": "CoinTelegraph",
       "title": "North Korean hackers create memecoins to launder funds from Binance hack: Elliptic",
       "link": "https://cointelegraph.com/news/north-korean-hackers-memecoins-launder-binance-hack-elliptic?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-2-1794253954000",
+      "id": "rss-CoinTelegraph-5-1794253954000",
       "timestamp": "19:52",
       "source": "CoinTelegraph",
       "title": "Formation Securities plans Solana stock trading venue under SEC exemption",
       "link": "https://cointelegraph.com/news/formation-securities-solana-stock-trading-venue-sec-exemption?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1794264987000",
+      "timestamp": "22:56",
+      "source": "CoinDesk",
+      "title": "Securitize pushes into $6 trillion asset-backed finance market with River One acquisition",
+      "link": "https://www.coindesk.com/business/2026/11/09/securitize-pushes-into-usd6-trillion-asset-backed-finance-market-with-river-one-acquisition"
+    },
+    {
+      "id": "rss-CoinDesk-1-1794252975000",
+      "timestamp": "19:36",
+      "source": "CoinDesk",
+      "title": "Robinhood backs tokenization of its stock on OKX–ICE platform even as most companies opt out",
+      "link": "https://www.coindesk.com/business/2026/11/09/robinhood-backs-tokenization-of-its-stock-on-okx-ice-platform-even-as-most-companies-opt-out"
+    },
+    {
+      "id": "rss-CoinDesk-2-1794241185000",
+      "timestamp": "16:19",
+      "source": "CoinDesk",
+      "title": "A Bitcoin block just neared a 2015 transaction record, but paid only $180 in fees",
+      "link": "https://www.coindesk.com/tech/2026/11/09/a-bitcoin-block-just-neared-a-2015-transaction-record-but-paid-only-usd180-in-fees"
+    },
+    {
+      "id": "rss-CoinDesk-3-1794237605000",
+      "timestamp": "15:20",
+      "source": "CoinDesk",
+      "title": "Google’s AI chip push adds more pressure on Nvidia",
+      "link": "https://www.coindesk.com/markets/2026/11/09/google-s-ai-chip-push-adds-more-pressure-on-nvidia"
+    },
+    {
+      "id": "egld-1794261447697",
+      "timestamp": "21:57",
+      "source": "EGLD",
+      "title": "Cotation publique · $2.98 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
     },
     {
       "id": "rss-CoinTelegraph-3-1794248729000",
@@ -51,27 +107,6 @@
       "source": "CoinTelegraph",
       "title": "Avalanche’s AVAX leads crypto gains following NYSE tokenization deal",
       "link": "https://cointelegraph.com/news/avalanche-avax-crypto-nyse-tokenization-deal?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1794252975000",
-      "timestamp": "19:36",
-      "source": "CoinDesk",
-      "title": "Robinhood backs tokenization of its stock on OKX–ICE platform even as most companies opt out",
-      "link": "https://www.coindesk.com/business/2026/11/09/robinhood-backs-tokenization-of-its-stock-on-okx-ice-platform-even-as-most-companies-opt-out"
-    },
-    {
-      "id": "rss-CoinDesk-1-1794241185000",
-      "timestamp": "16:19",
-      "source": "CoinDesk",
-      "title": "A Bitcoin block just neared a 2015 transaction record, but paid only $180 in fees",
-      "link": "https://www.coindesk.com/tech/2026/11/09/a-bitcoin-block-just-neared-a-2015-transaction-record-but-paid-only-usd180-in-fees"
-    },
-    {
-      "id": "rss-CoinDesk-2-1794237605000",
-      "timestamp": "15:20",
-      "source": "CoinDesk",
-      "title": "Google’s AI chip push adds more pressure on Nvidia",
-      "link": "https://www.coindesk.com/markets/2026/11/09/google-s-ai-chip-push-adds-more-pressure-on-nvidia"
     },
     {
       "id": "rss-CoinDesk-3-1794236444000",
@@ -158,46 +193,11 @@
       "link": "https://www.coindesk.com/tech/2026/11/09/binance-s-bitcoin-mining-pool-finds-just-one-block-in-a-week-as-shutdown-nears"
     },
     {
-      "id": "egld-1794184461247",
-      "timestamp": "00:34",
-      "source": "EGLD",
-      "title": "Cotation publique · $2.97 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
       "id": "rss-CoinTelegraph-0-1794178746000",
       "timestamp": "22:59",
       "source": "CoinTelegraph",
       "title": "Vitalik ‘pivots’ ETH to store of value, crypto suffers after US midterms: Hodler’s Digest",
       "link": "https://cointelegraph.com/magazine/vitaliks-pivots-to-eth-as-a-store-of-value-us-election-weighs-on-crypto-hodlers-digest?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1794142671000",
-      "timestamp": "12:57",
-      "source": "CoinTelegraph",
-      "title": "Binance France emails announce closure of its users’ accounts on Dec. 31",
-      "link": "https://cointelegraph.com/news/binance-france-emails-announce-closure-of-its-users-accounts-on-dec-31?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1794131328000",
-      "timestamp": "09:48",
-      "source": "CoinTelegraph",
-      "title": "Amsterdam protesters break into Microsoft data center construction site: Report",
-      "link": "https://cointelegraph.com/news/amsterdam-data-center-protesters-break-into-construction-site-report?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1794125576000",
-      "timestamp": "08:12",
-      "source": "CoinTelegraph",
-      "title": "Binance’s finance chief Kaiser Ng to leave company, report says",
-      "link": "https://cointelegraph.com/news/binances-finance-chief-kaiser-ng-to-leave-company-report-says?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1794060960000",
-      "timestamp": "14:16",
-      "source": "CoinTelegraph",
-      "title": "Ex-FBI counterintelligence agent stole almost $2.5M in crypto",
-      "link": "https://cointelegraph.com/news/ex-fbi-counterintelligence-agent-stole-almost-25m-in-crypto?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
