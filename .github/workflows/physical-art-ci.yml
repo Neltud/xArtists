@@ -27,7 +27,7 @@ jobs:
       - name: Locked backend dependencies (strict, PR #274)
         working-directory: services/access-api
         run: npm ci --ignore-scripts --no-audit --no-fund
-      - name: Test Shopify HMAC, physical custody and wallet security
+      - name: Test retired merchant gates, physical custody and wallet security
         working-directory: services/access-api
         run: npm test
   physical-frontend:
