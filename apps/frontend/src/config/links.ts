@@ -11,7 +11,7 @@ export const LINKS = {
   walletWeb: 'https://wallet.multiversx.com',
   xportal: 'https://xportal.com',
   docs: 'https://github.com/Neltud/xArtists/tree/main/docs',
-  githubPages: 'https://neltud.github.io/xArtists/',
+  githubPages: 'https://xartists.art/',
   treasuryPolicy: 'https://github.com/Neltud/xArtists/blob/main/docs/TREASURY_POLICY.md',
   walletLogin: (callback: string) =>
     `https://wallet.multiversx.com/hook/login?callbackUrl=${encodeURIComponent(callback)}`,
