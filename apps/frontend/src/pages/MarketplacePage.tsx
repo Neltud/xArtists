@@ -11,6 +11,7 @@ import { canListBuyNft } from '../config/scStatus'
 import RwaPhysicalPanel from '../components/market/RwaPhysicalPanel'
 import DigitalPacksPanel from '../components/market/DigitalPacksPanel'
 import OpenSeaCollectionPanel from '../components/market/OpenSeaCollectionPanel'
+import ArtpriceOfficialPanel from '../components/market/ArtpriceOfficialPanel'
 import ExistingNftReadiness from '../components/market/ExistingNftReadiness'
 import LiaAndEscrowNfts from '../components/market/LiaAndEscrowNfts'
 import DriveArtShowcase from '../experience/DriveArtShowcase'
@@ -210,6 +211,8 @@ export default function MarketplacePage(){
 
     {selected==='opensea'&&<OpenSeaCollectionPanel />}
 
+    {(selected==='art'||selected==='rwa')&&<ArtpriceOfficialPanel />}
+
     {selected==='rwa'&&<section className="space-y-4" aria-label="Œuvres physiques">
       <div>
         <h2 className="text-lg font-semibold text-white">Art physique · provenance & livraison</h2>
@@ -219,8 +222,8 @@ export default function MarketplacePage(){
       <div className="grid gap-3 sm:grid-cols-3">
         {[
           ['01','Certifier','Photo originale, technique, dimensions, empreinte et certificat.'],
-          ['02','Vendre','Une seule commande active par œuvre. Offre Shopify à activer et vérifier.'],
-          ['03','Livrer','Suivi, réception signée par l’acheteur, litige et revue de l’état.'],
+          ['02','Documenter','Dossier de provenance et prix de vente distincts de l’analyse du marché. Aucune vente directe active.'],
+          ['03','Attester','Transport et réception nécessitent des preuves indépendantes ; service logistique indisponible.'],
         ].map(step=><div key={step[0]} className="rounded-xl border border-white/10 bg-white/[0.025] p-4">
           <p className="text-xs font-mono text-amber-300">{step[0]}</p>
           <p className="mt-2 font-semibold text-white text-sm">{step[1]}</p>
@@ -228,8 +231,8 @@ export default function MarketplacePage(){
         </div>)}
       </div>
       <p className="rounded-xl border border-amber-500/20 p-3 text-xs text-amber-100">
-        Vente d’œuvres physiques sur Etsy : possible sous les règles de l’art original du vendeur ;
-        la vente de NFT sur Etsy est interdite. Ne pas diriger un paiement Etsy vers xArtists.
+        Aucun marchand tiers ni paiement externe n’est connecté à ce catalogue.
+        Les archives de ventes et les prix du marché nécessitent une source et une licence vérifiées.
         Les NFT et la propriété matérielle restent juridiquement distincts.
       </p>
       <Link to="/rwa" className="btn-primary inline-flex min-h-[44px] items-center px-4 text-sm">
