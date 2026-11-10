@@ -11,7 +11,7 @@ test('commercial /offres and /offers static HTML have truthful crawler-readable 
   const fr = commercialSeoHtml(template, '/offres')
   const en = commercialSeoHtml(template, '/offers')
   for (const html of [fr, en]) {
-    assert.match(html, /https:\/\/neltud\.github\.io\/xArtists\/offres\//)
+    assert.match(html, /https:\/\/xartists\.art\/offres\//)
     assert.match(html, /name="robots" content="index, follow"/)
     assert.match(html, /property="og:description"/)
     assert.match(html, /name="twitter:description"/)
