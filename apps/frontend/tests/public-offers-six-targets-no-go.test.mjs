@@ -6,6 +6,8 @@ const read = path => readFileSync(new URL(path, import.meta.url), 'utf8')
 const targets = read('../src/config/commercialTargets.ts')
 const offers = read('../src/pages/CommercialLaunchPage.tsx')
 const pack = read('../src/pages/PackLandingPage.tsx')
+const agents = read('../src/pages/Agents.tsx')
+const shelf = read('../src/components/packs/GenesisPackShelf.tsx')
 
 test('approved commercial targets keep Pulse/Yield/Sentinel order and close all checkouts', () => {
   assert.ok(targets.indexOf("id: 'pulse', targetEgld: '33'") < targets.indexOf("id: 'yield', targetEgld: '22'"))
@@ -45,4 +47,15 @@ test('public discovery is readable and non-transactional; no password, checkout 
   assert.match(offers, /text-zinc-900 dark:text-zinc-100/)
   assert.match(offers, /href="#commercial-services"/)
   assert.match(offers, /href="#commercial-genesis"/)
+})
+
+test('Genesis shelf and Agents discovery show only target EGLD and have no public purchase component', () => {
+  for (const source of [agents, shelf]) {
+    assert.match(source, /GENESIS_TARGETS_BY_ID/)
+    assert.doesNotMatch(source, /priceEur\\.list|Catalogue 110|110 \\/ 75 \\/ 50/)
+  }
+  assert.doesNotMatch(agents, /PackCheckout|PackOpenTheater/)
+  assert.match(agents, /politique 2/)
+  assert.match(shelf, /Plafond cible · non payable/)
+  assert.match(shelf, /bg-white dark:bg-zinc-900/)
 })
