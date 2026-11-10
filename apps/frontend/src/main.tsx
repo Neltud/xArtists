@@ -18,7 +18,7 @@ if (!root) throw new Error('root missing')
 
 ReactDOM.createRoot(root).render(
   <React.StrictMode>
-    <BrowserRouter basename="/xArtists">
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <I18nProvider>
         <WalletProvider>
           <App />
