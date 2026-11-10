@@ -7,23 +7,7 @@
  */
 import { Link } from 'react-router-dom'
 import { useI18n } from '../i18n/I18nContext'
-
-// Owner-selected commercial TARGETS, not VM quotes or Stripe Prices.
-// Actual contract readback 2026-11-08: 1 / 5 / 2.5 EGLD. Any price mismatch
-// blocks purchases and must never be corrected by silently overpaying.
-export const GENESIS_PREVIEW = [
-  { id: 'pulse', targetEgld: '33', observedEgld: '1', cap: 333, motif: '⚡' },
-  { id: 'yield', targetEgld: '22', observedEgld: '5', cap: 500, motif: '◈' },
-  { id: 'sentinel', targetEgld: '11', observedEgld: '2,5', cap: 777, motif: '◇' },
-] as const
-
-// Walletless, service-only monthly proposals. Labels are placeholders pending
-// owner naming, legal VAT/terms and certified Stripe subscription onboarding.
-export const MAINSTREAM_PREVIEW = [
-  { sku: 'fiat_379', price: '3,79', level: 1 },
-  { sku: 'fiat_579', price: '5,79', level: 2 },
-  { sku: 'fiat_979', price: '9,79', level: 3 },
-] as const
+import { GENESIS_PREVIEW, MAINSTREAM_PREVIEW } from '../config/commercialTargets'
 
 const COPY = {
   fr: {
