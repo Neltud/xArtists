@@ -119,8 +119,8 @@ contrat testnet et les prérequis précédents.
 ## Services distincts
 
 - MoonPay : onramp crypto éventuel, **pas** substitut à une preuve PayBox bancaire.
-- Etsy : uniquement œuvres physiques ou listings compatibles avec sa politique ;
-  aucun droit NFT implicite dans une commande Etsy.
+- Marchands tiers : intégrations de vente physique retirées du site ;
+  aucune commande externe ni facture ne crée de droit NFT implicite.
 - Neon : stockage et réservations, pas une autorité on-chain.
 - Plugin IA / OpenAI : assistance et opérations read-only uniquement ;
   aucune prise de décision de paiement, signature ou mint autonome.
