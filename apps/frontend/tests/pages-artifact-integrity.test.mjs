@@ -21,9 +21,9 @@ function fixture(t) {
   }
   write('build-info.json', {
     renderer: 'sites-v3', source_sha: SHA, release_version: VERSION,
-    version_source: '.release-please-manifest.json', base_url: '/xArtists/', public_route_count: ROUTES.length,
+    version_source: '.release-please-manifest.json', base_url: '/', public_route_count: ROUTES.length,
   })
-  write('dapp-release.json', { base_path: '/xArtists/', routes: ROUTES })
+  write('dapp-release.json', { base_path: '/', routes: ROUTES })
   const manifest = {
     'index.html': { file: 'assets/main.js', isEntry: true, imports: ['_react.js'], dynamicImports: ['src/Tro.tsx'] },
     '_react.js': { file: 'assets/react.js' },
@@ -32,7 +32,7 @@ function fixture(t) {
   write('.vite/manifest.json', manifest)
   for (const name of ['main.js', 'react.js', 'tro.js', 'tro.css', 'token.svg']) write('assets/' + name, 'fixture')
   for (const route of ROUTES) write(route === '/' ? 'index.html' : route.slice(1) + '/index.html',
-    '<!doctype html><script type="module" src="/xArtists/assets/main.js"></script>')
+    '<!doctype html><script type="module" src="/assets/main.js"></script>')
   return {
     root, write, manifest,
     verify: (overrides = {}) => verifyPagesArtifact({ directory: root, expectedSha: SHA, releaseVersion: VERSION, ...overrides }),
@@ -61,7 +61,7 @@ test('a missing lazy JavaScript or image file is rejected', t => {
 
 test('a stale route bundle and a missing auction entry fail before upload', t => {
   const f = fixture(t)
-  f.write('auction/index.html', '<script src="/xArtists/assets/old-main.js"></script>')
+  f.write('auction/index.html', '<script src="/assets/old-main.js"></script>')
   assert.throws(() => f.verify(), /different Vite entry: \/auction/)
   rmSync(join(f.root, 'auction/index.html'))
   assert.throws(() => f.verify(), /auction/)
