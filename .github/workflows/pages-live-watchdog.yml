@@ -36,7 +36,7 @@ jobs:
           for attempt in 1 2 3; do
             status=$(curl -sS -L --max-time 20 -H 'Cache-Control: no-cache' \
               -o /tmp/xartists-public-info.json -w '%{http_code}' \
-              "https://neltud.github.io/xArtists/build-info.json?watchdog=${GITHUB_RUN_ID}&attempt=${attempt}") || status=000
+              "https://xartists.art/build-info.json?watchdog=${GITHUB_RUN_ID}&attempt=${attempt}") || status=000
             actual=$(jq -r '.source_sha // "missing"' /tmp/xartists-public-info.json 2>/dev/null || echo "missing")
             if [ "$status" = 200 ] && [ "$actual" = "$expected" ]; then
               ok=1
@@ -57,8 +57,8 @@ jobs:
           for path in auction marketplace tro/sale offres; do
             status=$(curl -sS -L --max-time 20 \
               -o /tmp/xartists-public-route.html -w '%{http_code}' \
-              "https://neltud.github.io/xArtists/${path}/?watchdog=${GITHUB_RUN_ID}") || status=000
-            if [ "$status" != 200 ] || ! grep -q '/xArtists/assets/' /tmp/xartists-public-route.html; then
+              "https://xartists.art/${path}/?watchdog=${GITHUB_RUN_ID}") || status=000
+            if [ "$status" != 200 ] || ! grep -q '/assets/' /tmp/xartists-public-route.html; then
               echo "::error::Public deep link ${path} did not serve Vite assets (HTTP ${status})"
               exit 1
             fi
