@@ -152,13 +152,15 @@ html[data-theme="dark"] .xa-agents-discovery .xa-agent-notice {
 }
 
 .xa-genesis-grid .xa-genesis-polished {
+  padding: 0;
   background: var(--xa-surface);
   box-shadow: 0 3px 15px rgba(20, 31, 24, 0.045) !important;
 }
 
 /* Studio had white headings and black inputs on the default light surface. */
 .xa-creator-studio > .xa-studio-workflow,
-.xa-creator-studio > section.xa-studio-workflow {
+.xa-creator-studio > section.xa-studio-workflow,
+.xa-creator-studio > section.xa-studio-surface {
   background: var(--xa-surface);
   color: var(--xa-text);
   padding: clamp(17px, 3vw, 26px);
@@ -223,7 +225,8 @@ html[data-theme="dark"] .xa-creator-studio .btn-primary:not(:disabled) {
   .xa-pack-detail .xa-pack-info-card,
   .xa-agents-discovery .xa-agent-selected,
   .xa-creator-studio > .xa-studio-workflow,
-  .xa-creator-studio > section.xa-studio-workflow {
+  .xa-creator-studio > section.xa-studio-workflow,
+.xa-creator-studio > section.xa-studio-surface {
     padding: 20px 16px;
   }
 
