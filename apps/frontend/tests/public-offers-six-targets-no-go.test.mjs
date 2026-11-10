@@ -52,7 +52,7 @@ test('public discovery is readable and non-transactional; no password, checkout 
 test('Genesis shelf and Agents discovery show only target EGLD and have no public purchase component', () => {
   for (const source of [agents, shelf]) {
     assert.match(source, /GENESIS_TARGETS_BY_ID/)
-    assert.doesNotMatch(source, /priceEur\\.list|Catalogue 110|110 \\/ 75 \\/ 50/)
+    assert.doesNotMatch(source, /priceEur\.list|Catalogue 110|110 \/ 75 \/ 50/)
   }
   assert.doesNotMatch(agents, /PackCheckout|PackOpenTheater/)
   assert.match(agents, /politique 2/)
