@@ -24,6 +24,9 @@ test('live art market screens no longer advertise external Etsy/Shopify merchant
 test('Artprice panel displays official publisher and official report only; no paid rows or fake price', () => {
   assert.match(panel, /fr\.artprice\.com\/artprice-news\/13751\//)
   assert.match(panel, /fr\.artprice\.com\/'/)
+  assert.match(panel, /208 000 œuvres/)
+  assert.match(panel, /juillet 2025 à juin 2026/)
+  assert.match(panel, /le-marche-de-lart-contemporain-2026/)
   assert.match(panel, /licence officielle en attente/)
   assert.match(panel, /Aucune cote ou estimation publiée/)
   assert.match(panel, /noopener noreferrer/)
