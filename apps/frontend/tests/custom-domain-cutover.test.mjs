@@ -1,6 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
+import { spawnSync } from 'node:child_process'
 
 const read = path => readFileSync(new URL('../' + path, import.meta.url), 'utf8')
 const html = read('index.html')
@@ -49,7 +50,7 @@ test('GitHub Pages deploy is blocked until both custom-domain ownership and web 
   }
   assert.match(workflow, /www\.xartists\.art CNAME/)
   assert.match(workflow, /neltud\.github\.io\./)
-  assert.match(workflow, /::error::Unexpected apex A record/)
+  assert.match(workflow, /::error::Unexpected apex A/)
   assert.match(workflow, /needs: build/)
   assert.match(workflow, /VITE_DAPP_URL: https:\/\/xartists\.art\//)
 })
@@ -62,4 +63,36 @@ test('domain cutover never authorizes a mint, card checkout or contact mailbox',
   assert.doesNotMatch(guards, /hello@xartists\.art/)
   // Domain migration is independent of database/ledger infrastructure.
   assert.doesNotMatch(workflow, /\b(?:setPackPrice|buyPack|live_mint=true)\b/)
+})
+
+
+test('Pages workflow has ONE fail-closed deploy job, action and SHA attestation', () => {
+  const deploy = workflow.slice(workflow.indexOf('\n  deploy:\n'))
+  assert.ok(deploy.length > 1000, 'deploy section must exist')
+  const once = needle => deploy.split(needle).length - 1
+  assert.equal(once('      - name: Verify xartists.art Pages ownership'), 1)
+  assert.equal(once('      - name: Deploy to GitHub Pages'), 1)
+  assert.equal(once('        uses: actions/deploy-pages@v4'), 1)
+  assert.equal(once('      - name: Verify deployed Pages serves EXACT source SHA'), 1)
+  assert.ok(deploy.indexOf('      - name: Verify xartists.art Pages ownership') <
+    deploy.indexOf('      - name: Deploy to GitHub Pages'))
+  assert.match(deploy, /dig \+short xartists\.art AAAA/)
+  assert.match(deploy, /neltud\.github\.io\./)
+  assert.doesNotMatch(deploy, / <<< "\$records" \| grep -q \.; then\n        uses:/)
+})
+
+test('Pages custom-domain preflight shell block parses as Bash', () => {
+  const deploy = workflow.slice(workflow.indexOf('\n  deploy:\n'))
+  const start = deploy.indexOf('\n        run: |\n')
+  assert.ok(start > 0)
+  const tail = deploy.slice(start + '\n        run: |\n'.length)
+  const lines = tail.split('\n')
+  const commands = []
+  for (const line of lines) {
+    if (line.startsWith('      - name: ')) break
+    if (line.trim()) assert.ok(line.startsWith('          '), 'shell body indent')
+    commands.push(line.startsWith('          ') ? line.slice(10) : '')
+  }
+  const bash = spawnSync('bash', ['-n'], { input: commands.join('\n'), encoding: 'utf8' })
+  assert.equal(bash.status, 0, bash.stderr)
 })
