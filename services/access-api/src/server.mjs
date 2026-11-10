@@ -33,7 +33,6 @@ import {studioMediaConfig,mediaJwt,mediaActor,readCreatorMedia,
 import {
   physicalConfig, issuePhysicalSession, physicalActor, merchantAuthorized,
   registerPhysicalWork, readPhysicalWork, changePhysicalWork,
-  processShopifyPhysicalWebhook, readPhysicalRaw,
 } from './physicalFulfillment.mjs'
 
 const WORLD_RIGHTS = createWorldRightsHandler()
@@ -333,24 +332,16 @@ async function handleRequest(req, res) {
   // No NFT mint, payment capture, escrow release, NFT transfer or AI appraisal.
   if (req.method === 'GET' && pth === '/v1/physical/config') {
     json(res, 200, { ok: true, ...physicalConfig(),
-      shopify_webhook_registered: 'operator_must_verify',
+      commerce_provider: 'none', merchant_webhook_enabled: false,
       automatic_escrow_release: false, automatic_nft_transfer: false })
     return
   }
 
-  if (req.method === 'POST' && pth === '/v1/webhooks/shopify/physical') {
-    if (!physicalConfig().enabled) {
-      json(res, 503, { ok: false, error: 'physical_fulfillment_not_configured' })
-      return
-    }
-    const raw = await readPhysicalRaw(req)
-    try {
-      const result = await processShopifyPhysicalWebhook(raw, req.headers)
-      json(res, 200, result)
-    } catch (error) {
-      json(res, error.statusCode || 503, { ok: false,
-        error: error.statusCode ? error.message : 'physical_webhook_store_unavailable' })
-    }
+  // A legacy merchant endpoint is permanently retired: no body is read,
+  // no signature parser is invoked, and no PostgreSQL row can be changed.
+  // Keep 410 for existing integrations until third-party webhooks are revoked.
+  if (pth === '/v1/webhooks/shopify/physical') {
+    json(res, 410, {ok:false,error:'retired_commerce_provider'})
     return
   }
 
