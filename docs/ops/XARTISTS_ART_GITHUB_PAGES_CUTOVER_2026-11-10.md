@@ -11,6 +11,23 @@
 - Depuis l'hébergement OVH, le certificat était associé au cluster129 et la page d'attente OVH ; aucun certificat public valide `xartists.art` attesté dans cette lecture.
 - La version actuellement servie par GitHub Pages utilise un **base path /xArtists/** ; ne pas se contenter de changer les DNS sans publier un build destiné à **/**.
 
+## Nouveaux constats depuis le Manager OVHcloud (session propriétaire, lecture seule)
+
+Le **10 novembre 2026**, une session authentifiée sur le Manager OVHcloud a établi les faits suivants, sans toucher à la zone :
+
+- Domaine **enregistré / technique actif**, **pas de `clientHold`**, expiration **15 octobre 2027**, DNSSEC **activé** ; **renouvellement automatique non configuré**. Ne pas confondre cette situation avec un site déjà publié ou une messagerie testée.
+- **Apex** `xartists.art A = 51.91.236.255` (OVH page de construction). **Aucun AAAA à l'apex**. **Aucun A / AAAA / CNAME `www`** présent.
+- NS `dns107.ovh.net.` et `ns107.ovh.net.` ; conserver DNSSEC et les NS sans modification.
+- Sous-domaines **`app.xartists.art A = 146.59.146.223`** et **`mail.xartists.art A = 146.59.146.223`** : **ne pas modifier leurs enregistrements**. L'inventaire affiche deux lignes A identiques pour `app` ; ne pas les nettoyer dans ce chantier.
+- Messagerie : MX, SPF, DKIM et DMARC déclarés ; **aucun test d'émission/réception effectué**. Ne pas modifier les enregistrements mail ni publier `hello@xartists.art`.
+- **Attention `ftp.xartists.art CNAME = xartists.art.`** : ce sous-domaine suivra la nouvelle adresse GitHub Pages lorsqu'on remplacera les A de l'apex. Un éventuel FTP OVH via `ftp.xartists.art` pourrait alors cesser de fonctionner. **Vérifier l'usage de ce nom et prévoir sa migration vers le nom d'hôte fourni par OVH avant le cutover** ; ne pas supprimer ou rediriger automatiquement le CNAME FTP.
+
+Le dossier DNS est désormais complet pour les noms web ; le custom domain GitHub Pages n'est **pas** attesté. Tant que la revue UX de la PR #483 et les paramètres GitHub Pages ne sont pas validés, **ne pas basculer les DNS**.
+
+### Intégrité du workflow de déploiement (correctif P0)
+
+La PR #484 contenait une **duplication de bloc de déploiement** due à une substitution incorrecte. Le workflow a été reconstruit à partir de la section de déploiement valide de `main` ; une seule action `actions/deploy-pages@v4`, une seule vérification du commit source et un garde-fou DNS/Pages situé **avant** le déploiement. Le test `custom-domain-cutover.test.mjs` vérifie désormais les occurrences uniques **et la syntaxe Bash du garde-fou**, et refuse un A OVH résiduel, un AAAA inattendu ou `www` incorrect. **Les tests précédemment verts ne suffisaient pas à détecter cette corruption ; toujours exiger les checks sur le dernier SHA.**
+
 ## Séquence de raccordement — en respectant la zone de messagerie
 
 ### 1) Confirmer la propriété / la cible GitHub avant de modifier les DNS
@@ -38,7 +55,7 @@ Dans **OVHcloud → Web Cloud → Noms de domaine → xartists.art → Zone DNS*
 | CNAME | `www` | `neltud.github.io.` | Ajouter ; **sans /xArtists/** |
 | AAAA | `@` | Aucune requise pour ce passage (IPv4 suffit) | **Examiner** et éliminer seulement l'éventuelle ancienne IPv6 de la page OVH si elle existe, sans toucher aux autres noms |
 
-**Ne pas modifier** : NS `dns107.ovh.net / ns107.ovh.net`, SOA, MX, `mail.xartists.art`, TXT SPF, DKIM, `_dmarc` ou les enregistrements d'authentification/validation non liés au web. Sauvegarder une capture/export de la zone **avant et après**. Aucun wildcard `*` CNAME/A. Ne pas désactiver ni supprimer le service mail OVH ni créer de MySQL.
+**Ne pas modifier** : NS `dns107.ovh.net / ns107.ovh.net`, SOA, MX, `mail.xartists.art`, TXT SPF, DKIM, `_dmarc` ou les enregistrements d'authentification/validation non liés au web. Sauvegarder une capture/export de la zone **avant et après**. **Vérifier le risque sur `ftp.xartists.art` qui pointe actuellement vers l'apex ; conserver l'accès FTP alternatif OVH avant changement.** Aucun wildcard `*` CNAME/A. Ne pas désactiver ni supprimer le service mail OVH ni créer de MySQL.
 
 > Références : [DNS GitHub Pages officiels](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site), [OVHcloud CNAME](https://docs.ovhcloud.com/fr/guides/web-cloud/domains/dns-zone-cname-record-creation).
 
