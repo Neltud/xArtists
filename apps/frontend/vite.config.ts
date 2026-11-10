@@ -8,7 +8,9 @@ const isSdkDapp = (id: string) =>
 
 export default defineConfig(({ mode }) => ({
   plugins: [react(), accessApiCspPlugin(process.env.VITE_ACCESS_API_BASE || loadEnv(mode, process.cwd(), 'VITE_ACCESS_API_BASE').VITE_ACCESS_API_BASE), publicAvailabilityPlugin()],
-  base: '/xArtists/',
+  // Custom GitHub Pages domain serves the app at its origin root.
+  // Do not deploy this release until Pages Settings owns xartists.art and DNS points to GitHub.
+  base: '/',
   define: {
     'process.env': '{}',
     'process.env.NODE_ENV': JSON.stringify(
