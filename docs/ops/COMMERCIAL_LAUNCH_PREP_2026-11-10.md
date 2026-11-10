@@ -17,7 +17,21 @@ Les six validations de catégorie (site public, prix, wallets, IPFS/PostgreSQL, 
 - Deux projets Neon **sandbox** identifiés ; aucune preuve que la DATABASE_URL de Render pointe sur l'un d'eux ou sur une base de production dédiée. Ne pas partager les chaînes de connexion.
 - Compte Stripe en mode production accessible : trois produits Genesis **one-time** affichés actifs, de 110 / 75 / 50 EUR ; ce constat n'atteste **aucun checkout ni abonnement actif**. Le modèle retenu par le propriétaire demande **EGLD signé pour l'achat NFT** et **fiat EUR sous abonnement pour les services**. Ne pas réutiliser ces produits Stripe one-time pour contourner cette règle ; revue/archivage à arbitrer explicitement, sans mutation dans cette préparation.
 - Render : workspace trouvé ; **déploiement courant, identité de base, configuration effective et disponibilité HTTP non certifiés dans cette revue**.
-- Source d'observation on-chain datée du 08/11 : Pulse 1 EGLD, Yield 5 EGLD, Sentinel 2,5 EGLD ; **ce ne sont pas des devis live**. Anciennes valeurs marketing 33 / 22,5 / 15 EGLD obsolètes, ne jamais envoyer au wallet. Les 110 / 75 / 50 EUR sont un catalogue indicatif, pas une parité EGLD.
+- Source d'observation on-chain datée du 08/11 : Pulse 1 EGLD, Yield 5 EGLD, Sentinel 2,5 EGLD ; **ce ne sont pas des devis live**. Le propriétaire fixe maintenant comme **objectifs** 33 / 22 / 11 EGLD, mais les contrats ne sont pas alignés. Les 110 / 75 / 50 EUR sont un ancien catalogue one-time, pas une parité EGLD ni une offre NFT fiat activable.
+
+## Actualisation des choix du propriétaire — 10 novembre 2026
+
+**Paramètres de préparation confirmés ; aucune autorisation de prélèvement ou de transaction.**
+
+| Famille | Offres et cibles commerciales | PSP / voie prévue | Preuve bloquante |
+|---|---|---|---|
+| **NFT Genesis** | Pulse **33 EGLD**, Yield **22 EGLD**, Sentinel **11 EGLD**, achat unique | Wallet MultiversX et EGLD, signature distincte | VM readback du 08/11 : **1 / 5 / 2,5 EGLD** seulement ; prix cible ≠ contrat. Mise en cohérence du contrat, revue et autorisation dédiées **avant tout achat** |
+| **Fiat mainstream, sans NFT** | **3,79 €**, **5,79 €**, **9,79 € par mois** ; SKU internes `fiat_379`, `fiat_579`, `fiat_979` | **Stripe Nelsonprods choisi**, configuration et preuves sandbox seulement, **aucune session payante** | Produits/prix récurrents non créés dans ce lot ; vérification e-mail/OIDC, mapping client, factures payées signées, période, refund/révocation et DB exigés |
+| **MoonPay** | Acquisition d'EGLD par l'utilisateur, hors abonnement | Rampe crypto distincte | Acheter de l'EGLD ne prouve ni achat NFT, ni droit de service |
+| **PayBox** | Option carte à évaluer indépendamment | Contrat/PSP distinct de Stripe, aucun abonnement supposé | Récurrence, IPN et durabilité juridique/technique à certifier par rail |
+| **Finance Computer** | **Qualification uniquement** | Rôle à préciser avec Martin, **aucun partenariat ni intégration présumés** | Mail/contrat/API non vérifiés dans la boîte Gmail connectée ; aucun badge ni checkout |
+ 
+Le propriétaire s'occupe personnellement du domaine `xartists.art`, à recontrôler après correction du registraire. Les montants EUR ne sont pas qualifiés TTC ou HT ; TVA, CGV, services inclus, essais et résiliation restent à arbitrer. Les anciens tarifs `29 €/mois`, `290 €/an`, `33 / 22,5 / 15 EGLD` et l'ancien catalogue Genesis en EUR ne doivent pas alimenter un checkout.
 
 ## Matrice des capacités — aucune opération transactionnelle ouverte
 
@@ -52,7 +66,7 @@ Les six validations de catégorie (site public, prix, wallets, IPFS/PostgreSQL, 
 
 1. **P0 documentaire / publication** : revue release #466 et branche de ce dossier ; résoudre prix historiques contradictoires, vérifier SHA Pages/Render, mobile 375–414px et navigation sans wallet. Les neuf PR ouvertes ne doivent pas être fusionnées en bloc (notamment majors TS / WalletConnect).
 2. **P0 identité & infra** : choisir le projet PostgreSQL de production, prouver la liaison Render/DB via empreintes non sensibles, tester restauration + concurrence ; chiffrer stockage et incident ; établir auth email/SIWX, compte sans wallet distinct.
-3. **P0 fiat service** : choisir Stripe *ou* Whop comme PSP d'abonnement, décider périodicité/prix/TVA, puis construire produits récurrents en sandbox et webhooks durables. Les anciens produits Stripe one-time sont à examiner hors checkout, sans mutation implicite.
+3. **P0 fiat service** : utiliser Stripe Nelsonprods comme PSP d'abonnement choisi, préparer les mensualités **3,79 / 5,79 / 9,79 €** sans créer de session ou de produit avant décision séparée, déterminer TVA/CGV, puis recetter un backend sandbox et webhooks durables. Les anciens produits Stripe one-time sont à examiner hors checkout, sans mutation implicite.
 4. **P0 art/IPFS** : droits explicites des fichiers #005, upload sécurisé de tests en bac à sable, CIDs et SHA exacts, pins indépendants, JSON canonique ; pas de divulgation des originaux privés.
 5. **P0 MultiversX** : relecture mainnet RO du codeHash, rôles, prix et URIs ; testnet wallets vendeur/acheteur ; mint Pulse #005 owner-only **seulement après signature explicite dédiée**, confirmation bloc, token et URI.
 6. **P0 règlement / livraison** : rejouer les parcours fraude/panne/remboursement ; audits paiement (S1) et NFT/droits (S2) ; ne pas accorder d'entitlement sur statut UI.
