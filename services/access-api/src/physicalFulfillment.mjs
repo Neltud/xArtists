@@ -31,17 +31,17 @@ function validWallet(wallet) {
   try { erdToPubkey(wallet); return true } catch { return false }
 }
 
+/**
+ * Retired 2026-11-10: old Shopify physical fulfillment provider cannot be
+ * reactivated by stale Render environment variables. Preserve the historical
+ * custody ledger and its audit code; NEVER accept new merchant webhooks or
+ * new physical orders under this vendor.
+ */
 export function physicalConfig(env = process.env) {
-  const configured = env.PHYSICAL_FULFILLMENT_ENABLED === '1'
-    && String(env.SHOPIFY_WEBHOOK_SECRET || '').length >= 24
-    && /^[a-z0-9-]+\.myshopify\.com$/.test(String(env.SHOPIFY_SHOP_DOMAIN || ''))
-    && String(env.DATABASE_URL || '').trim().length > 0
-    && String(env.PHYSICAL_ADMIN_TOKEN || '').length >= 32
-    && String(env.ACCESS_JWT_SECRET || env.JWT_SECRET || '').length >= 16
   return {
-    enabled: configured,
-    mode: configured ? 'configured_requires_webhook_registration' : 'disabled',
-    storage: env.DATABASE_URL ? 'postgres' : 'not_configured',
+    enabled: false,
+    mode: 'vendor_retired',
+    storage: env.DATABASE_URL ? 'postgres_read_only_legacy' : 'not_configured',
   }
 }
 
@@ -437,39 +437,11 @@ export async function changePhysicalWork(id, actor, type, input, isAdmin = false
   })
 }
 
-/** Duplicate Shopify deliveries are persisted; schema & transaction are all-or-nothing. */
-export async function processShopifyPhysicalWebhook(raw, headers) {
-  const check=verifyShopifyDelivery(raw,headers)
-  if(!check.ok) throw fail(check.error,401)
-  let data
-  try{data=JSON.parse(raw.toString('utf8'))}catch{throw fail('invalid_shopify_json')}
-  if(!data || typeof data!=='object' || Array.isArray(data))throw fail('invalid_shopify_json')
-  return physicalTx(async c=>{
-    const old=await c.query('SELECT body_sha256 FROM xartists_physical_deliveries WHERE webhook_id=$1',[check.id])
-    if(old.rows.length){
-      if(old.rows[0].body_sha256!==check.hash)throw fail('webhook_id_reused_with_different_payload',409)
-      return {ok:true,duplicate:true,updated:0}
-    }
-    const reversalTopic = check.topic === 'refunds/create' || check.topic === 'orders/cancelled'
-    const reversalId = String(check.topic === 'refunds/create' ? data.order_id : data.id || '')
-    const skus = (Array.isArray(data.line_items) ? data.line_items : [])
-      .map(item => String(item.sku || '')).filter(sku => /^XAPHY-[A-F0-9]{14}$/.test(sku))
-    const targets = reversalTopic && /^[0-9]{1,24}$/.test(reversalId)
-      ? await c.query("SELECT payload FROM xartists_physical_works WHERE payload->>'shopifyOrderId' = $1", [reversalId])
-      : skus.length
-        ? await c.query('SELECT payload FROM xartists_physical_works WHERE sku = ANY($1::text[])', [skus])
-        : { rows: [] }
-    let updated=0
-    for(const row of targets.rows){
-      const work=row.payload
-      const change=check.topic==='orders/paid'
-        ? applyPaidOrder(work,data)
-        : (check.topic==='orders/cancelled' || check.topic==='refunds/create')
-          ? applyPaymentReversal(work,data,check.topic)
-          : applyFulfillment(work,data)
-      if(change.applied){await writeWork(c,work);updated++}
-    }
-    await c.query('INSERT INTO xartists_physical_deliveries (webhook_id,body_sha256) VALUES ($1,$2)',[check.id,check.hash])
-    return {ok:true,duplicate:false,updated}
-  })
+/**
+ * Vendor ingestion permanently retired. The old Shopify signature parser and
+ * state-transition functions remain for historical audit tests only.
+ * This path MUST NOT be wired to HTTP or make PostgreSQL writes again.
+ */
+export async function processShopifyPhysicalWebhook() {
+  throw fail('retired_commerce_provider', 410)
 }
