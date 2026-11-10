@@ -10,13 +10,13 @@ const binding = {
   subscription_id: 'sub_subscriptionfixture',
   price_id: 'price_recurringfixture',
   currency: 'eur',
-  plan: 'tca_monthly',
+  plan: 'fiat_379', amount_cents: 379, interval: 'month',
 }
 const invoice = {
   object: 'invoice', livemode: false, id: 'in_fixturebill',
   customer: binding.customer_id, subscription: binding.subscription_id,
   currency: 'eur', status: 'paid', paid: true,
-  amount_paid: 2900, billing_reason: 'subscription_cycle',
+  amount_paid: 379, billing_reason: 'subscription_cycle',
   lines: { data: [{ price: { id: binding.price_id } }], has_more: false },
 }
 const subscription = {
@@ -97,8 +97,8 @@ test('trusted customer, subscription, recurring price and EUR must all match', (
 })
 test('nonpaid, zero amount, unknown billing reason and Stripe customer-only events cannot certify', () => {
   for (const wrong of [
-    { status: 'open' }, { paid: false }, { amount_paid: 0 },
-    { amount_paid: '2900' }, { billing_reason: 'manual' },
+    { status: 'open' }, { paid: false }, { amount_paid: 0 }, { amount_paid: 579 },
+    { amount_paid: '379' }, { billing_reason: 'manual' },
   ]) held(inspect(signed('invoice.paid', { ...invoice, ...wrong })),
     'invoice_not_paid_or_trial_unapproved')
   held(inspect(signed('checkout.session.completed', invoice)), 'unsupported_stripe_billing_event')
@@ -111,6 +111,8 @@ test('untrusted or absent server binding cannot authorize even authentic Stripe 
     undefined, {}, { ...binding, currency: 'usd' },
     { ...binding, price_id: 'price_live?' },
     { ...binding, plan: 'nft_pulse' },
+    { ...binding, plan: 'fiat_579' },
+    { ...binding, interval: 'year' },
     { ...binding, customer_id: 'cus_bad?' },
   ]) held(inspect({ ...s, binding: b }), 'trusted_service_binding_missing')
 })
@@ -133,4 +135,17 @@ test('a mismatched subscription id and unsupported status never trigger a change
     noRights(x)
   }
   held(inspect(signed('customer.subscription.deleted', subscription)), 'subscription_deletion_not_confirmed')
+})
+
+test('all three owner-selected monthly fiat tiers remain service-only review candidates', () => {
+  for (const [plan, amount_cents] of [['fiat_379', 379], ['fiat_579', 579], ['fiat_979', 979]]) {
+    const b = { ...binding, plan, amount_cents }
+    const x = inspect({ ...signed('invoice.paid', { ...invoice, amount_paid: amount_cents }), binding: b })
+    assert.equal(x.candidate_verified, true)
+    noRights(x)
+    const wrongAmount = inspect({
+      ...signed('invoice.paid', { ...invoice, amount_paid: amount_cents + 1 }), binding: b,
+    })
+    held(wrongAmount, 'invoice_not_paid_or_trial_unapproved')
+  }
 })
