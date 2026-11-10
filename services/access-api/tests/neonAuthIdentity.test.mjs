@@ -45,7 +45,7 @@ test('signed verified Neon JWT maps to opaque walletless identity only', async (
   const { verify, reads } = makeVerifier()
   const out = await verify(signed())
   assert.deepEqual({ ...out }, {
-    provider: 'email_oidc', subject: baseClaims.sub,
+    provider: 'email_oidc', subject: baseUrl + '/.well-known/jwks.json#' + baseClaims.sub,
     verifiedAt: '2026-11-10T12:00:00.000Z',
   })
   assert.equal(JSON.stringify(out).includes(baseClaims.email), false)
