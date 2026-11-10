@@ -310,7 +310,7 @@ export default function StudioPage() {
         </div>
       </section>
 
-      <section className="card xa-studio-workflow space-y-4 border border-[color:var(--xa-border)] bg-[color:var(--xa-surface)]">
+      <section className="card xa-studio-surface space-y-4 border border-[color:var(--xa-border)] bg-[color:var(--xa-surface)]">
         <h2 className="text-sm font-semibold text-[color:var(--xa-text)]">{xaRender("Certification Phygital")}</h2>
         <p className="text-sm text-[color:var(--xa-text-secondary)] leading-relaxed">
           {xaRender("Photo HD → hash SHA-256 local → certificats CoA / CoP. Réévaluation future via intention LIA ")}<code className="text-xs text-[color:var(--xa-text-secondary)]"> PHYGITAL_REEVAL</code>.
@@ -318,7 +318,7 @@ export default function StudioPage() {
         <PhysicalNftCertifier />
       </section>
 
-      <section className="card xa-studio-workflow space-y-4">
+      <section className="card xa-studio-surface space-y-4">
         <h2 className="text-sm font-semibold text-[color:var(--xa-text)]">
           {xaRender("Packs Agent IA")}{xaRender(agentMint ? '' : ' · bientôt on-chain')}
         </h2>
