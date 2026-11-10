@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 /**
  * Physical art provenance discovery only.
  *
- * Legacy merchant fulfillment, customer-wallet binding and Shopify webhooks
+ * Legacy merchant fulfillment, customer-wallet binding and carrier webhooks
  * were retired 2026-11-10. No merchant order state, shipping form,
  * wallet signature, uploaded file or confidential buyer data is collected.
  * The historical backend custody ledger remains inaccessible to public writes.
