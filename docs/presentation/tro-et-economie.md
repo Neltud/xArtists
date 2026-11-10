@@ -49,7 +49,7 @@ La [nouvelle page $TRO — Achat & Solana](https://neltud.github.io/xArtists/tro
 
 Le [plan technique et les conditions GO/NO-GO du bridge](https://github.com/Neltud/xArtists/blob/main/docs/TRO_SOLANA_BRIDGE_GO_NO_GO.md) précise les invariants de couverture, les contrôles anti-rejeu, la finalité, les multisignatures, les audits et les contraintes de conformité. La vente primaire de tokens, lorsqu'elle est juridiquement applicable, impose une revue dédiée des obligations MiCA en France et dans l'UE. **Une vitrine d'information n'est pas une offre publique de tokens.**
 
-**Les œuvres physiques Shopify/Etsy et les NFT d'artistes sont des parcours commerciaux distincts**. En particulier, un NFT créé et confirmé sur MultiversX ne devient pas automatiquement une œuvre physique livrable ni un actif transférable sur Solana.
+**Les œuvres physiques et les NFT d'artistes sont des objets juridiques et techniques distincts**, sans connecteur marchand tiers actif. En particulier, un NFT créé et confirmé sur MultiversX ne devient pas automatiquement une œuvre physique livrable ni un actif transférable sur Solana.
 
 ### Où vérifier une information
 
