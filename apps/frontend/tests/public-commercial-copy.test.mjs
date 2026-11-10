@@ -4,12 +4,15 @@ import { test } from 'node:test'
 
 const source = path => readFileSync(new URL(path, import.meta.url), 'utf8')
 
-test('Genesis products do not describe Whop subscriptions as a Genesis one-time checkout', () => {
+test('Genesis product pages reject mixed Whop/EUR checkout and show separate Stripe services', () => {
   const s = source('../src/pages/PackLandingPage.tsx')
   assert.doesNotMatch(s, /whop\.com\/checkout\//i)
-  assert.doesNotMatch(s, /Même prix one-time/)
-  assert.match(s, /Whop · abonnement TCA distinct/)
-  assert.match(s, /ne comprennent pas ce NFT/)
+  assert.doesNotMatch(s, /Whop|PackCheckout|PackOpenTheater|pack\.priceEur\.list/)
+  assert.match(s, /Abonnements mainstream · services seulement/)
+  assert.match(s, /ne contiennent aucun NFT/)
+  assert.match(s, /GENESIS_TARGETS_BY_ID/)
+  assert.match(s, /33 \/ 22 \/ 11 EGLD/)
+  assert.match(s, /Relevé contrat du 08\/11/)
 })
 
 test('Public footer points to the official GitBook and dashboard avoids a false live label', () => {
