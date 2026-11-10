@@ -30,7 +30,7 @@ Le bridge officiel MultiversX documente des schémas MultiversX ↔ chaînes EVM
 
 La page publique peut orienter vers le token MultiversX et vers une **plateforme tierce** de swap documentée dans le dépôt ; le routage externe ne constitue pas une preuve de liquidité ni une cotation garantie. Aucun prix, contrepartie ou wallet de paiement n'est publié ici. Aucun échange ne se déclenche automatiquement.
 
-Avant d'envisager une vente primaire ou l'ouverture d'un checkout, évaluer le règlement **MiCA** et les obligations applicables en France/UE : qualifications exactes du token et de l'opérateur, éventuelles exemptions, livre blanc, notifications, communications marketing non trompeuses, statut de service crypto, KYC et exigences de conformité, conditions de vente et protection des utilisateurs. Cette analyse nécessite un conseil juridique adapté aux faits. **Shopify/Etsy et les produits physiques sont un circuit distinct**, pas un moyen d'esquiver les obligations crypto.
+Avant d'envisager une vente primaire ou l'ouverture d'un checkout, évaluer le règlement **MiCA** et les obligations applicables en France/UE : qualifications exactes du token et de l'opérateur, éventuelles exemptions, livre blanc, notifications, communications marketing non trompeuses, statut de service crypto, KYC et exigences de conformité, conditions de vente et protection des utilisateurs. Cette analyse nécessite un conseil juridique adapté aux faits. **Les anciennes plateformes marchandes externes et les produits physiques sont un circuit distinct**, pas un moyen d'esquiver les obligations crypto.
 
 Sources publiques :
 - [AMF — MiCA](https://www.amf-france.org/fr/actualites-publications/dossiers-thematiques/mica)

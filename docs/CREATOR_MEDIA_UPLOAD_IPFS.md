@@ -196,12 +196,12 @@ Aucune exécution simulée en CI ne suffit pour clôturer #402.
 Le parcours public distingue désormais trois rayons :
 
 - **Art numérique** : créations d'artistes (images, MP4 NFT) ; recherche, tri et listings indexés par le backend quand disponible. Aucun achat automatique, aucune offre inventée et aucune donnée fictive déguisée en live.
-- **Œuvres physiques** : attestation de provenance, chaîne de garde xArtists, Shopify seulement après activation du marchand. Réception signée et litiges distincts du NFT.
+- **Œuvres physiques** : attestation de provenance, chaîne de garde xArtists en lecture seule ; aucun prestataire marchand connecté. Réception et litiges distincts du NFT.
 - **Packs IA** : Pulse, Yield et Sentinel, droits d'accès différents des NFT d'artistes.
 
-**Etsy :** le règlement officiel au 5 octobre 2026 interdit formellement la vente de NFT. Il est possible d'étudier des fiches **d'œuvres physiques originales** éligibles, avec photos réelles, prix, stocks, transport et origine ; **jamais présenter un NFT à vendre sur Etsy, ni orienter un acheteur Etsy vers un paiement externe**. Aucune publication Etsy n'est automatisée par cette PR.
+**Sources de marché :** rapports publics d’Artprice par Artmarket.com accessibles par lien externe ; aucune cote ni donnée de ventes payante intégrée sans licence B2B écrite.
 
-Sources : https://www.etsy.com/legal/policy/non-fungible-tokens-nfts-policy/1114711452112 · https://www.etsy.com/legal/creativity/ · https://docs.multiversx.com/tokens/nft-tokens/ · https://github.com/PinataCloud/docs/blob/main/pinata-api-ipfs.yaml
+Sources : https://fr.artprice.com/ · https://docs.multiversx.com/tokens/nft-tokens/ · https://github.com/PinataCloud/docs/blob/main/pinata-api-ipfs.yaml
 
 ## Tests et gates de mise en service
 

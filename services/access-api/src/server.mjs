@@ -27,13 +27,13 @@ import { oidcMintPullEnabled, verifyGitHubOidc, eligibleOidcOrders, claimOidcMin
 import { loadOrders } from './orders.mjs'
 import { troBridgeStatus } from './troBridgeStatus.mjs'
 import { createOpenSeaPreviewService } from './openseaPreview.mjs'
+import { artpriceReadiness } from './artpriceLicensed.mjs'
 import { tryHandleAuction, auctionPublicConfig } from './auctionHttp.mjs'
 import {studioMediaConfig,mediaJwt,mediaActor,readCreatorMedia,
   uploadStudioMedia,pinStudioMetadata} from './creatorMedia.mjs'
 import {
   physicalConfig, issuePhysicalSession, physicalActor, merchantAuthorized,
   registerPhysicalWork, readPhysicalWork, changePhysicalWork,
-  processShopifyPhysicalWebhook, readPhysicalRaw,
 } from './physicalFulfillment.mjs'
 
 const WORLD_RIGHTS = createWorldRightsHandler()
@@ -177,6 +177,9 @@ async function handleRequest(req, res) {
       orders_backend: process.env.DATABASE_URL ? 'postgres' : 'file',
       physical_works: physicalConfig().enabled ? 'configured' : 'off',
       physical_store: physicalConfig().storage,
+      artprice_data_license_verified: false,
+      artprice_records_enabled: false,
+      retired_commerce_providers_enabled: false,
       studio_media_upload:studioMediaConfig().enabled ? 'pinata_ipfs' : 'off',
       tro_solana_bridge:'off',
       opensea_preview_configured: Boolean(process.env.OPEN_SEA_API_KEY),
@@ -189,6 +192,20 @@ async function handleRequest(req, res) {
   }
 
 
+
+  // Artprice by Artmarket.com: official source metadata only.
+  // Paid results and artist-index feeds require a written data-license grant.
+  // No proxy, scraper, importer, invented price or Artprice API endpoint.
+  if (pth === '/v1/artprice/status') {
+    if (req.method !== 'GET') { json(res, 405, { ok: false, error: 'method_not_allowed' }); return }
+    json(res, 200, artpriceReadiness())
+    return
+  }
+  if (pth === '/v1/artprice/records') {
+    json(res, 403, { ok: false, error: 'artprice_written_license_required',
+      licensed: false, data: [], record_count: 0 })
+    return
+  }
 
   // Separate operational dependency check: /health intentionally stays fast
   // and does not pretend that DATABASE_URL guarantees a working database.
@@ -333,24 +350,16 @@ async function handleRequest(req, res) {
   // No NFT mint, payment capture, escrow release, NFT transfer or AI appraisal.
   if (req.method === 'GET' && pth === '/v1/physical/config') {
     json(res, 200, { ok: true, ...physicalConfig(),
-      shopify_webhook_registered: 'operator_must_verify',
+      commerce_provider: 'none', merchant_webhook_enabled: false,
       automatic_escrow_release: false, automatic_nft_transfer: false })
     return
   }
 
-  if (req.method === 'POST' && pth === '/v1/webhooks/shopify/physical') {
-    if (!physicalConfig().enabled) {
-      json(res, 503, { ok: false, error: 'physical_fulfillment_not_configured' })
-      return
-    }
-    const raw = await readPhysicalRaw(req)
-    try {
-      const result = await processShopifyPhysicalWebhook(raw, req.headers)
-      json(res, 200, result)
-    } catch (error) {
-      json(res, error.statusCode || 503, { ok: false,
-        error: error.statusCode ? error.message : 'physical_webhook_store_unavailable' })
-    }
+  // A legacy merchant endpoint is permanently retired: no body is read,
+  // no signature parser is invoked, and no PostgreSQL row can be changed.
+  // Keep 410 for existing integrations until third-party webhooks are revoked.
+  if (pth === '/v1/webhooks/shopify/physical') {
+    json(res, 410, {ok:false,error:'retired_commerce_provider'})
     return
   }
 

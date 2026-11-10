@@ -194,7 +194,7 @@ export default function TroCrosschainPage() {
           <p className="tro-portal__eyebrow">03 / TRANSPARENCE</p>
           <h2>Des étapes vérifiables.</h2>
           <p>Le bridge et le checkout direct restent fermés. {launchReady ? 'En revue.' : 'Aucun prix public de vente directe, taux de conversion ou mint Solana ne sont affirmés.'} 
-            Les œuvres physiques et leurs ventes Shopify/Etsy restent distinctes de $TRO et des NFTs.</p>
+            Les œuvres physiques et leurs certificats de provenance restent distincts de $TRO et des NFTs ; aucun marchand externe n’est connecté.</p>
         </div>
         <div className="tro-portal__bottomlinks">
           <Link to="/marketplace">Marketplace d’art ↗</Link>

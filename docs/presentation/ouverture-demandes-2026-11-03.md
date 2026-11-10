@@ -31,7 +31,7 @@ documentation synchronisée GitBook uniquement après validation CI et merge.
   **Pulse 110 €**, **Yield 75 €**, **Sentinel 50 €**. Ces tarifs ne
   constituent **pas** un devis accepté ni une vente possible aujourd'hui.
 - Les abonnements Whop/TCA sont **indépendants** des trois packs Genesis.
-  Aucune vente Whop ou Shopify n'est activée par cette publication.
+  Aucune vente ni abonnement réel n'est activé par cette publication.
 
 ## Ce qui reste fermé
 

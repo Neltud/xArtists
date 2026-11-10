@@ -30,7 +30,7 @@ const ship=(sku,shipment_status)=>({
   tracking_url:'https://tracking.example.com/detail',
 })
 
-test('physical module is disabled until all server-side gates are explicitly configured',()=>{
+test('retired physical vendor cannot be reactivated by stale Shopify or merchant environment flags',()=>{
   const cfg=physicalConfig({
     PHYSICAL_FULFILLMENT_ENABLED:'1',
     SHOPIFY_WEBHOOK_SECRET:'a'.repeat(32),SHOPIFY_SHOP_DOMAIN:'g2vj0e-10.myshopify.com',
@@ -44,7 +44,7 @@ test('physical module is disabled until all server-side gates are explicitly con
     SHOPIFY_WEBHOOK_SECRET:'a'.repeat(32),SHOPIFY_SHOP_DOMAIN:'g2vj0e-10.myshopify.com',
     ACCESS_JWT_SECRET:'secret-sufficiently-long',
     DATABASE_URL:'postgres://placeholder',PHYSICAL_ADMIN_TOKEN:'b'.repeat(40),
-  }).enabled,true)
+  }).enabled,false)
 })
 
 test('Shopify webhook verifies raw bytes, domain, topic and HMAC, prevents signature bypass',()=>{
@@ -170,7 +170,13 @@ test('HTTP path is fail-closed before a database/shop webhook is configured',asy
   try{
     const cfg=await (await fetch(server.base+'/v1/physical/config')).json()
     assert.equal(cfg.enabled,false)
+    assert.equal(cfg.mode,'vendor_retired')
+    assert.equal(cfg.commerce_provider,'none')
+    assert.equal(cfg.merchant_webhook_enabled,false)
     assert.equal(cfg.automatic_escrow_release,false)
+    const hook=await post(server.base+'/v1/webhooks/shopify/physical',{id:123456})
+    assert.equal(hook.status,410)
+    assert.equal((await hook.json()).error,'retired_commerce_provider')
     assert.equal((await post(server.base+'/v1/physical/challenge',{address:artist})).status,503)
     assert.equal((await post(server.base+'/v1/physical/works',{title:'test'})).status,503)
     assert.equal((await post(server.base+'/v1/physical/session',{address:artist})).status,503)
