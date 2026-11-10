@@ -12,7 +12,7 @@ La nouvelle [page $TRO · achat & Solana](https://neltud.github.io/xArtists/tro/
 - [Premier mint NFT artiste mainnet — checklist de preuves](docs/FIRST_ARTIST_MAINNET_MINT.md)
 - API publique de statut **en lecture seule** : https://xartists-access-api.onrender.com/v1/tro/bridge/status (disponible après fusion et déploiement)
 
-Le **Creator Studio** accepte JPG/PNG/WebP/MP4 mais l'upload automatique Pinata reste désactivé jusqu'à la configuration sécurisée de Render et la vérification de la base de données. Le mint lui-même exige la signature de l'artiste avec son wallet et une transaction mainnet confirmée. L'inscription Shopify/Etsy pour des œuvres physiques relève d'un canal distinct et ne constitue pas une vente de NFT ni de $TRO.
+Le **Creator Studio** accepte JPG/PNG/WebP/MP4 mais l'upload automatique Pinata reste désactivé jusqu'à la configuration sécurisée de Render et la vérification de la base de données. Le mint lui-même exige la signature de l'artiste avec son wallet et une transaction mainnet confirmée. Les anciennes intégrations marchandes externes ont été retirées du parcours xArtists. Pour le marché de l’art, les liens Artprice officiels sont consultables ; les bases de prix nécessitent une licence de données écrite.
 
 ## Discover xArtists
 
