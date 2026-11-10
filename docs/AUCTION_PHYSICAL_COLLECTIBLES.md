@@ -53,7 +53,7 @@ draft
   → ended              (end_at passed; winner = highest valid bid ≥ reserve)
   → settlement         (winner notified; payment window e.g. 48h)
   → paid               (PayBox IPN server_confirmed — path B style)
-  → fulfill            (physical: same ladder as PHYSICAL_ART_SHOPIFY…)
+  → fulfill            (physical: separate custody and buyer-acceptance evidence)
   → carrier_delivered
   → buyer_accepted | disputed
   → completed          (release seller + optional NFT transfer)
@@ -72,7 +72,7 @@ Aligné **path B** packs :
 1. Winner → session checkout PayBox **montant = highest bid + fees**.
 2. IPN RSA → `server_confirmed` sur `auction_order`.
 3. **Pas** de mint pack ici ; pour **digital_nft** : transfer depuis escrow **après** paid (et éventuellement après délai court anti-chargeback si politique EU).
-4. Pour **physical / hybrid** : paid ouvre **fulfillment** (Shopify ou carrier plugin manuel d’abord) — **identique** aux gates `ORDER_PAID → SHIPPED → CARRIER_DELIVERED → BUYER_ACCEPTED`.
+4. Pour **physical / hybrid** : paid ouvre **fulfillment** (transporteur tiers contractuellement vérifié, non connecté actuellement) — **identique** aux gates `ORDER_PAID → SHIPPED → CARRIER_DELIVERED → BUYER_ACCEPTED`.
 5. Libération vendeur (payout) **seulement** après `BUYER_ACCEPTED` ou fin inspection sans litige.
 
 EGLD/on-chain auction (English on MultiversX) = **P2+** (dépôts de garantie, gas, UX friction) — ne pas bloquer le P1 fiat.
