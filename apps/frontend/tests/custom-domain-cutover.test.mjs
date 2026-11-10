@@ -60,6 +60,6 @@ test('domain cutover never authorizes a mint, card checkout or contact mailbox',
   const guards = read('src/config/legalEntity.ts')
   assert.match(guards, /contact: 'Issues GitHub/)
   assert.doesNotMatch(guards, /hello@xartists\.art/)
-  const hosting = read('../../docs/ops/OVH_DOMAIN_MAIL_RENDER_POSTGRES_BOUNDARIES_2026-11-10.md')
-  assert.match(hosting, /PostgreSQL/)
+  // Domain migration is independent of database/ledger infrastructure.
+  assert.doesNotMatch(workflow, /\b(?:setPackPrice|buyPack|live_mint=true)\b/)
 })
