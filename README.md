@@ -68,6 +68,7 @@ Optional APIs or credentials must be configured out of band. **Never commit priv
 ## Project and documentation
 
 - [Official public GitBook](https://xartists.gitbook.io/xartists/) — visitors, collectors, creators, mobile guide, product scope
+- [Commercial launch preparation (10 Nov 2026)](docs/ops/COMMERCIAL_LAUNCH_PREP_2026-11-10.md) — per-rail GO/NO-GO evidence, owner approvals and rollback; **no financial activation**
 - [Safety and launch gates](docs/security/launch-gates.md) — evidence before merchant/mainnet operations
 - [Commercial model](docs/COMMERCIAL_MODEL.md) — Genesis vs Whop, pricing, delivery distinctions
 - [GitHub Actions](https://github.com/Neltud/xArtists/actions) — reproducible tests and Pages deployments
