@@ -17,6 +17,12 @@ const ID = {
   subscription: /^sub_[A-Za-z0-9]{6,128}$/,
   price: /^price_[A-Za-z0-9]{6,128}$/,
 }
+// Owner-approved *targets*, not Stripe product/price creation or checkout permission.
+const MONTHLY_EUR_CENTS = Object.freeze({
+  fiat_379: 379,
+  fiat_579: 579,
+  fiat_979: 979,
+})
 const NO_GO = Object.freeze({
   grant_access: false,
   nft_owned: false,
@@ -41,8 +47,9 @@ const validBinding = binding =>
   ID.customer.test(binding.customer_id ?? '') &&
   ID.subscription.test(binding.subscription_id ?? '') &&
   ID.price.test(binding.price_id ?? '') &&
-  (binding.plan === 'tca_monthly' || binding.plan === 'tca_annual') &&
-  (binding.currency === 'eur')
+  Object.hasOwn(MONTHLY_EUR_CENTS, binding.plan) &&
+  binding.amount_cents === MONTHLY_EUR_CENTS[binding.plan] &&
+  binding.interval === 'month' && binding.currency === 'eur'
 
 function invoiceSubscriptionId(invoice) {
   const direct = invoice.subscription
@@ -90,8 +97,10 @@ export function inspectStripeBillingSandboxEvent({
       // Payment failure triggers review/revocation; never grants access.
       return candidate('failed_invoice_reconcile', event.id, binding.subscription_id)
     }
+    // Strict initial pilot: coupons, tax variations, prorations and extras
+    // require a separately reconciled pricing policy before acceptance.
     if (object.status !== 'paid' || object.paid !== true ||
-        !Number.isSafeInteger(object.amount_paid) || object.amount_paid <= 0 ||
+        !Number.isSafeInteger(object.amount_paid) || object.amount_paid !== binding.amount_cents ||
         !['subscription_create', 'subscription_cycle', 'subscription_update'].includes(object.billing_reason)) {
       return hold('invoice_not_paid_or_trial_unapproved')
     }
