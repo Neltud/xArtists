@@ -49,3 +49,20 @@
 - **Stripe / MoonPay / PayBox / Finance Computer** : aucun checkout, paiement, abonnement, mint, signature ou changement de contrat via cette préparation OVH.
 
 **Conclusion : NO-GO contact commercial par email, NO-GO paiements et NFT, jusqu'aux attestations séparées.**
+
+
+## Sonde publique — 10 novembre 2026, 18:43 Europe/Paris
+
+Lecture seule, sans login OVH, sans envoi d'email, sans changement de zone.
+
+| Contrôle | Constat | Décision |
+|---|---|---|
+| NS / SOA | `dns107.ovh.net`, `ns107.ovh.net` | Délégation DNS OVH **observée**. Ce n'est pas une preuve de fin de clientHold ni de commande livrée. |
+| A `xartists.art` | `51.91.236.255` | L'apex résout. À 18:12 il était encore NXDOMAIN. |
+| HTTPS | Certificat `CN=cluster129.hosting.ovh.net`, pas `xartists.art` | **NO-GO** : le nom du domaine n'est pas couvert. |
+| Contenu HTTP | Page OVH « Site en construction » | **Ce n'est pas la dApp.** La dApp reste [GitHub Pages](https://neltud.github.io/xArtists/), HTTP 200. |
+| `www` | NXDOMAIN | **NO-GO** |
+| MX | `mail.xartists.art` → `146.59.146.223` | Hôte mail résolu. **Pas** une boîte hello@ testée. |
+| SPF / DMARC | Un enregistrement de chaque, forme valide | Candidat DNS seulement. Pas de preuve d'envoi, de réception ni de DKIM. |
+
+`production_contact_ready` reste **false**. Ne pas publier `hello@xartists.art`. Ne pas créer de MySQL OVH. Ne pas coller cette zone sur la dApp sans certificat au nom du domaine et sans inventaire de zone sauvegardé. PostgreSQL Render n'est toujours pas identifié : Access, autre sandbox ou base dédiée.
