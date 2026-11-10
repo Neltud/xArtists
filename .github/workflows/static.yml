@@ -223,9 +223,8 @@ jobs:
     needs: build
     if: github.ref == 'refs/heads/main'
     steps:
-      # Protect the current neltud.github.io/xArtists site until the new
-      # domain is actually claimed in GitHub Pages settings and OVH DNS.
-      - name: Enforce xartists.art Pages ownership and DNS before root-base deployment
+      # Read-only custom-domain and DNS guard; no configuration changes.
+      - name: Verify xartists.art Pages ownership and public DNS before deploying
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -235,132 +234,24 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             "https://api.github.com/repos/$GITHUB_REPOSITORY/pages" | jq -r '.cname // ""')"
           if [ "$cname" != "xartists.art" ]; then
-            echo "::error::Pages custom domain must be xartists.art before a root-path release. No deploy."
-            exit 1
+            echo "::error::Pages domain not xartists.art"; exit 1
           fi
           records="$(dig +short xartists.art A)"
           for ip in 185.199.108.153 185.199.109.153 185.199.110.153 185.199.111.153; do
             if ! grep -Fxq "$ip" <<< "$records"; then
-              echo "::error::Missing GitHub Pages apex A: $ip (DNS not ready; no deploy)"
-              exit 1
+              echo "::error::Missing GitHub Pages apex A $ip"; exit 1
             fi
           done
-          if grep -Ev '^(185\\.199\\.(108|109|110|111)\\.153)
-        uses: actions/deploy-pages@v4
-
-      - name: Verify deployed Pages serves EXACT source SHA (not just a successful upload)
-        run: |
-          set -euo pipefail
-          ok=0
-          for attempt in 1 2 3 4 5 6 7 8 9 10 11 12; do
-            status=$(curl -sS -L --max-time 20 -H 'Cache-Control: no-cache' \
-              -o /tmp/xartists-live-build-info.json -w '%{http_code}' \
-              "https://xartists.art/build-info.json?sha=${GITHUB_SHA}&attempt=${attempt}") || status=000
-            if [ "$status" = 200 ] && jq -e --arg sha "$GITHUB_SHA" \
-              '.source_sha == $sha and .renderer == "sites-v3" and
-               (.release_version | type == "string") and
-               .version_source == ".release-please-manifest.json"' \
-              /tmp/xartists-live-build-info.json >/dev/null 2>&1; then
-              echo "Pages built commit confirmed: $GITHUB_SHA"
-              ok=1
-              break
-            fi
-            echo "Pages still stale/unavailable at attempt $attempt (HTTP $status)"
-            sleep 6
-          done
-          if [ "$ok" != 1 ]; then
-            echo "::error::Pages did not serve this exact commit SHA. No public GO."
-            exit 1
+          if grep -Ev '^185\.199\.(108|109|110|111)\.153$' <<< "$records" | grep -q .; then
+            echo "::error::Unexpected apex A"; exit 1
           fi
-
-      - name: Verify public Genesis product links return HTTP 200
-        run: |
-          set -euo pipefail
-          for pack in pulse yield sentinel; do
-            ok=0
-            for attempt in 1 2 3 4 5 6; do
-              status=$(curl -sS -L --max-time 20 -o /tmp/xartists-product.html -w '%{http_code}' "https://xartists.art/packs/$pack/")
-              if [ "$status" = 200 ] && grep -q '/assets/' /tmp/xartists-product.html; then
-                echo "Verified $pack direct link HTTP 200 and Vite asset reference"
-                ok=1
-                break
-              fi
-              echo "Product $pack not ready (HTTP $status), attempt $attempt"
-              sleep 5
-            done
-            if [ "$ok" != 1 ]; then
-              echo "::error::Public Genesis pack $pack did not pass direct-link check"
-              exit 1
-            fi
-          done
-
-          # Campaign links must open directly from emails/social shares.
-          for page in offres offers; do
-            ok=0
-            for attempt in 1 2 3 4 5 6; do
-              status=$(curl -sS -L --max-time 20 -o /tmp/xartists-commercial.html -w '%{http_code}' "https://xartists.art/$page/")
-              if [ "$status" = 200 ] && grep -q '/assets/' /tmp/xartists-commercial.html; then
-                echo "Verified $page campaign deep link HTTP 200 and Vite asset reference"
-                ok=1
-                break
-              fi
-              echo "$page campaign URL not ready (HTTP $status), attempt $attempt"
-              sleep 5
-            done
-            if [ "$ok" != 1 ]; then
-              echo "::error::Public campaign deep link $page did not pass HTTP 200 check"
-              exit 1
-            fi
-          done
-
-          # Public Marketplace and Auctions are browse-only until their
-          # independently approved settlement and bid gates pass.
-          for page in marketplace auction; do
-            ok=0
-            for attempt in 1 2 3 4 5 6; do
-              status=$(curl -sS -L --max-time 20 -o /tmp/xartists-commerce.html -w '%{http_code}' "https://xartists.art/$page/")
-              if [ "$status" = 200 ] && grep -q '/assets/' /tmp/xartists-commerce.html; then
-                echo "Verified public $page deep link HTTP 200 and Vite assets"
-                ok=1
-                break
-              fi
-              echo "$page catalog link not ready (HTTP $status), attempt $attempt"
-              sleep 5
-            done
-            if [ "$ok" != 1 ]; then
-              echo "::error::Marketplace/Auction public link $page did not pass HTTP 200"
-              exit 1
-            fi
-          done
-
-          # Direct deep links to the new $TRO discovery page must work.
-          for page in tro/sale finance/tro/sale; do
-            ok=0
-            for attempt in 1 2 3 4 5 6; do
-              status=$(curl -sS -L --max-time 20 -o /tmp/xartists-tro.html -w '%{http_code}' "https://xartists.art/$page/")
-              if [ "$status" = 200 ] && grep -q '/assets/' /tmp/xartists-tro.html; then
-                echo "Verified $page direct URL HTTP 200 and Vite asset reference"
-                ok=1
-                break
-              fi
-              echo "$page not yet ready (HTTP $status), attempt $attempt"
-              sleep 5
-            done
-            if [ "$ok" != 1 ]; then
-              echo "::error::TRO public deep link $page not ready"
-              exit 1
-            fi
-          done
- <<< "$records" | grep -q .; then
-            echo "::error::Unexpected apex A record: remove OVH construction IP before deploying"
-            exit 1
+          if [ -n "$(dig +short xartists.art AAAA)" ]; then
+            echo "::error::Unexpected apex AAAA"; exit 1
           fi
           www="$(dig +short www.xartists.art CNAME | tr '[:upper:]' '[:lower:]')"
           if [ "$www" != "neltud.github.io." ]; then
-            echo "::error::www CNAME must resolve directly to neltud.github.io. No deploy."
-            exit 1
+            echo "::error::www must point to neltud.github.io."; exit 1
           fi
-          echo "GitHub Pages custom domain and OVH web DNS verified; mail DNS untouched."
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
