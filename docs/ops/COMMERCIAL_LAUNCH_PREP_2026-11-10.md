@@ -33,6 +33,20 @@ Les six validations de catégorie (site public, prix, wallets, IPFS/PostgreSQL, 
  
 Le propriétaire s'occupe personnellement du domaine `xartists.art`, à recontrôler après correction du registraire. Les montants EUR ne sont pas qualifiés TTC ou HT ; TVA, CGV, services inclus, essais et résiliation restent à arbitrer. Les anciens tarifs `29 €/mois`, `290 €/an`, `33 / 22,5 / 15 EGLD` et l'ancien catalogue Genesis en EUR ne doivent pas alimenter un checkout.
 
+## Attestation HTTP read-only du backend Render — 10 novembre 2026
+
+**Nouvelle observation factuelle**, obtenue par requêtes HTTP GET publiques en lecture seule, sans identifiant, sans migration ni paiement. Elle actualise le constat incomplet du contrôle initial ; **ne prouve pas le projet Neon ou la bonne base de production**.
+
+| URL publique (GET) | Réponse JSON utile | Interprétation exacte |
+|---|---|---|
+| `https://xartists-access-api.onrender.com/health` | `ok=true`, `orders_backend="postgres"` | Processus API disponible et variable DATABASE_URL détectée ; aucun contrôle de privilèges dans `/health` |
+| `https://xartists-access-api.onrender.com/v1/ops/orders-store/status` | `ok=true`, `backend="postgres"`, `table_ready=true` | Une connexion SQL du backend a résolu `public.paybox_orders` lors du contrôle |
+| `https://xartists-access-api.onrender.com/v1/ops/mint-jobs-store/status` | `ok=true`, `backend="postgres"`, `table_ready=true` | Une connexion SQL du backend a résolu `public.mint_jobs` lors du contrôle |
+
+**Sur `/health` au même moment :** `paybox_checkout_enabled=false` même si `paybox_configured=true` et `paybox_mode="prod"`; `stripe_live_checkout_enabled=false`, `stripe_sandbox.checkout_enabled=false`, `stripe_sandbox.webhook_ready=false`, `moonpay_configured=false`, `mint_dispatch_enabled=false`, `mint_dry_run=true`, `mint_live_enabled=false`, `lia_live_trading="0"`. **Attention :** `mint_oidc_pull_enabled=true`, une route de préparation GitHub OIDC en **dry run**, reste active ; elle n'est pas un mint live ni une autorisation commerciale et requiert un contrôle spécifique de ses mutations de jobs d'essai.
+
+Les sondes PostgreSQL répondent par présence de tables (via `to_regclass`) avec cache court ; elles ne démontrent **ni** l'identité du DSN/tenant, **ni** les colonnes/index, **ni** les droits INSERT, **ni** la reprise après incident, **ni** la persistance des commandes et reçus. Le workspace Render ne contient aucune instance Postgres managée : la base peut être externe. Pour terminer la preuve **sans exposer de secret**, le propriétaire de l'infrastructure compare en interface privée le **hostname/projet et la base** du `DATABASE_URL` Render aux instances Neon, puis signe une attestation **sans DSN, mot de passe, token ou données personnelles**. Un contrôle de restauration et d'idempotence sur **base jetable** reste nécessaire. Aucune connexion de production ni aucune configuration n'a été modifiée durant cette lecture.
+
 ## Matrice des capacités — aucune opération transactionnelle ouverte
 
 | Parcours / rail | Utilisable maintenant | Preuves minimales avant GO financier / NFT | Travaux | Autorité finale |
