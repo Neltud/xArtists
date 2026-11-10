@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { AGENT_PACKS, PACK_VISUAL, PACK_EDITION } from '../../config/agentPacks'
+import { GENESIS_TARGETS_BY_ID } from '../../config/commercialTargets'
 import { useCopy } from '../../experience/state'
 import { localizeChild as xaLocalize, renderChild as xaRender } from '../../i18n/phraseRuntime'
 import GenesisCard3D from './GenesisCard3D'
@@ -36,7 +37,7 @@ export default function GenesisPackShelf() {
           return (
             <article
               key={pack.id}
-              className="xa-genesis-card flex flex-col overflow-hidden rounded-2xl border bg-black/30"
+              className="xa-genesis-card flex flex-col overflow-hidden rounded-2xl border bg-white dark:bg-zinc-900"
               style={{ borderColor: visual.border, boxShadow: visual.glow }}
             >
               <div className="p-3 pb-0">
@@ -61,8 +62,8 @@ export default function GenesisPackShelf() {
                 <p className="xa-genesis-series text-[12px] text-zinc-400">{edition.seriesName}</p>
                 <p className="text-[11px] text-zinc-500">{xaRender(visual.mediaMotif)}</p>
                 <div className="xa-genesis-price mt-1 flex items-baseline gap-2">
-                  <strong className="text-lg tabular-nums text-white">{pack.priceEur.list} €</strong>
-                  <span className="text-[12px] text-zinc-500">Catalogue indicatif</span>
+                  <strong className="text-lg tabular-nums text-zinc-900 dark:text-white">{GENESIS_TARGETS_BY_ID[pack.id].targetEgld} EGLD</strong>
+                  <span className="text-[12px] text-zinc-600 dark:text-zinc-400">Plafond cible · non payable</span>
                 </div>
                 <p className="xa-genesis-cap text-[12px]" style={{ color: visual.accent }}>
                   <strong className="tabular-nums">{edition.maxSupply}</strong>
@@ -88,7 +89,7 @@ export default function GenesisPackShelf() {
 
       <p className="mt-3 text-[11px] text-zinc-600">
         {xaLocalize(
-          'Aperçus visuels et numéros d’édition illustratifs, non mintés. Prix de catalogue non contractuels. Paiements et mint SFT publics désactivés (paper-first).',
+          'Aperçus visuels et numéros d’édition illustratifs, non mintés. Plafonds commerciaux 33 / 22 / 11 EGLD, pas des devis ni des prix de contrat. Paiements et mint SFT publics désactivés ; politique de devis EUR/EGLD non opérationnelle.',
         )}
       </p>
     </section>
