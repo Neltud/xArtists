@@ -137,7 +137,9 @@ export function createNeonAuthIdentityVerifier({
 
     return Object.freeze({
       provider: 'email_oidc',
-      subject: payload.sub,
+      // Namespaced by the exact auth instance: other Neon environments cannot
+      // resolve the same internal account via an equal opaque sub claim.
+      subject: config.jwksUrl + '#' + payload.sub,
       verifiedAt: new Date(nowMs).toISOString(),
     })
   }
