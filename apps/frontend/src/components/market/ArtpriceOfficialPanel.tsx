@@ -47,6 +47,16 @@ export default function ArtpriceOfficialPanel() {
         reproduits ici : xArtists n’a pas encore de licence de redistribution
         ni de flux de données contractuellement vérifié.
       </p>
+      <div className="mt-4 rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-4 dark:border-zinc-700 dark:bg-zinc-800">
+        <p className="text-xs font-semibold uppercase tracking-wide text-zinc-600 dark:text-zinc-300">Indicateur publié · rapport contemporain 2026</p>
+        <p className="mt-2 text-2xl font-semibold tabular-nums text-zinc-900 dark:text-white">208 000 œuvres</p>
+        <p className="mt-1 text-sm leading-6 text-zinc-700 dark:text-zinc-300">
+          Adjugées dans le monde de juillet 2025 à juin 2026 selon Artprice,
+          dans son rapport 2026. Chiffre historique agrégé, non une cote en temps réel.
+          <a href={ART_PRICE_CONTEMPORARY_2026} target="_blank" rel="noopener noreferrer"
+            className="ml-1 underline underline-offset-4">Source officielle</a>.
+        </p>
+      </div>
       <p role="status" className="mt-4 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-950 dark:border-amber-700 dark:bg-amber-950/30 dark:text-amber-100">
         {status === 'checking' ? 'Contrôle de disponibilité des données…' :
           status === 'pending_license' ? 'Connexion aux données Artprice : licence officielle en attente. Aucune cote ou estimation publiée.' :
