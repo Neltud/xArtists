@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { getAccessApiBase } from '../../lib/stripe'
 
 /**
  * Artprice by Artmarket.com: official source links, NOT a data feed or
@@ -13,7 +12,7 @@ const ART_PRICE_CONTEMPORARY_2026 =
 const ART_PRICE_OFFICIAL_SITE = 'https://fr.artprice.com/'
 
 export default function ArtpriceOfficialPanel() {
-  const base = getAccessApiBase()
+  const base = ((import.meta.env.VITE_ACCESS_API_BASE as string | undefined) || '').replace(/\/$/, '')
   const [status, setStatus] = useState<'checking' | 'pending_license' | 'unavailable'>('checking')
 
   useEffect(() => {
