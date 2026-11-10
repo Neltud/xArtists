@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 
-const BASE = (process.env.E2E_BASE_URL || 'https://neltud.github.io/xArtists').replace(/\/+$/, '');
+const BASE = (process.env.E2E_BASE_URL || 'https://xartists.art').replace(/\/+$/, '');
 
 // Read-only checks of the deployed host, separate from the PR-local UX suite.
 async function visitPublished(page: Page, path: string) {

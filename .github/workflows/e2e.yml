@@ -32,7 +32,7 @@ jobs:
 
       - name: Run deployed-site smoke only (no local UX specs)
         env:
-          E2E_BASE_URL: https://neltud.github.io/xArtists
+          E2E_BASE_URL: https://xartists.art
           CI: true
         run: npx playwright test --config=playwright.config.ts
 
@@ -41,7 +41,7 @@ jobs:
         run: |
           cat >> "$GITHUB_STEP_SUMMARY" <<'SUMMARY'
           ### Published Pages smoke
-          Target: https://neltud.github.io/xArtists
+          Target: https://xartists.art
 
           This job checks the already published website. It does not build or validate this PR's frontend.
           The separate UX local preview workflow builds this PR and runs the responsive suite.
