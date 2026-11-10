@@ -15,7 +15,8 @@ test('Artprice source is official Artmarket.com, no fabricated paid data, no cac
   assert.equal(ready.auto_import, false)
   assert.equal(ready.artprice_partner, false)
   assert.match(ready.official_source, /^https:\/\/fr\.artprice\.com\/$/)
-  assert.match(ready.official_report, /^https:\/\/fr\.artprice\.com\/artprice-news\//)
+  assert.match(ready.official_report, /^https:\/\/fr\.artprice\.com\/artprice-reports\/le-marche-de-lart-contemporain-2026$/)
+  assert.match(ready.official_report_2025, /^https:\/\/fr\.artprice\.com\/artprice-news\//)
   assert.match(ARTPRICE_SOURCE.terms, /^https:\/\/fr\.artprice\.com\/block\/cgv/)
 })
 test('Artprice export shape is only preparatory; estimates or unknown prices are invalid', () => {
