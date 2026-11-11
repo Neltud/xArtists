@@ -131,6 +131,11 @@ export default function MarketplacePage(){
       </nav>
     </section>
 
+    {selected==='art'&&<MarketplaceDiscoveryGrid
+      listings={items} sourceReady={sourceReady} loading={loading} query={query} sort={sort}
+      onQuery={setQuery} onSort={setSort} onRefresh={()=>void refresh()}
+    />}
+
     {selected==='art'&&<section id="xa-market-sell" className="space-y-3 rounded-2xl border border-white/10 p-3 sm:p-5" aria-label="Vendre mes NFT">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div><h2 className="text-lg font-semibold">Vendre mes NFT</h2>
@@ -139,11 +144,6 @@ export default function MarketplacePage(){
       </div>
       <MyOwnedNftsPanel />
     </section>}
-
-    {selected==='art'&&<MarketplaceDiscoveryGrid
-      listings={items} sourceReady={sourceReady} loading={loading} query={query} sort={sort}
-      onQuery={setQuery} onSort={setSort} onRefresh={()=>void refresh()}
-    />}
 
     {selected==='art'&&<details className="xa-market-tech"
       onToggle={e=>setShowTech(e.currentTarget.open)}>
