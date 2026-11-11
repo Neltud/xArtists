@@ -1,70 +1,44 @@
-# xArtists · Art, AI Agents & MultiversX
+# xArtists · Art, NFTs, xOrus & MultiversX
 
-**An immersive art and AI experience, open to everyone.** xArtists connects artists, collectors and visitors through a 3D museum, creative tools, NFTs and agent intelligence dashboards on MultiversX.
+**Site officiel : [xartists.art](https://xartists.art/)** · [Musée](https://xartists.art/museum/) · [Marketplace](https://xartists.art/marketplace/) · [Studio](https://xartists.art/studio/) · [GitBook](https://xartists.gitbook.io/xartists/) · [GitHub Actions](https://github.com/Neltud/xArtists/actions)
 
-[**Launch the public dApp**](https://neltud.github.io/xArtists/) · [**Official GitBook**](https://xartists.gitbook.io/xartists/) · [**Browse the museum**](https://neltud.github.io/xArtists/museum) · [**AI Agents**](https://neltud.github.io/xArtists/agents)
+xArtists est une dApp d'art et de création : découverte sans wallet, œuvres physiques et numériques, NFT signés par leur propriétaire, outils 3D et intelligence **xOrus** (paper). Les contrats et services ont des autorisations séparées ; une interface visible ne garantit pas qu'une opération commerciale est activée.
 
-## xOrus, xRights et sculpture 3D
+## Les quatre parcours
 
-**xOrus** centralise les analyses et la qualité des signaux, tandis que **xRights** (ancien XA World Rights) prépare les licences sociales. Le [Lab sculpture](https://xartists.art/lab?view=3d) permet de faire tourner localement 4–36 vues d’une œuvre avant tout maillage certifié. La récompense envisagée de **1 TRO par NFT physique réellement minté et vérifié** reste sans versement automatique : preuve blockchain, anti-doublon, réserve et autorisation humaine sont indispensables.
+| Votre objectif | Lien | Ce qui est réellement fait |
+| --- | --- | --- |
+| **Vendre un NFT que je possède** | [Vendre mon NFT](https://xartists.art/marketplace/#xa-market-sell) | Choisir dans le wallet, fixer un prix EGLD, vérifier les royalties et l'escrow, puis **signer personnellement** le listing ; preuve finale sur Explorer nécessaire |
+| **Créer le NFT de ma sculpture** | [Studio sculpture](https://xartists.art/studio/?mode=sculpture) | Photo/vidéo ou GLB + droits + collection et rôle NFTCreate + URI IPFS/HTTPS valide + signature du minter |
+| **Tourner / examiner ma sculpture** | [Lab 3D](https://xartists.art/lab/?view=3d) | Rotation locale de 4–36 photos/MP4 ; import d'un GLB existant jusqu'à 32 Mio et aperçu 3D ; pas de maillage inventé ni de certificat métrique |
+| **Explorer l'intelligence paper** | [xOrus](https://xartists.art/intelligence/xorus/) | 120 **définitions** de signaux, sources datées, abstention si données insuffisantes, aucune transaction autonome |
 
-## xOrus — intelligence xArtists (paper)
+Les identifiants historiques `/lia` et `lia/` restent en compatibilité pendant la migration vers **xOrus**. L'archive Vellum/Chorus n'est plus un moteur autorisé à lancer des transactions. Le vote externe ChatGPT est au plus de 15 % ; Sentinel garde son veto.
 
-**xOrus** est le nouveau nom public de l'essaim d'analyse précédemment appelé Chorus. Il définit **120 signaux** ; la présence dans le catalogue ne signifie pas qu'ils sont alimentés. Sans données indépendantes et fraîches, le système s'abstient. Le veto Sentinel demeure prioritaire et l'avis externe est limité à 15 %.
+## État confirmé au 11 novembre 2026
 
-`LIA_LIVE_TRADING` n'active aucune transaction xOrus : `executable=false`, ni signature, ni trade, ni mint. Les paiements et actions mainnet restent des parcours distincts, sous contrôle humain.
+- **GitHub Pages** : déploiement de `969b3a96c38aba5a1ab596535490f097079e3c8e` sur `xartists.art` vérifié par [l'Action Pages](https://github.com/Neltud/xArtists/actions/runs/43093538589), y compris lecture publique du `source_sha`. Les commits ultérieurs demandent une nouvelle vérification.
+- **Marketplace vendeurs** : PR [#518](https://github.com/Neltud/xArtists/pull/518) et [#514](https://github.com/Neltud/xArtists/pull/514) intégrées ; préparation du listing de **ses propres NFT**, contrôle frais/royalties depuis la chaîne, codeHash/payable et signature wallet. **Un listing utilisateur signé sur cette version et son dépôt confirmé en escrow restent à prouver** ([issue #428](https://github.com/Neltud/xArtists/issues/428)). Les gates achat/enchères/packs sont distincts.
+- **Creator Studio** : collection NFT mainnet, rôle `ESDTRoleNFTCreate`, création d'un NFT par signature personnelle. Le premier mint d'une sculpture depuis le parcours complet n'est **pas** documenté comme confirmé.
+- **IPFS / GLB** : le frontend et l'API existent, mais le service sécurisé d'upload peut être **OFF** en production. Pour l'activer, vérifier les migrations PostgreSQL `004` puis `005`, le compte Pinata, le JWT serveur, les quotas et les tests de publication. Le switch GLB est supplémentaire. **Aucune clé n'est placée dans Vite, GitHub ou le navigateur.**
+- **Comptes sans wallet et abonnement EUR** : parcours de préparation/sandbox, pas de lien production ou droit NFT présumé. Les offres Genesis/PayBox, RWA, enchères payables et trading autonome restent soumis à des GO/NO-GO séparés ; pas de promesse de rendement ni de livraison implicite.
 
-- [Documentation xOrus](docs/XORUS.md) · [board paper xOrus (snapshot non temps réel)](apps/frontend/public/data/xorus_board.json)
-- Nouvelle commande : `PYTHONPATH=. python -m lia.xorus`. L'import historique `lia.chorus` reste temporairement pour les intégrations existantes, avec migration après la vérification de la PR de sécurité #513.
+## Google Drive et originaux de collection
 
-## $TRO — acquisition et interopérabilité Solana (release gated)
+Le dossier de galerie xArtists a été inventorié le **11 novembre 2026** : **291 PNG**, ainsi que **4 MP4** dans son dossier vidéo historique. Il s'agit d'un **inventaire privé de fichiers, pas de 295 NFT**. Les fichiers, IDs Drive, droits de chaque artiste, empreintes SHA-256 et CIDs ne sont **pas publiés** dans le repo. Ne jamais rendre une archive privée publique par simple changement d'URL de partage.
 
-La nouvelle [page $TRO · achat & Solana](https://neltud.github.io/xArtists/tro/sale) propose une présentation claire de **TRO-94c925 sur MultiversX**, le contrôle de l'identifiant sur Explorer et un accès externe au DEX, **sans prix ni liquidité garantis**. Le projet de bridge Solana est **désactivé** : aucun mint SPL officiellement attesté, aucune adresse de dépôt, aucun transfert, aucune vente directe xArtists.
+Parcours autorisé : choisir les œuvres et attester les droits → contrôler les octets originaux et les empreintes → publier sur IPFS via un compte artiste authentifié → vérifier les CIDs → signer le mint → confirmer sur Explorer. L'import manuel fonctionne dès qu'un artiste télécharge une copie depuis Drive puis la sélectionne dans Studio ; **aucune synchronisation OAuth Drive→IPFS sans consentement n'est revendiquée**.
 
-- [Architecture et GO/NO-GO du bridge](docs/TRO_SOLANA_BRIDGE_GO_NO_GO.md)
-- [Premier mint NFT artiste mainnet — checklist de preuves](docs/FIRST_ARTIST_MAINNET_MINT.md)
-- API publique de statut **en lecture seule** : https://xartists-access-api.onrender.com/v1/tro/bridge/status (disponible après fusion et déploiement)
+Voir [staging Drive privé](docs/ops/DRIVE_NFT_PRIVATE_STAGING_2026-11-11.md), [guide créateur/vente/Drive](docs/presentation/creer-vendre-nft-ipfs-drive.md) et [runbook backend IPFS](docs/ops/BACKEND_IPFS_ACTIVATION_2026-11-11.md).
 
-Le **Creator Studio** accepte JPG/PNG/WebP/MP4 mais l'upload automatique Pinata reste désactivé jusqu'à la configuration sécurisée de Render et la vérification de la base de données. Le mint lui-même exige la signature de l'artiste avec son wallet et une transaction mainnet confirmée. Les anciennes intégrations marchandes externes ont été retirées du parcours xArtists. Pour le marché de l’art, les liens Artprice officiels sont consultables ; les bases de prix nécessitent une licence de données écrite. Voir [l'architecture de sources officielles Artprice](docs/ARTPRICE_OFFICIAL_LICENSING_2026-11-10.md).
+## Plugins et services
 
-## Discover xArtists
+- [**xRights**](https://xartists.art/create/world-rights/) : atelier de licences de contenus sociaux, édition/export de dossiers locaux. Le **ZIP premium n'est pas publié** : téléchargement payant / exemption propriétaire exigent une licence et un entitlement vérifiés sur le serveur. Connexion YouTube en lecture seule soumise à OAuth et disponibilité backend ; autres plateformes en préparation manuelle. [Code](packages/xa-world-rights/README.md).
+- [**NFT Factory / Distributeurs**](https://xartists.art/create/nft-factory/) : plans de collection et distributeur **paper** ; aucune génération, distribution, vente ou mint automatique autorisé. [Spécification](docs/NFT_FACTORY_DISTRIBUTORS_PAPER_TO_LIVE.md).
+- **xOrus Agent** : [connecteur de données en préparation](packages/xorus-agent/README.md), pas un endpoint MCP public actif, ni un plugin de trading.
+- [**GitBook officiel**](https://xartists.gitbook.io/xartists/) : édition liée au dossier `docs/` par Git Sync GitHub. [Guides plugins](docs/presentation/plugins-xartists.md).
 
-| Explore | Create | Intelligence | Your space |
-| --- | --- | --- | --- |
-| Immersive museum, collections and artwork references | Phygital Studio and collection preparation | LIA, Command Center, Genesis agent profiles | Wallet, owned artworks and access rights |
-
-**No wallet is needed for public discovery.** The V3 mobile interface offers a lightweight 2D LIA overview, with an optional 3D immersive experience. Live signals in the public interface may be simulated or delayed; always read their labels.
-
-## Genesis AI agent packs
-
-| Pack | Tier | Catalogue price | Edition cap |
-| --- | --- | ---: | ---: |
-| **Pulse** | Gold | **€110** | 333 |
-| **Yield** | Silver | **€75** | 500 |
-| **Sentinel** | Platinum | **€50** | 777 |
-
-Genesis packs are **planned one-time purchases**, associated with limited-edition MultiversX NFT artworks and advertised durable access rights. They **are not subscriptions**. **Sales are currently suspended.** Recorded `getPackPrice` values on 8 November were Pulse **1 EGLD**, Yield **5 EGLD** and Sentinel **2.5 EGLD**, which do not constitute executable quotes or parity with the EUR catalogue. Existing pack NFTs have empty media URIs; delivery and access entitlements have not been validated for public sales.
-
-**Whop TCA Membership is separate:** recurring services while subscribed; no Genesis SFT automatically included. See [commercial model](docs/COMMERCIAL_MODEL.md), [public buying guide](docs/security/guide-public-packs-whop.md) and [current availability](https://xartists.gitbook.io/xartists/presentation/etat-du-produit).
-
-## Release status — November 8, 2026 (v0.130.0)
-
-- **Public web app:** v0.130.0 deployed on GitHub Pages, source [c00f1388](https://github.com/Neltud/xArtists/commit/c00f13888d88ccfbb05275a4fa7d9f97715ab812) independently verified in the public build manifest. The 8 November clarity/UX patch is a subsequent documentation and discovery enhancement, not a new commercial authorization.
-- **LIA intelligence:** read-only/paper by default. **Autonomous LIA Ops trading is NOT authorised.**
-- **MultiversX mainnet:** contracts and NFT references exist, but a deployment is not proof of safe commercial delivery.
-- **Genesis pack payments:** **closed on both crypto and fiat rails** in the web checkout. The UI displays €110 / €75 / €50 as a catalogue only; the last recorded smart-contract prices are **1 / 5 / 2.5 EGLD** (8 November snapshot), not a real-time quote. Existing NFTs have empty media URIs. PayBox payment → authenticated IPN → NFT entitlement → refund proof remains **unconfirmed**.
-- **Public financial launch:** **NO-GO until capability-specific human approval and evidence**. No claim of yield, investment performance or guaranteed gains.
-
-For the latest source-backed status, see [Release 0.130.0 — 8 November](docs/RELEASE_2026-11-08_PUBLIC.md), [Design/UX review](docs/presentation/revue-design-2026-11-08.md), [8 November chain-readiness evidence](docs/ops/AGENTS_PACK_STEP2_FRONTEND_NO_GO_2026-11-08.md), and [launch audit (2 November)](docs/LAUNCH_AUDIT_2026-11-02.md). Historical operations are not current launch authorisations.
-
-
-## Design & accessibility — 8 November review
-
-The public desktop flow was checked without a wallet (home → museum → agents → marketplace). Strengths include wallet-optional discovery, clear breadcrumbs, a theme switch and prominent preview markers. Outstanding priorities: **remove legacy EGLD estimates from every discovery route**, increase small labels to readable sizes, review artwork image alternatives and secondary-text contrast, and verify **mobile 375–414 px**, keyboard focus and reduced-motion behavior in a browser. Read the [design review and release checklist](docs/audits/DESIGN_REVIEW_2026-11-08.md). This is a targeted desktop review, **not** a full WCAG or mobile certification.
-
-## Developer quick start
-
-The public site is a React 18 + Vite + TypeScript dApp, using Three.js, the MultiversX SDK and a separate Access API. GitHub Pages deployment is defined by [static.yml](.github/workflows/static.yml).
+## Développement et vérification
 
 ```bash
 cd apps/frontend
@@ -76,18 +50,6 @@ npm run typecheck
 npm run build
 ```
 
-Optional APIs or credentials must be configured out of band. **Never commit private keys, wallet PEMs, JWTs, PSP merchant secrets or production session tokens.** A green CI build does not authorise new financial side effects.
+Le frontend est React/Vite/TypeScript ; l'API séparée vit dans `services/access-api`. Le déploiement du site est géré par [`.github/workflows/static.yml`](.github/workflows/static.yml). Un build vert **ne prouve pas** un déploiement ni un paiement. Aucun script de documentation ne doit activer `LIA_LIVE_TRADING`, PayBox, Stripe ou l'upload IPFS.
 
-## Project and documentation
-
-- [Official public GitBook](https://xartists.gitbook.io/xartists/) — visitors, collectors, creators, mobile guide, product scope
-- [Safety and launch gates](docs/security/launch-gates.md) — evidence before merchant/mainnet operations
-- [Commercial model](docs/COMMERCIAL_MODEL.md) — Genesis vs Whop, pricing, delivery distinctions
-- [GitHub Actions](https://github.com/Neltud/xArtists/actions) — reproducible tests and Pages deployments
-- [Marketing and media pack](docs/marketing/VIDEO_LAUNCH_2026-11-02.md) — genuine browser recordings and publish-ready copy
-
-## Security and contribution
-
-Report reproducible issues through [GitHub Issues](https://github.com/Neltud/xArtists/issues). Checkout, mint, trading and permissions changes require isolated tests and human review. Read [launch gates](docs/security/launch-gates.md) before changing any live rail.
-
-Created by **Nelson Tuduri / Neltud**. xArtists is an artistic and technical project, **not a guaranteed-return investment vehicle**.
+**Sécurité :** jamais de seed, PEM, JWT Pinata, jetons Google, secrets PSP ou clé de portefeuille dans les issues, commits ou captures d'écran. Toute action NFT, mint, vente ou dépense exige une vérification et une signature personnelle. [Issues](https://github.com/Neltud/xArtists/issues) · [Licence et conditions](LICENSE) · [Gates de lancement](docs/security/launch-gates.md).
