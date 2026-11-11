@@ -116,10 +116,10 @@ export default function MarketplacePage(){
             Créer au Studio <span aria-hidden="true">↗</span>
           </Link>
         </div>
-        <div className="xa-marketplace-hero__links" aria-label="Autres parcours du marché">
+        <nav className="xa-marketplace-hero__links" aria-label="Autres parcours du marché">
           <Link to="/rwa">Œuvres physiques</Link>
           <Link to="/auction">Enchères · aperçu</Link>
-        </div>
+        </nav>
       </div>
       <div className="xa-marketplace-hero__index" aria-hidden="true">
         <span className="xa-marketplace-hero__index-label">UNIVERS / 01—03</span>
