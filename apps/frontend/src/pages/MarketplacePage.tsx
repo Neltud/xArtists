@@ -12,7 +12,7 @@ import OpenSeaCollectionPanel from '../components/market/OpenSeaCollectionPanel'
 import ArtpriceOfficialPanel from '../components/market/ArtpriceOfficialPanel'
 import ExistingNftReadiness from '../components/market/ExistingNftReadiness'
 import LiaAndEscrowNfts from '../components/market/LiaAndEscrowNfts'
-import DriveArtShowcase from '../experience/DriveArtShowcase'
+import MarketplaceDiscoveryGrid from '../components/market/MarketplaceDiscoveryGrid'
 import MainnetJourney from '../components/MainnetJourney'
 import {useCopy} from '../experience/state'
 
@@ -29,31 +29,15 @@ const SHELVES:{id:Shelf;name:string;summary:string}[]=[
   {id:'packs',name:'marketShelfPacksName',summary:'marketShelfPacksSummary'},
   {id:'opensea',name:'marketShelfOpenSeaName',summary:'marketShelfOpenSeaSummary'},
 ]
-function asText(value:unknown,max=120):string{
-  return typeof value==='string'?value.slice(0,max):value==null?'':String(value).slice(0,max)
-}
 function priceEgld(l:Listing):number|null{
   const raw=l.price_egld // Never infer EGLD from a currency-less index price.
   if(raw===undefined||raw===null||String(raw)==='')return null
   const value=Number(raw)
   return Number.isFinite(value)&&value>0?value:null
 }
-function safeArtworkImage(l:Listing):string|null{
-  const source=typeof l.media==='string'?l.media:Array.isArray(l.media)?l.media[0]?.url:undefined
-  const url=String(l.thumbnail||source||l.url||'')
-  if(/^ipfs:\/\/(Qm[1-9A-HJ-NP-Za-km-z]{44}|bafy[a-z2-7]{20,})(\/[A-Za-z0-9._~/-]+)?$/i.test(url))
-    return 'https://ipfs.io/ipfs/'+url.slice(7)
-  try{
-    const parsed=new URL(url)
-    return parsed.protocol==='https:'&&parsed.username===''&&parsed.password===''?url:null
-  }catch{return null}
-}
 function isPackListing(l:Listing):boolean{
   const tag=String(l.collection||l.token||l.identifier||'').toUpperCase()
   return ['XAIPLS','XAIYLD','XAISNT'].some(prefix=>tag.startsWith(prefix+'-'))
-}
-function isNftId(v:string):boolean{
-  return /^[A-Z0-9]{3,10}-[a-f0-9]{6}-[a-f0-9]+$/i.test(v)
 }
 export default function MarketplacePage(){
   const c=useCopy()
@@ -107,7 +91,7 @@ export default function MarketplacePage(){
         <h1>{c('marketHeroTitleA')}<span>{c('marketHeroTitleB')}</span></h1>
         <p className="xa-marketplace-hero__lead">{c('marketHeroLead')}</p>
         <div className="xa-marketplace-hero__actions">
-          <a href="#xa-market-categories" className="xa-marketplace-hero__primary">
+          <a href="#xa-market-grid" className="xa-marketplace-hero__primary">
             {c('marketPrimaryCta')} <span aria-hidden="true">↓</span>
           </a>
           <Link to="/studio" className="xa-marketplace-hero__secondary">
@@ -127,13 +111,7 @@ export default function MarketplacePage(){
       </div>
     </header>
 
-    <p className="xa-marketplace-status" role="note">
-      <span className="xa-marketplace-status__dot" aria-hidden="true" />
-      <span>
-        {c('marketStatusPrefix')}: {c(live?'marketStatusLive':'marketStatusOff')}.
-        {c('marketStatusOwnership')}
-      </span>
-    </p>
+
 
     <section className="xa-marketplace-categories" id="xa-market-categories" aria-labelledby="xa-market-categories-title">
       <div className="xa-marketplace-categories__heading">
@@ -151,78 +129,23 @@ export default function MarketplacePage(){
       </nav>
     </section>
 
-    {selected==='art'&&<DriveArtShowcase compact />}
-    {selected==='art'&&<LiaAndEscrowNfts />}
-    {selected==='art'&&<ExistingNftReadiness />}
-    {selected==='art'&&<section className="space-y-4" aria-label="Art numérique">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h2 className="text-lg font-semibold text-white">Art numérique · créations originales</h2>
-          <p className="text-xs text-zinc-400 mt-1">
-            JPG, PNG, WebP et MP4 · liens IPFS · vente seulement quand un listing on-chain est vérifié.
-          </p>
-        </div>
-        <button type="button" className="btn-secondary text-xs min-h-[40px] px-3"
-          disabled={loading} onClick={()=>void refresh()}>
-          {loading?'Actualisation…':'Actualiser le catalogue'}
-        </button>
-      </div>
-      <div className="flex flex-col sm:flex-row gap-2">
-        <label className="flex-1 text-xs text-zinc-400">Rechercher un artiste, titre ou NFT
-          <input value={query} onChange={e=>setQuery(e.target.value)}
-            className="mt-1 w-full rounded-xl border border-white/10 bg-black/40 px-3 py-3 text-white"
-            placeholder="Titre, collection, artiste…" />
-        </label>
-        <label className="text-xs text-zinc-400">Trier
-          <select value={sort} onChange={e=>setSort(e.target.value as typeof sort)}
-            className="mt-1 block w-full rounded-xl border border-white/10 bg-zinc-950 p-3 text-white">
-            <option value="recent">Par défaut</option>
-            <option value="price_asc">Prix croissant</option>
-            <option value="price_desc">Prix décroissant</option>
-          </select>
-        </label>
-      </div>
-      {!sourceReady&&!loading&&<div className="rounded-2xl border border-amber-500/20 p-5 text-sm text-zinc-300 space-y-2">
-        <p className="font-semibold text-white">Catalogue de ventes vérifiées non disponible</p>
-        <p>Nous n’inventons ni NFT en vente, ni prix, ni bouton d’achat. La connexion à l’index des listings
-          et au contrat marketplace doit être validée.</p>
-        <Link to="/studio" className="inline-block text-cyan-300 underline">Publier d’abord mon œuvre depuis Studio</Link>
-      </div>}
-      {sourceReady&&!loading&&items.length===0&&<div className="rounded-2xl border border-white/10 p-5 text-sm text-zinc-400 space-y-2">
-        <p>Aucune œuvre numérique indexée pour ce filtre.</p>
-        <Link to="/studio" className="text-cyan-200 underline">Créer mon premier NFT</Link>
-      </div>}
-      {sourceReady&&!loading&&items.length>0&&<p role="note" className="rounded-xl border border-amber-500/20 bg-amber-500/5 px-4 py-3 text-xs text-zinc-400">
-        {c('marketIndexDataDisclaimer')}
-      </p>}
-      {items.length>0&&<ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {items.map((l,i)=>{
-          const id=asText(l.identifier||l.token)
-          const url=safeArtworkImage(l)
-          const price=priceEgld(l)
-          return <li key={asText(l.listing_id??id??i)} className="overflow-hidden rounded-2xl border border-white/10 bg-black/30">
-            <div className="aspect-[4/3] bg-slate-900/60 flex items-center justify-center">
-              {url?<img src={url} alt={asText(l.name)||'Œuvre numérique'} loading="lazy"
-                className="h-full w-full object-cover"/>:<span className="text-sm text-zinc-500">NFT · aperçu indisponible</span>}
-            </div>
-            <div className="p-4 space-y-2">
-              <p className="font-semibold text-white line-clamp-2">{asText(l.name||id||'Œuvre')}</p>
-              <p className="text-xs text-zinc-400 truncate">{asText(l.creator||l.collection||id)}</p>
-              <div className="space-y-1">
-                <p className="text-sm font-mono text-cyan-200">{price!==null?price.toFixed(4)+' EGLD':c('marketPriceUnknown')}</p>
-                {price!==null&&<p className="text-xs text-zinc-400">{c('marketIndexPriceDisclaimer')}</p>}
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {isNftId(id)&&<a href={'https://explorer.multiversx.com/nfts/'+encodeURIComponent(id)}
-                  target="_blank" rel="noopener noreferrer" className="btn-secondary text-xs min-h-[40px] inline-flex items-center px-3">Vérifier sur Explorer</a>}
-                {!live&&<span className="text-xs text-zinc-500 self-center">Achat désactivé · contrat non validé</span>}
-                {live&&<span className="text-xs text-zinc-400 self-center">Vérifiez le listing avant toute signature</span>}
-              </div>
-            </div>
-          </li>
-        })}
-      </ul>}
-    </section>}
+    {selected==='art'&&<MarketplaceDiscoveryGrid
+      listings={items} sourceReady={sourceReady} loading={loading} query={query} sort={sort}
+      onQuery={setQuery} onSort={setSort} onRefresh={()=>void refresh()}
+    />}
+
+    {selected==='art'&&<details className="xa-market-tech">
+      <summary>{c('marketGridTechTitle')}</summary>
+      <div><LiaAndEscrowNfts/><ExistingNftReadiness/></div>
+    </details>}
+
+    <p className="xa-marketplace-status" role="note">
+      <span className="xa-marketplace-status__dot" aria-hidden="true" />
+      <span>
+        {c('marketStatusPrefix')}: {c(live?'marketStatusLive':'marketStatusOff')}.
+        {c('marketStatusOwnership')}
+      </span>
+    </p>
 
     {selected==='opensea'&&<OpenSeaCollectionPanel />}
 
