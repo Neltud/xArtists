@@ -110,7 +110,6 @@ export default function MyOwnedNftsPanel() {
       <ListNftSheet
         target={listTarget}
         onClose={() => setListTarget(null)}
-        onListed={() => account.refresh()}
       />
     </>
   )
