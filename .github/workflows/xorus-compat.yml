@@ -21,8 +21,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Run Xorus alias safety regression without any network transaction
+      - name: Run Xorus alias and Chorus paper invariants on the same SHA (offline)
         env:
           PYTHONPATH: ${{ github.workspace }}
           LIA_LIVE_TRADING: '0'
-        run: python3 -m unittest discover -s tests -p 'test_xorus_alias.py' -v
+        run: |
+          python3 -m unittest discover -s tests -p 'test_xorus_alias.py' -v
+          python3 -m unittest discover -s tests -p 'test_chorus_paper_safety.py' -v
