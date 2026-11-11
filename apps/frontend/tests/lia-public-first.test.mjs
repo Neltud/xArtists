@@ -44,6 +44,6 @@ test('LIA top-level page remains browse-only and exposes market, auction and pac
   assert.match(page, /Simulated P&L is not realized profit/)
   assert.doesNotMatch(page, /\{hub\?\.note\}/)
   assert.doesNotMatch(page, /LIVE user-sign xPortal/)
-  assert.match(page, /Vellum strategy withheld/)
+  assert.match(page, /Archived strategy withheld/)
   assert.match(page, /producerFreshness\.is_stale/)
 })

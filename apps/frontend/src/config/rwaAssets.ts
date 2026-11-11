@@ -71,5 +71,5 @@ export const RWA_USER_JOURNEY = [
   'List Market — fee + royalty ; flag isPhysical visible',
   'Acheteur : Buy → ownership on-chain',
   'Si physique : escrow / shipping off-chain + status metadata (P2 SC)',
-  'Reward 1 TRO max : uniquement œuvre réelle, trigger vente (anti-spam)',
+  'Programme proposé : 1 TRO par NFT physique créé et vérifié sur xArtists, sous réserve d’un reçu finalisé, contrôle anti-doublon et réserve réelle ; aucun versement automatique activé.',
 ] as const

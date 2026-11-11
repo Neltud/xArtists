@@ -1,0 +1,28 @@
+name: xOrus licensed data and physical NFT reward contracts
+on:
+  pull_request:
+    paths:
+      - 'lia/xorus/**'
+      - 'tests/test_xorus_data_rewards.py'
+      - '.github/workflows/xorus-data-policy.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  offline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Offline provenance, reward and paper invariants
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+          LIA_LIVE_TRADING: '0'
+          TRO_REWARDS_LIVE: '0'
+        run: |
+          python3 -m unittest discover -s tests -p 'test_xorus_data_rewards.py' -v
+          python3 -m unittest discover -s tests -p 'test_xorus_alias.py' -v
+          python3 -m unittest discover -s tests -p 'test_chorus_paper_safety.py' -v

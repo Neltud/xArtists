@@ -32,7 +32,7 @@ test('mobile visitor menu has simple journeys before collapsed specialist links'
     )
   }
   // Remaining specialist routes stay reachable (advanced or elsewhere in the menu).
-  for (const url of ['/rwa', '/lia', '/dao']) {
+  for (const url of ['/rwa', '/xorus', '/dao']) {
     assert.ok(shell.includes('to="' + url + '"'), 'specialist route remains reachable: ' + url)
   }
   assert.match(shell, /xa-mobile-advanced"><summary>\{c\('welcomeAdvanced'\)\}/)
