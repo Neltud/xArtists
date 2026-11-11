@@ -8,7 +8,9 @@ const css = read('../src/pages/marketplace-page.css')
 const oldShellCss = read('../src/experience/experience.css')
 
 test('Marketplace hero is a light-first, readable editorial surface in both themes', () => {
-  assert.match(market, /import '\.\/marketplace-page\.css'/)
+  const app = read('../src/App.tsx')
+  assert.match(app, /import '\.\/pages\/marketplace-page\.css'/)
+  assert.doesNotMatch(market, /import '\.\/marketplace-page\.css'/)
   assert.match(market, /<header className="xa-marketplace-hero">/)
   assert.match(css, /\.xa-marketplace-hero\s*\{[^}]*background:\s*var\(--xa-panel\)/)
   assert.match(css, /\.xa-marketplace-hero__lead\s*\{[^}]*color:\s*var\(--xa-muted\)/)
@@ -81,4 +83,14 @@ test('Unverified index prices are never presented as confirmed on-chain offers',
   assert.match(market, /price\.toFixed\(4\)\+' EGLD':c\('marketPriceUnknown'\)/)
   assert.match(market, /!live&&<span/)
   assert.match(market, /const live=canListBuyNft\(\)/)
+})
+
+test('Marketplace critical CSS is bundled eagerly instead of requiring lazy CSS preloading', () => {
+  const app = read('../src/App.tsx')
+  const main = read('../src/main.tsx')
+  assert.match(main, /import App from '\.\/App'/)
+  assert.match(app, /import '\.\/pages\/marketplace-page\.css'/)
+  assert.doesNotMatch(market, /import '\.\/marketplace-page\.css'/)
+  assert.match(css, /\.xa-marketplace-hero\s*\{/)
+  assert.match(css, /\.xa-marketplace-category\s*\{/)
 })

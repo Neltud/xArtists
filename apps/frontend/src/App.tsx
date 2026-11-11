@@ -17,6 +17,8 @@ import './experience/drive-art.css'
 import './experience/mobile-contrast-fixes.css'
 import './experience/commercial-visual-polish.css'
 import './experience/museum-a11y.css'
+// Keep the market's critical contrast styles in the eager bundle: the page is lazy.
+import './pages/marketplace-page.css'
 
 const PackLandingPage = lazy(() => import('./pages/PackLandingPage'))
 const HousePage = lazy(() => import('./pages/HousePage'))

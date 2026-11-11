@@ -15,7 +15,6 @@ import LiaAndEscrowNfts from '../components/market/LiaAndEscrowNfts'
 import DriveArtShowcase from '../experience/DriveArtShowcase'
 import MainnetJourney from '../components/MainnetJourney'
 import {useCopy} from '../experience/state'
-import './marketplace-page.css'
 
 type Shelf='art'|'rwa'|'packs'|'opensea'
 type Listing={

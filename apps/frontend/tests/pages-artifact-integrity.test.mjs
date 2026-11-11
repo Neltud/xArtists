@@ -95,3 +95,23 @@ test('CLI returns a failing process status for a broken upload directory', t => 
   assert.throws(() => execFileSync(process.execPath, args, { stdio: 'pipe' }),
     error => error.status === 1 && /tro\.css/.test(error.stderr.toString()))
 })
+
+
+test('Marketplace CSS is eager in entry styles and never a lazy route stylesheet', t => {
+  const f = fixture(t)
+  f.manifest['index.html'].css = ['assets/main.css']
+  f.manifest['index.html'].dynamicImports.push('src/pages/MarketplacePage.tsx')
+  f.manifest['src/pages/MarketplacePage.tsx'] = {
+    file: 'assets/market.js', isDynamicEntry: true, css: ['assets/market.css'],
+  }
+  f.write('assets/main.css', '.xa-marketplace-hero{color:var(--xa-text)}')
+  f.write('assets/market.js', 'market page')
+  f.write('assets/market.css', '.xa-marketplace-hero{color:#222}')
+  f.write('.vite/manifest.json', f.manifest)
+  assert.throws(() => f.verify(), /Marketplace critical CSS must be eagerly bundled/)
+  f.manifest['src/pages/MarketplacePage.tsx'].css = []
+  f.write('.vite/manifest.json', f.manifest)
+  assert.equal(f.verify().routes_checked, ROUTES.length)
+  f.write('assets/main.css', 'missing required marketplace styles')
+  assert.throws(() => f.verify(), /Marketplace hero contrast styles must exist in entry CSS/)
+})
