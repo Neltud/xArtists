@@ -89,7 +89,15 @@ export default function LoginModal({ open: controlledOpen, onClose, onConnected 
     setWcUri(null)
   }
 
-  const close = () => {attempt.current++;cancelXPortalLogin();setBusy(false);reset()}
+  const cancelCurrent = () => {
+    // Closing/retrying must never silently accept a late WalletConnect approval.
+    attempt.current++
+    cancelXPortalLogin()
+    setBusy(false)
+    setWcUri(null)
+    setError('Connexion annulée. Tu peux relancer xPortal.')
+  }
+  const close = () => {cancelCurrent();reset()}
 
   if (!open) return null
 
@@ -222,6 +230,12 @@ export default function LoginModal({ open: controlledOpen, onClose, onConnected 
             <button type="button" className="btn-primary w-full" disabled={busy} onClick={() => void runXPortal()}>
               {xaRender(busy ? 'En attente…' : 'xPortal / WalletConnect')}
             </button>
+            {busy&&<button type="button" className="btn-secondary w-full" onClick={cancelCurrent}>
+              {xaRender("Annuler la connexion xPortal")}
+            </button>}
+            {busy&&<p role="status" className="text-[12px] text-[color:var(--xa-text-muted)]">
+              {xaRender("Si aucun lien xPortal n’apparaît, le relais sera réessayé automatiquement. Si l’échec persiste, ouvre le site dans Chrome plutôt que dans un navigateur intégré.")}
+            </p>}
             <button type="button" className="btn-secondary w-full" disabled={busy} onClick={() => void runExtension()}>
               {xaRender("Extension DeFi Wallet ")}</button>
             <div className="space-y-2 border-t border-white/10 pt-3">
