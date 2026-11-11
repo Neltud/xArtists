@@ -1,0 +1,29 @@
+name: Chorus paper safety (offline, no deployment)
+
+on:
+  pull_request:
+    paths:
+      - 'lia/chorus/**'
+      - 'tests/test_chorus_paper_safety.py'
+      - 'docs/CHORUS.md'
+      - 'docs/SOURCE_OF_TRUTH.md'
+      - '.github/workflows/chorus-paper-safety.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  chorus-invariants:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Offline paper invariants — no secrets, signers, trades or network
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+          LIA_LIVE_TRADING: '0'
+        run: python3 -m unittest discover -s tests -p 'test_chorus_paper_safety.py' -v
