@@ -1,4 +1,4 @@
-"""Xorus public API. Compatible facade over the historical Chorus paper engine."""
+"""xOrus public API. Compatible facade over the historical Chorus paper engine."""
 from __future__ import annotations
 
 import json
@@ -19,7 +19,7 @@ def run_xorus(*, market: Optional[dict[str, Any]] = None, chatgpt_brief: Any = N
         board["crosscut"]["live_trading"] = False
     handoff = board.get("handoff_for_chatgpt")
     if isinstance(handoff, str) and handoff.startswith("CHORUS →"):
-        board["handoff_for_chatgpt"] = "XORUS →" + handoff[len("CHORUS →"):]
+        board["handoff_for_chatgpt"] = "xORUS →" + handoff[len("CHORUS →"):]
     return board
 
 

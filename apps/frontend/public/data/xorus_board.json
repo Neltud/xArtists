@@ -18,7 +18,7 @@
     "chatgpt": "advisory brief only, weight capped at 15%",
     "signs": false
   },
-  "note": "Snapshot paper horodaté : 120 signaux définis ne sont pas 120 données reçues. Sans flux vérifiés, Xorus s'abstient. Aucun ordre ni exécution.",
+  "note": "Snapshot paper horodaté : 120 signaux définis ne sont pas 120 données reçues. Sans flux vérifiés, xOrus s'abstient. Aucun ordre ni exécution.",
   "legacy_engine": "chorus",
   "snapshot_kind": "static_paper_snapshot"
 }

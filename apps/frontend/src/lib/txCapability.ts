@@ -39,7 +39,7 @@ export function signBlockReason(method: WalletMethod | string | null | undefined
     return 'Session lecture seule (adresse collée) — impossible de signer. Reconnecte via xPortal / Web Wallet.'
   }
   if (method === 'pem') {
-    return 'PEM interdit dans la dApp. Xorus ne signe pas. Seul xPortal signe.'
+    return 'PEM interdit dans la dApp. xOrus ne signe pas. Seul xPortal signe.'
   }
   if (!SIGNING_METHODS.has(method)) {
     return 'Méthode de connexion non signante.'

@@ -1,6 +1,6 @@
-# Xorus — essaim d'analyse xArtists (paper only)
+# xOrus — essaim d'analyse xArtists (paper only)
 
-**Xorus** est le nouveau nom public de **Chorus**. Le changement de marque n'active aucune capacité financière.
+**xOrus** est le nouveau nom public de **Chorus**. Le changement de marque n'active aucune capacité financière.
 
 ## Contrat de sécurité
 

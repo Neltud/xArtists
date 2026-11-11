@@ -4,13 +4,13 @@
 
 [**Launch the public dApp**](https://neltud.github.io/xArtists/) · [**Official GitBook**](https://xartists.gitbook.io/xartists/) · [**Browse the museum**](https://neltud.github.io/xArtists/museum) · [**AI Agents**](https://neltud.github.io/xArtists/agents)
 
-## Xorus — intelligence xArtists (paper)
+## xOrus — intelligence xArtists (paper)
 
-**Xorus** est le nouveau nom public de l'essaim d'analyse précédemment appelé Chorus. Il définit **120 signaux** ; la présence dans le catalogue ne signifie pas qu'ils sont alimentés. Sans données indépendantes et fraîches, le système s'abstient. Le veto Sentinel demeure prioritaire et l'avis externe est limité à 15 %.
+**xOrus** est le nouveau nom public de l'essaim d'analyse précédemment appelé Chorus. Il définit **120 signaux** ; la présence dans le catalogue ne signifie pas qu'ils sont alimentés. Sans données indépendantes et fraîches, le système s'abstient. Le veto Sentinel demeure prioritaire et l'avis externe est limité à 15 %.
 
-`LIA_LIVE_TRADING` n'active aucune transaction Xorus : `executable=false`, ni signature, ni trade, ni mint. Les paiements et actions mainnet restent des parcours distincts, sous contrôle humain.
+`LIA_LIVE_TRADING` n'active aucune transaction xOrus : `executable=false`, ni signature, ni trade, ni mint. Les paiements et actions mainnet restent des parcours distincts, sous contrôle humain.
 
-- [Documentation Xorus](docs/XORUS.md) · [board paper Xorus (snapshot non temps réel)](apps/frontend/public/data/xorus_board.json)
+- [Documentation xOrus](docs/XORUS.md) · [board paper xOrus (snapshot non temps réel)](apps/frontend/public/data/xorus_board.json)
 - Nouvelle commande : `PYTHONPATH=. python -m lia.xorus`. L'import historique `lia.chorus` reste temporairement pour les intégrations existantes, avec migration après la vérification de la PR de sécurité #513.
 
 ## $TRO — acquisition et interopérabilité Solana (release gated)
