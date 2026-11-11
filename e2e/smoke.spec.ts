@@ -54,27 +54,7 @@ test.describe('xArtists published Pages — no wallet or transactions', () => {
     expect(await cards.count()).toBeGreaterThanOrEqual(4);
     for (let i = 0; i < artworks.length; i++) {
       const image = cards.nth(i).locator('img');
-      await expect(image).toHaveAttribute('src', new RegExp(artworks[i].replace('.', '\\.') + '
-    const response = await request.get(`${BASE}/build-info.json`);
-    expect(response.status()).toBe(200);
-    const stamp = await response.json();
-    expect(stamp.source_sha).toMatch(/^[a-f0-9]{40}$/);
-    await test.info().attach('published-build-info', {
-      body: JSON.stringify(stamp, null, 2), contentType: 'application/json',
-    });
-  });
-
-  test('home has no unhandled application or chunk-loading errors', async ({ page }) => {
-    const errors: string[] = [];
-    page.on('pageerror', error => errors.push(error.message));
-    await visitPublished(page, '/');
-    await expect(page.getByRole('heading', { level: 1 }).first()).toBeVisible();
-    // Keep listening briefly for deferred/lazy-module errors after rendering.
-    await page.waitForTimeout(2000);
-    expect(errors.filter(message => !/ResizeObserver loop/i.test(message))).toEqual([]);
-  });
-});
-));
+      await expect(image).toHaveAttribute('src', new RegExp(artworks[i].replace('.', '\\.') + '$'));
       await expect(image).toBeVisible();
       await expect.poll(() => image.evaluate(element => (element as HTMLImageElement).naturalWidth),
         { timeout: 12_000, message: artworks[i] + ' must decode and display, not just exist in markup' }).toBeGreaterThan(0);
