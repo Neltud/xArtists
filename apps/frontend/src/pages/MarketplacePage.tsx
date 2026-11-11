@@ -34,7 +34,7 @@ function asText(value:unknown,max=120):string{
   return typeof value==='string'?value.slice(0,max):value==null?'':String(value).slice(0,max)
 }
 function priceEgld(l:Listing):number|null{
-  const raw=l.price_egld??l.price
+  const raw=l.price_egld // Never infer EGLD from a currency-less index price.
   if(raw===undefined||raw===null||String(raw)==='')return null
   const value=Number(raw)
   return Number.isFinite(value)&&value>0?value:null
@@ -193,6 +193,9 @@ export default function MarketplacePage(){
         <p>Aucune œuvre numérique indexée pour ce filtre.</p>
         <Link to="/studio" className="text-cyan-200 underline">Créer mon premier NFT</Link>
       </div>}
+      {sourceReady&&!loading&&items.length>0&&<p role="note" className="rounded-xl border border-amber-500/20 bg-amber-500/5 px-4 py-3 text-xs text-zinc-400">
+        {c('marketIndexDataDisclaimer')}
+      </p>}
       {items.length>0&&<ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {items.map((l,i)=>{
           const id=asText(l.identifier||l.token)
@@ -206,7 +209,10 @@ export default function MarketplacePage(){
             <div className="p-4 space-y-2">
               <p className="font-semibold text-white line-clamp-2">{asText(l.name||id||'Œuvre')}</p>
               <p className="text-xs text-zinc-400 truncate">{asText(l.creator||l.collection||id)}</p>
-              <p className="text-sm font-mono text-cyan-200">{price!==null?price.toFixed(4)+' EGLD':'Prix non confirmé'}</p>
+              <div className="space-y-1">
+                <p className="text-sm font-mono text-cyan-200">{price!==null?price.toFixed(4)+' EGLD':c('marketPriceUnknown')}</p>
+                {price!==null&&<p className="text-xs text-zinc-400">{c('marketIndexPriceDisclaimer')}</p>}
+              </div>
               <div className="flex flex-wrap gap-2">
                 {isNftId(id)&&<a href={'https://explorer.multiversx.com/nfts/'+encodeURIComponent(id)}
                   target="_blank" rel="noopener noreferrer" className="btn-secondary text-xs min-h-[40px] inline-flex items-center px-3">Vérifier sur Explorer</a>}
