@@ -317,7 +317,7 @@
   font-weight: 750;
   letter-spacing: .12em;
 }
-.xa-module-body .xa-market-grid__heading h2 {
+.xa-module-body .xa-market-grid__heading h1 {
   margin: 0;
   color: var(--xa-text) !important;
   font-size: clamp(20px, 2vw, 28px) !important;
@@ -605,7 +605,7 @@
   .xa-marketplace-category__summary { display: none; }
   .xa-marketplace-category strong { font-size: 11px; }
   .xa-market-grid__heading { align-items: flex-start; margin-bottom: 9px; }
-  .xa-module-body .xa-market-grid__heading h2 { font-size: 20px !important; }
+  .xa-module-body .xa-market-grid__heading h1 { font-size: 20px !important; }
   .xa-market-grid__heading p:last-child { font-size: 11px; }
   .xa-market-grid__count { margin-top: 5px; font-size: 10px; }
   .xa-market-grid__toolbar { margin-bottom: 8px; }
@@ -638,36 +638,10 @@
 }
 
 
-/* Artwork-first mobile market: the first card row must be inside the
- * initial 844px viewport, not buried under marketing and operations copy. */
+/* Catalog-first mobile: no marketing hero before the artwork cards.
+ * Collapse category headings but preserve the actual category buttons. */
 @media(max-width:700px) {
   .xa-marketplace--art > * + * { margin-top: 9px !important; }
-  .xa-marketplace--art .xa-marketplace-hero {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 0;
-    padding: 10px 13px 11px;
-    border-radius: 12px;
-  }
-  .xa-marketplace--art .xa-marketplace-hero__eyebrow,
-  .xa-marketplace--art .xa-marketplace-hero__lead,
-  .xa-marketplace--art .xa-marketplace-hero__links { display: none; }
-  .xa-module-body .xa-marketplace--art .xa-marketplace-hero h1 {
-    font-size: 22px !important;
-    line-height: 1.08;
-    letter-spacing: -.03em !important;
-  }
-  .xa-marketplace--art .xa-marketplace-hero__actions {
-    margin-top: 6px;
-    gap: 5px;
-    flex-wrap: nowrap;
-  }
-  .xa-marketplace--art .xa-marketplace-hero__primary,
-  .xa-marketplace--art .xa-marketplace-hero__secondary {
-    min-height: 30px;
-    padding: 5px 9px;
-    font-size: 10px;
-  }
-  .xa-marketplace--art .xa-marketplace-hero__primary { flex: 0 1 auto; }
   .xa-marketplace--art .xa-marketplace-categories__heading { display: none; }
   .xa-marketplace--art .xa-marketplace-categories__grid { padding-block: 0 3px; }
   .xa-marketplace--art .xa-market-grid__heading { margin-bottom: 5px; }
