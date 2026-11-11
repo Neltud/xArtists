@@ -21,7 +21,7 @@ test('public status differentiates source age, checking time and simulated perfo
   assert.match(overview, /fetchLiaStatus/)
   assert.match(overview, /fetchLiaHubStatus/)
   assert.match(overview, /Aggregator:/)
-  assert.match(overview, /Hub\/Vellum mirror:/)
+  assert.match(overview, /Legacy hub snapshot:/)
   assert.match(overview, /Checking a snapshot does not refresh its source/)
   assert.match(overview, /Simulation only/)
   assert.match(overview, /not realized/)
