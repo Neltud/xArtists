@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 
-const BASE = '/xArtists'
+const BASE = ''
 const dist = fileURLToPath(new URL('../apps/frontend/dist/', import.meta.url))
 const release = JSON.parse(readFileSync(dist + 'dapp-release.json', 'utf8'))
 const routes: string[] = release.routes
