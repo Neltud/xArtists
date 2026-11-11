@@ -28,3 +28,12 @@ test('stale QR is cleared on both failure and completion; fallback never promise
   assert.match(modal, /sans signature ni achat/)
   assert.match(modal, /Aucun checkout Fiat, droit NFT ou mint n'est activé/)
 })
+
+test('production Pages build allows an operator-approved Reown project variable', () => {
+  const deploy = read('../../.github/workflows/static.yml')
+  const example = read('../.env.example')
+  assert.match(deploy, /VITE_WALLETCONNECT_PROJECT_ID: \$\\{\\{ vars\\.VITE_WALLETCONNECT_PROJECT_ID \\}\\}/)
+  assert.match(example, /https:\/\/xartists\\.art/)
+  assert.match(example, /https:\/\/www\\.xartists\\.art/)
+  assert.doesNotMatch(example, /project already allowlisted/)
+})
