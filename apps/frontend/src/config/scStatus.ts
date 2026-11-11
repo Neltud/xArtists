@@ -90,6 +90,17 @@ export function canListBuyNft(): boolean {
   )
 }
 
+/** Owner-signed NFT listing only. Does not authorize buy, bid or pack checkout.
+ * Requires a fresh marketplace codeHash/payable observation; the listing
+ * hook separately verifies owner, creator royalties and live fees at click.
+ */
+export function canListOwnedNft(): boolean {
+  return runtimeCodehashOk('marketplace') && isUsableScAddress(MARKETPLACE_ADDRESS)
+}
+export function marketplaceUserListingReceiverOrThrow(): string {
+  if (!canListOwnedNft()) throw new Error('Contrat marketplace non vérifié pour le listing')
+  return MARKETPLACE_ADDRESS
+}
 export function canBuyAgent(): boolean {
   return (
     AGENT_PACK_PUBLIC_MINT_RELEASED &&
