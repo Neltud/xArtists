@@ -1,0 +1,22 @@
+{
+  "engine": "chorus",
+  "version": "1.0.0",
+  "ts": "2026-11-11T17:40:00Z",
+  "replaces": "vellum",
+  "live_trading": false,
+  "live_locked": true,
+  "crosscut": {
+    "stance": "ABSTAIN",
+    "reason": "thin_tape",
+    "signals_defined": 120,
+    "signals_fed": 9,
+    "families_fed": 4,
+    "executable": false,
+    "live_trading": false
+  },
+  "symbiosis": {
+    "chatgpt": "advisory brief only, weight capped at 15%",
+    "signs": false
+  },
+  "note": "120 signaux sont définis. Sans flux branchés, Chorus s'abstient. Ce n'est pas un ordre."
+}
