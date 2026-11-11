@@ -24,22 +24,22 @@ async function visit(page: import('@playwright/test').Page, path: string) {
 test.describe('xArtists public accessibility, local built frontend only', () => {
 
   for (const width of [360, 390, 430]) {
-    test(`marketplace at ${width}px: hero stays readable with four choices and no wallet`, async ({ page }) => {
+    test(`marketplace at ${width}px: artwork-first grid stays readable without wallet`, async ({ page }) => {
       await page.setViewportSize({ width, height: 844 })
       await page.emulateMedia({ reducedMotion: 'reduce' })
       await visit(page, '/marketplace/?lang=fr')
-      const hero = page.locator('.xa-marketplace-hero')
-      await expect(hero).toBeVisible()
-      await expect(hero.getByRole('heading', { level: 1, name: /Découvrez l’art/ })).toBeVisible()
-      const colors = await hero.evaluate(el => ({
+      // The artwork catalog replaces the marketing hero on the marketplace tab.
+      await expect(page.locator('.xa-marketplace-hero')).toHaveCount(0)
+      const title = page.locator('.xa-market-grid__heading h1')
+      await expect(title).toHaveText('Œuvres à découvrir')
+      const firstCard = page.locator('.xa-market-grid__card').first()
+      await expect(firstCard).toBeVisible()
+      const colors = await firstCard.evaluate(el => ({
         background: getComputedStyle(el).backgroundColor,
-        headline: getComputedStyle(el.querySelector('h1')!).color,
-        description: getComputedStyle(el.querySelector('.xa-marketplace-hero__lead')!).color,
+        title: getComputedStyle(el.querySelector('h3')!).color,
       }))
-      expect(contrastRatio(colors.headline, colors.background), 'market title contrast').toBeGreaterThanOrEqual(4.5)
-      expect(contrastRatio(colors.description, colors.background), 'market description contrast').toBeGreaterThanOrEqual(4.5)
-      await expect(hero.getByRole('link', { name: /Explorer les œuvres/ })).toBeVisible()
-      await expect(hero.getByRole('link', { name: /Créer au Studio/ })).toBeVisible()
+      expect(contrastRatio(colors.title, colors.background), 'market card title contrast').toBeGreaterThanOrEqual(4.5)
+      await expect(page.locator('.xa-market-grid').getByRole('searchbox')).toBeVisible()
       const categories = page.locator('.xa-marketplace-category')
       await expect(categories).toHaveCount(4)
       const navigationDisplay = await page.locator('.xa-marketplace-categories__grid').evaluate(el =>
@@ -93,19 +93,18 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
     await page.setViewportSize({ width: 390, height: 844 })
     await page.emulateMedia({ reducedMotion: 'reduce' })
     const cases: Array<[string,string,string]> = [
-      ['fr','Découvrez l’art.','Art numérique'],
-      ['en','Discover art.','Digital art'],
-      ['es','Descubre el arte.','Arte digital'],
-      ['de','Kunst entdecken.','Digitale Kunst'],
-      ['ru','Откройте искусство.','Цифровое искусство'],
-      ['uk','Відкрийте мистецтво.','Цифрове мистецтво'],
-      ['zh','发现艺术。','数字艺术'],
-      ['ar','اكتشف الفن.','الفن الرقمي'],
+      ['fr','Œuvres à découvrir','Art numérique'],
+      ['en','Explore artworks','Digital art'],
+      ['es','Explorar obras','Arte digital'],
+      ['de','Kunstwerke entdecken','Digitale Kunst'],
+      ['ru','Открыть работы','Цифровое искусство'],
+      ['uk','Відкрити роботи','Цифрове мистецтво'],
+      ['zh','探索艺术作品','数字艺术'],
+      ['ar','استكشف الأعمال','الفن الرقمي'],
     ]
     for (const [lang, title, category] of cases) {
       await visit(page, '/marketplace/?lang=' + lang)
-      const hero = page.locator('.xa-marketplace-hero')
-      await expect(hero.getByRole('heading', {level:1})).toContainText(title)
+      await expect(page.locator('.xa-market-grid__heading h1')).toContainText(title)
       const tabs = page.locator('.xa-marketplace-category')
       await expect(tabs).toHaveCount(4)
       await expect(tabs.first()).toContainText(category)
