@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test'
 import { mkdirSync } from 'node:fs'
 
-const BASE = '/xArtists'
+const BASE = ''
 function contrastRatio(foreground: string, background: string): number {
   const luminance = (color: string) => {
     const rgb = color.replace(/^rgba?\(/, '').split(',').slice(0, 3).map(channel => Number.parseFloat(channel.trim()))
@@ -22,6 +22,36 @@ async function visit(page: import('@playwright/test').Page, path: string) {
 }
 
 test.describe('xArtists public accessibility, local built frontend only', () => {
+
+  for (const width of [360, 390, 430]) {
+    test(`marketplace at ${width}px: hero stays readable with four choices and no wallet`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 844 })
+      await page.emulateMedia({ reducedMotion: 'reduce' })
+      await visit(page, '/marketplace/')
+      const hero = page.locator('.xa-marketplace-hero')
+      await expect(hero).toBeVisible()
+      await expect(hero.getByRole('heading', { level: 1, name: /Découvrez l’art/ })).toBeVisible()
+      const colors = await hero.evaluate(el => ({
+        background: getComputedStyle(el).backgroundColor,
+        headline: getComputedStyle(el.querySelector('h1')!).color,
+        description: getComputedStyle(el.querySelector('.xa-marketplace-hero__lead')!).color,
+      }))
+      expect(contrastRatio(colors.headline, colors.background), 'market title contrast').toBeGreaterThanOrEqual(4.5)
+      expect(contrastRatio(colors.description, colors.background), 'market description contrast').toBeGreaterThanOrEqual(4.5)
+      await expect(hero.getByRole('link', { name: /Explorer les œuvres/ })).toBeVisible()
+      await expect(hero.getByRole('link', { name: /Créer au Studio/ })).toBeVisible()
+      const categories = page.locator('.xa-marketplace-category')
+      await expect(categories).toHaveCount(4)
+      const columns = await page.locator('.xa-marketplace-categories__grid').evaluate(el =>
+        getComputedStyle(el).gridTemplateColumns.split(' ').filter(Boolean).length)
+      expect(columns, 'compact two-column mobile category grid').toBe(2)
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)
+      expect(overflow, `Marketplace horizontal overflow at ${width}px`).toBeLessThanOrEqual(12)
+      await page.screenshot({ animations: 'disabled', path: `artifacts/ux-mobile/marketplace-editorial-${width}.png` })
+      await categories.nth(1).click()
+      await expect(page).toHaveURL(/tab=rwa/)
+    })
+  }
   for (const width of [390, 1440]) {
     test('NFT Factory guided flow at '+width+'px: create, verify and publish remain clear', async ({ page }) => {
       await page.setViewportSize({ width, height: 844 })
