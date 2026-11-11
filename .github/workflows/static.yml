@@ -100,6 +100,10 @@ jobs:
           VITE_ACCESS_API_BASE: ${{ vars.VITE_ACCESS_API_BASE || 'https://xartists-access-api.onrender.com' }}
           # The existing GitHub Pages custom domain (configured separately in Settings → Pages).
           VITE_DAPP_URL: https://xartists.art/
+          # Public Reown project ID. Repo Actions variable permits the owner's
+          # exact, allowlisted production project to replace the historical
+          # fallback ID without a code change. Unset preserves paper/read-only.
+          VITE_WALLETCONNECT_PROJECT_ID: ${{ vars.VITE_WALLETCONNECT_PROJECT_ID }}
           VITE_MOONPAY_API_KEY: ${{ vars.VITE_MOONPAY_API_KEY || secrets.VITE_MOONPAY_API_KEY }}
           # Fail-closed. Preprod Paybox is not a public checkout until A-E2E (IPN) is green.
           VITE_PAYBOX_ENABLED: ${{ vars.VITE_PAYBOX_ENABLED || 'false' }}
@@ -108,7 +112,10 @@ jobs:
           VITE_GENESIS_COMMERCIAL_GO: ${{ vars.VITE_GENESIS_COMMERCIAL_GO || '0' }}
           VITE_VELLUM_8008_WEBHOOK: ${{ secrets.VITE_VELLUM_8008_WEBHOOK }}
           VITE_TRO_STAKING_CODEHASH_OK: ${{ secrets.VITE_TRO_STAKING_CODEHASH_OK }}
-          VITE_MARKETPLACE_CODEHASH_OK: ${{ secrets.VITE_MARKETPLACE_CODEHASH_OK }}
+          # Public Mainnet NFT marketplace only, never agent packs or payments.
+          # Explicit opt-in remains OFF unless configured; a value 1 ALSO needs
+          # fresh codeHash + payable observation and user wallet signature.
+          VITE_MARKETPLACE_CODEHASH_OK: ${{ vars.VITE_MARKETPLACE_CODEHASH_OK || secrets.VITE_MARKETPLACE_CODEHASH_OK || '0' }}
           VITE_VENUE_CODEHASH_OK: ${{ secrets.VITE_VENUE_CODEHASH_OK }}
           VITE_AGENTS_CODEHASH_OK: ${{ secrets.VITE_AGENTS_CODEHASH_OK }}
           VITE_NFT_STAKING_CODEHASH_OK: ${{ secrets.VITE_NFT_STAKING_CODEHASH_OK }}

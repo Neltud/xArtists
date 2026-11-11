@@ -14,6 +14,8 @@ export type UserNft = {
   url?: string
   media?: { url?: string }[]
   type?: string
+  balance?: string
+  uris?: string[]
 }
 
 export type UserToken = {
@@ -81,6 +83,8 @@ function mapNft(r: Record<string, unknown>): UserNft {
     url: typeof r.url === 'string' ? r.url : undefined,
     media: Array.isArray(r.media) ? (r.media as UserNft['media']) : undefined,
     type: typeof r.type === 'string' ? r.type : undefined,
+    balance: r.balance === undefined || r.balance === null ? undefined : String(r.balance),
+    uris: Array.isArray(r.uris) ? r.uris.filter((u): u is string => typeof u === 'string') : undefined,
   }
 }
 
@@ -104,9 +108,14 @@ export function useUserAccount(address: string | null | undefined): UserAccount 
       setNfts([])
       setTokens([])
       setError(null)
+      setLoading(false)
+      setRefreshedAt(null)
       return
     }
     let cancelled = false
+    setNfts([])
+    setTokens([])
+    setRefreshedAt(null)
     ;(async () => {
       setLoading(true)
       setError(null)

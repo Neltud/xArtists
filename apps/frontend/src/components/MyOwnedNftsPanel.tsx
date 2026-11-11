@@ -9,14 +9,15 @@ import { useUserAccount } from '../hooks/useUserAccount'
 import ListNftSheet, { type ListTarget } from './ListNftSheet'
 import { requestOpenConnect } from '../lib/walletEvents'
 import { OWNED_GLOW } from '../lib/ownershipMap'
-import { canListBuyNft } from '../config/scStatus'
+import {useMarketplaceReadiness} from '../hooks/useMarketplaceReadiness'
+import {isOwnedNftListCandidate} from '../lib/marketplaceUserListing.mjs'
 import { ImageWithFallback } from './ui/ImageWithFallback'
 
 export default function MyOwnedNftsPanel() {
-  const { connected, address } = useWallet()
+  const { connected, address, canAttemptSign } = useWallet()
   const account = useUserAccount(connected ? address : null)
   const [listTarget, setListTarget] = useState<ListTarget | null>(null)
-  const live = canListBuyNft()
+  const live = useMarketplaceReadiness()
 
   const items = useMemo(() => account.nfts.slice(0, 48), [account.nfts])
 
@@ -45,6 +46,7 @@ export default function MyOwnedNftsPanel() {
           </div>
         </div>
 
+        {account.error && <p role="alert" className="text-xs text-amber-200">Impossible de vérifier les NFT du wallet : {account.error}</p>}
         {xaRender(account.loading && items.length === 0 ? (
           <p className="text-sm text-zinc-500">{xaRender("Chargement des NFT…")}</p>
         ) : items.length === 0 ? (
@@ -57,6 +59,7 @@ export default function MyOwnedNftsPanel() {
                 typeof n.nonce === 'number'
                   ? n.nonce
                   : Number(String(n.identifier || '').split('-').pop()) || 0
+              const eligible = isOwnedNftListCandidate(n)
               return (
                 <div
                   key={n.identifier}
@@ -78,7 +81,7 @@ export default function MyOwnedNftsPanel() {
                     <button
                       type="button"
                       className="btn-primary w-full text-[11px] py-1.5 min-h-[36px]"
-                      disabled={!live}
+                      disabled={!live || !canAttemptSign || !eligible || account.loading || !!account.error}
                       onClick={() =>
                         setListTarget({
                           collection: n.collection || '',
@@ -89,7 +92,7 @@ export default function MyOwnedNftsPanel() {
                         })
                       }
                     >
-                      {xaRender("Mettre en vente ")}</button>
+                      {xaRender(eligible ? 'Mettre en vente' : 'NFT non éligible au listing')}</button>
                   </div>
                 </div>
               )
@@ -97,16 +100,16 @@ export default function MyOwnedNftsPanel() {
           </div>
         ))}
 
+        {canAttemptSign===false && <p className="text-xs text-amber-200">Wallet lecture seule ou session expirée : reconnecte un wallet signataire.</p>}
         {xaRender(!live && (
           <p className="text-[11px] text-amber-200">
-            {xaRender("Listing gated — marketplace SC / codehash Pages. ")}</p>
+            {xaRender("Mise en vente indisponible : vérification codeHash/payable, configuration build ou accès réseau manquant.")}</p>
         ))}
       </div>
 
       <ListNftSheet
         target={listTarget}
         onClose={() => setListTarget(null)}
-        onListed={() => account.refresh()}
       />
     </>
   )

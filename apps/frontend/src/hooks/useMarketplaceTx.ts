@@ -4,10 +4,11 @@
  * ESDTNFTTransfer: TX receiver = USER (holder).
  * Errors always stored as string (React #31).
  */
-import { useCallback, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { useSendTransaction } from './useSendTransaction'
 import { useWallet } from '../context/WalletContext'
 import { egldTextToWei } from '../lib/egldExactAmount.mjs'
+import { verifyUserNftListPreflight } from '../lib/marketplaceUserListing.mjs'
 import {
   isMarketplaceLive,
   marketplaceReceiverOrThrow,
@@ -97,6 +98,8 @@ export function useMarketplaceTx() {
   const [lastTx, setLastTx] = useState<string | null>(null)
   const { send } = useSendTransaction()
   const { address, canAttemptSign } = useWallet()
+  const walletNow = useRef(address)
+  walletNow.current=address
   const live = isMarketplaceLive()
 
   const run = useCallback(
@@ -104,7 +107,7 @@ export function useMarketplaceTx() {
       tx: object,
       labels: { processing: string; success: string; fail: string },
     ) => {
-      if (!live) {
+      if (!isMarketplaceLive()) {
         setError(BLOCKED)
         throw new Error(BLOCKED)
       }
@@ -139,7 +142,7 @@ export function useMarketplaceTx() {
         setPending(false)
       }
     },
-    [send, live, address, canAttemptSign],
+    [send, address, canAttemptSign],
   )
 
   const listNft = useCallback(
@@ -149,11 +152,23 @@ export function useMarketplaceTx() {
         setError(msg)
         throw new Error(msg)
       }
-      const royaltyBps = Math.min(Math.max(p.royaltyBps ?? 500, 0), 750)
+      if (!/^[A-Za-z0-9]{3,20}-[a-z0-9]{6}$/.test(p.tokenId) || !Number.isSafeInteger(p.nonce) || p.nonce <= 0) throw new Error('Collection ou nonce NFT invalide')
       const priceAtomic = egldToAtomic(p.priceEgld)
+      // Hook-level revalidation prevents legacy NFTDetailModal callers from
+      // bypassing ownership or on-chain creator royalties.
+      const proof = await verifyUserNftListPreflight({
+        address, identifier:p.tokenId+'-'+p.nonce.toString(16).padStart(2,'0'),
+        collection:p.tokenId, nonce:p.nonce,
+      })
+      if(walletNow.current!==address || !canAttemptSign) throw new Error('Signature wallet expirée ou compte changé.')
+      if ((p.royaltyBps!==undefined && p.royaltyBps!==proof.royaltyBps) ||
+          (p.royaltyReceiver!==undefined && p.royaltyReceiver!==proof.royaltyReceiver))
+        throw new Error('Royalties différentes des métadonnées vérifiées : refus.')
+      const royaltyBps = proof.royaltyBps
       const sc = marketplaceReceiverOrThrow()
+      if(sc!==proof.escrowReceiver) throw new Error('Adresse contrat changée depuis la vérification.')
       const scHex = bech32ToHex(sc)
-      const recvHex = bech32ToHex(p.royaltyReceiver || address)
+      const recvHex = bech32ToHex(proof.royaltyReceiver)
       if (!scHex || !recvHex) {
         const msg = 'Adresse marketplace / royalty invalide'
         setError(msg)
