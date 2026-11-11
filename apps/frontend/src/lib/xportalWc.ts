@@ -135,18 +135,6 @@ function isMobileUa(): boolean {
   return /iPhone|iPad|Android/i.test(navigator.userAgent || '')
 }
 
-function presentWcUri(uri: string) {
-  try {
-    window.dispatchEvent(new CustomEvent('xartists-wc-uri', { detail: { uri } }))
-  } catch {
-    /* */
-  }
-
-  // Opening an app after asynchronous initialization is blocked by mobile browsers.
-  // The pairing UI renders a real link that the user can tap once the URI is ready.
-
-}
-
 function makeCallbacks(getProvider:()=>XcProvider) {
   return {
     onClientLogin: async () => undefined,
@@ -368,7 +356,7 @@ export async function loginWithXPortalMainnet(
           ? 'Ouvre xPortal et approuve la session…'
           : 'Scanne le QR avec xPortal.',
       })
-      presentWcUri(uri)
+      // Pairing URI remains private to the caller's onProgress callback.
     }
 
     onProgress?.({
