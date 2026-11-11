@@ -4,6 +4,8 @@ on:
     paths:
       - 'apps/frontend/src/experience/**'
       - 'apps/frontend/src/pages/LabPage.tsx'
+      - 'apps/frontend/src/components/ArtworkTurntableLab.tsx'
+      - 'apps/frontend/tests/sculpture-lab-glb-flow.test.mjs'
       - 'apps/frontend/src/pages/DigitalTwinPage.tsx'
       - 'apps/frontend/src/pages/WorldRightsPage.tsx'
       - 'apps/frontend/tests/xorus-public-routes.test.mjs'
@@ -25,7 +27,7 @@ jobs:
           node-version: '22'
       - run: npm ci --legacy-peer-deps
       - name: Verify old and new URLs, status and read-only sculpture flow
-        run: node --test tests/xorus-public-routes.test.mjs
+        run: node --test tests/xorus-public-routes.test.mjs tests/sculpture-lab-glb-flow.test.mjs
       - name: Frontend release, routes, i18n and build
         env:
           VITE_LIA_LIVE_TRADING: '0'
