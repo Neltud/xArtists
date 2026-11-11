@@ -147,8 +147,6 @@ export default function MarketplaceDiscoveryGrid({
         {loading?'…':c('refresh')}
       </button>
     </div>
-    <p className="xa-market-grid__notice" role="note">{c('marketGridNotice')}</p>
-    {sourceReady&&listings.length>0&&<p className="xa-market-grid__source-note" role="note">{c('marketIndexDataDisclaimer')}</p>}
     {cards.length>0?<ul className="xa-market-grid__cards" aria-label={c('marketGridTitle')}>
       {cards.map((card,i)=>{
         const badge=card.source==='studio'?'marketGridExhibit':card.source==='owned'?
@@ -182,6 +180,8 @@ export default function MarketplaceDiscoveryGrid({
       {chainLoading?c('marketGridLoading'):c('marketGridEmpty')}
       {(filter!=='all'||query)&&<button type="button" onClick={()=>{setFilter('all');onQuery('')}}>{c('marketGridReset')}</button>}
     </div>}
+    <p className="xa-market-grid__notice" role="note">{c('marketGridNotice')}</p>
+    {sourceReady&&listings.length>0&&<p className="xa-market-grid__source-note" role="note">{c('marketIndexDataDisclaimer')}</p>}
     {chainError&&<p className="xa-market-grid__source-note">{c('marketGridChainUnavailable')}</p>}
     {!sourceReady&&!loading&&<p className="xa-market-grid__source-note">{c('marketGridIndexUnavailable')}</p>}
   </section>
