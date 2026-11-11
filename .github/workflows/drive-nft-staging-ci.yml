@@ -1,0 +1,22 @@
+name: Drive NFT media staging (offline, no mint)
+on:
+  pull_request:
+    paths:
+      - 'scripts/ops/prepare-drive-nft-staging.mjs'
+      - 'scripts/ops/prepare-drive-nft-staging.test.mjs'
+      - 'docs/ops/DRIVE_NFT_PRIVATE_STAGING_2026-11-11.md'
+      - '.github/workflows/drive-nft-staging-ci.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  no-network-draft:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify private metadata scrub and zero-mint drafts
+        run: node --test scripts/ops/prepare-drive-nft-staging.test.mjs
