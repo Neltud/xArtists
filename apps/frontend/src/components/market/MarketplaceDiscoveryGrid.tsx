@@ -57,6 +57,7 @@ export default function MarketplaceDiscoveryGrid({
   const [escrow,setEscrow]=useState<ChainNft[]>([])
   const [chainLoading,setChainLoading]=useState(true)
   const [chainError,setChainError]=useState(false)
+  const [verifiedSaleStatus,setVerifiedSaleStatus]=useState<'pending'|'verified'|'unavailable'>('pending')
   useEffect(()=>{
     const controller=new AbortController()
     const read=async(address:string):Promise<ChainNft[]>=>{
@@ -160,7 +161,11 @@ export default function MarketplaceDiscoveryGrid({
       {cards.map((card,i)=>{
         const badge=card.source==='studio'?'marketGridExhibit':card.source==='owned'?
           'marketGridHeld':card.source==='escrow'?'marketGridDeposit':'marketGridIndexed'
-        const details=card.source==='index'?card.price!==null?
+        const details=card.key==='escrow:ASFT-a6273a-01'
+          ? verifiedSaleStatus==='verified'?c('marketGridVerifiedSale')
+            :verifiedSaleStatus==='pending'?c('marketGridVerifyingSale')
+            :c('marketGridSaleUnverified')
+          :card.source==='index'?card.price!==null?
           card.price.toFixed(4)+' EGLD · '+c('marketGridUnverified'):
           c('marketPriceUnknown'):card.source==='studio'?
           c('marketGridNotListed'):c('marketGridSaleUnverified')
@@ -182,7 +187,7 @@ export default function MarketplaceDiscoveryGrid({
               :<a href={card.href} target="_blank" rel="noopener noreferrer" className="xa-market-grid__card-action">
                 {c('marketGridVerify')} <span aria-hidden="true">↗</span></a>)
               :<span className="xa-market-grid__card-inactive">{c('marketGridNoLink')}</span>}
-            {card.key==='escrow:ASFT-a6273a-01'&&<MarketplaceVerifiedBuy/>}
+            {card.key==='escrow:ASFT-a6273a-01'&&<MarketplaceVerifiedBuy onQuoteStatus={setVerifiedSaleStatus}/>}
           </div>
         </li>
       })}
