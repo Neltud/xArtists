@@ -1,5 +1,77 @@
 # Changelog — xArtists
 
+## [0.132.0](https://github.com/Neltud/xArtists/compare/v0.131.0...v0.132.0) (2026-11-11)
+
+
+### Features
+
+* **auth:** add paper-only account and subscription policy primitives ([c63a337](https://github.com/Neltud/xArtists/commit/c63a3373fd60944d94964bbddd73e1c7d464411d))
+* **auth:** internal verified Neon Ed25519 walletless identity primitive ([#480](https://github.com/Neltud/xArtists/issues/480)) ([ac6b14c](https://github.com/Neltud/xArtists/commit/ac6b14cae8b3ff4fea6a820310596eaff589449a))
+* **chorus:** add swarm cross-cut (paper, no sign) ([ae6ebb3](https://github.com/Neltud/xArtists/commit/ae6ebb3e3792464188f8f285663b170b2af80e36))
+* **chorus:** replace Vellum runtime with paper signal swarm ([b0e74eb](https://github.com/Neltud/xArtists/commit/b0e74eb36d7a4a3f4165af95ec55ee59ecd77011))
+* **contact:** email DNS preflight, Discord and Telegram placeholders ([#500](https://github.com/Neltud/xArtists/issues/500)) ([5cb6529](https://github.com/Neltud/xArtists/commit/5cb65291d32aded85922de7e0fef254524734877))
+* **data:** publish Chorus paper board (abstain, 120 defined) ([a6c8378](https://github.com/Neltud/xArtists/commit/a6c8378228b0001ec266338acd9392c71d8f0f43))
+* **domain:** serve xArtists at xartists.art via guarded GitHub Pages root build ([#484](https://github.com/Neltud/xArtists/issues/484)) ([1da2b37](https://github.com/Neltud/xArtists/commit/1da2b3761576356a38796444e5f6ae40c1efdb51))
+* **ipfs:** verify exact recovered media bytes without asserting backup provenance ([6ea72ff](https://github.com/Neltud/xArtists/commit/6ea72fff2a18ef3662ba1419b5cd3cac36a2bba5))
+* **lab:** unify simulations and agent network in one accessible hub ([#507](https://github.com/Neltud/xArtists/issues/507)) ([989b665](https://github.com/Neltud/xArtists/commit/989b6650ca50cac39dd8815c624d3161353d7a8d))
+* **lia:** read Chorus board before the retired Vellum file ([b0c40cf](https://github.com/Neltud/xArtists/commit/b0c40cfedbd0656e7c9cd066e88b6c98d6c6018d))
+* **market:** artwork-first catalog with real NFT discovery grid ([#495](https://github.com/Neltud/xArtists/issues/495)) ([bab1749](https://github.com/Neltud/xArtists/commit/bab174959ddbb118e8d2acdeb024496bdedc6b7c))
+* **marketplace:** user-signed ASFT [#2](https://github.com/Neltud/xArtists/issues/2) direct buy at 0.25 EGLD ([#502](https://github.com/Neltud/xArtists/issues/502)) ([08857d4](https://github.com/Neltud/xArtists/commit/08857d4536e0712fcabdf0b715796ff15ae563ed))
+* **nft:** local Drive media staging without private IDs or mint ([#511](https://github.com/Neltud/xArtists/issues/511)) ([0548d01](https://github.com/Neltud/xArtists/commit/0548d0148eb855a5978b9c309cb95a0ffa04c794))
+* **ops:** audit Pinata and secondary Kubo pin status with IPFS readback ([a9bd0f1](https://github.com/Neltud/xArtists/commit/a9bd0f16084cbd9fc8567a02ae920a2b4b13b974))
+* **services:** import Stripe Billing sandbox-only subscription evidence gates ([#481](https://github.com/Neltud/xArtists/issues/481)) ([d1bcfb0](https://github.com/Neltud/xArtists/commit/d1bcfb0a28d5e693cea3ebe799cbf4fea0f97a5d))
+
+
+### Bug Fixes
+
+* **auth:** reapply strict subscription calendar checks on current main ([8b49e1a](https://github.com/Neltud/xArtists/commit/8b49e1a6ee984fe6d4001c73fd5910671c14c5ad))
+* **auth:** reapply strict subscription calendar checks on current main ([7c6c6bd](https://github.com/Neltud/xArtists/commit/7c6c6bd777636cb5ee5291ec0a144e60481a181b))
+* **auth:** recover strict subscription date validation on current main ([879364f](https://github.com/Neltud/xArtists/commit/879364ff73a0da01d1f00b00cdd859bcce6b045b))
+* **css:** preload marketplace critical styles with app shell ([9c11c7a](https://github.com/Neltud/xArtists/commit/9c11c7a0400a2f013c44f125e84c1c48af75a8bc))
+* **lab:** archive stale agent-network readiness instead of false GO ([#512](https://github.com/Neltud/xArtists/issues/512)) ([dc169b7](https://github.com/Neltud/xArtists/commit/dc169b7f8a31262c88976929de3f2cc6fe55a8ff))
+* **lab:** eliminate live lazy CSS preload failure on direct /lab route ([#510](https://github.com/Neltud/xArtists/issues/510)) ([3340f69](https://github.com/Neltud/xArtists/commit/3340f69c463b24a622d5c51d632b79a8c6ecfbed))
+* **market:** accurate chain sale state, verified buyer receipt and fee cap ([#509](https://github.com/Neltud/xArtists/issues/509)) ([ccee0c9](https://github.com/Neltud/xArtists/commit/ccee0c9c1cc39315cfb565b8be02f0ee516cabc7))
+* **market:** apply xMEX exclusion to gallery and LIA inventories ([bc3d48f](https://github.com/Neltud/xArtists/commit/bc3d48f45807d0af17fb4a3da251d3467169ee94))
+* **market:** apply xMEX exclusion to gallery and LIA inventories ([bb07e33](https://github.com/Neltud/xArtists/commit/bb07e3366b56f5952e90312990b8c91817221703))
+* **market:** exclude LIA xMEX positions from artwork listings ([8fd329c](https://github.com/Neltud/xArtists/commit/8fd329cbb1e91220ba0034fbdbbf0ed9333b50c3))
+* **market:** exclude xMEX financial positions from artwork catalog ([d22b522](https://github.com/Neltud/xArtists/commit/d22b5225bb5abd08e396c4ed934503541a11050d))
+* **market:** exclude xMEX financial positions from artwork catalog ([6f3b4ec](https://github.com/Neltud/xArtists/commit/6f3b4ec0e3fb8f5f688b7b9d0c8c436993fa3b47))
+* **market:** exclude xMEX financial positions from artwork catalog ([1288362](https://github.com/Neltud/xArtists/commit/1288362f568d120b0ebbfcfe3fb9fa3cec3e8080))
+* **museum:** mobile WebGL recovery and accessible CSS 3D mode ([#508](https://github.com/Neltud/xArtists/issues/508)) ([2e287d9](https://github.com/Neltud/xArtists/commit/2e287d92b1ab000e2494779d43529bcbf4f3fde1))
+* **p0 art:** retire Etsy/Shopify merchant rails and add licensed Artprice official source gate ([#486](https://github.com/Neltud/xArtists/issues/486)) ([7ba2b5d](https://github.com/Neltud/xArtists/commit/7ba2b5d40667cb04a5e6136bb293643ee9469d89))
+* **p0 market:** label unverified index prices and avoid ambiguous EGLD values ([#491](https://github.com/Neltud/xArtists/issues/491)) ([43ebc6e](https://github.com/Neltud/xArtists/commit/43ebc6e13c1a983d80c185d4974086aaa3f76889))
+* **p0 ux:** charger le CSS critique Marketplace avec l'application, sans preload tardif ([660da03](https://github.com/Neltud/xArtists/commit/660da0363859a009482005b91c7dd68ed083478e))
+* **p0:** block raw mint dispatch and require canonical paid PostgreSQL row ([0d2b19f](https://github.com/Neltud/xArtists/commit/0d2b19f201d3af8e19482847463cbbbdaba7d642))
+* **p0:** block uncertified live access-pack mint ([12f85c5](https://github.com/Neltud/xArtists/commit/12f85c53836eb159b207d0083b2fb3d8bd625676))
+* **p0:** distrust browser payment history and block unverified venue rights ([#494](https://github.com/Neltud/xArtists/issues/494)) ([096dd09](https://github.com/Neltud/xArtists/commit/096dd097a4f757f31e7a1b26fa04159883d9de9a))
+* **p0:** enforce exact paid catalogue before mint dispatch ([5102812](https://github.com/Neltud/xArtists/commit/5102812311abf65f21118f5301d05a13edebf533))
+* **p0:** gate pack EGLD wallet payment by exact fresh onchain price ([668fd6a](https://github.com/Neltud/xArtists/commit/668fd6a5a1dbf928d10522e0fcf07fad419f36f3))
+* **p0:** reject paid-but-disputed S1/S2 and replayed NFT dispatch ([d6a2265](https://github.com/Neltud/xArtists/commit/d6a2265bb5fe781eb3e630bcc9aa8775e5048c33))
+* **p0:** require both payment proof flags for mint dispatch ([f9661a7](https://github.com/Neltud/xArtists/commit/f9661a7c921d4c2bdc42f7e2975c11508f4d6bad))
+* **p0:** require PostgreSQL presence and fresh readiness before PayBox checkout ([d9ded95](https://github.com/Neltud/xArtists/commit/d9ded955d067dadad765401e585edb36661f12c6))
+* **p0:** strict verified subscription timestamps and cancellation gates ([#479](https://github.com/Neltud/xArtists/issues/479)) ([d065268](https://github.com/Neltud/xArtists/commit/d065268f44dd55e10c5d77ddc185186208068d1a))
+* **packs:** expose verified six empty-media NFT truth in walletless UI ([b7efbac](https://github.com/Neltud/xArtists/commit/b7efbac26412316a8c1c8c062d35dd373c039666))
+* **pages:** watch xartists.art canonical HTTPS and exact live assets ([#485](https://github.com/Neltud/xArtists/issues/485)) ([be40a6b](https://github.com/Neltud/xArtists/commit/be40a6b5a17a98983b28b7d9353af8bfd10648ba))
+* **studio:** disclose Pinata proof limitations before mint ([cccfb5f](https://github.com/Neltud/xArtists/commit/cccfb5f891e35fd7ec769f15beefc7eda668c7a5))
+* **test:** restore valid marketplace image smoke syntax and remove duplicated block ([9abb9f1](https://github.com/Neltud/xArtists/commit/9abb9f13755c732a845cc19574ddf7cd8450e24f))
+* **ui:** accessible mobile marketplace and root-path UX tests ([#488](https://github.com/Neltud/xArtists/issues/488)) ([64905d7](https://github.com/Neltud/xArtists/commit/64905d76db0d5cb49764fe18c3ec1eaf79f4c707))
+* **ux:** eight-language marketplace visitor entry and RTL mobile checks ([#490](https://github.com/Neltud/xArtists/issues/490)) ([9c8fa7f](https://github.com/Neltud/xArtists/commit/9c8fa7fa636fb05796c98eb7f09039d669544d5f))
+* **ux:** polished walletless EUR offers and Genesis EGLD discovery, no checkout ([#483](https://github.com/Neltud/xArtists/issues/483)) ([6e54e87](https://github.com/Neltud/xArtists/commit/6e54e873468da585705d048ec17b2a9044eda9ec))
+* **ux:** shorter home journeys and direct mobile module access ([#499](https://github.com/Neltud/xArtists/issues/499)) ([88cee0e](https://github.com/Neltud/xArtists/commit/88cee0e785cfa0c3e8912229ec64ae41bb3caacc))
+* **xPortal:** annulation fiable dans le panneau wallet, sans connexion tardive ([#505](https://github.com/Neltud/xArtists/issues/505)) ([997f0b2](https://github.com/Neltud/xArtists/commit/997f0b29db01b15dcf7552a28a8f55d7db733179))
+* **xportal:** retry mobile WC pairing on alternate official relay ([#503](https://github.com/Neltud/xArtists/issues/503)) ([7c452fe](https://github.com/Neltud/xArtists/commit/7c452fef584a8b6d6972123868a7a9bcd8755a74))
+
+
+### Performance
+
+* **marketplace:** remove late CSS import from lazy route ([d1919ed](https://github.com/Neltud/xArtists/commit/d1919ed5d7ad83a05b3a957dd9bdb7d7cb55952c))
+
+
+### Documentation
+
+* **auth:** specify walletless and verified wallet-linked accounts ([629bc46](https://github.com/Neltud/xArtists/commit/629bc469b56135f465b150fc51da9916546673d0))
+* **context:** marketplace [#495](https://github.com/Neltud/xArtists/issues/495) public proof and mainnet gates ([#496](https://github.com/Neltud/xArtists/issues/496)) ([6e45e62](https://github.com/Neltud/xArtists/commit/6e45e6256102c3a97401144a856a6280a4a79544))
+
 ## [0.131.0](https://github.com/Neltud/xArtists/compare/v0.130.0...v0.131.0) (2026-11-09)
 
 
