@@ -7,9 +7,13 @@ icon: palette
 
 # Artistes et créateurs
 
+**Nouveau au 11 novembre 2026 :** le parcours [**Lab sculpture → Studio NFT**](https://xartists.art/studio/?mode=sculpture), le lien [**Vendre mon NFT**](https://xartists.art/marketplace/#xa-market-sell) et les contrôles vendeur ont été publiés au [SHA 969b3a96…](https://github.com/Neltud/xArtists/actions/runs/43093538589). Un listing utilisateur confirmé, le premier mint sculpture et l'état d'activation IPFS du serveur restent à attester ; aucune transaction n'a été signée par le support.
+
+[Guide vendeur, sculpture et Drive](creer-vendre-nft-ipfs-drive.md) · [Plugins disponibles](plugins-xartists.md)
+
 **Le Creator Studio V3 est ouvert aux artistes.** Ils peuvent préparer leurs œuvres, demander la création de leur propre collection NFT sur **MultiversX mainnet**, attribuer le rôle de création si nécessaire et signer le mint d'un premier NFT depuis leur wallet personnel. Le parcours a été corrigé dans [la PR #268](https://github.com/Neltud/xArtists/pull/268), fusionnée, testée et déployée le 2 novembre 2026.
 
-[**Ouvrir le Creator Studio**](https://neltud.github.io/xArtists/create/studio/) · [Voir le code du parcours](https://github.com/Neltud/xArtists/blob/main/docs/CREATOR_MAINNET_MINT.md)
+[**Ouvrir le Creator Studio**](https://xartists.art/create/studio/) · [Voir le code du parcours](https://github.com/Neltud/xArtists/blob/main/docs/CREATOR_MAINNET_MINT.md)
 
 > **État de validation :** l'interface et les tests automatisés sont en production. Le premier **mint réellement signé par un artiste et confirmé sur Explorer** reste à documenter. Aucun wallet, aucune clé et aucun achat ne sont utilisés par le support pour effectuer une transaction à la place de l'artiste. Ce flux est distinct des achats de packs Genesis par PayBox, qui restent soumis à leur propre validation.
 
@@ -84,7 +88,7 @@ Ce parcours a été intégré par la [PR #273](https://github.com/Neltud/xArtist
 
 ### Comment cela fonctionne
 
-1. Ouvrez le [Creator Studio](https://neltud.github.io/xArtists/studio), connectez votre portefeuille xPortal, choisissez ou émettez votre collection NFT.
+1. Ouvrez le [Creator Studio](https://xartists.art/studio), connectez votre portefeuille xPortal, choisissez ou émettez votre collection NFT.
 2. Sélectionnez votre photo ou MP4. Le navigateur en propose un aperçu **local** ; ce n'est ni un upload réussi ni un NFT.
 3. Confirmez vos droits de publication et ajoutez un titre et une description. Pour une vidéo, les métadonnées utilisent le champ `animation_url`; pour une image, le champ `image`.
 4. Lorsque le service d'upload est activé, signez un challenge dédié. L'API épingle le média et ses métadonnées JSON sur IPFS via un secret Pinata conservé **sur le serveur**, sans clé privée de wallet.
@@ -130,7 +134,7 @@ La [page RWA](https://xartists.art/rwa) explique cette limite et oriente vers la
 * Un NFT, une réception ou une proposition d'IA **ne transfèrent jamais automatiquement des droits légaux, des fonds ou un escrow**.
 * Les médias privés et les adresses des acheteurs ne sont pas publiés dans le registre public ; leur traitement, leur conservation et les consentements devront être revus avant ouverture commerciale.
 
-Les artistes peuvent continuer à [préparer leur NFT dans le Studio](https://neltud.github.io/xArtists/studio) ; l'activation commerciale et le suivi de colis réel resteront annoncés séparément, après validation.
+Les artistes peuvent continuer à [préparer leur NFT dans le Studio](https://xartists.art/studio) ; l'activation commerciale et le suivi de colis réel resteront annoncés séparément, après validation.
 
 ## Pour aller plus loin
 

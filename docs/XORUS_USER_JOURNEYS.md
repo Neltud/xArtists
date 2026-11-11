@@ -1,6 +1,6 @@
 # xOrus • Parcours utilisateur — NFT & sculpture
 
-**État de cette révision : PR #514, ne pas confondre la branche GitHub avec le déploiement effectivement visible sur xartists.art.**
+**État au 11 novembre 2026 : PR #514 fusionnée et GitHub Pages publie le SHA `969b3a96c38aba5a1ab596535490f097079e3c8e` ([preuve](https://github.com/Neltud/xArtists/actions/runs/43093538589)). Aucun nouveau listing ni mint utilisateur n'est réputé confirmé sans transaction sur Explorer.**
 
 ## Je veux vendre un NFT de mon wallet
 
