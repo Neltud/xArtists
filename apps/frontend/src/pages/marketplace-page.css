@@ -636,3 +636,44 @@
   .xa-marketplace-hero__primary { flex: 1 1 148px; }
   .xa-marketplace-hero__secondary { flex: 0 1 auto; }
 }
+
+
+/* Artwork-first mobile market: the first card row must be inside the
+ * initial 844px viewport, not buried under marketing and operations copy. */
+@media(max-width:700px) {
+  .xa-marketplace--art > * + * { margin-top: 9px !important; }
+  .xa-marketplace--art .xa-marketplace-hero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    padding: 10px 13px 11px;
+    border-radius: 12px;
+  }
+  .xa-marketplace--art .xa-marketplace-hero__eyebrow,
+  .xa-marketplace--art .xa-marketplace-hero__lead,
+  .xa-marketplace--art .xa-marketplace-hero__links { display: none; }
+  .xa-module-body .xa-marketplace--art .xa-marketplace-hero h1 {
+    font-size: 22px !important;
+    line-height: 1.08;
+    letter-spacing: -.03em !important;
+  }
+  .xa-marketplace--art .xa-marketplace-hero__actions {
+    margin-top: 6px;
+    gap: 5px;
+    flex-wrap: nowrap;
+  }
+  .xa-marketplace--art .xa-marketplace-hero__primary,
+  .xa-marketplace--art .xa-marketplace-hero__secondary {
+    min-height: 30px;
+    padding: 5px 9px;
+    font-size: 10px;
+  }
+  .xa-marketplace--art .xa-marketplace-hero__primary { flex: 0 1 auto; }
+  .xa-marketplace--art .xa-marketplace-categories__heading { display: none; }
+  .xa-marketplace--art .xa-marketplace-categories__grid { padding-block: 0 3px; }
+  .xa-marketplace--art .xa-market-grid__heading { margin-bottom: 5px; }
+  .xa-marketplace--art .xa-market-grid__heading p:last-child { display: none; }
+  .xa-marketplace--art .xa-market-grid__eyebrow { margin-bottom: 2px; }
+  .xa-marketplace--art .xa-market-grid__toolbar { margin-bottom: 6px; }
+  .xa-marketplace--art .xa-market-grid__filters { margin-bottom: 4px; padding-bottom: 5px; }
+  .xa-marketplace--art .xa-market-grid__count { margin-top: 2px; }
+}
