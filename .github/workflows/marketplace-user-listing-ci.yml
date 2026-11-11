@@ -22,3 +22,32 @@ jobs:
           node-version: 20
       - name: Read-only listing validator and source gates
         run: node --test apps/frontend/tests/marketplace-user-listing-gate.test.mjs
+
+  mainnet-readonly:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 20
+      - name: Revalidate independent read-only marketplace inspector
+        run: node --test scripts/ops/inspect-marketplace-mainnet.test.mjs
+      - name: Verify production codeHash, payable, pause, fees and listing views (no transactions)
+        run: |
+          node --input-type=module <<'NODE'
+          import {readFileSync} from 'node:fs'
+          import {inspectMarketplace} from './scripts/ops/inspect-marketplace-mainnet.mjs'
+          const registry=JSON.parse(readFileSync('data/contracts.json','utf8'))
+          const result=await inspectMarketplace({registry,maxListings:8})
+          console.log(JSON.stringify({
+            network:result.network,contract:result.address,
+            codehashMatchesRegistry:result.codehashMatchesRegistry,
+            payable:result.payable,paused:result.paused,feeBps:result.feeBps,
+            inspectedListings:result.listings.length,
+            activeListingIds:result.activeListings.map(item=>item.id),
+            checkedAt:new Date().toISOString(),
+            note:'Read-only observation; no completed sale or buyer delivery is inferred'
+          }))
+          if(result.paused)throw Error('Marketplace paused — NO GO')
+          NODE
