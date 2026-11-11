@@ -84,7 +84,7 @@ export default function MarketplacePage(){
     else v.set('tab',next)
     setParams(v)
   }
-  return <div className="xa-page xa-marketplace animate-fade-in space-y-6 pb-24 max-w-6xl mx-auto">
+  return <div className={"xa-page xa-marketplace animate-fade-in space-y-6 pb-24 max-w-6xl mx-auto"+(selected==='art'?" xa-marketplace--art":"")}>
     <header className="xa-marketplace-hero">
       <div className="xa-marketplace-hero__copy">
         <p className="xa-marketplace-hero__eyebrow">{c('marketHeroEyebrow')}</p>
