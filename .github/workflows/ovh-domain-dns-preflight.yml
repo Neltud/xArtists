@@ -1,0 +1,45 @@
+# OVH domain/mail DNS checks only. Never changes registrar, DNS, email,
+# database, payments or mint. Live DNS is manual-only.
+name: OVH domain DNS preflight — read-only
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/ops/ovh-domain-dns-preflight.mjs'
+      - 'scripts/ops/ovh-domain-dns-preflight.test.mjs'
+      - 'docs/ops/OVH_DOMAIN_MAIL_RENDER_POSTGRES_BOUNDARIES_2026-11-10.md'
+      - '.github/workflows/ovh-domain-dns-preflight.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dns-contracts:
+    name: Offline DNS/mail policy tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Assert DNS is not mail or registrar certification
+        run: node --test scripts/ops/ovh-domain-dns-preflight.test.mjs
+
+  public-dns:
+    name: Public xartists.art DNS observation (manual)
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Query public DNS only, no OVH login or email send
+        run: node scripts/ops/ovh-domain-dns-preflight.mjs
