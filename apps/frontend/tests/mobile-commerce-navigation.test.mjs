@@ -65,5 +65,11 @@ test('Studio preflight warns before selecting files when uploads are disabled', 
   assert.match(media, /Aperçu local uniquement/)
   assert.match(media, /disabled=\{!enabled\|\|pending/)
   assert.match(auction, /Aucune enchère ni adjudication réelle n’est acceptée actuellement/)
-  assert.match(market, /Achat désactivé · contrat non validé/)
+  const gallery=read('src/components/market/MarketplaceDiscoveryGrid.tsx')
+  assert.match(market, /c\(live\?'marketStatusLive':'marketStatusOff'\)/)
+  assert.match(gallery, /marketGridNotListed/)
+  assert.match(gallery, /marketGridSaleUnverified/)
+  assert.match(gallery, /marketGridDeposit/)
+  assert.doesNotMatch(gallery, /buyNow|buyNft|sendTransaction|requestOpenConnect/)
+
 })
