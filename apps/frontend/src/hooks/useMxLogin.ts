@@ -16,8 +16,13 @@ export function useMxLogin() {
   const [wcProgress, setWcProgress] = useState<XPortalLoginProgress | null>(null)
   // Ignore late WalletConnect results when the user cancels or closes the panel.
   const attempt = useRef(0)
+  // Only this hook's own in-flight request may be cancelled on unmount.
+  // LoginModal uses the same global WC client, but owns a separate attempt.
+  const activeAttempt = useRef<number | null>(null)
 
   const cancelXPortal = useCallback(() => {
+    if (activeAttempt.current === null) return
+    activeAttempt.current = null
     attempt.current++
     cancelXPortalLogin()
     setWcProgress(null)
@@ -29,10 +34,19 @@ export function useMxLogin() {
 
   const connectXPortal = useCallback(async () => {
     const id = ++attempt.current
+    activeAttempt.current = id
     setWcProgress({ phase: 'init', message: 'Connexion xPortal mainnet…' })
-    const res = await loginWithXPortalMainnet(p => {
-      if (attempt.current === id) setWcProgress(p)
-    })
+    let res: Awaited<ReturnType<typeof loginWithXPortalMainnet>>
+    try {
+      res = await loginWithXPortalMainnet(p => {
+        if (attempt.current === id) setWcProgress(p)
+      })
+    } catch {
+      // The SDK normally returns an error object; keep unexpected exceptions fail-closed.
+      res = { ok: false, error: 'WalletConnect indisponible. Réessaie.' }
+    } finally {
+      if (activeAttempt.current === id) activeAttempt.current = null
+    }
     // An approval arriving after an explicit cancellation must not attach a wallet.
     if (attempt.current !== id) return { ok: false as const, error: 'Connexion annulée.' }
     if (!res.ok) {
