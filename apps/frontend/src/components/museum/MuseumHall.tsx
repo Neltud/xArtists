@@ -2,7 +2,7 @@ import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/p
 /**
  * Entrée unique salle 3D : WebGL dans la page si disponible, sinon CSS 3D.
  */
-import { lazy, Suspense, useMemo } from 'react'
+import { lazy, Suspense, useMemo, useState } from 'react'
 import type { FrameItem } from './MuseumCorridor'
 import type { RoomBlueprint } from '../../lib/roomBlueprint'
 import { isWebGLAvailable } from '../../lib/webglSupport'
@@ -28,34 +28,50 @@ export default function MuseumHall({
   roomTitle?: string
 }) {
   const webgl = useMemo(() => isWebGLAvailable(), [])
+  const [compatible, setCompatible] = useState(false)
 
-  if (!webgl) {
-    return (
-      <MuseumBlueprintRoom
-        blueprint={blueprint}
-        frames={frames}
-        room={room}
-        allowBuy={allowBuy}
-        emptyLabel={emptyLabel}
-      />
-    )
-  }
-
+  // A successful WebGL probe does not guarantee Android/WebView can draw a
+  // scene after switching apps. Keep the artwork visible through CSS 3D.
   return (
-    <Suspense
-      fallback={
-        <div className="xa-museum-engine-loading">
-          {xaRender("Chargement moteur WebGL… ")}</div>
-      }
-    >
-      <MuseumWebGLHall
-        blueprint={blueprint}
-        frames={frames}
-        room={room}
-        allowBuy={allowBuy}
-        emptyLabel={emptyLabel}
-        roomTitle={roomTitle}
-      />
-    </Suspense>
+    <div className="xa-museum-engine">
+      {webgl && (
+        <div className="xa-museum-engine-controls" role="group" aria-label="Mode d’affichage du musée">
+          <button
+            type="button"
+            className="xa-museum-engine-switch"
+            aria-pressed={compatible}
+            onClick={() => setCompatible(v => !v)}
+          >
+            {compatible
+              ? xaRender("Revenir au musée WebGL")
+              : xaRender("Écran vide ? Afficher le musée en mode compatible")}
+          </button>
+        </div>
+      )}
+      {!webgl || compatible
+        ? <MuseumBlueprintRoom
+            blueprint={blueprint}
+            frames={frames}
+            room={room}
+            allowBuy={allowBuy}
+            emptyLabel={emptyLabel}
+          />
+        : <Suspense
+            fallback={
+              <div className="xa-museum-engine-loading">
+                {xaRender("Chargement moteur WebGL… ")}
+              </div>
+            }
+          >
+            <MuseumWebGLHall
+              blueprint={blueprint}
+              frames={frames}
+              room={room}
+              allowBuy={allowBuy}
+              emptyLabel={emptyLabel}
+              roomTitle={roomTitle}
+            />
+          </Suspense>}
+    </div>
   )
 }
