@@ -1,10 +1,48 @@
-# ACTIVE_CONTEXT — xArtists (live system state)
+# ACTIVE_CONTEXT — xArtists / Vellum.ia
 
-**Last updated:** 2026-11-01  
-**Branch:** `main`  
-**Bundle:** `0.126.0` via `static.yml` · workflow `VITE_LIA_LIVE_TRADING` défaut **0** · Paybox UI fail-closed · **not** a trading go-live
+**Mis à jour :** 11 novembre 2026 (audit du déploiement public)  
+**Branche de référence :** `main`  
+**Release public :** **0.131.0**, GitHub Pages `https://xartists.art/`  
+**SHA public vérifié :** `bab174959ddbb118e8d2acdeb024496bdedc6b7c`  
+**Build UTC :** `2026-11-11T11:47:09.896Z`  
+**Preuve :** `https://xartists.art/build-info.json` · [Actions 43014671657](https://github.com/Neltud/xArtists/actions/runs/43014671657)  
+**Ne pas confondre :** nouvelle interface publique **≠** mise en vente / achat / trading mainnet activé.
 
 ---
+
+## Décision de publication — Marketplace #495
+
+- [PR #495](https://github.com/Neltud/xArtists/pull/495) : **fusionnée**, 14/14 contrôles GitHub de la PR verts, dont Chrome responsive, sécurité, TypeScript, release et navigation mobile. Le commit déployé est exactement le SHA ci-dessus.
+- `/marketplace` redirige vers `/explore/market` ; l'onglet Art ouvre directement sur **une grille de cartes d'œuvres**, sans bannière marketing avant les images. Catégories, recherche et filtres restent accessibles en première zone.
+- Grille : **2 colonnes mobile**, **3 tablette**, **4 desktop**, avec 4 œuvres exposées du studio provenant d'actifs réellement publics `/art/drive/` et NFT lus en **lecture seule** depuis l'API MultiversX (wallet LIA et dépôts du contrat).
+- Instantané de lecture du catalogue public au 11 novembre : **13 cartes** (4 œuvres d'exposition, 1 dépôt, 8 NFT détenus). Comptage instantané, **pas 13 ventes**, ni une garantie de disponibilité.
+- Étiquettes : `exposition / hors vente`, `détenu / non listé`, `dépôt / vente non prouvée`, `index externe / non vérifié`. Le montant d'un index n'est jamais une offre on-chain exécutable. Pas de bouton « Acheter » inventé.
+- Les outils LIA/inventaires avancés restent disponibles dans un panneau technique replié, monté seulement à l'ouverture. Huit langues, RTL arabe, contrôles Playwright 360/390/430/768/1440 px.
+- Validation UX complémentaire du navigateur public indépendante des tests de PR ; toute anomalie future sera tracée séparément.
+
+## Garde-fous maintenus — NO-GO commercial / trading
+
+- `build-info.json.lia_live_trading=false` confirmé. `VITE_LIA_LIVE_TRADING` reste à **0** ; aucun trading autonome LIA autorisé.
+- PayBox **fail-closed** ; pas de PayBox production, débit Stripe, achat, vente, signature, broadcast ou mint automatiques permis par le correctif UX.
+- Aucune liquidation, swap ou recharge du wallet LIA Ops. Le burst de signatures du 30 octobre 2026 reste un incident de sécurité de référence.
+- Fenêtre de surveillance Upbit/Bithumb EGLD **16–20 novembre 2026**, selon l'audit de risque daté du 11 novembre ; seule une levée officielle vérifiée et un protocole opérateur distinct pourraient réexaminer le gel.
+- Tout prix d'Agents SC, état de listing (`getListing`) et possession NFT exige une **lecture on-chain fraîche** avant une transaction. Les prix de packs consignés dans d'anciennes notes peuvent diverger : **ne pas s'en servir comme tarif live**.
+- Treasury destination `null` : pas de `claimFees`, pas d'activation silencieuse de DAO/proposals.
+
+## Travail encore bloqué, à garder séparé
+
+- **#480** authentification walletless Neon JWT Ed25519 (**draft**) et **#481** Stripe Billing EUR sandbox (**draft**) : ne pas fusionner ni activer avant preuves JWT, S1/S2 paiement-livraison, remboursement et My Packs NFT.
+- **#478** dossier de GO commercial par rail (**draft**) et **#482** OVH/DNS/mail readiness (**draft**) : ne pas confondre dossiers de préparation et permissions de production.
+- **#494** assainissement de l'historique / soumissions venue (**draft**) : conserver en revue de sécurité, sans merge automatique.
+- **#466** release-please `0.132.0` : ne pas fusionner pour un simple changement de numéro.
+- Artprice officiel : liens de référence uniquement tant qu'une licence B2B de données n'est pas prouvée.
+- Messagerie `hello@xartists.art` : DNS configurés, **réception SMTP réelle non certifiée**.
+- Prochaines priorités : vérification visuelle publique de la grille et des images, étiquettes de provenance/fraîcheur, simplification des sous-modules, audit mobile final ; paiements et mint restent sous gates distincts.
+
+---
+
+> **Archive historique ci-dessous (snapshot du 1er novembre 2026).** Les anciens prix, balances, cours, statuts et URLs GitHub Pages sont conservés pour traçabilité, **pas** comme vérité courante. Pour l'état de production, utiliser la section du 11 novembre ci-dessus et le SHA de `build-info.json`.
+
 
 ## 1. On-chain status (probe 2026-11-01T05:48:00Z)
 
