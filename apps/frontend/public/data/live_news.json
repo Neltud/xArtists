@@ -1,8 +1,85 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-11T13:37:27.806Z",
+  "updatedAt": "2026-11-11T21:44:50.002Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1794433489437",
+      "timestamp": "21:44",
+      "source": "EGLD",
+      "title": "Cotation publique · $2.90 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1794429799000",
+      "timestamp": "20:43",
+      "source": "CoinTelegraph",
+      "title": "US data center restrictions could give Bitcoin miners an edge in AI, though challenges remain",
+      "link": "https://cointelegraph.com/news/us-data-center-restrictions-bitcoin-miners-edge-ai?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1794421843000",
+      "timestamp": "18:30",
+      "source": "CoinTelegraph",
+      "title": "OKXICE moves ahead with tokenized stocks as blue chips push back",
+      "link": "https://cointelegraph.com/news/okxice-tokenized-stocks-blue-chips-push-back?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1794414360000",
+      "timestamp": "16:26",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin hovers near $74K as stocks rise despite US bond yield rebound",
+      "link": "https://cointelegraph.com/markets/bitcoin-74k-stocks-us-bond-yield-inflation-cpi?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1794405738000",
+      "timestamp": "14:02",
+      "source": "CoinTelegraph",
+      "title": "Deutsche Bank launches crypto custody for companies and institutions",
+      "link": "https://cointelegraph.com/news/deutsche-bank-debuts-digital-asset-custody-services-eu?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1794404295000",
+      "timestamp": "13:38",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1794403800000",
+      "timestamp": "13:30",
+      "source": "CoinTelegraph",
+      "title": "Paraguay bank collapse shows stablecoins can offer a lifeline... of sorts",
+      "link": "https://cointelegraph.com/magazine/paraguay-bank-collapse-shows-stablecoins-can-offer-a-lifeline-of-sorts?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1794412845000",
+      "timestamp": "16:00",
+      "source": "CoinDesk",
+      "title": "Crypto Long & Short: The GENIUS Act’s guarantees don’t cover DeFi lending",
+      "link": "https://www.coindesk.com/coindesk-indices/2026/11/11/crypto-long-and-short-the-genius-act-s-guarantees-don-t-cover-defi-lending"
+    },
+    {
+      "id": "rss-CoinDesk-1-1794402000000",
+      "timestamp": "13:00",
+      "source": "CoinDesk",
+      "title": "OKXICE to debut tokenized stock trading with Strategy, Coinbase, Circle this month",
+      "link": "https://www.coindesk.com/business/2026/11/10/okxice-to-debut-tokenized-stock-trading-with-strategy-coinbase-circle-this-month"
+    },
+    {
+      "id": "rss-CoinDesk-2-1794401856000",
+      "timestamp": "12:57",
+      "source": "CoinDesk",
+      "title": "Meet Spiko, the largest tokenized fund in the world you’ve probably never heard about",
+      "link": "https://www.coindesk.com/business/2026/11/11/meet-spiko-the-largest-tokenized-fund-in-the-world-you-ve-probably-never-heard-about"
+    },
+    {
+      "id": "rss-CoinDesk-3-1794399684000",
+      "timestamp": "12:21",
+      "source": "CoinDesk",
+      "title": "Live news: Bitcoin remains under pressure as CoreWeave, Nvidia lead AI rebound",
+      "link": "https://www.coindesk.com/tech/2026/11/11/live-news-coreweave-jumps-14-as-earnings-fuel-rebound-across-battered-ai-stocks"
+    },
     {
       "id": "egld-1794404247420",
       "timestamp": "13:37",
@@ -116,88 +193,11 @@
       "link": "https://cointelegraph.com/news/banks-270m-project-faro-stablecoin-2027?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-4-1794348287000",
-      "timestamp": "22:04",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
       "id": "rss-CoinTelegraph-5-1794346480000",
       "timestamp": "21:34",
       "source": "CoinTelegraph",
       "title": "Can crypto trust firms compete with banks in US derivatives settlements?",
       "link": "https://cointelegraph.com/news/crypto-trust-firms-compete-banks-us-derivatives-settlements?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "egld-1794351143301",
-      "timestamp": "22:52",
-      "source": "EGLD",
-      "title": "Cotation publique · $2.96 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1794345876000",
-      "timestamp": "21:24",
-      "source": "CoinTelegraph",
-      "title": "Across Protocol warns users to avoid app amid reports of drained wallets",
-      "link": "https://cointelegraph.com/news/across-protocol-warns-avoid-app-drained-wallets?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1794344864000",
-      "timestamp": "21:07",
-      "source": "CoinTelegraph",
-      "title": "Ava Labs exec says NYSE deal marks end of blockchain’s ‘general purpose era’",
-      "link": "https://cointelegraph.com/interview/ava-labs-nyse-general-purpose-chains?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1794342362000",
-      "timestamp": "20:26",
-      "source": "CoinTelegraph",
-      "title": "Kimber Digital Securities gains broker-dealer status for tokenized assets",
-      "link": "https://cointelegraph.com/news/kimber-digital-securities-broker-dealer-tokenization?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1794334327000",
-      "timestamp": "18:12",
-      "source": "CoinTelegraph",
-      "title": "Mercado Bitcoin to resume cash withdrawals after $49M hack",
-      "link": "https://cointelegraph.com/news/pix-withdrawals-resume-mercado-bitcoin-hack?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "egld-1794329304392",
-      "timestamp": "16:48",
-      "source": "EGLD",
-      "title": "Cotation publique · $2.93 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1794327903000",
-      "timestamp": "16:25",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin nears 11-week low after ‘discouraging’ US CPI inflation beat",
-      "link": "https://cointelegraph.com/markets/bitcoin-11-week-low-discouraging-us-cpi-inflation?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1794318039000",
-      "timestamp": "13:40",
-      "source": "CoinTelegraph",
-      "title": "Poland’s lower house backs sanctions bill covering crypto freezes",
-      "link": "https://cointelegraph.com/news/poland-bill-freeze-sanctions-crypto-assets?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1794317400000",
-      "timestamp": "13:30",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin’s ‘best buying opportunity ever’ has arrived: Mark Moss",
-      "link": "https://cointelegraph.com/magazine/bitcoins-best-buying-opportunity-ever-has-arrived-mark-moss?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1794316559000",
-      "timestamp": "13:15",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin may benefit as global tightening slows, Binance Research says",
-      "link": "https://cointelegraph.com/markets/bitcoin-price-global-tightening-binance-research?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
