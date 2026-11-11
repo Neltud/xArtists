@@ -84,7 +84,7 @@ export default function ChainInfoBanner({ compact = false }: { compact?: boolean
           <span className="rounded-full border border-emerald-400/30 bg-emerald-500/10 px-2 py-0.5 text-[9px] font-semibold text-emerald-200">
             {xaRender("SC déployés ")}</span>
           <span className="rounded-full border border-amber-400/30 bg-amber-500/10 px-2 py-0.5 text-[9px] font-semibold text-amber-100">
-            {xaRender("LIA = paper ")}</span>
+            {xaRender("xOrus = paper ")}</span>
           <span className="rounded-full border border-white/15 px-2 py-0.5 text-[9px] font-semibold text-zinc-400">
             {xaRender("TX = xPortal ")}</span>
         </div>
@@ -134,8 +134,8 @@ export default function ChainInfoBanner({ compact = false }: { compact?: boolean
           {xaRender("Checklist GO_LIVE → ")}</Link>
         <Link to="/agents" className="text-zinc-400 hover:underline">
           {xaRender("Packs + On-Ramp → ")}</Link>
-        <Link to="/lia" className="text-zinc-400 hover:underline">
-          {xaRender("Hub LIA → ")}</Link>
+        <Link to="/xorus" className="text-zinc-400 hover:underline">
+          {xaRender("xOrus → ")}</Link>
         <Link to="/command-center" className="text-zinc-400 hover:underline">
           {xaRender("Command Center → ")}</Link>
       </div>

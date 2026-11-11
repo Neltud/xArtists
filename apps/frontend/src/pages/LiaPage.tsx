@@ -1,6 +1,6 @@
 import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
- * LIA Hub — Control Room 3D + Cockpit LIVE intents xPortal (v0.110).
+ * xOrus — Control Room 3D + Cockpit LIVE intents xPortal (v0.110).
  */
 import { useCallback, useEffect, useState } from 'react'
 import LiaHubControlRoomLazy from '../components/lia/LiaHubControlRoomLazy'
@@ -61,11 +61,11 @@ export default function LiaPage() {
   const producerFreshness = assessTelemetrySource({
     source_ts: agg?.mindset?.vellum_ts ?? null,
     published_at: agg?.ts ?? null,
-    provider: 'Vellum producer', data_mode: 'paper',
+    provider: 'Retired legacy producer', data_mode: 'paper',
   })
   const hubFreshness = assessTelemetrySource({
     source_ts: hub?.ts ?? null, published_at: hub?.ts ?? null,
-    provider: 'Vellum hub mirror', data_mode: 'paper',
+    provider: 'Legacy hub snapshot', data_mode: 'paper',
   })
 
   const refresh = useCallback(async () => {

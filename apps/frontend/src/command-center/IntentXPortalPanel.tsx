@@ -76,7 +76,7 @@ export default function IntentXPortalPanel() {
     const draft = prepared.draft
     setToast(
       LIA_LIVE_TRADING
-        ? `Prêt à signer · ${describeTx(draft)} · wallet LIA via xPortal`
+        ? `Prêt à signer · ${describeTx(draft)} · wallet protocole historique via xPortal`
         : 'Suivi ouvert (paper). Active VITE_LIA_LIVE_TRADING=1 pour broadcaster une TX.',
     )
     refresh()
@@ -86,7 +86,7 @@ export default function IntentXPortalPanel() {
     if (busyId !== null) return
     if (!connected || !address) {
       requestOpenConnect()
-      setToast('Connecte le wallet LIA dans xPortal.')
+      setToast('Connecte le wallet protocole historique dans xPortal.')
       return
     }
     if (!LIA_LIVE_TRADING) {
@@ -178,13 +178,13 @@ export default function IntentXPortalPanel() {
         plafond pré-signature {LIA_GUARDS.maxUsdPerTrade} $/opération.
         Univers visé : EGLD + ESDT fongibles. Chaque swap exige une cotation et une transaction vérifiées.
         {LIA_LIVE_TRADING
-          ? ' Connecte le wallet LIA ops dans xPortal puis « Signer xPortal ».'
+          ? ' Connecte le wallet protocole historique ops dans xPortal puis « Signer xPortal ».'
           : ' Mode paper : colle un hash après signature manuelle, ou rebuild avec VITE_LIA_LIVE_TRADING=1.'}
       </p>
 
       {LIA_LIVE_TRADING && (
         <p className="text-[11px] text-amber-100/90 rounded-lg border border-amber-500/25 bg-amber-500/10 px-3 py-2 mono break-all">
-          Wallet LIA ops attendu : {LIA_WALLET}
+          Wallet protocole historique ops attendu : {LIA_WALLET}
           {isLiaOps ? ' · ✅ connecté' : connected ? ' · ⚠️ autre adresse' : ' · non connecté'}
         </p>
       )}
@@ -297,8 +297,8 @@ export default function IntentXPortalPanel() {
       )}
 
       <div className="flex flex-wrap gap-3 text-[11px] text-zinc-500 pt-1">
-        <Link to="/lia" className="hover:text-zinc-300">
-          LIA Hub
+        <Link to="/xorus" className="hover:text-zinc-300">
+          xOrus
         </Link>
         <Link to="/command-center" className="hover:text-zinc-300">
           Command Center

@@ -13,7 +13,7 @@ import { useI18n } from '../i18n/I18nContext'
 /** Compte = session utilisateur + ops personnelles */
 const ACCOUNT = ['/wallet', '/portfolio', '/my-packs', '/command-center']
 /** Public = preuve d’intelligence & marchés (Model C) */
-const PUBLIC = ['/lia', '/market', '/lp', '/museum', '/marketplace', '/agents']
+const PUBLIC = ['/xorus', '/market', '/lp', '/museum', '/marketplace', '/agents']
 const INFO = ['/legal', '/go-live', '/sitemap']
 
 export default function SideNav({ open, onClose }: { open: boolean; onClose: () => void }) {
@@ -52,7 +52,7 @@ export default function SideNav({ open, onClose }: { open: boolean; onClose: () 
     {
       title: 'Public · intelligence',
       items: publicItems,
-      hint: 'Hub LIA, marchés, pools — transparent, paper-first',
+      hint: 'xOrus, marchés, pools — transparent, paper-first',
     },
     { title: 'Principal', items: main, hint: '' },
     {

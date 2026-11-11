@@ -19,7 +19,7 @@ export const CORE_MODULES: ProductModule[] = [
   { id: 'museum', path: '/museum', label: 'Musée', emoji: '\ud83d\uddbc', tier: 'core', status: 'ui', blurb: 'Galerie 3D' },
   { id: 'marketplace', path: '/market', label: 'Marché', emoji: '\u25a3', tier: 'core', status: 'live', blurb: 'NFT · list / buy', sc: 'nft_marketplace' },
   { id: 'agents', path: '/agents', label: 'Packs IA', emoji: '\u25ce', tier: 'core', status: 'live', blurb: 'Pulse · Yield · Sentinel', sc: 'agents_marketplace' },
-  { id: 'lia', path: '/lia', label: 'LIA Hub', emoji: '\u25c9', tier: 'core', status: 'ui', blurb: 'Paper only · décisions' },
+  { id: 'lia', path: '/xorus', label: 'xOrus', emoji: '\u25c9', tier: 'core', status: 'ui', blurb: 'Paper only · décisions' },
   { id: 'studio', path: '/studio', label: 'Studio', emoji: '\ud83c\udfa8', tier: 'core', status: 'live', blurb: 'Créer · lister' },
   { id: 'wallet', path: '/wallet', label: 'Wallet', emoji: '\u25c7', tier: 'core', status: 'ui', blurb: 'Session · on-ramp' },
 ]

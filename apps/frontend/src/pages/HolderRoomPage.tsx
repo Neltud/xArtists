@@ -113,8 +113,8 @@ export default function HolderRoomPage() {
         <div className="flex flex-wrap gap-2">
           <Link to={`/trading?pack=${packId}&desk=1`} className="btn-primary text-sm">
             {xaRender("Ouvrir le desk ")}</Link>
-          <Link to="/lia" className="btn-secondary text-sm">
-            {xaRender("LIA Hub ")}</Link>
+          <Link to="/xorus" className="btn-secondary text-sm">
+            {xaRender("xOrus ")}</Link>
           <Link to="/command-center" className="btn-secondary text-sm">
             {xaRender("Command Center ")}</Link>
         </div>

@@ -127,8 +127,8 @@ export default function HistoryPage() {
           </tbody>
         </table>
       </div>
-      <Link to="/lia" className="btn-secondary text-sm">
-        {xaRender("← LIA hub ")}</Link>
+      <Link to="/xorus" className="btn-secondary text-sm">
+        {xaRender("← xOrus ")}</Link>
     </div>
   )
 }
