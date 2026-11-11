@@ -8,33 +8,26 @@ import { Link } from 'react-router-dom'
 import { AGENT_PACKS } from '../config/agentPacks'
 import { loadOwnedPacks } from '../lib/nftPacks'
 
-type Intent = {
-  packId?: string
-  provider?: string
-  amount?: number | string
-  currency?: string
-  paper_only?: boolean
-  ts?: number
-  address?: string
-  status?: string
-}
+import { normalizeLocalPaymentIntent, normalizeLocalPaymentLog } from '../lib/localPaymentHistory.mjs'
+
+type Intent = ReturnType<typeof normalizeLocalPaymentIntent>
 
 function readIntent(): Intent | null {
   try {
     const raw = localStorage.getItem('xartists_access_checkout_intent')
     if (!raw) return null
-    return JSON.parse(raw) as Intent
+    return normalizeLocalPaymentIntent(JSON.parse(raw))
   } catch {
     return null
   }
 }
 
-function readIntentLog(): Intent[] {
+function readIntentLog(): NonNullable<Intent>[] {
   try {
     const raw = localStorage.getItem('xartists_access_checkout_log')
     if (!raw) return []
     const j = JSON.parse(raw)
-    return Array.isArray(j) ? j : []
+    return normalizeLocalPaymentLog(j)
   } catch {
     return []
   }
@@ -53,7 +46,7 @@ export default function PaymentHistory() {
       when: intent.ts ? new Date(intent.ts).toLocaleString() : '—',
       label: pack?.name || intent.packId || 'Pack',
       detail: `${intent.provider || 'paper'} · ${intent.amount ?? '—'} ${intent.currency || 'EUR'}`,
-      kind: intent.paper_only ? 'paper intent' : 'checkout',
+      kind: intent.kind,
     })
   }
   for (const item of log.slice().reverse()) {
@@ -62,7 +55,7 @@ export default function PaymentHistory() {
       when: item.ts ? new Date(item.ts).toLocaleString() : '—',
       label: pack?.name || item.packId || 'Pack',
       detail: `${item.provider || 'paper'} · ${item.amount ?? '—'}`,
-      kind: item.status || 'log',
+      kind: item.kind,
     })
   }
   for (const id of owned) {
@@ -70,8 +63,8 @@ export default function PaymentHistory() {
     rows.push({
       when: 'local',
       label: pack?.name || id,
-      detail: 'Pack marqué possédé (paper / device)',
-      kind: 'owned',
+      detail: 'Pack enregistré sur cet appareil · propriété non vérifiée',
+      kind: 'Déclaration locale · non vérifiée',
     })
   }
 
