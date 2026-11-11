@@ -35,3 +35,10 @@ test('xPortal publicly separates relay initialization from QR pairing without le
   assert.match(wc, /WalletConnect bloqué avant QR/)
   assert.match(wc, /if\(signal\.aborted\)throw new Error\('Connexion annulée\.'\)/)
 })
+
+test('panel unmount cannot abort an unrelated LoginModal pairing', () => {
+  assert.match(hook, /const activeAttempt = useRef<number \| null>\(null\)/)
+  assert.match(hook, /if \(activeAttempt\.current === null\) return/)
+  assert.match(hook, /activeAttempt\.current = id/)
+  assert.match(hook, /if \(activeAttempt\.current === id\) activeAttempt\.current = null/)
+})
