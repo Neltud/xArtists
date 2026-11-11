@@ -81,3 +81,16 @@ test('frontend never marks wallet-hook / SDK submitted prompt as chain transacti
   assert.match(locale,/marketStatusOff: \["Ventes générales désactivées/)
   assert.doesNotMatch(src,/autoBroadcast|markListingSold|purchaseConfirmed\s*=\s*true/)
 })
+
+
+test('NFT detail quote uses live 3 percent fee, includes royalties and rejects >10 percent total',()=>{
+  const status=readFileSync(new URL('../src/config/scStatus.ts',import.meta.url),'utf8')
+  const detail=readFileSync(new URL('../src/components/NFTDetailModal.tsx',import.meta.url),'utf8')
+  assert.match(status,/NFT_MARKET_FEE_BPS = 300/)
+  assert.match(detail,/function feeSplit\(price: number, feeBps: number, royaltyBps: number\)/)
+  assert.match(detail,/const royalty = \(price \* royaltyBps\) \/ 10_000/)
+  assert.match(detail,/toSeller: price - fee - royalty/)
+  assert.match(detail,/royaltyPlusFee > 1_000/)
+  assert.match(detail,/disabled=\{txDisabled \|\| royaltyPlusFee > 1_000\}/)
+  assert.doesNotMatch(detail,/royaltyPlusFee > 10_000/)
+})
