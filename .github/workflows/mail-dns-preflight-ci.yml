@@ -1,0 +1,25 @@
+name: Business mail DNS preflight (no mailbox claims)
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/ops/check-xartists-mail-dns.mjs'
+      - 'scripts/ops/check-xartists-mail-dns.test.mjs'
+      - '.github/workflows/mail-dns-preflight-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test scripts/ops/check-xartists-mail-dns.test.mjs
+      - name: Public read-only DNS check (manual only)
+        if: github.event_name == 'workflow_dispatch'
+        run: node scripts/ops/check-xartists-mail-dns.mjs
