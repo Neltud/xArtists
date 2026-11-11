@@ -1,8 +1,85 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-11T04:51:17.443Z",
+  "updatedAt": "2026-11-11T13:37:27.806Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1794404247420",
+      "timestamp": "13:37",
+      "source": "EGLD",
+      "title": "Cotation publique · $2.92 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1794402150000",
+      "timestamp": "13:02",
+      "source": "CoinTelegraph",
+      "title": "CoreWeave stock jumps 15% premarket after Q3 revenue beats estimates",
+      "link": "https://cointelegraph.com/markets/coreweave-stock-surges-pre-market-q3-revenue?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1794401050000",
+      "timestamp": "12:44",
+      "source": "CoinTelegraph",
+      "title": "FSB urgest Turkey to tighten crypto oversight, set stablecoin rules",
+      "link": "https://cointelegraph.com/news/fsb-turkey-crypto-oversight-stablecoin-regulation?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1794400304000",
+      "timestamp": "12:31",
+      "source": "CoinTelegraph",
+      "title": "Zcash falls below $1,000 for first time since September",
+      "link": "https://cointelegraph.com/markets/zcash-falls-1k-grayscales-1m-ecosystem-commitment?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1794398183000",
+      "timestamp": "11:56",
+      "source": "CoinTelegraph",
+      "title": "Barclays boosts BlackRock Bitcoin ETF stake 48% as banks expand holdings",
+      "link": "https://cointelegraph.com/news/barclays-blackrock-ibit-boost-key-q3-filings?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1794396636000",
+      "timestamp": "11:30",
+      "source": "CoinTelegraph",
+      "title": "Kraken parent adds over 200 tokenized UK and EU stocks to xStocks",
+      "link": "https://cointelegraph.com/news/kraken-xstocks-200-tokenized-uk-eu-equities?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1794395126000",
+      "timestamp": "11:05",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin short-term holders send 47K BTC to exchanges at a loss",
+      "link": "https://cointelegraph.com/markets/bitcoin-speculators-btc-exchanges-unrealized-loss-727k?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1794342993000",
+      "timestamp": "20:36",
+      "source": "CoinDesk",
+      "title": "Warren: What is White House doing to prevent a repeat of teleprompter's Trump bets?",
+      "link": "https://www.coindesk.com/policy/2026/11/10/warren-what-is-white-house-doing-to-prevent-a-repeat-of-teleprompter-s-trump-bets"
+    },
+    {
+      "id": "rss-CoinDesk-1-1794341708000",
+      "timestamp": "20:15",
+      "source": "CoinDesk",
+      "title": "Former NYSE president says stock issuers hold the key to tokenization as Bullish builds its platform",
+      "link": "https://www.coindesk.com/business/2026/11/10/former-nyse-president-says-stock-issuers-hold-the-key-to-tokenization-as-bullish-builds-its-platform"
+    },
+    {
+      "id": "rss-CoinDesk-2-1794331942000",
+      "timestamp": "17:32",
+      "source": "CoinDesk",
+      "title": "Goldman Sachs, Citi among banks said to commit $270 million to stablecoin venture",
+      "link": "https://www.coindesk.com/business/2026/11/10/goldman-sachs-citi-among-banks-said-to-commit-usd270-million-to-stablecoin-venture"
+    },
+    {
+      "id": "rss-CoinDesk-3-1794330442000",
+      "timestamp": "17:07",
+      "source": "CoinDesk",
+      "title": "Crypto is now teamed up with U.S. government in two legal battles over perps",
+      "link": "https://www.coindesk.com/news-analysis/2026/11/10/crypto-teams-up-with-u-s-government-to-defend-stock-perps-in-legal-fight"
+    },
     {
       "id": "egld-1794372676866",
       "timestamp": "04:51",
@@ -51,34 +128,6 @@
       "source": "CoinTelegraph",
       "title": "Can crypto trust firms compete with banks in US derivatives settlements?",
       "link": "https://cointelegraph.com/news/crypto-trust-firms-compete-banks-us-derivatives-settlements?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1794342993000",
-      "timestamp": "20:36",
-      "source": "CoinDesk",
-      "title": "Warren: What is White House doing to prevent a repeat of teleprompter's Trump bets?",
-      "link": "https://www.coindesk.com/policy/2026/11/10/warren-what-is-white-house-doing-to-prevent-a-repeat-of-teleprompter-s-trump-bets"
-    },
-    {
-      "id": "rss-CoinDesk-1-1794341708000",
-      "timestamp": "20:15",
-      "source": "CoinDesk",
-      "title": "Former NYSE president says stock issuers hold the key to tokenization as Bullish builds its platform",
-      "link": "https://www.coindesk.com/business/2026/11/10/former-nyse-president-says-stock-issuers-hold-the-key-to-tokenization-as-bullish-builds-its-platform"
-    },
-    {
-      "id": "rss-CoinDesk-2-1794331942000",
-      "timestamp": "17:32",
-      "source": "CoinDesk",
-      "title": "Goldman Sachs, Citi among banks said to commit $270 million to stablecoin venture",
-      "link": "https://www.coindesk.com/business/2026/11/10/goldman-sachs-citi-among-banks-said-to-commit-usd270-million-to-stablecoin-venture"
-    },
-    {
-      "id": "rss-CoinDesk-3-1794330442000",
-      "timestamp": "17:07",
-      "source": "CoinDesk",
-      "title": "Crypto is now teamed up with U.S. government in two legal battles over perps",
-      "link": "https://www.coindesk.com/news-analysis/2026/11/10/crypto-teams-up-with-u-s-government-to-defend-stock-perps-in-legal-fight"
     },
     {
       "id": "egld-1794351143301",
@@ -149,55 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Bitcoin may benefit as global tightening slows, Binance Research says",
       "link": "https://cointelegraph.com/markets/bitcoin-price-global-tightening-binance-research?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1794311095000",
-      "timestamp": "11:44",
-      "source": "CoinTelegraph",
-      "title": "Coinbase, Kalshi join lawsuit backing CFTC over US stock perp futures",
-      "link": "https://cointelegraph.com/news/coinbase-kalshi-cftc-stock-perpetual-futures-lawsuit?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1794317529000",
-      "timestamp": "13:32",
-      "source": "CoinDesk",
-      "title": "U.S. CPI rose stronger than expected 0.4% in October; core rate rose 0.3%",
-      "link": "https://www.coindesk.com/markets/2026/11/10/u-s-cpi-rose-stronger-than-expected-0-4-in-october-core-rate-rose-0-3"
-    },
-    {
-      "id": "rss-CoinDesk-1-1794314300000",
-      "timestamp": "12:38",
-      "source": "CoinDesk",
-      "title": "Ripple Prime head Marc Asch to step down, Noel Kimmel named successor",
-      "link": "https://www.coindesk.com/business/2026/11/09/ripple-prime-head-marc-asch-to-step-down-noel-kimmel-named-successor"
-    },
-    {
-      "id": "rss-CoinDesk-2-1794312900000",
-      "timestamp": "12:15",
-      "source": "CoinDesk",
-      "title": "Bitcoin breaks with stocks, declines as ETF outflows mount, MARA reduces holdings",
-      "link": "https://www.coindesk.com/daybook-us/2026/11/10/bitcoin-breaks-with-stocks-declines-as-etf-outflows-mount-mara-sells-holdings"
-    },
-    {
-      "id": "rss-CoinDesk-3-1794309850000",
-      "timestamp": "11:24",
-      "source": "CoinDesk",
-      "title": "Bitcoin lags stock rebound in advance of U.S. inflation report",
-      "link": "https://www.coindesk.com/markets/2026/11/10/bitcoin-lags-stock-rebound-in-advance-of-u-s-inflation-report"
-    },
-    {
-      "id": "egld-1794290592566",
-      "timestamp": "06:03",
-      "source": "EGLD",
-      "title": "Cotation publique · $2.97 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1794287158000",
-      "timestamp": "05:05",
-      "source": "CoinTelegraph",
-      "title": "Crypto exchanges need hard dollar caps on hot wallets, CertiK says",
-      "link": "https://cointelegraph.com/news/crypto-exchanges-need-dollar-caps-on-hot-wallets-certik?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
