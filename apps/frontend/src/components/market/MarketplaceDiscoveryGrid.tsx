@@ -5,9 +5,9 @@
  */
 import {useEffect,useMemo,useState} from 'react'
 import {Link} from 'react-router-dom'
-import {DRIVE_EXHIBITION} from '../experience/DriveArtShowcase'
-import {useCopy} from '../experience/state'
-import {LIA_OPS,MAINNET_ADDRESSES} from '../config/contracts'
+import {DRIVE_EXHIBITION} from '../../experience/DriveArtShowcase'
+import {useCopy} from '../../experience/state'
+import {LIA_OPS,MAINNET_ADDRESSES} from '../../config/contracts'
 
 type ChainNft={identifier?:string;name?:string;collection?:string;balance?:number|string;url?:string;media?:Array<{url?:string;thumbnailUrl?:string}>}
 type IndexListing={
@@ -167,7 +167,8 @@ export default function MarketplaceDiscoveryGrid({
           <div className="xa-market-grid__card-body">
             <p className="xa-market-grid__collection">{card.sub}</p>
             <h3 title={card.title}>{card.title}</h3>
-            <p className="xa-market-grid__price">{details}</p>
+            <p className="xa-market-grid__price"
+              title={card.source==='index'?c('marketIndexPriceDisclaimer'):undefined}>{details}</p>
             {card.href?(card.source==='studio'
               ?<Link to={card.href} className="xa-market-grid__card-action">
                 {c('marketGridViewArt')} <span aria-hidden="true">↗</span></Link>
