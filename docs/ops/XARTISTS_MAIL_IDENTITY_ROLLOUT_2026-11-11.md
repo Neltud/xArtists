@@ -11,6 +11,7 @@ Contrôle DNS-over-HTTPS (Google Public DNS) :
 - MX : priorité **1** vers `mail.xartists.art` ; A de ce serveur `146.59.146.223`.
 - SPF : `v=spf1 a mx a:mail.xartists.art -all`.
 - DMARC : `v=DMARC1;p=reject;rua=mailto:adminsys@xartists.art;sp=reject;aspf=s;`.
+- PTR de `146.59.146.223` : `vps-1e220e55.vps.ovh.net` ; ce nom inverse ne correspond pas à `mail.xartists.art`. C'est un **indice de VPS OVH**, non une preuve du logiciel SMTP utilisé ou de la gestion des boîtes. Pour l'envoi depuis ce VPS, contrôler HELO/EHLO, reverse DNS, TLS et réputation.
 
 Ce résultat remplace le constat **NXDOMAIN du 03/11** dans `CONTACT_CHANNEL_READINESS_2026-11-03.md` ; il ne prouve ni l'existence de `adminsys@`, ni celle de `contact@`, ni la bonne configuration SMTP, TLS, DKIM ou la délivrabilité. Les MX observés **ne sont pas nécessairement ceux du MX Plan OVH** : identifier le service réel avant toute modification DNS. Ne pas remplacer des MX en service par des valeurs génériques.
 
