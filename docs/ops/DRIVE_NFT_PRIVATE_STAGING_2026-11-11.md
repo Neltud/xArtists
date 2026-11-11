@@ -36,3 +36,11 @@ Pour chaque candidat : `status=PAPER_METADATA_DRAFT`, `rightsDeclared=false`, `r
 Le workflow réel demeure séparé : (1) déclaration de droits par œuvre ; (2) possession et intégrité des **octets originaux**, SHA-256 vérifié localement ; (3) création d'un catalogue revu et de métadonnées par token ; (4) upload authentifié via `creatorMedia` après contrôle du serveur, quotas, consentement et Pinata correctement configuré ; (5) vérification des CIDs et des images sur deux passerelles ; (6) signature manuelle explicite du minter autorisé sur MultiversX ; (7) preuve de réception on-chain et lien de livraison.
 
 Le script n'est pas un connecteur OAuth Google Drive intégré au navigateur. Il ne modifie ni `CREATOR_MEDIA_UPLOAD_ENABLED`, ni `STUDIO_GLB_UPLOAD_ENABLED`, ni les règles de mint/distributeur. **Aucun achat ou mint automatique** n'est permis.
+
+## Inventaire de métadonnées vérifié le 11 novembre 2026
+
+Une lecture du **dossier galerie NFT xArtists** a renvoyé **291 PNG** nommés de `xArtists0001.png` à `xArtists0291.png`. Son dossier frère **nft MP4 FIRE** contient **4 MP4** (XART01, XART02, XART03, XART09). Il s'agit uniquement de résultats d'inventaire : aucune licence, preuve d'origine octet, SHA-256 ni CID n'a été produite.
+
+Ces objets **ne doivent pas être exposés en public** en copiant des liens Drive ou des IDs dans le repo. Le créateur vérifie chaque œuvre et autorise explicitement sa publication avant le passage au Studio ou au distributeur.
+
+Front-end désormais relié à une démarche explicite : télécharger l'œuvre autorisée depuis son propre Drive, choisir le fichier local dans [Studio](https://xartists.art/studio/?mode=sculpture) puis publier sur IPFS uniquement si les gates serveur sont valides. Le backend n'exécute aucun import OAuth Google automatique.

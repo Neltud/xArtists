@@ -78,6 +78,7 @@ export default function CreatorMediaUpload({title,onReady}:Props){
   useEffect(()=>{
     if(!base){setEnabled(false);setModelEnabled(false);return}
     const c=new AbortController()
+    let active=true
     // A sleeping Render instance can recover without forcing an app reload.
     // A retry only re-reads public config: it never authorizes an upload.
     const timeout=window.setTimeout(()=>c.abort(),12000)
@@ -87,8 +88,8 @@ export default function CreatorMediaUpload({title,onReady}:Props){
       .then(async r=>r.ok?r.json():null)
       .then(j=>{if(!c.signal.aborted){setEnabled(j?.enabled===true);setModelEnabled(j?.modelEnabled===true)}})
       .catch(()=>{if(!c.signal.aborted){setEnabled(false);setModelEnabled(false)}})
-      .finally(()=>{window.clearTimeout(timeout);if(c.signal.aborted)setEnabled(false)})
-    return ()=>{window.clearTimeout(timeout);c.abort()}
+      .finally(()=>{window.clearTimeout(timeout);if(active && c.signal.aborted)setEnabled(false)})
+    return ()=>{active=false;window.clearTimeout(timeout);c.abort()}
   },[base,statusRetry])
   const pick=(next:File|null)=>{
     // Android document providers may label .glb as application/octet-stream.
