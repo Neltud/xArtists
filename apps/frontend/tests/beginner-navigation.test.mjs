@@ -20,11 +20,20 @@ test('mobile visitor menu has simple journeys before collapsed specialist links'
   const starter = shell.indexOf('xa-mobile-start')
   const advanced = shell.indexOf('<details className="xa-mobile-advanced">')
   assert.ok(starter > 0 && advanced > starter, 'beginner menu must precede specialist tools')
+  // Core visitor journeys stay in the primary mobile block.
   for (const url of ['/', '/museum', '/studio', '/marketplace', '/guide']) {
     assert.ok(shell.includes('to="' + url + '" onClick={closeMobile}'), 'mobile quick action missing: ' + url)
   }
-  for (const url of ['/rwa', '/auction', '/agents', '/lia', '/dao']) {
-    assert.ok(shell.slice(advanced).includes('to="' + url + '"'), 'specialist route remains reachable: ' + url)
+  // Auction, Agents and My Packs are intentionally promoted into the primary block.
+  for (const url of ['/auction', '/agents', '/my-packs']) {
+    assert.ok(
+      shell.slice(starter, advanced).includes('to="' + url + '"'),
+      'promoted primary route missing from mobile start: ' + url
+    )
+  }
+  // Remaining specialist routes stay reachable (advanced or elsewhere in the menu).
+  for (const url of ['/rwa', '/lia', '/dao']) {
+    assert.ok(shell.includes('to="' + url + '"'), 'specialist route remains reachable: ' + url)
   }
   assert.match(shell, /xa-mobile-advanced"><summary>\{c\('welcomeAdvanced'\)\}/)
 })
