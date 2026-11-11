@@ -6,6 +6,9 @@ import '../pages/troCrosschain.css'
 // Creator Studio must remain styled on direct canonical /create/studio URLs.
 // Load its small, light-first stylesheet before any lazy StudioPage chunk.
 import '../styles/creator-studio-light.css'
+// Lab must not request a separately hashed CSS chunk on direct /lab deep links.
+// Load this tiny stylesheet eagerly before the lazy LabPage module resolves.
+import '../pages/lab-page.css'
 // $TRO sale is informational and essential: bundle it eagerly to avoid stale
 // lazy-chunk preload errors across direct GitHub Pages and PWA deep links.
 import TroCrosschainPage from '../pages/TroCrosschainPage'
