@@ -60,6 +60,18 @@ export function verifyPagesArtifact({ directory, expectedSha, releaseVersion }) 
     if (chunk.isDynamicEntry) lazyModules++
   }
 
+  // Marketplace is a lazy route, but its critical contrast styles must be
+  // loaded with the HTML entry, not fetched later as a second CSS chunk.
+  // This avoids CSS-preload failures during a Pages release transition.
+  const market = manifest['src/pages/MarketplacePage.tsx']
+  if (market?.isDynamicEntry) {
+    assert.equal((market.css || []).length, 0,
+      'Marketplace critical CSS must be eagerly bundled, not a lazy CSS chunk')
+    assert((entry.css || []).some(name =>
+      readFileSync(file(name), 'utf8').includes('.xa-marketplace-hero')),
+      'Marketplace hero contrast styles must exist in entry CSS')
+  }
+
   for (const route of release.routes) {
     assert(typeof route === 'string' && /^\/(?:[a-z0-9_-]+\/?)*$/i.test(route), `Invalid public route: ${route}`)
     const name = route === '/' ? 'index.html' : route.replace(/^\/|\/$/g, '') + '/index.html'
