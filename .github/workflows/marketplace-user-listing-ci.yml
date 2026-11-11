@@ -3,6 +3,11 @@ on:
   pull_request:
     paths:
       - 'apps/frontend/src/components/MyOwnedNftsPanel.tsx'
+      - 'apps/frontend/src/config/scStatus.ts'
+      - 'apps/frontend/src/lib/scStatus.ts'
+      - 'apps/frontend/src/hooks/useMarketplaceReadiness.ts'
+      - 'apps/frontend/src/hooks/useMarketplaceTx.ts'
+      - 'apps/frontend/tests/marketplace-seller-only-unlock.test.mjs'
       - 'apps/frontend/src/components/ListNftSheet.tsx'
       - 'apps/frontend/src/pages/MarketplacePage.tsx'
       - 'apps/frontend/src/lib/marketplaceUserListing.mjs'
@@ -21,7 +26,7 @@ jobs:
         with:
           node-version: 20
       - name: Read-only listing validator and source gates
-        run: node --test apps/frontend/tests/marketplace-user-listing-gate.test.mjs
+        run: node --test apps/frontend/tests/marketplace-user-listing-gate.test.mjs apps/frontend/tests/marketplace-seller-only-unlock.test.mjs
 
   mainnet-readonly:
     runs-on: ubuntu-latest

@@ -3,7 +3,7 @@
   "author": {
     "name": "X Artists"
   },
-  "description": "XA World Rights developer package: local rights preparation, simulated registry and receipts, plus an operator-configured YouTube read-only web integration. Commerce remains disabled.",
+  "description": "xRights developer package: local rights preparation, simulated registry and receipts, plus an operator-configured YouTube read-only web integration. Commerce remains disabled.",
   "extensions": {
     "com.openai": {
       "interface": {
@@ -15,8 +15,8 @@
           "Simule une enchère fiat ou crypto avec consentement du créateur, sans encaissement."
         ],
         "developerName": "X Artists",
-        "displayName": "XA World Rights",
-        "longDescription": "XA World Rights prépare la valorisation des textes, photos, vidéos, carrousels, podcasts et autres contenus sociaux : droits, consentement, exclusivités, prix, offres et royalties. Catalogue de 13 réseaux et revue d’éligibilité locale. Aucun connecteur actif, paiement ou déploiement.",
+        "displayName": "xRights",
+        "longDescription": "xRights prépare la valorisation des textes, photos, vidéos, carrousels, podcasts et autres contenus sociaux : droits, consentement, exclusivités, prix, offres et royalties. Catalogue de 13 réseaux et revue d’éligibilité locale. Aucun connecteur actif, paiement ou déploiement.",
         "shortDescription": "Licences de contenus sociaux"
       }
     }

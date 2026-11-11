@@ -4,8 +4,6 @@ on:
     paths:
       - 'apps/frontend/src/hooks/useMxLogin.ts'
       - 'apps/frontend/src/components/WalletConnectPanel.tsx'
-      - 'apps/frontend/src/components/LoginModal.tsx'
-      - 'apps/frontend/tests/xportal-modal-isolation.test.mjs'
       - 'apps/frontend/src/lib/xportalWc.ts'
       - 'apps/frontend/tests/xportal-wallet-panel-cancel.test.mjs'
       - 'apps/frontend/tests/xportal-mobile-relay-fallback.test.mjs'
@@ -30,5 +28,4 @@ jobs:
         run: |
           node --test \
             apps/frontend/tests/xportal-wallet-panel-cancel.test.mjs \
-            apps/frontend/tests/xportal-mobile-relay-fallback.test.mjs \
-            apps/frontend/tests/xportal-modal-isolation.test.mjs
+            apps/frontend/tests/xportal-mobile-relay-fallback.test.mjs

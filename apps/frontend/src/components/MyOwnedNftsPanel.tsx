@@ -3,7 +3,8 @@ import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phra
  * Mes NFT (wallet) → « Mettre en vente » → ListNftSheet.
  * Miniatures via ImageWithFallback (pas de carré blanc si média offline).
  */
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { useWallet } from '../context/WalletContext'
 import { useUserAccount } from '../hooks/useUserAccount'
 import ListNftSheet, { type ListTarget } from './ListNftSheet'
@@ -15,11 +16,33 @@ import { ImageWithFallback } from './ui/ImageWithFallback'
 
 export default function MyOwnedNftsPanel() {
   const { connected, address, canAttemptSign } = useWallet()
+  const location = useLocation()
+  const openedFor=useRef<string | null>(null)
   const account = useUserAccount(connected ? address : null)
   const [listTarget, setListTarget] = useState<ListTarget | null>(null)
-  const live = useMarketplaceReadiness()
+  const live = useMarketplaceReadiness('seller')
 
   const items = useMemo(() => account.nfts.slice(0, 48), [account.nfts])
+  // Studio links to /marketplace?list=<NFT-ID>. This only opens the
+  // human-reviewed dialog; it cannot initiate a wallet transaction.
+  useEffect(()=>{
+    openedFor.current=null
+    setListTarget(null)
+  },[address])
+  useEffect(()=>{
+    const id=new URLSearchParams(location.search).get('list')
+    if(!id || !connected || !address || account.loading || account.error)return
+    const key=address+':'+id
+    if(openedFor.current===key)return
+    const nft=items.find(n=>n.identifier===id && isOwnedNftListCandidate(n))
+    if(!nft)return
+    openedFor.current=key
+    const nonce=typeof nft.nonce==='number'?nft.nonce:parseInt(id.split('-').pop()||'',16)
+    if(!Number.isSafeInteger(nonce)||nonce<=0)return
+    setListTarget({collection:nft.collection||'',nonce,
+      name:nft.name||nft.identifier,identifier:nft.identifier,
+      imageUrl:nft.url||nft.media?.[0]?.url})
+  },[account.loading,account.error,connected,address,items,location.search])
 
   if (!connected) {
     return (
@@ -58,7 +81,7 @@ export default function MyOwnedNftsPanel() {
               const nonce =
                 typeof n.nonce === 'number'
                   ? n.nonce
-                  : Number(String(n.identifier || '').split('-').pop()) || 0
+                  : parseInt(String(n.identifier || '').split('-').pop() || '',16) || 0
               const eligible = isOwnedNftListCandidate(n)
               return (
                 <div

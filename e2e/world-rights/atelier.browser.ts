@@ -1,10 +1,10 @@
 import {test,expect} from '@playwright/test'
 test.beforeEach(async({page})=>{
   await page.route('https://xartists-access-api.onrender.com/**',route=>route.fulfill({status:503,contentType:'text/html',body:'Configuration requise'}))
-  await page.goto('/xArtists/plugins/xa-world-rights/app.html')
+  await page.goto('/plugins/xa-world-rights/app.html')
 })
 test('standalone tool is readable and responsive without a wallet',async({page})=>{
- await expect(page.getByRole('heading',{level:1})).toContainText('XA World Rights')
+ await expect(page.getByRole('heading',{level:1})).toContainText('xRights')
  await expect(page.getByText('Vente, paiement et livraison non activés.',{exact:false})).toBeVisible()
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)).toBe(true)
  await expect(page.getByRole('button',{name:'Exporter le dossier JSON'})).toBeDisabled()
@@ -31,7 +31,7 @@ test('creator can prepare and download a non-authorizing dossier',async({page})=
  await expect(page.getByRole('button',{name:'Exporter le dossier JSON'})).toBeDisabled()
 })
 test('public premium distribution is unavailable; source import removes fake approval',async({page,request})=>{
- const response=await request.get('/xArtists/plugins/xa-world-rights/xa-world-rights-0.6.0.zip')
+ const response=await request.get('/plugins/xa-world-rights/xa-world-rights-0.6.0.zip')
  // Vite dev/preview may return the SPA index with HTTP 200 for missing paths.
  // Guard the actual bytes and MIME instead of assuming a 404 status.
  const data=await response.body()

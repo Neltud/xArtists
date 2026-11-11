@@ -4,6 +4,19 @@
 
 [**Launch the public dApp**](https://neltud.github.io/xArtists/) · [**Official GitBook**](https://xartists.gitbook.io/xartists/) · [**Browse the museum**](https://neltud.github.io/xArtists/museum) · [**AI Agents**](https://neltud.github.io/xArtists/agents)
 
+## xOrus, xRights et sculpture 3D
+
+**xOrus** centralise les analyses et la qualité des signaux, tandis que **xRights** (ancien XA World Rights) prépare les licences sociales. Le [Lab sculpture](https://xartists.art/lab?view=3d) permet de faire tourner localement 4–36 vues d’une œuvre avant tout maillage certifié. La récompense envisagée de **1 TRO par NFT physique réellement minté et vérifié** reste sans versement automatique : preuve blockchain, anti-doublon, réserve et autorisation humaine sont indispensables.
+
+## xOrus — intelligence xArtists (paper)
+
+**xOrus** est le nouveau nom public de l'essaim d'analyse précédemment appelé Chorus. Il définit **120 signaux** ; la présence dans le catalogue ne signifie pas qu'ils sont alimentés. Sans données indépendantes et fraîches, le système s'abstient. Le veto Sentinel demeure prioritaire et l'avis externe est limité à 15 %.
+
+`LIA_LIVE_TRADING` n'active aucune transaction xOrus : `executable=false`, ni signature, ni trade, ni mint. Les paiements et actions mainnet restent des parcours distincts, sous contrôle humain.
+
+- [Documentation xOrus](docs/XORUS.md) · [board paper xOrus (snapshot non temps réel)](apps/frontend/public/data/xorus_board.json)
+- Nouvelle commande : `PYTHONPATH=. python -m lia.xorus`. L'import historique `lia.chorus` reste temporairement pour les intégrations existantes, avec migration après la vérification de la PR de sécurité #513.
+
 ## $TRO — acquisition et interopérabilité Solana (release gated)
 
 La nouvelle [page $TRO · achat & Solana](https://neltud.github.io/xArtists/tro/sale) propose une présentation claire de **TRO-94c925 sur MultiversX**, le contrôle de l'identifiant sur Explorer et un accès externe au DEX, **sans prix ni liquidité garantis**. Le projet de bridge Solana est **désactivé** : aucun mint SPL officiellement attesté, aucune adresse de dépôt, aucun transfert, aucune vente directe xArtists.

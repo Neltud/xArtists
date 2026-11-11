@@ -35,7 +35,7 @@ export default function LiaMobileOverview() {
     return () => window.clearInterval(timer)
   }, [refresh])
 
-  // A new aggregator publication never makes an old Vellum model or fill fresh.
+  // A new aggregator publication never makes an old archived model or fill fresh.
   // Source timestamps are separate from the current browser check time.
   const now = Date.now()
   const aggregatorSource = assessTelemetrySource({
@@ -48,7 +48,7 @@ export default function LiaMobileOverview() {
   }, now)
   const modelSource = assessTelemetrySource({
     source_ts: status?.mindset?.vellum_ts ?? null, published_at: status?.ts ?? null,
-    provider: 'Vellum reasoning (producer)', data_mode: 'paper',
+    provider: 'Retired legacy model source', data_mode: 'paper',
   }, now)
   const paperSource = assessTelemetrySource({
     source_ts: status?.shadow?.last_shadow?.slice(-1)[0]?.ts ?? null,
@@ -68,7 +68,7 @@ export default function LiaMobileOverview() {
   return (
     <section aria-labelledby="lia-public-overview" className="min-w-0 space-y-4 rounded-2xl border border-cyan-500/25 bg-zinc-950/95 p-3 sm:p-5">
       <div className="space-y-2">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-cyan-300">LIA · Control Room</p>
+        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-cyan-300">xOrus · Control Room</p>
         <h2 id="lia-public-overview" className="text-xl font-semibold text-white">Agent intelligence at a glance</h2>
         <p className="break-words text-xs text-emerald-200">{LIA_BADGE}</p>
         <p className="text-sm text-zinc-200"><strong>Execution mode:</strong> {mode}</p>
@@ -87,24 +87,24 @@ export default function LiaMobileOverview() {
           Aggregator: {aggregatorSource.source_ts || 'unavailable'} · {aggregatorSource.source_health} · {aggregatorSource.age_minutes ?? '?'} min old · {aggregatorSource.data_mode}
         </p>
         <p className="mt-1 text-xs text-zinc-400">
-          Hub/Vellum mirror: {hubSource.source_ts || 'unavailable'} · {hubFresh ? 'recent paper snapshot' : 'stale or unavailable'} · {hubSource.source_health}
+          Legacy hub snapshot: {hubSource.source_ts || 'unavailable'} · {hubFresh ? 'recent paper snapshot' : 'stale or unavailable'} · {hubSource.source_health}
         </p>
         <p className="mt-1 text-xs text-zinc-500">
           {syncedAt === null ? 'Not checked yet' : 'Checked at ' + new Date(syncedAt).toLocaleTimeString()} · Checking a snapshot does not refresh its source.
         </p>
         <p className="mt-1 break-words text-xs text-amber-200" role="status">
-          Vellum producer: {modelSource.source_ts || 'unavailable'} · {modelSource.source_health} · {modelSource.data_mode} · no fresh model claim
+          Legacy producer (retired): {modelSource.source_ts || 'unavailable'} · {modelSource.source_health} · {modelSource.data_mode} · no fresh model claim
         </p>
         <p className="mt-1 break-words text-xs text-zinc-400">
           Paper fill: {paperSource.source_ts || 'unavailable'} · {paperSource.source_health} · TTL {paperSource.ttl_seconds}s
         </p>
       </div>
 
-      <div className="grid min-w-0 gap-3 sm:grid-cols-3" aria-label="Last published LIA telemetry">
+      <div className="grid min-w-0 gap-3 sm:grid-cols-3" aria-label="Last published xOrus paper telemetry">
         <div className="min-w-0 rounded-xl border border-white/10 bg-white/[0.04] p-4">
           <p className="text-xs text-zinc-400">Reported strategy</p>
           <p className="mt-1 break-words text-lg font-semibold text-white">{reportedStrategy || 'Unavailable — model delayed or unsourced'}</p>
-          <p className="mt-1 text-xs text-zinc-500">Vellum producer timestamp required · not a trade</p>
+          <p className="mt-1 text-xs text-zinc-500">Legacy producer (retired) timestamp required · not a trade</p>
         </div>
         <div className="min-w-0 rounded-xl border border-white/10 bg-white/[0.04] p-4">
           <p className="text-xs text-zinc-400">Shadow performance</p>

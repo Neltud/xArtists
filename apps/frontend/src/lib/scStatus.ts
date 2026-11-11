@@ -14,6 +14,7 @@ export {
   SLOT_CASINO_ADDRESS,
   TRO_TOKEN_ID,
   canListBuyNft,
+  canListOwnedNft,
   canBuyAgent,
   canRentVenueOnChain,
   canStakeTro,
@@ -23,6 +24,7 @@ export {
   canUseTreasury,
   canSpinSlot,
   marketplaceReceiverOrThrow,
+  marketplaceUserListingReceiverOrThrow,
   venueReceiverOrThrow,
   troStakingReceiverOrThrow,
   daoReceiverOrThrow,
@@ -44,6 +46,7 @@ export {
 
 import {
   canListBuyNft,
+  canListOwnedNft,
   canBuyAgent,
   canRentVenueOnChain,
   canStakeTro,
@@ -71,6 +74,10 @@ export function isMarketplaceLive(): boolean {
   return canListBuyNft()
 }
 
+/** Separate seller listing gate; payments/bids keep their explicit build flag. */
+export function isMarketplaceListingLive(): boolean {
+  return canListOwnedNft()
+}
 export function isAgentsMarketplaceLive(): boolean {
   return canBuyAgent()
 }

@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState, type ChangeEvent, type PointerEvent } from 'react'
+import { Link } from 'react-router-dom'
+import StudioGlbPreview from './StudioGlbPreview'
 import { extractLocalMp4Frames, inspectLocalMp4, STUDIO_VIDEO_FRAME_COUNTS, type VideoInfo } from '../lib/studioVideoFrames'
 
 /**
@@ -24,6 +26,8 @@ export default function ArtworkTurntableLab() {
   const [zoom, setZoom] = useState(1)
   const [error, setError] = useState('')
   const [videoFile, setVideoFile] = useState<File | null>(null)
+  const [glbFile, setGlbFile] = useState<File | null>(null)
+  const [glbError, setGlbError] = useState('')
   const [videoInfo, setVideoInfo] = useState<VideoInfo | null>(null)
   const [clipStart, setClipStart] = useState(0)
   const [clipEnd, setClipEnd] = useState(20)
@@ -361,7 +365,37 @@ export default function ArtworkTurntableLab() {
           Ajoute au moins quatre photos, ou extrais des vues d’une vidéo MP4, pour commencer.
         </div>
       )}
+      <section aria-label="Inspecter un vrai modèle GLB" className="rounded-xl border border-cyan-200 bg-cyan-50 p-3 space-y-2">
+        <h4 className="text-sm font-semibold">Inspecter mon fichier 3D (GLB glTF 2.0)</h4>
+        <p className="text-xs text-zinc-700">Si tu as déjà un maillage de ta sculpture (COLMAP, Meshroom, Blender), charge un .glb pour le tourner et zoomer localement. 32 Mio maximum, sans ressources externes. Ce contrôle ne certifie pas l'échelle ni l'auteur.</p>
+        <label className="block text-sm font-medium" htmlFor="xa-turntable-glb">Fichier GLB local</label>
+        <input id="xa-turntable-glb" type="file" accept=".glb,model/gltf-binary"
+          className="block w-full rounded-lg border border-zinc-300 bg-white p-2 text-sm"
+          onChange={e=>{
+            const file=e.target.files?.[0]||null
+            setGlbFile(null)
+            if(!file){setGlbError('');return}
+            if(!/\.glb$/i.test(file.name)||file.size<28||file.size>32*1024*1024){
+              setGlbError('Choisir un GLB 2.0 de moins de 32 Mio. Aucun fichier n’a été transféré.')
+              e.target.value=''
+              return
+            }
+            setGlbError('')
+            setGlbFile(file)
+          }}/>
+        {glbError&&<p role="alert" className="text-xs text-amber-800">{glbError}</p>}
+        {glbFile&&<div className="space-y-2">
+          <p className="break-all text-xs text-zinc-700">{glbFile.name} · rendu local</p>
+          <StudioGlbPreview file={glbFile}/>
+        </div>}
+        <Link to="/studio?mode=sculpture" className="inline-flex min-h-[44px] items-center rounded-lg bg-zinc-900 px-4 py-2 text-sm font-semibold text-white">Publier ce modèle / photo en NFT dans Studio</Link>
+      </section>
       {motionReduced && <p className="text-xs text-zinc-600">Rotation automatique désactivée selon les préférences d’accessibilité de l’appareil.</p>}
+      <div className="flex flex-wrap gap-2 rounded-xl border border-cyan-300 bg-cyan-50 p-3">
+        <Link to="/studio?mode=sculpture" className="min-h-[44px] inline-flex items-center rounded-lg bg-zinc-900 px-3 py-2 text-sm font-semibold text-white">Créer le NFT de ma sculpture</Link>
+        <Link to="/create/digital-twin" className="min-h-[44px] inline-flex items-center rounded-lg border border-zinc-300 px-3 py-2 text-sm">Reconstruction 3D et certificat</Link>
+        <p className="basis-full text-xs text-zinc-600">Ces photos restent locales. L'étape Studio demandera un fichier réellement épinglé sur IPFS ou une URI déjà hébergée et un wallet autorisé.</p>
+      </div>
     </section>
   )
 }

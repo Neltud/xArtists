@@ -306,8 +306,8 @@ function CommandCenterInner() {
       <DataTunnelTransition active={tunnelRef.current} />
 
       <div className="flex flex-wrap gap-3 text-[12px] text-zinc-500">
-        <Link to="/lia" className="hover:text-zinc-300">
-          {xaRender("LIA Hub ")}</Link>
+        <Link to="/xorus" className="hover:text-zinc-300">
+          {xaRender("xOrus ")}</Link>
         <Link to="/agents" className="hover:text-zinc-300">
           {xaRender("Packs ")}</Link>
         <Link to="/" className="hover:text-zinc-300">

@@ -27,13 +27,13 @@ const PATHS = [
     accent: 'from-[color:var(--xa-accent-soft)] to-transparent border-[color:var(--xa-border-strong)]',
   },
   {
-    id: 'lia',
-    title: 'Suivre LIA',
+    id: 'xorus',
+    title: 'Découvrir xOrus',
     emoji: '⚡',
     blurb: 'Board paper, compound, signaux — pas ton argent',
-    steps: ['Trading', 'Portfolio', 'Sim Lab'],
-    to: '/trading',
-    secondary: { to: '/portfolio', label: 'Book LIA' },
+    steps: ['Signaux', 'Sources', 'Lab'],
+    to: '/xorus',
+    secondary: { to: '/lab', label: 'Lab xOrus' },
     accent: 'from-[color:var(--xa-accent-soft)] to-transparent border-[color:var(--xa-border-strong)]',
   },
   {
@@ -58,7 +58,7 @@ export default function UserPathHub() {
             {xaRender("Que veux-tu faire ? ")}</h2>
         </div>
         <p className="text-[11px] text-[color:var(--xa-text-muted)] max-w-xs text-right">
-          {xaRender("Choisis un chemin. LIA (⌘K) comprend aussi le langage naturel. ")}</p>
+          {xaRender("Choisis un chemin. xOrus explique les signaux publiés sans passer d'ordre. ")}</p>
       </div>
       <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-3">
         {xaRender(PATHS.map(p => (

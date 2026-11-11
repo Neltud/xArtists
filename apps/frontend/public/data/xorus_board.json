@@ -1,0 +1,24 @@
+{
+  "engine": "xorus",
+  "version": "1.0.0",
+  "ts": "2026-11-11T17:40:00Z",
+  "replaces": "vellum",
+  "live_trading": false,
+  "live_locked": true,
+  "crosscut": {
+    "stance": "ABSTAIN",
+    "reason": "thin_tape",
+    "signals_defined": 120,
+    "signals_fed": 9,
+    "families_fed": 4,
+    "executable": false,
+    "live_trading": false
+  },
+  "symbiosis": {
+    "chatgpt": "advisory brief only, weight capped at 15%",
+    "signs": false
+  },
+  "note": "Snapshot paper horodaté : 120 signaux définis ne sont pas 120 données reçues. Sans flux vérifiés, xOrus s'abstient. Aucun ordre ni exécution.",
+  "legacy_engine": "chorus",
+  "snapshot_kind": "static_paper_snapshot"
+}

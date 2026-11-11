@@ -238,7 +238,7 @@ Object.assign(copy, {
   twin:['Jumeau numérique','Digital twin','Gemelo digital','Digitaler Zwilling','Цифровой двойник','Цифровий двійник','数字孪生','التوأم الرقمي'],
   academy:['TCA Academy','TCA Academy','Academia TCA','TCA Akademie','Академия TCA','Академія TCA','TCA学院','أكاديمية TCA'],
   ads:['Visibilité & médias','Visibility & media','Visibilidad y medios','Sichtbarkeit & Medien','Продвижение и медиа','Просування та медіа','推广与媒体','الظهور والإعلام'],
-  lia:['LIA · Vue d’ensemble','LIA · Overview','LIA · Visión general','LIA · Übersicht','LIA · Обзор','LIA · Огляд','LIA · 概览','LIA · نظرة عامة'],
+  lia:['xOrus · Intelligence','xOrus · Intelligence','xOrus · Inteligencia','xOrus · Intelligenz','xOrus · Аналитика','xOrus · Аналітика','xOrus · 智能分析','xOrus · الذكاء والتحليل'],
   command:['Centre de contrôle','Command center','Centro de control','Kontrollzentrum','Центр управления','Центр керування','控制中心','مركز التحكم'],
   lightning:['Agent Lightning','Lightning agent','Agente Lightning','Lightning-Agent','Агент Lightning','Агент Lightning','Lightning智能体','وكيل Lightning'],
   polylia:['Agent PolyLIA','PolyLIA agent','Agente PolyLIA','PolyLIA-Agent','Агент PolyLIA','Агент PolyLIA','PolyLIA智能体','وكيل PolyLIA'],

@@ -2,13 +2,13 @@
 import type { Dict } from './types'
 
 export const liaHubFr: Dict = {
-  'lia.hub.label': 'LIA Hub',
+  'lia.hub.label': 'xOrus',
   'lia.hub.title': 'Agent autonome & signaux',
   'lia.hub.lead':
-    'Chorus — 120 signaux, recoupe paper. ChatGPT en brief seulement (15 %). Pas de Vellum. Pas de TX agent.',
+    'xOrus — 120 signaux, recoupe paper. ChatGPT en brief seulement (15 %). Archive historique désactivée. Pas de TX agent.',
   'lia.hub.noAutonomousTx':
     'Aucune TX agent autonome\u00a0: les actions on-chain passent par xPortal.',
-  'lia.control.kicker': 'LIA Hub · Salle de contrôle',
+  'lia.control.kicker': 'xOrus · Salle de contrôle',
   'lia.control.hint': 'Survole / clique un écran holo',
   'lia.control.hintPack': 'Pack {id} · clic pour ouvrir',
   'lia.control.open': 'Ouvrir la salle de contrôle 3D · Packs Agent',
@@ -16,7 +16,7 @@ export const liaHubFr: Dict = {
   'lia.loader': 'Initialisation de l’infrastructure xArtists…',
 
   'pack.gate.kicker': 'Command Center · Accès NFT',
-  'pack.gate.title': 'Accès Réservé — Command Center LIA',
+  'pack.gate.title': 'Accès Réservé — Command Center xOrus',
   'pack.gate.locked':
     'Cet écran de contrôle nécessite la possession d’un Pack Agent NFT {pack}.',
   'pack.gate.unlocked':
@@ -34,13 +34,13 @@ export const liaHubFr: Dict = {
 }
 
 export const liaHubEn: Dict = {
-  'lia.hub.label': 'LIA Hub',
+  'lia.hub.label': 'xOrus',
   'lia.hub.title': 'Autonomous agent & signals',
   'lia.hub.lead':
-    'Chorus — 120 signals, paper cross-cut. ChatGPT brief only (15% cap). Vellum retired. No agent txs.',
+    'xOrus — 120 signals, paper cross-cut. ChatGPT brief only (15% cap). Legacy producer retired. No agent txs.',
   'lia.hub.noAutonomousTx':
     'No autonomous agent txs: on-chain actions go through xPortal.',
-  'lia.control.kicker': 'LIA Hub · Control room',
+  'lia.control.kicker': 'xOrus · Control room',
   'lia.control.hint': 'Hover / click a holo screen',
   'lia.control.hintPack': 'Pack {id} · click to open',
   'lia.control.open': 'Open 3D control room · Agent packs',
@@ -48,7 +48,7 @@ export const liaHubEn: Dict = {
   'lia.loader': 'Initializing xArtists infrastructure…',
 
   'pack.gate.kicker': 'Command Center · NFT access',
-  'pack.gate.title': 'Reserved Access — LIA Command Center',
+  'pack.gate.title': 'Reserved Access — xOrus Command Center',
   'pack.gate.locked':
     'This control screen requires ownership of an Agent Pack NFT {pack}.',
   'pack.gate.unlocked':

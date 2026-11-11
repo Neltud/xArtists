@@ -1,7 +1,7 @@
 import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as xaUsePhraseLocale} from '../i18n/phraseRuntime'
 /** Creator Studio — collections + mint + list + certification phygital. */
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useWallet } from '../context/WalletContext'
 import { useUserAccount } from '../hooks/useUserAccount'
 import { useStudioMintTx } from '../hooks/useStudioMintTx'
@@ -18,6 +18,8 @@ import { saveStudioCollection } from '../lib/studioOnChainMint'
 export default function StudioPage() {
   xaUsePhraseLocale()
 
+  const [params] = useSearchParams()
+  const sculptureMode = params.get('mode') === 'sculpture'
   const { connected, address, canAttemptSign } = useWallet()
   const account = useUserAccount(connected ? address : null)
   const nfts = account.nfts || []
@@ -122,12 +124,25 @@ export default function StudioPage() {
     <div className="xa-creator-studio animate-fade-in mx-auto max-w-3xl space-y-8 px-4 pb-28 pt-6 sm:px-7">
       <header className="space-y-1">
         <p className="section-label">{xaRender("Création")}</p>
-        <h1 className="section-title display text-2xl">{xaRender("Creator Studio")}</h1>
+        <h1 className="section-title display text-2xl">{xaRender(sculptureMode ? "Créer le NFT de ma sculpture" : "Creator Studio")}</h1>
         <p className="text-sm leading-7 text-[color:var(--xa-text-secondary)]">
           {xaRender("Prépare ton œuvre, publie-la sur IPFS, puis crée ton NFT avec la signature de ton propre wallet. Aucun mint automatique. ")}</p>
       </header>
 
       <MainnetJourney current="studio" />
+      <section aria-label="Parcours création sculpture" className="card space-y-2 border border-cyan-500/25">
+        <h2 className="font-semibold text-[color:var(--xa-text)]">Ma sculpture → NFT sur MultiversX</h2>
+        <p className="text-sm text-[color:var(--xa-text-secondary)]">
+          Photographie ou modèle GLB de ton œuvre physique, collection artiste, média publié sur IPFS, puis signature du mint dans ton wallet. La rotation de photos n'est pas une reconstruction 3D certifiée.
+        </p>
+        <div className="flex flex-wrap gap-2">
+          <Link to="/lab?view=3d" className="btn-secondary text-sm">1 · Prévisualiser la sculpture</Link>
+          <Link to="/create/digital-twin" className="btn-secondary text-sm">2 · Préparer le jumeau 3D</Link>
+          <a href="#xa-studio-mint" className="btn-primary text-sm">3 · Publier puis signer le NFT</a>
+          <Link to="/marketplace#xa-market-sell" className="btn-secondary text-sm">4 · Mettre en vente</Link>
+        </div>
+        <p className="text-xs text-amber-900 dark:text-amber-100">Le mint exige la preuve du rôle NFTCreate, un média distant valide et une signature humaine. La récompense proposée de 1 TRO par NFT physique vérifié n'est pas versée automatiquement.</p>
+      </section>
 
       <ol className="xa-studio-steps" aria-label="Étapes pour créer un NFT artiste">
         <li><strong>1 · Wallet</strong><span>Connecte ton compte artiste.</span></li>
@@ -218,9 +233,9 @@ export default function StudioPage() {
           {xaRender("Après issue : récupère le token id sur l’explorer (TICKER-xxxxxx), colle-le ci-dessus, puis rôle + mint. ")}</p>
       </section>
 
-      <ArtworkTurntableLab />
+      <div id="xa-studio-turntable"><ArtworkTurntableLab /></div>
 
-      <section className="card xa-studio-workflow space-y-3">
+      <section id="xa-studio-mint" className="card xa-studio-workflow space-y-3">
         <h2 className="text-sm font-semibold text-[color:var(--xa-text)]">{xaRender("Préparer et créer mon NFT")}</h2>
         <label className="block text-sm font-medium" htmlFor="xa-studio-nft-name">
           Nom de l’œuvre à publier
@@ -313,7 +328,7 @@ export default function StudioPage() {
       <section className="card xa-studio-surface space-y-4 border border-[color:var(--xa-border)] bg-[color:var(--xa-surface)]">
         <h2 className="text-sm font-semibold text-[color:var(--xa-text)]">{xaRender("Certification Phygital")}</h2>
         <p className="text-sm text-[color:var(--xa-text-secondary)] leading-relaxed">
-          {xaRender("Photo HD → hash SHA-256 local → certificats CoA / CoP. Réévaluation future via intention LIA ")}<code className="text-xs text-[color:var(--xa-text-secondary)]"> PHYGITAL_REEVAL</code>.
+          {xaRender("Photo HD → hash SHA-256 local → certificats CoA / CoP. Réévaluation future via intention xOrus ")}<code className="text-xs text-[color:var(--xa-text-secondary)]"> PHYGITAL_REEVAL</code>.
         </p>
         <PhysicalNftCertifier />
       </section>

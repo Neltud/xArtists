@@ -19,5 +19,11 @@
     },
     "max_per_collection_standard": 505,
     "max_per_collection_pro": 10005
-  }
+  },
+  "policy_revision": "2026-11-11 proposal",
+  "legacy_trigger": "first_sale (legacy implementation; not a verified mint reward)",
+  "requested_trigger": "verified_physical_nft_mint",
+  "payment_live": false,
+  "proof_required": true,
+  "note": "Historical pool and distributed counts are unverified, not an authorization. 1 TRO per eligible physical NFT minted through xArtists requires chain receipt, provenance, anti-replay and authorized reserve. No transfer is performed."
 }

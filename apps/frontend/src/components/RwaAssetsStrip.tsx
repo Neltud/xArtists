@@ -69,7 +69,7 @@ export default function RwaAssetsStrip() {
                     : 'border-white/10 text-zinc-500'
                 }`}
               >
-                {xaRender(t.troRewardEligible ? '1 TRO max éligible' : 'Pas de reward TRO physique')}
+                {xaRender(t.troRewardEligible ? '1 TRO prévu après mint physique vérifié (non versé)' : 'Pas de reward TRO physique')}
               </span>
               <span
                 className={`text-[10px] rounded-full px-2 py-0.5 border ${

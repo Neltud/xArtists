@@ -53,7 +53,6 @@ export default function LoginModal({ open: controlledOpen, onClose, onConnected 
 
   const { t } = useI18n()
   const attempt=useRef(0)
-  const activeAttempt=useRef<number|null>(null)
   const { connect } = useWallet()
   const [internalOpen, setInternalOpen] = useState(false)
   const open = controlledOpen ?? internalOpen
@@ -74,25 +73,13 @@ export default function LoginModal({ open: controlledOpen, onClose, onConnected 
     return () => window.removeEventListener(OPEN_CONNECT_EVENT, on)
   }, [controlledOpen])
 
-  // An unrelated wallet panel must never supply this modal's QR.
-  // Only this modal's login progress callback may set wcUri.
   useEffect(() => {
-    if (!open && activeAttempt.current !== null) {
-      attempt.current++
-      activeAttempt.current = null
-      cancelXPortalLogin()
-      setWcUri(null)
-      setBusy(false)
+    const onUri = (e: Event) => {
+      const u = (e as CustomEvent).detail?.uri
+      if (typeof u === 'string') setWcUri(u)
     }
-  }, [open])
-
-  useEffect(() => () => {
-    // Unmount cancels only a pairing started by this modal.
-    if (activeAttempt.current !== null) {
-      attempt.current++
-      activeAttempt.current = null
-      cancelXPortalLogin()
-    }
+    window.addEventListener('xartists-wc-uri', onUri)
+    return () => window.removeEventListener('xartists-wc-uri', onUri)
   }, [])
 
   const reset = () => {
@@ -105,10 +92,7 @@ export default function LoginModal({ open: controlledOpen, onClose, onConnected 
   const cancelCurrent = () => {
     // Closing/retrying must never silently accept a late WalletConnect approval.
     attempt.current++
-    if (activeAttempt.current !== null) {
-      activeAttempt.current = null
-      cancelXPortalLogin()
-    }
+    cancelXPortalLogin()
     setBusy(false)
     setWcUri(null)
     setError('Connexion annulée. Tu peux relancer xPortal.')
@@ -119,7 +103,6 @@ export default function LoginModal({ open: controlledOpen, onClose, onConnected 
 
   const runXPortal = async () => {
     const id=++attempt.current
-    activeAttempt.current=id
     setBusy(true)
     setError('xPortal…')
     setWcUri(null)
@@ -131,25 +114,19 @@ export default function LoginModal({ open: controlledOpen, onClose, onConnected 
       })
       if(id!==attempt.current)return
       if (!res.ok) {
-        setWcUri(null)
         setError(res.error)
         return
       }
       const linked = connect(res.address, 'xportal')
       if (!linked.ok) {
-        setWcUri(null)
         setError(linked.error || 'Session refusée')
         return
       }
       onConnected?.(res.address)
       reset()
     } catch (e) {
-      if(id===attempt.current){
-        setWcUri(null)
-        setError(e instanceof Error ? e.message : 'Erreur xPortal')
-      }
+      if(id===attempt.current)setError(e instanceof Error ? e.message : 'Erreur xPortal')
     } finally {
-      if(activeAttempt.current===id)activeAttempt.current=null
       if(id===attempt.current)setBusy(false)
     }
   }
@@ -194,7 +171,7 @@ export default function LoginModal({ open: controlledOpen, onClose, onConnected 
   const runSimpleWebWallet = () => {
     window.open(WEB_WALLET, '_blank', 'noopener,noreferrer')
     setError(
-      'Web Wallet officiel ouvert. Coller erd1 dans xArtists donne uniquement un accès en lecture seule, sans signature ni achat. Pour signer, utilise une connexion authentifiée.',
+      'Web Wallet ouvert. Crée ou déverrouille un compte, copie erd1, colle-la ci-dessous (ou reviens avec xPortal).',
     )
     setMode('classic')
   }
@@ -203,7 +180,7 @@ export default function LoginModal({ open: controlledOpen, onClose, onConnected 
     const id = generateGuestReceiveId()
     saveGuestReceiveId(id, { purpose: 'fiat_pack_pending' })
     setError(
-      `Identifiant local temporaire : ${id}. Aucun checkout Fiat, droit NFT ou mint n'est activé par cet identifiant. Aucun paiement ni livraison n'est confirmé.`,
+      `Identifiant réception temporaire : ${id}. Utilise-le au checkout Fiat — le mint sera lié après webhook dès qu’un erd1 est fourni (email / claim).`,
     )
   }
 
@@ -261,8 +238,6 @@ export default function LoginModal({ open: controlledOpen, onClose, onConnected 
             </p>}
             <button type="button" className="btn-secondary w-full" disabled={busy} onClick={() => void runExtension()}>
               {xaRender("Extension DeFi Wallet ")}</button>
-            <button type="button" className="btn-secondary w-full" disabled={busy} onClick={runSimpleWebWallet}>
-              {xaRender("Ouvrir Web Wallet officiel (sans connexion automatique) ")}</button>
             <div className="space-y-2 border-t border-white/10 pt-3">
               <p className="text-[11px] text-zinc-600">{xaRender("Lecture seule — coller erd1")}</p>
               <input
@@ -284,9 +259,9 @@ export default function LoginModal({ open: controlledOpen, onClose, onConnected 
             <button type="button" className="btn-primary w-full" onClick={runSimpleWebWallet}>
               {xaRender("Ouvrir Web Wallet MVX ↗ ")}</button>
             <button type="button" className="btn-secondary w-full text-sm" onClick={runGuestForFiat}>
-              {xaRender("Préparer un identifiant local (sans paiement) ")}</button>
+              {xaRender("Identifiant temporaire (fiat sans erd1 encore) ")}</button>
             <p className="text-[10px] text-zinc-600">
-              {xaRender("Identifiant local de préparation seulement : pas de paiement, de mint, de livraison NFT ou de droit d'accès vérifié. ")}</p>
+              {xaRender("L’ID temporaire lie le paiement au futur mint — tu devras revendiquer avec un erd1 (claim). Pas un compte titres. ")}</p>
           </div>
         ))}
 

@@ -1,6 +1,6 @@
 import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
- * LIA Hub — Control Room 3D + Cockpit LIVE intents xPortal (v0.110).
+ * xOrus — Control Room 3D + Cockpit LIVE intents xPortal (v0.110).
  */
 import { useCallback, useEffect, useState } from 'react'
 import LiaHubControlRoomLazy from '../components/lia/LiaHubControlRoomLazy'
@@ -61,11 +61,11 @@ export default function LiaPage() {
   const producerFreshness = assessTelemetrySource({
     source_ts: agg?.mindset?.vellum_ts ?? null,
     published_at: agg?.ts ?? null,
-    provider: 'Vellum producer', data_mode: 'paper',
+    provider: 'Retired legacy producer', data_mode: 'paper',
   })
   const hubFreshness = assessTelemetrySource({
     source_ts: hub?.ts ?? null, published_at: hub?.ts ?? null,
-    provider: 'Vellum hub mirror', data_mode: 'paper',
+    provider: 'Legacy hub snapshot', data_mode: 'paper',
   })
 
   const refresh = useCallback(async () => {
@@ -103,7 +103,7 @@ export default function LiaPage() {
   return (
     <div className="animate-fade-in mx-auto max-w-5xl min-w-0 space-y-6 pb-28">
       <header className="space-y-3">
-        <p className="section-label">LIA · PUBLIC CONTROL ROOM</p>
+        <p className="section-label">xOrus · INTELLIGENCE</p>
         <h1 className="section-title display text-2xl sm:text-3xl">Agent signals, clearly explained</h1>
         <p className="max-w-2xl text-sm leading-relaxed text-zinc-300">
           Explore the published signals of the xArtists AI agents, read the source timestamps, and
@@ -115,7 +115,7 @@ export default function LiaPage() {
             : 'PAPER / SHADOW · Automated live trading is disabled. Simulated P&L is not realized profit.'}
         </p>
         <p className="max-w-2xl text-xs text-zinc-500">
-          Data comes from periodically published snapshots, not a continuous LIA trading stream.
+          Data comes from dated snapshots. xOrus does not claim live trading, wallet execution or paid data rights.
           The published timestamp is different from the time at which you open this page.
         </p>
       </header>
@@ -140,7 +140,7 @@ export default function LiaPage() {
             <h2 id="lia-advanced" className="text-lg font-semibold text-white">Advanced intelligence &amp; diagnostics</h2>
             <p className="mt-1 text-xs leading-relaxed text-zinc-400">
               Optional technical dashboards, asset tickers, intent logs and simulations.
-              These are not confirmations of trades, NFT deliveries or real-time LIA executions.
+              These are not confirmations of trades, NFT deliveries or real-time xOrus execution.
             </p>
           </div>
           <button type="button" onClick={() => setAdvancedOpen(open => !open)} aria-expanded={advancedOpen}
@@ -168,14 +168,14 @@ export default function LiaPage() {
             <section className="min-w-0 space-y-2 rounded-xl border border-white/10 p-4">
               <h3 className="text-sm font-semibold text-zinc-100">Sources &amp; operator telemetry</h3>
               <p className="text-xs text-zinc-400">
-                Vellum: paper/delayed snapshots only; no independently verified trading execution
+                Legacy producer retired: archived or delayed snapshots only; no verified autonomous trading
                 {' · '}Model aura: {mAura}
                 {loading ? ' · synchronizing snapshots' : ''}
               </p>
               <p className="break-words text-xs text-zinc-400">Hub mirror: {hubFreshness.source_ts || 'unavailable'} · {hubFreshness.source_health} · no LIVE claim</p>
               {!producerFreshness.is_stale && agg?.paper === true && agg?.mindset?.strategy
                 ? <p className="text-xs text-zinc-400">Paper strategy (producer fresh): {agg.mindset.strategy}</p>
-                : <p className="break-words text-xs text-amber-200">Vellum strategy withheld — producer {producerFreshness.source_health}; source {producerFreshness.source_ts || 'unavailable'}</p>}
+                : <p className="break-words text-xs text-amber-200">Archived strategy withheld — producer {producerFreshness.source_health}; source {producerFreshness.source_ts || 'unavailable'}</p>}
               {txs.length > 0 && (
                 <div className="text-xs text-zinc-500">
                   <p>Recent public wallet transactions (not proof of autonomous agent trading):</p>

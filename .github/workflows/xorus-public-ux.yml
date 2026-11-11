@@ -1,0 +1,41 @@
+name: xOrus public routes, Lab UX and build (no deploy)
+on:
+  pull_request:
+    paths:
+      - 'apps/frontend/src/experience/**'
+      - 'apps/frontend/src/pages/LabPage.tsx'
+      - 'apps/frontend/src/components/ArtworkTurntableLab.tsx'
+      - 'apps/frontend/tests/sculpture-lab-glb-flow.test.mjs'
+      - 'apps/frontend/src/pages/DigitalTwinPage.tsx'
+      - 'apps/frontend/src/pages/WorldRightsPage.tsx'
+      - 'apps/frontend/tests/xorus-public-routes.test.mjs'
+      - '.github/workflows/xorus-public-ux.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    defaults:
+      run:
+        working-directory: apps/frontend
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+      - run: npm ci --legacy-peer-deps
+      - name: Verify old and new URLs, status and read-only sculpture flow
+        run: node --test tests/xorus-public-routes.test.mjs tests/sculpture-lab-glb-flow.test.mjs
+      - name: Frontend release, routes, i18n and build
+        env:
+          VITE_LIA_LIVE_TRADING: '0'
+          VITE_PAYBOX_ENABLED: 'false'
+          VITE_GENESIS_COMMERCIAL_GO: '0'
+        run: |
+          npm run test:release
+          npm run check:routes
+          npm run verify:site
+          npm run typecheck
+          npm run build
