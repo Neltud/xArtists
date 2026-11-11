@@ -3,63 +3,42 @@ hidden: true
 noIndex: true
 ---
 
-# Source of truth — xArtists status
+# Source of truth — xArtists (statut contrats ≠ disponibilité produit)
 
-**Updated:** 2026-09-24\
-**Rule:** Communication and roadmaps **must not** claim production/mainnet deploy unless this file + live probe agree.
+**Révision documentaire : 11 novembre 2026.** L'édition du 24 septembre décrivait la sonde alors indisponible, pas la situation mainnet du 11 novembre.
 
-## Canonical sources (in order)
+## Sources et niveau de preuve
 
-1. **`data/contracts.json`** — addresses, `codeHash` expectations, `ui_status.verdict`
-2. **MultiversX API** — `GET https://api.multiversx.com/accounts/{address}` → `codeHash` null = **not deployed**. If the endpoint is **down**, treat as **unread / empty** (fail-closed), do not invent live.
-3. **This document** — human summary
-4. Roadmaps / TECHNICAL / ANALYSE\_\* — **secondary**; if they conflict, ignore them
+1. **`data/contracts.json`** : adresses officielles et codeHash attendus. Le libellé technique `status: LIVE` du registre ne vaut **pas** autorisation de vente, de signature ni de mainnet produit.
+2. **API publique MultiversX** : code WASM, `codeHash`, `isPayable`, vues du contrat et inventaire NFT. Une réponse manquante est **non vérifiée**, jamais déduite d'un snapshot.
+3. **Chorus** : `lia/chorus`, `docs/CHORUS.md`, board paper et tests d'abstention. Le conseil externe ChatGPT ne peut pas signer ou renverser le veto Sentinel.
+4. **Ce document** : synthèse datée et prudente, subordonnée aux preuves on-chain actuelles. Un ancien montant de caisse ne peut jamais être présenté comme un prix de pack.
 
-## Current verdict
+## Situation au 11 novembre 2026
 
-| Field                  | Value                                                                                                                                                                        |
-| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Status**             | **GO\_DEMO**                                                                                                                                                                 |
-| **Network**            | MultiversX mainnet (read) · **Supernova 600 ms live** (since 10 Sep 2026, epoch 2233)                                                                                        |
-| **Product SCs**        | **Not deployed** (last-known `codeHash` null; accounts API **down** 24 Sep)                                                                                                  |
-| **LIA\_LIVE\_TRADING** | **false** (paper board)                                                                                                                                                      |
-| **Demo**               | https://neltud.github.io/xArtists/                                                                                                                                           |
-| **Probe**              | 2026-09-24 \~04:32 UTC · epoch **2242** · `/stats` 200 · `/economics` `/accounts` `/tokens` **KO** · EGLD books \~$4.13 · LIA Ops last-known 2.09 EGLD / nonce 1468 (19 Sep) |
+| Domaine | Vérité connue | Verdict produit |
+| --- | --- | --- |
+| Site principal | `https://xartists.art/`; URL GitHub Pages historique redirigée | Frontend public, pas de preuve d'activation générale des rails commerciaux |
+| Chorus / LIA | 120 signaux définis, 9 alimentés, 4 familles dans le dernier board transmis ; `ABSTAIN / thin_tape` | **Paper uniquement** ; `executable=false` et `LIA_LIVE_TRADING` ignoré |
+| NFT Marketplace `…8txmm` | Bytecode et codeHash `8TTszCmN…` présents ; compte payable ; solde de contrat observé **0,0175 EGLD** | Contrat déployé ≠ achat automatiquement autorisé. Listing, prix, escrow, signature et réception se vérifient séparément |
+| Agents `…gdqwsg` | Bytecode et codeHash `igm9oUpg…` présents ; **non payable** ; solde observé **0,033 EGLD** | Prix packs on-chain rapportés : Pulse **10**, Yield **5**, Sentinel **2,5 EGLD**. Le solde du SC n'est pas un prix |
+| Slot `…s4g34f` | Bytecode et codeHash `UZ0nX6dW…` présents ; solde **0,50 EGLD** ; `isPayable=false` | **Aucun spin réel**. Ne pas afficher « mode réel ouvert » |
+| TRO staking / venue split | Bytecode présent, soldes de contrats rapportés à **0** | Déploiement technique seulement, permissions et fonctionnalités à certifier |
+| Contrats legacy | Adresses `never_fund` du registre, codeHash non présent | **Ne jamais financer** |
 
-### Smart contracts (last verified 2026-09-19; unread 24 Sep)
+Ces montants et états sont des **observations datées**, non des relevés en temps réel. Pour une nouvelle décision, relire les vues et vérifications contractuelles. Aucune clé ni signature requise pour les lectures.
 
-| Contract                          | Address (short) | codeHash | Status            |
-| --------------------------------- | --------------- | -------- | ----------------- |
-| nft\_staking                      | `…xr8cl`        | null     | **NOT\_DEPLOYED** |
-| tro\_governance                   | `…e0ca8`        | null     | **NOT\_DEPLOYED** |
-| marketplace                       | `…8354t`        | null     | **NOT\_DEPLOYED** |
-| nft\_minter                       | `…yztkn`        | null     | **NOT\_DEPLOYED** |
-| agents\_marketplace               | —               | —        | **NOT\_DEPLOYED** |
-| tro\_burn / rwa / treasury / slot | —               | —        | **NOT\_DEPLOYED** |
+## Argent, droits et sécurité
 
-Addresses may exist as empty accounts. **Empty ≠ deployed.** Unread ≠ deployed.
+- Prix EUR déterminés **côté serveur uniquement** : Pulse **110 €**, Yield **75 €**, Sentinel **50 €**. Le navigateur ne définit ni montant ni droit de propriété.
+- PayBox : seule route `POST /v1/checkout/paybox`. Tant que HMAC et IPN restent des stubs, paiement/livraison = **NO-GO**.
+- Pas de DCA TRO, de mint, de trade, de signature, de spin réel ou de déploiement par Chorus.
+- Les transitions `signed`, `paid`, `delivered` et `owned` nécessitent chacune une preuve adaptée et une validation indépendante. Aucun état local ou prompt wallet ne suffit.
+- Vellum est **retiré du chemin d'exécution** ; `lia/vellum` est une archive gelée, pas une dépendance des flux Chorus.
+- Les rails mainnet nécessitant une signature humaine restent distincts du système de décision Chorus, qui n'est jamais un exécuteur.
 
-## Separate workstreams (not status labels)
+## Archive de l'écart corrigé
 
-| Workstream             | Meaning                                                            |
-| ---------------------- | ------------------------------------------------------------------ |
-| **Indexer recovery**   | Wait for `/accounts` 200 after v2.1.3.0 before any ops TX          |
-| **SC deploy + verify** | Real wasm on-chain, then update `contracts.json`                   |
-| **LIA executor**       | Replace stubs with signed execution behind `LIA_LIVE_TRADING`      |
-| **GrokyversX**         | Host-side bot; PEM on operator; not “LIA production”               |
-| **THE PULSE**          | Social signals layer; demo strip on Home                           |
-| **Supernova**          | **Done on-network.** Timing auto-detect + post-date default 600 ms |
-| **MX-8004**            | Manifest ready; register after indexer + Identity registry live    |
+Le document du **24 septembre 2026** affichait `GO_DEMO` avec « Product SCs: Not deployed », à partir de réponses API manquantes et d'adresses legacy. Ce verdict est **obsolète** depuis les sondes de fin septembre et du **11 novembre 2026** : du bytecode existe bien sur les adresses actuelles du registre. La formule exacte est **« bytecode mainnet présent, lancement produit/trading/slot non autorisé »**, et non « tout non déployé » ni « tout LIVE produit ».
 
-## Features not active (do not advertise as live)
-
-* **ContrarianBrain** — not implemented as a live brain
-* **GreenSmoke (GSN) signals** — labels/config exist; **not** wired as live trading inputs to LIA executor
-* **Playwright E2E in CI** — do not claim green E2E until package + workflow proven
-* **Primordial Slot claims** — paper bank only
-
-## Forbidden wording until codeHash non-null + gates pass
-
-* `PRODUCTION_MAINNET` for product SCs
-* `Déployé` on SC tables without API proof
-* `Production-ready` without checklist in `contracts.json` / this file
+Pour la suite, confirmer les preuves mainnet contract par contract ; ne jamais recycler une référence legacy ou un ancien solde comme état courant.
