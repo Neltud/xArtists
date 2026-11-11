@@ -51,7 +51,8 @@ test('Marketplace visitor entry copy is complete in all eight supported language
     'marketHeroEyebrow','marketHeroTitleA','marketHeroTitleB','marketHeroLead',
     'marketPrimaryCta','marketStudioCta','marketSecondaryLabel','marketPhysicalLink',
     'marketAuctionPreview','marketIndexLabel','marketIndexDigital','marketIndexPhysical',
-    'marketIndexCreative','marketStatusPrefix','marketStatusLive','marketStatusOff',
+    'marketIndexCreative','marketIndexDataDisclaimer','marketIndexPriceDisclaimer','marketPriceUnknown',
+    'marketStatusPrefix','marketStatusLive','marketStatusOff',
     'marketStatusOwnership','marketExploreTitle','marketExploreIntro','marketCategoriesLabel',
     'marketShelfArtName','marketShelfArtSummary','marketShelfRwaName','marketShelfRwaSummary',
     'marketShelfPacksName','marketShelfPacksSummary','marketShelfOpenSeaName','marketShelfOpenSeaSummary',
@@ -69,4 +70,15 @@ test('Marketplace visitor entry copy is complete in all eight supported language
   assert.match(market, /const c=useCopy\(\)/)
   assert.match(market, /<strong>\{c\(s\.name\)\}<\/strong>/)
   assert.match(market, /<span className="xa-marketplace-category__summary">\{c\(s\.summary\)\}<\/span>/)
+})
+
+test('Unverified index prices are never presented as confirmed on-chain offers', () => {
+  assert.match(market, /const raw=l\.price_egld/)
+  assert.doesNotMatch(market, /l\.price_egld\s*\?\?\s*l\.price/)
+  assert.match(market, /sourceReady&&!loading&&items\.length>0&&<p role="note"/)
+  assert.match(market, /c\('marketIndexDataDisclaimer'\)/)
+  assert.match(market, /price!==null&&<p className="text-xs text-zinc-400">\{c\('marketIndexPriceDisclaimer'\)\}/)
+  assert.match(market, /price\.toFixed\(4\)\+' EGLD':c\('marketPriceUnknown'\)/)
+  assert.match(market, /!live&&<span/)
+  assert.match(market, /const live=canListBuyNft\(\)/)
 })
