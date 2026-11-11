@@ -1,7 +1,9 @@
 {
-  "ts": "2026-10-07T15:40:00Z",
+  "ts": "2026-11-11T17:40:00Z",
   "ok": false,
-  "errors": ["awaiting Vellum orchestrator next_run"],
+  "live": false,
+  "engine": "chorus",
+  "errors": ["Vellum runtime retired. See data/chorus_board.json"],
   "git_sha": "main",
-  "note": "Front published CommandWall fix + handoff doc. Brain must run publish pipeline."
+  "note": "Chorus is the paper swarm. This file is a tombstone so old clients stop waiting on Vellum."
 }
