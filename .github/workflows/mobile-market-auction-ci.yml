@@ -9,6 +9,11 @@ on:
       - 'apps/frontend/src/experience/Icon.tsx'
       - 'apps/frontend/src/experience/Pages.tsx'
       - 'apps/frontend/src/pages/MarketplacePage.tsx'
+      - 'apps/frontend/src/App.tsx'
+      - 'apps/frontend/src/pages/marketplace-page.css'
+      - 'apps/frontend/scripts/verify-pages-artifact.mjs'
+      - 'apps/frontend/tests/marketplace-mobile-editorial.test.mjs'
+      - 'apps/frontend/tests/pages-artifact-integrity.test.mjs'
       - 'apps/frontend/src/pages/AuctionPage.tsx'
       - 'apps/frontend/src/components/CreatorMediaUpload.tsx'
       - 'apps/frontend/tests/mobile-commerce-navigation.test.mjs'
@@ -22,6 +27,11 @@ on:
       - 'apps/frontend/src/experience/Icon.tsx'
       - 'apps/frontend/src/experience/Pages.tsx'
       - 'apps/frontend/src/pages/MarketplacePage.tsx'
+      - 'apps/frontend/src/App.tsx'
+      - 'apps/frontend/src/pages/marketplace-page.css'
+      - 'apps/frontend/scripts/verify-pages-artifact.mjs'
+      - 'apps/frontend/tests/marketplace-mobile-editorial.test.mjs'
+      - 'apps/frontend/tests/pages-artifact-integrity.test.mjs'
       - 'apps/frontend/src/pages/AuctionPage.tsx'
       - 'apps/frontend/src/components/CreatorMediaUpload.tsx'
       - 'apps/frontend/tests/mobile-commerce-navigation.test.mjs'
@@ -54,6 +64,21 @@ jobs:
       - name: Build Vite for production
         working-directory: apps/frontend
         run: npm run build
+      - name: Verify Marketplace contrast CSS is eager, not a lazy preload
+        working-directory: apps/frontend
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict'
+          import { readFileSync } from 'node:fs'
+          const manifest = JSON.parse(readFileSync('dist/.vite/manifest.json', 'utf8'))
+          const market = manifest['src/pages/MarketplacePage.tsx']
+          const entry = manifest['index.html']
+          assert(market?.isDynamicEntry, 'Marketplace must remain a lazy route')
+          assert.equal((market.css || []).length, 0, 'Marketplace CSS is still lazy-loaded')
+          assert((entry?.css || []).some(name =>
+            readFileSync('dist/' + name, 'utf8').includes('.xa-marketplace-hero')),
+            'Marketplace critical contrast CSS missing from eager entry')
+          NODE
       - name: Verify all static aliases, asset base, and SPA 404
         working-directory: apps/frontend
         run: |
