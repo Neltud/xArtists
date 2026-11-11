@@ -9,11 +9,36 @@ export const SUBSCRIPTION_STATUS = Object.freeze({
 })
 
 /**
- * Fail-closed subscription access.
- * `providerVerified` must come from server-side webhook verification and
- * transactionally persisted subscription records, never from request JSON.
- * `periodEnd` is an ISO timestamp; canceled subscriptions retain access only
- * if the provider-confirmed paid-through date is in the future.
+ * Accept an unambiguous, strict UTC timestamp (seconds and optional milliseconds).
+ * Date.parse alone normalizes impossible dates such as February 30.
+ * The provider adapter must convert provider-specific epoch/offset values to UTC
+ * after verifying and persisting the event; browser-controlled data is untrusted.
+ */
+function parseVerifiedUtcTimestamp(value) {
+  if (typeof value !== 'string') return null
+  const match = /^(\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])T([01]\d|2[0-3]):([0-5]\d):([0-5]\d)(?:\.(\d{1,3}))?Z$/.exec(value)
+  if (!match) return null
+  const parsed = Date.parse(value)
+  if (!Number.isFinite(parsed)) return null
+  const date = new Date(parsed)
+  if (date.getUTCFullYear() !== Number(match[1]) ||
+      date.getUTCMonth() + 1 !== Number(match[2]) ||
+      date.getUTCDate() !== Number(match[3]) ||
+      date.getUTCHours() !== Number(match[4]) ||
+      date.getUTCMinutes() !== Number(match[5]) ||
+      date.getUTCSeconds() !== Number(match[6])) return null
+  return parsed
+}
+
+/**
+ * Fail-closed subscription access for SERVICES ONLY.
+ * providerVerified MUST be derived from a validated, durably committed PSP
+ * event by the backend, never from a browser field or a success redirect.
+ * This pure projection DOES NOT verify webhook signatures, issue sessions,
+ * authorize user identity, create an entitlement, or grant NFT ownership.
+ *
+ * periodEnd and canceledAt must be canonical UTC strings (Z suffix);
+ * normalize provider timestamps in the trusted adapter before calling.
  */
 export function projectSubscriptionAccess({
   status,
@@ -28,21 +53,24 @@ export function projectSubscriptionAccess({
     nft_owned: false, mint_allowed: false,
   })
   if (providerVerified !== true) return deny('subscription_not_provider_verified')
-  if (refunded === true) return deny('subscription_refunded')
-  if (!Number.isFinite(now)) return deny('invalid_clock')
-  if (typeof periodEnd !== 'string' || !/^\d{4}-\d{2}-\d{2}T/.test(periodEnd)) {
-    return deny('invalid_subscription_period')
-  }
-  const end = Date.parse(periodEnd)
-  if (!Number.isFinite(end) || end <= now) return deny('subscription_expired')
-  if (canceledAt != null && (!Number.isFinite(Date.parse(canceledAt)) ||
-      ![SUBSCRIPTION_STATUS.ACTIVE, SUBSCRIPTION_STATUS.CANCELED].includes(status))) {
-    return deny('invalid_subscription_cancellation')
-  }
+  // Reject ambiguous provider ledger flags rather than treating strings as booleans.
+  if (refunded !== false) return deny('subscription_refunded_or_unknown')
+  if (typeof now !== 'number' || !Number.isFinite(now)) return deny('invalid_clock')
+  const end = parseVerifiedUtcTimestamp(periodEnd)
+  if (end === null) return deny('invalid_subscription_period')
+  if (end <= now) return deny('subscription_expired')
   if (![SUBSCRIPTION_STATUS.ACTIVE, SUBSCRIPTION_STATUS.TRIALING, SUBSCRIPTION_STATUS.CANCELED].includes(status)) {
     return deny('subscription_not_active')
   }
-  // A canceled subscription needs explicit cancellation evidence to retain access.
+  if (canceledAt != null) {
+    const canceled = parseVerifiedUtcTimestamp(canceledAt)
+    if (canceled === null || canceled > now || canceled > end ||
+        ![SUBSCRIPTION_STATUS.ACTIVE, SUBSCRIPTION_STATUS.CANCELED].includes(status)) {
+      return deny('invalid_subscription_cancellation')
+    }
+  }
+  // Canceled access is allowed only through an independently verified
+  // paid-through period AND actual (not scheduled future) cancellation evidence.
   if (status === SUBSCRIPTION_STATUS.CANCELED && canceledAt == null) {
     return deny('cancellation_evidence_required')
   }
