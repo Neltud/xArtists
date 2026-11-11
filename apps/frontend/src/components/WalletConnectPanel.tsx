@@ -115,7 +115,7 @@ export default function WalletConnectPanel() {
           }}
         >
           {xaRender("Annuler la connexion xPortal")}
-        </button>
+        </button>}
         <button type="button" className="btn-secondary text-sm py-2" onClick={openWebWallet}>
           {xaRender("Web Wallet — navigateur ")}</button>
         <button
