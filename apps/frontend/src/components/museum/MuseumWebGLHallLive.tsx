@@ -386,15 +386,18 @@ export default function MuseumWebGLHallLive({
     const clearOnHide=()=>{if(document.hidden)resetInputs()};document.addEventListener('visibilitychange',clearOnHide)
     avatar.position.set(px, 0, pz)
 
-    const ro = new ResizeObserver(() => {
-      const w = mount.clientWidth || 1
-      const h = mount.clientHeight || 1
+    const resize = () => {
+      // Recompute projection on the initial mount too: ResizeObserver can
+      // deliver its first notification late on Android custom tabs.
+      const w = Math.max(1, mount.clientWidth || 640)
+      const h = Math.max(1, mount.clientHeight || 400)
       camera.aspect = w / h
       camera.updateProjectionMatrix()
       renderer.setSize(w, h, false)
-    })
+    }
+    const ro = new ResizeObserver(resize)
     ro.observe(mount)
-    renderer.setSize(mount.clientWidth || 640, mount.clientHeight || 400, false)
+    resize()
 
     const kd = (e: KeyboardEvent) => {
       const tag=(e.target as HTMLElement)?.tagName
@@ -476,8 +479,10 @@ export default function MuseumWebGLHallLive({
     canvas.addEventListener('pointercancel',onPointerCancel)
     canvas.addEventListener('lostpointercapture',onPointerCancel)
 
-    setReady(true)
+    // Do not mark the scene ready until the GPU has rendered a real frame.
+    // A successful context creation alone is not enough on Android/WebView.
     const clock = new THREE.Clock()
+    let firstFrame = true
     let raf = 0
     const loop = () => {
       if (disposed) return
@@ -546,7 +551,18 @@ export default function MuseumWebGLHallLive({
       camera.lookAt(px-Math.sin(yaw)*4,EYE+Math.sin(pitch)*4,pz-Math.cos(yaw)*4)
       mount.dataset.moving=moving?'1':'0'
 
-      renderer.render(scene, camera)
+      try {
+        renderer.render(scene, camera)
+        if (firstFrame) {
+          firstFrame = false
+          setReady(true)
+        }
+      } catch {
+        // A mobile GPU can accept context creation then fail on draw; show
+        // the populated CSS 3D room rather than leaving a frozen blank canvas.
+        webglPaused = true
+        setSceneError(true)
+      }
     }
     loop()
 
