@@ -48,6 +48,7 @@ export default function MarketplacePage(){
   const [listings,setListings]=useState<Listing[]>([])
   const [loading,setLoading]=useState(false)
   const [sourceReady,setSourceReady]=useState(false)
+  const [showTech,setShowTech]=useState(false)
   const [query,setQuery]=useState('')
   const [sort,setSort]=useState<'recent'|'price_asc'|'price_desc'>('recent')
 
@@ -134,9 +135,10 @@ export default function MarketplacePage(){
       onQuery={setQuery} onSort={setSort} onRefresh={()=>void refresh()}
     />}
 
-    {selected==='art'&&<details className="xa-market-tech">
+    {selected==='art'&&<details className="xa-market-tech"
+      onToggle={e=>setShowTech(e.currentTarget.open)}>
       <summary>{c('marketGridTechTitle')}</summary>
-      <div><LiaAndEscrowNfts /><ExistingNftReadiness /></div>
+      {showTech&&<div><LiaAndEscrowNfts /><ExistingNftReadiness /></div>}
     </details>}
 
     <p className="xa-marketplace-status" role="note">
