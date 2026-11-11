@@ -1,0 +1,28 @@
+name: xPortal WalletConnect relay pairing preflight (no wallet)
+
+on:
+  pull_request:
+    paths:
+      - 'apps/frontend/scripts/check-walletconnect-pairing.mjs'
+      - '.github/workflows/xportal-walletconnect-relay-preflight.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pairing-read-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    defaults:
+      run:
+        working-directory: apps/frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install locked frontend dependencies
+        run: npm ci --legacy-peer-deps --ignore-scripts
+      - name: Generate anonymous pairing URI only; do not sign or approve
+        run: node scripts/check-walletconnect-pairing.mjs
