@@ -18,5 +18,75 @@
     "xOrus — 120 сигналів, лише паперовий аналіз. ChatGPT тільки консультує (до 15 %). Vellum вилучено. Агент не надсилає транзакції.",
     "xOrus — 120 个信号，仅限模拟分析。ChatGPT 只提供建议（权重最多 15%）。Vellum 已停用。代理不发送交易。",
     "xOrus — 120 إشارة للتحليل الورقي فقط. يقدم ChatGPT الرأي فقط (بحد أقصى 15٪). أُزيل Vellum. لا معاملات آلية من الوكيل."
+  ],
+  "xOrus": [
+    "xOrus",
+    "xOrus",
+    "xOrus",
+    "xOrus",
+    "xOrus",
+    "xOrus",
+    "xOrus",
+    "xOrus"
+  ],
+  "xOrus · Salle de contrôle": [
+    "xOrus · Salle de contrôle",
+    "xOrus · Control room",
+    "xOrus · Sala de control",
+    "xOrus · Kontrollraum",
+    "xOrus · Панель управления",
+    "xOrus · Центр керування",
+    "xOrus · 控制中心",
+    "xOrus · غرفة التحكم"
+  ],
+  "xOrus · Control room": [
+    "xOrus · Salle de contrôle",
+    "xOrus · Control room",
+    "xOrus · Sala de control",
+    "xOrus · Kontrollraum",
+    "xOrus · Панель управления",
+    "xOrus · Центр керування",
+    "xOrus · 控制中心",
+    "xOrus · غرفة التحكم"
+  ],
+  "Accès Réservé — Command Center xOrus": [
+    "Accès Réservé — Command Center xOrus",
+    "Reserved Access — xOrus Command Center",
+    "Acceso restringido — Centro xOrus",
+    "Geschützter Zugriff — xOrus-Kontrollzentrum",
+    "Ограниченный доступ — центр xOrus",
+    "Обмежений доступ — центр xOrus",
+    "受限访问 — xOrus 控制中心",
+    "وصول مقيّد — مركز xOrus"
+  ],
+  "Reserved Access — xOrus Command Center": [
+    "Accès Réservé — Command Center xOrus",
+    "Reserved Access — xOrus Command Center",
+    "Acceso restringido — Centro xOrus",
+    "Geschützter Zugriff — xOrus-Kontrollzentrum",
+    "Ограниченный доступ — центр xOrus",
+    "Обмежений доступ — центр xOrus",
+    "受限访问 — xOrus 控制中心",
+    "وصول مقيّد — مركز xOrus"
+  ],
+  "xOrus — 120 signaux, recoupe paper. ChatGPT en brief seulement (15 %). Archive historique désactivée. Pas de TX agent.": [
+    "xOrus — 120 signaux, recoupe paper. ChatGPT en brief seulement (15 %). Archive historique désactivée. Pas de TX agent.",
+    "xOrus — 120 signals, paper cross-check. ChatGPT advisory only (15% cap). Legacy producer retired. No agent transactions.",
+    "xOrus — 120 señales definidas, evaluación simulada. ChatGPT solo asesora (máximo 15 %). Productor anterior retirado. Sin operaciones automáticas.",
+    "xOrus — 120 definierte Signale, nur Papierauswertung. ChatGPT berät mit höchstens 15 %. Alter Producer deaktiviert. Keine Agententransaktionen.",
+    "xOrus — 120 определённых сигналов, только симуляция. Советы ChatGPT — не более 15 %. Старый источник отключён. Без транзакций агента.",
+    "xOrus — 120 визначених сигналів, лише симуляція. Поради ChatGPT — до 15 %. Старе джерело вимкнене. Без транзакцій агента.",
+    "xOrus — 定义了120个信号，仅供模拟分析。ChatGPT仅提供建议（权重最多15%）。旧数据源已停用，不执行代理交易。",
+    "xOrus — 120 إشارة محددة للتحليل المحاكى فقط. دور ChatGPT استشاري (بحد 15٪). المصدر القديم متوقف. لا معاملات آلية."
+  ],
+  "xOrus — 120 signals, paper cross-cut. ChatGPT brief only (15% cap). Legacy producer retired. No agent txs.": [
+    "xOrus — 120 signaux, recoupe paper. ChatGPT en brief seulement (15 %). Archive historique désactivée. Pas de TX agent.",
+    "xOrus — 120 signals, paper cross-cut. ChatGPT brief only (15% cap). Legacy producer retired. No agent txs.",
+    "xOrus — 120 señales definidas, evaluación simulada. ChatGPT solo asesora (máximo 15 %). Productor anterior retirado. Sin operaciones automáticas.",
+    "xOrus — 120 definierte Signale, nur Papierauswertung. ChatGPT berät mit höchstens 15 %. Alter Producer deaktiviert. Keine Agententransaktionen.",
+    "xOrus — 120 определённых сигналов, только симуляция. Советы ChatGPT — не более 15 %. Старый источник отключён. Без транзакций агента.",
+    "xOrus — 120 визначених сигналів, лише симуляція. Поради ChatGPT — до 15 %. Старе джерело вимкнене. Без транзакцій агента.",
+    "xOrus — 定义了120个信号，仅供模拟分析。ChatGPT仅提供建议（权重最多15%）。旧数据源已停用，不执行代理交易。",
+    "xOrus — 120 إشارة محددة للتحليل المحاكى فقط. دور ChatGPT استشاري (بحد 15٪). المصدر القديم متوقف. لا معاملات آلية."
   ]
 }
