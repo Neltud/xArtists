@@ -1,6 +1,6 @@
 /**
  * Phase A: read-only MultiversX Marketplace inspection.
- * Never constructs, signs, broadcasts or sends a value transfer.
+ * Never constructs, signs, submits or sends a value transfer.
  * This is evidence for a gated future list -> buy -> NFT receipt test,
  * NOT permission to enable public checkout.
  */
