@@ -10,7 +10,7 @@ const MAINNET = '1'
 const SESSION_ADDR_KEY = 'xartists_xportal_addr'
 
 export type XPortalLoginProgress = {
-  phase: 'init' | 'uri' | 'waiting' | 'done' | 'error'
+  phase: 'init' | 'pairing' | 'uri' | 'waiting' | 'done' | 'error'
   uri?: string
   message?: string
 }
@@ -332,11 +332,15 @@ export async function loginWithXPortalMainnet(
     const relayUrls=[WALLET_CONNECT_V2_RELAY_URL,WALLET_CONNECT_V2_FALLBACK_RELAY_URL]
     for(let n=0;n<relayUrls.length;n++){
       if(signal.aborted)throw new Error('Connexion annulée.')
-      if(n>0)onProgress?.({phase:'init',message:'Relais principal indisponible. Nouvel essai de connexion xPortal…'})
+      // Public progress is deliberately coarse; never expose pairing URI or project ID.
+      onProgress?.({phase:'init',message:`Relais WalletConnect ${n+1}/${relayUrls.length} : initialisation…`})
+      let relayPhase:'init'|'pairing'='init'
       try {
         const candidate=makeProvider(WalletConnectV2Provider,projectId,relayUrls[n])
         const initialized=await withDeadline(candidate.init(),12000,'Relais WalletConnect indisponible.',signal)
         if(!initialized)throw new Error('Initialisation WalletConnect impossible.')
+        relayPhase='pairing'
+        onProgress?.({phase:'pairing',message:`Relais ${n+1}/${relayUrls.length} prêt. Génération du QR xPortal…`})
         const session=await withDeadline(candidate.connect(),12000,'Aucune proposition WalletConnect reçue.',signal)
         if(typeof session.uri!=='string'||!/^wc:[^\s]{8,2048}$/.test(session.uri)||
             typeof session.approval!=='function')throw new Error('Proposition WalletConnect invalide.')
@@ -350,7 +354,7 @@ export async function loginWithXPortalMainnet(
         // An authorization error cannot be fixed by rotating relay servers.
         if(/unauthorized|forbidden|origin|project.?id|401|403/i.test(message))throw err
         if(n===relayUrls.length-1)throw new Error(
-          'Connexion WalletConnect impossible (deux relais). Ouvre xartists.art dans Chrome, vérifie le réseau puis réessaie.'
+          `WalletConnect bloqué avant QR (${relayPhase==='init'?'initialisation du relais':'création du pairing'} sur deux relais). Ouvre xartists.art dans Chrome, vérifie le réseau puis réessaie.`
         )
       }
     }
