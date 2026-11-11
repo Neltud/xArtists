@@ -82,7 +82,7 @@ export function useVenueRentTx() {
           ],
           {
             processingMessage: 'Venue rentPay…',
-            successMessage: 'Rent paid on-chain',
+            successMessage: 'Transaction soumise — règlement à vérifier',
             errorMessage: 'rentPay failed',
           },
         )

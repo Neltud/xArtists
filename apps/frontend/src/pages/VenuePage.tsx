@@ -27,7 +27,7 @@ export default function VenuePage() {
   const selected = TIERS.find(t => t.id === tier) || TIERS[0]
 
   const onPay = async () => {
-    if (!connected) {
+    if (live && !connected) {
       requestOpenConnect()
       return
     }
@@ -38,12 +38,11 @@ export default function VenuePage() {
     try {
       if (live && typeof venue.rentPayLive === 'function') {
         await venue.rentPayLive(selected.id, selected.egld)
-        markWallOwned(selected.id, { mode: 'live', amountEgld: selected.egld })
-        push('rentPay envoyé on-chain', 'ok')
+        push('Transaction soumise — location non confirmée ; aucun droit attribué', 'info')
       } else if (typeof venue.rentPay === 'function') {
         await venue.rentPay(selected.id, selected.egld)
-        markWallOwned(selected.id, { mode: live ? 'live' : 'paper', amountEgld: selected.egld })
-        push(live ? 'rentPay envoyé' : 'Réservation locale — aucun EGLD envoyé', live ? 'ok' : 'info')
+        if (!live) markWallOwned(selected.id, { mode: 'paper', amountEgld: selected.egld })
+        push(live ? 'Transaction soumise — location non confirmée ; aucun droit attribué' : 'Réservation locale — aucun EGLD envoyé', 'info')
       } else if (typeof venue.rentPayPaper === 'function') {
         venue.rentPayPaper(selected.id, selected.egld)
         markWallOwned(selected.id, { mode: 'paper', amountEgld: selected.egld })
