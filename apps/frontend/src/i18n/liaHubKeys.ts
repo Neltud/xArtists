@@ -5,7 +5,7 @@ export const liaHubFr: Dict = {
   'lia.hub.label': 'LIA Hub',
   'lia.hub.title': 'Agent autonome & signaux',
   'lia.hub.lead':
-    'Chorus — 120 signaux, recoupe paper. ChatGPT en brief seulement (15 %). Pas de Vellum. Pas de TX agent.',
+    'Xorus — 120 signaux, recoupe paper. ChatGPT en brief seulement (15 %). Pas de Vellum. Pas de TX agent.',
   'lia.hub.noAutonomousTx':
     'Aucune TX agent autonome\u00a0: les actions on-chain passent par xPortal.',
   'lia.control.kicker': 'LIA Hub · Salle de contrôle',
@@ -37,7 +37,7 @@ export const liaHubEn: Dict = {
   'lia.hub.label': 'LIA Hub',
   'lia.hub.title': 'Autonomous agent & signals',
   'lia.hub.lead':
-    'Chorus — 120 signals, paper cross-cut. ChatGPT brief only (15% cap). Vellum retired. No agent txs.',
+    'Xorus — 120 signals, paper cross-cut. ChatGPT brief only (15% cap). Vellum retired. No agent txs.',
   'lia.hub.noAutonomousTx':
     'No autonomous agent txs: on-chain actions go through xPortal.',
   'lia.control.kicker': 'LIA Hub · Control room',
