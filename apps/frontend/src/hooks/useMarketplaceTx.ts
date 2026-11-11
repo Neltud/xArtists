@@ -12,7 +12,6 @@ import { verifyUserNftListPreflight } from '../lib/marketplaceUserListing.mjs'
 import {
   isMarketplaceLive,
   isMarketplaceListingLive,
-  marketplaceReceiverOrThrow,
   marketplaceUserListingReceiverOrThrow,
   MARKETPLACE_ADDRESS,
 } from '../lib/scStatus'
