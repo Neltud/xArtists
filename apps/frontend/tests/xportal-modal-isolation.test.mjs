@@ -30,7 +30,7 @@ test('stale QR is cleared on both failure and completion; fallback never promise
 })
 
 test('production Pages build allows an operator-approved Reown project variable', () => {
-  const deploy = read('../../.github/workflows/static.yml')
+  const deploy = read('../../../.github/workflows/static.yml')
   const example = read('../.env.example')
   assert.ok(deploy.includes('VITE_WALLETCONNECT_PROJECT_ID: ${{ vars.VITE_WALLETCONNECT_PROJECT_ID }}'))
   assert.ok(example.includes('https://xartists.art'))
