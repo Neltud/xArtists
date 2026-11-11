@@ -80,7 +80,7 @@ test('single-listing wallet UI rechecks quote and uses existing user signer only
  const ui=readFileSync(new URL('../src/components/market/MarketplaceVerifiedBuy.tsx',import.meta.url),'utf8')
  const grid=readFileSync(new URL('../src/components/market/MarketplaceDiscoveryGrid.tsx',import.meta.url),'utf8')
  const gate=readFileSync(new URL('../src/config/scStatus.ts',import.meta.url),'utf8')
- assert.match(grid,/card\.key==='escrow:ASFT-a6273a-01'&&<MarketplaceVerifiedBuy\/>/)
+ assert.match(grid,/card\.key==='escrow:ASFT-a6273a-01'&&<MarketplaceVerifiedBuy onQuoteStatus=\{setVerifiedSaleStatus\}\/>/)
  assert.match(grid,/new URLSearchParams\(window\.location\.search\)\.get\('buy'\)!=='2'/)
  assert.match(ui,/const fresh=await readVerifiedSale\(\)/)
  assert.match(ui,/receiver:VERIFIED_MARKET_SALE\.marketplace/)

@@ -25,9 +25,10 @@ interface Props {
   initialListingId?: number | null
 }
 
-function feeSplit(price: number, feeBps: number) {
+function feeSplit(price: number, feeBps: number, royaltyBps: number) {
   const fee = (price * feeBps) / 10_000
-  return { fee, toSeller: price - fee, feeBps }
+  const royalty = (price * royaltyBps) / 10_000
+  return { fee, royalty, toSeller: price - fee - royalty, feeBps }
 }
 
 export default function NFTDetailModal({
@@ -113,9 +114,10 @@ export default function NFTDetailModal({
   const live = canListBuyNft()
   const signBlock = signBlockReason(method)
   const priceN = parseFloat(buyPrice) || 0
-  const split = feeSplit(priceN, NFT_MARKET_FEE_BPS)
-  const royaltyBps = royalties != null ? royalties * 100 : 500
+  const royaltyBps = typeof royalties === 'number' && Number.isFinite(royalties)
+    ? Math.round(royalties * 100) : 500
   const royaltyPlusFee = royaltyBps + NFT_MARKET_FEE_BPS
+  const split = feeSplit(priceN, NFT_MARKET_FEE_BPS, royaltyBps)
 
   const guard = (fn: () => Promise<unknown>) => async () => {
     setTxMsg(null)
@@ -225,12 +227,13 @@ export default function NFTDetailModal({
               <div className="rounded-lg border border-[#2a2a3a] bg-[#0a0a0f] px-3 py-2 text-[11px] text-gray-400 space-y-1">
                 <p>
                   {xaRender("Fee market estimé ")}{xaRender((NFT_MARKET_FEE_BPS / 100).toFixed(1))}% →{xaRender(' ')}
-                  <span className="text-amber-200">{xaRender(split.fee.toFixed(4))} {xaRender(" EGLD")}</span> {xaRender(" · seller ≈")}{xaRender(' ')}
-                  <span className="text-teal-300">{xaRender(split.toSeller.toFixed(4))} {xaRender(" EGLD")}</span>
+                  <span className="text-amber-200">{xaRender(split.fee.toFixed(4))} {xaRender(" EGLD")}</span>
+                  {xaRender(" · royalty ≈ ")}{xaRender(split.royalty.toFixed(4))}{xaRender(" EGLD")}
+                  {xaRender(" · net vendeur ≈ ")}<span className="text-teal-300">{xaRender(split.toSeller.toFixed(4))} {xaRender(" EGLD")}</span>
                 </p>
-                {xaRender(royaltyPlusFee > 10_000 && (
+                {xaRender(royaltyPlusFee > 1_000 && (
                   <p className="text-red-300">
-                    {xaRender("Attention: royalty+fee &gt; 100% — SC doit rejeter (cap P0). ")}</p>
+                    {xaRender("Impossible de lister : frais + royalties > 10 % (plafond du contrat). ")}</p>
                 ))}
               </div>
             ))}
@@ -264,7 +267,7 @@ export default function NFTDetailModal({
                 />
                 <button
                   type="button"
-                  disabled={txDisabled}
+                  disabled={txDisabled || royaltyPlusFee > 1_000}
                   className="btn-primary text-sm"
                   onClick={guard(() =>
                     listNft({

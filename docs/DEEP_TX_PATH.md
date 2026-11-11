@@ -20,7 +20,7 @@ noIndex: true
 ## Fee (product)
 
 * Agents: `FEE_BPS=300` (3 %) · seller = price − fee · fee on SC until `claimFees`
-* NFT market: `VITE_NFT_MARKET_FEE_BPS` default **250** (2.5 %) — confirm on-chain after deploy
+* NFT market mainnet : **300 bps (3 %)** constatés le 11/11/2026 par `getFeeBps`, à relire avant toute signature ; total frais marketplace + royalties **≤ 1000 bps (10 %)**, sinon le smart contract rejette. Le montant affiché en fiche est une estimation, jamais une preuve de règlement.
 
 ## Click matrix (Market modal)
 

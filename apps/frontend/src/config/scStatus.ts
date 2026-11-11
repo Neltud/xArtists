@@ -52,7 +52,8 @@ export {
 } from './contracts'
 
 export const KNOWN_EMPTY_MARKETPLACE = false
-export const NFT_MARKET_FEE_BPS = 250
+/** Observed by live getFeeBps on 2026-11-11; UI estimate only, not a payment gate. */
+export const NFT_MARKET_FEE_BPS = 300
 export const AGENTS_FEE_BPS = 300
 
 /**
