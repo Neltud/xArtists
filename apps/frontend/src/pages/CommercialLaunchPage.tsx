@@ -8,6 +8,7 @@
 import { Link } from 'react-router-dom'
 import { useI18n } from '../i18n/I18nContext'
 import { GENESIS_PREVIEW, MAINSTREAM_PREVIEW } from '../config/commercialTargets'
+import { COMMUNITY_CONTACTS } from '../config/communityLinks'
 
 const COPY = {
   fr: {
@@ -39,6 +40,10 @@ const COPY = {
     contact: 'Faire une demande publique',
     publicNote: 'Le ticket GitHub est visible par tous. Pas de données personnelles ni de demande de paiement ; l’adresse de contact du domaine n’est pas encore certifiée.',
     social: 'Actualités sur X',
+    communityTitle: 'Contacts communautaires',
+    communityLead: 'Discord et Telegram servent aux échanges publics, pas aux demandes privées de support ou aux paiements.',
+    communityPending: 'Lien officiel à confirmer',
+    communitySafety: 'Ne communiquez jamais votre phrase secrète, mot de passe ou informations de paiement sur Discord ou Telegram.',
     museum: 'Visiter le Musée',
     studio: 'Explorer le Studio',
     trust: 'Informations importantes',
@@ -76,6 +81,10 @@ const COPY = {
     contact: 'Submit a public enquiry',
     publicNote: 'GitHub issues are public. Never post personal or payment details; the domain mailbox is not certified.',
     social: 'Updates on X',
+    communityTitle: 'Community contacts',
+    communityLead: 'Discord and Telegram are public community channels, not private support or payment channels.',
+    communityPending: 'Official link awaiting confirmation',
+    communitySafety: 'Never share your recovery phrase, password or payment information on Discord or Telegram.',
     museum: 'Visit the Museum',
     studio: 'Explore the Studio',
     trust: 'Important information',
@@ -161,6 +170,16 @@ export default function CommercialLaunchPage() {
           <Link to="/studio" className="inline-flex min-h-[44px] items-center rounded-full border border-zinc-300 px-5 py-3 text-sm dark:border-zinc-600">{c.studio}</Link>
         </div>
         <p className="mt-4 text-xs leading-5 text-zinc-600 dark:text-zinc-400">{c.publicNote}</p>
+        <section className="mt-6 border-t border-zinc-200 pt-6 dark:border-zinc-700" aria-labelledby="xa-community-title">
+          <h3 id="xa-community-title" className="font-semibold text-zinc-900 dark:text-zinc-100">{c.communityTitle}</h3>
+          <p className="mt-2 text-sm leading-6">{c.communityLead}</p>
+          <div className="mt-3 flex flex-wrap gap-3">
+            {(['discord', 'telegram'] as const).map(network => COMMUNITY_CONTACTS[network]
+              ? <a key={network} href={COMMUNITY_CONTACTS[network]!} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-[44px] items-center rounded-full border border-zinc-300 px-5 py-3 text-sm font-semibold dark:border-zinc-600">{network === 'discord' ? 'Discord' : 'Telegram'} ↗</a>
+              : <span key={network} className="inline-flex min-h-[44px] items-center rounded-full border border-dashed border-zinc-300 px-5 py-3 text-sm text-zinc-600 dark:border-zinc-600 dark:text-zinc-300">{network === 'discord' ? 'Discord' : 'Telegram'} · {c.communityPending}</span>)}
+          </div>
+          <p className="mt-3 text-xs leading-5 text-zinc-600 dark:text-zinc-400">{c.communitySafety}</p>
+        </section>
       </section>
 
       <aside className="xa-offers-trust rounded-3xl border border-zinc-200 p-5 text-sm leading-7 text-zinc-700 dark:border-zinc-700 dark:text-zinc-300 sm:p-7">
