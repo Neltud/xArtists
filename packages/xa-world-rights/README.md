@@ -1,4 +1,4 @@
-# XA World Rights — public workbench preview 0.6.0 (commerce OFF)
+# xRights — public workbench preview 0.6.0 (commerce OFF)
 
 This repository package imports the former private prototype and adds a downloadable browser tool to xArtists.
 Canonical page: https://neltud.github.io/xArtists/create/world-rights/
@@ -37,3 +37,7 @@ Existing receipts schema v1.0.0 remains unchanged. The Python register is still 
 Older skill reference chapters describe prototype milestones 0.1–0.5; this README describes the repository/web integration. A saved source commit is not a successful deployment. Consult GitHub Actions and the deployed build-info.json for the actual source SHA.
 
 The current software notice (LICENSE) reserves distribution rights subject to verified authorship. Prior legitimately MIT-licensed copies keep the grants made to them. Browser demo usage is distinct from future paid licensed plugin access. No payment, entitlement or verified owner-wallet exception is active. This does not register copyright or revoke prior MIT grants.
+
+## Nom public et compatibilité
+
+La marque de présentation est désormais **xRights**. Le nom technique `xartists-social-rights`, le chemin `packages/xa-world-rights` et l’URL embarquée `/plugins/xa-world-rights/` restent conservés pour compatibilité et historique des licences. Ce renommage ne change ni le propriétaire du droit d’auteur, ni les permissions existantes, ni les droits des anciens exemplaires sous MIT, ni les obligations d’autorisation des plateformes.

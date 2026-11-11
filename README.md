@@ -4,6 +4,10 @@
 
 [**Launch the public dApp**](https://neltud.github.io/xArtists/) · [**Official GitBook**](https://xartists.gitbook.io/xartists/) · [**Browse the museum**](https://neltud.github.io/xArtists/museum) · [**AI Agents**](https://neltud.github.io/xArtists/agents)
 
+## xOrus, xRights et sculpture 3D
+
+**xOrus** centralise les analyses et la qualité des signaux, tandis que **xRights** (ancien XA World Rights) prépare les licences sociales. Le [Lab sculpture](https://xartists.art/lab?view=3d) permet de faire tourner localement 4–36 vues d’une œuvre avant tout maillage certifié. La récompense envisagée de **1 TRO par NFT physique réellement minté et vérifié** reste sans versement automatique : preuve blockchain, anti-doublon, réserve et autorisation humaine sont indispensables.
+
 ## xOrus — intelligence xArtists (paper)
 
 **xOrus** est le nouveau nom public de l'essaim d'analyse précédemment appelé Chorus. Il définit **120 signaux** ; la présence dans le catalogue ne signifie pas qu'ils sont alimentés. Sans données indépendantes et fraîches, le système s'abstient. Le veto Sentinel demeure prioritaire et l'avis externe est limité à 15 %.
