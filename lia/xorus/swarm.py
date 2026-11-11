@@ -19,7 +19,7 @@ def run_xorus(*, market: Optional[dict[str, Any]] = None, chatgpt_brief: Any = N
         board["crosscut"]["live_trading"] = False
     handoff = board.get("handoff_for_chatgpt")
     if isinstance(handoff, str) and handoff.startswith("CHORUS →"):
-        board["handoff_for_chatgpt"] = "xORUS →" + handoff[len("CHORUS →"):]
+        board["handoff_for_chatgpt"] = "xOrus →" + handoff[len("CHORUS →"):]
     return board
 
 
