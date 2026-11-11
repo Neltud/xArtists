@@ -5,8 +5,6 @@
  */
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { useWallet } from '../context/WalletContext'
-import { requestOpenConnect } from '../lib/walletEvents'
 import { canListBuyNft } from '../config/scStatus'
 import RwaPhysicalPanel from '../components/market/RwaPhysicalPanel'
 import DigitalPacksPanel from '../components/market/DigitalPacksPanel'
@@ -16,6 +14,7 @@ import ExistingNftReadiness from '../components/market/ExistingNftReadiness'
 import LiaAndEscrowNfts from '../components/market/LiaAndEscrowNfts'
 import DriveArtShowcase from '../experience/DriveArtShowcase'
 import MainnetJourney from '../components/MainnetJourney'
+import './marketplace-page.css'
 
 type Shelf='art'|'rwa'|'packs'|'opensea'
 type Listing={
@@ -57,7 +56,6 @@ function isNftId(v:string):boolean{
   return /^[A-Z0-9]{3,10}-[a-f0-9]{6}-[a-f0-9]+$/i.test(v)
 }
 export default function MarketplacePage(){
-  const {connected}=useWallet()
   const live=canListBuyNft()
   const [params,setParams]=useSearchParams()
   const param=params.get('tab')
@@ -101,46 +99,59 @@ export default function MarketplacePage(){
     else v.set('tab',next)
     setParams(v)
   }
-  return <div className="xa-page animate-fade-in space-y-6 pb-24 max-w-6xl mx-auto">
-    <header className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-zinc-950 via-slate-950 to-violet-950 px-5 py-8 sm:px-8 sm:py-10 space-y-4">
-      <p className="section-label">xArtists · Creator Marketplace</p>
-      <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl text-white">
-        L’art physique rencontre le Web3
-      </h1>
-      <p className="max-w-2xl text-sm leading-relaxed text-zinc-300">
-        Découvrez les créations numériques, les œuvres tangibles et les produits IA.
-        Trois univers, des droits différents, des statuts de vente transparents.
-      </p>
-      <div className="flex flex-wrap gap-2">
-        <Link to="/auction" className="btn-primary inline-flex min-h-[44px] items-center px-4 text-sm">
-          Visiter la salle des enchères
-        </Link>
-        <Link to="/studio" className="btn-secondary inline-flex min-h-[44px] items-center px-4 text-sm">
-          Préparer une œuvre au Studio
-        </Link>
-        <Link to="/rwa" className="btn-secondary inline-flex min-h-[44px] items-center px-4 text-sm">
-          Dossier d’œuvre physique
-        </Link>
-        {!connected&&<button type="button" className="btn-secondary min-h-[44px] px-4 text-sm"
-          onClick={requestOpenConnect}>Connecter xPortal</button>}
+  return <div className="xa-page xa-marketplace animate-fade-in space-y-6 pb-24 max-w-6xl mx-auto">
+    <header className="xa-marketplace-hero">
+      <div className="xa-marketplace-hero__copy">
+        <p className="xa-marketplace-hero__eyebrow">xArtists · Galerie des créateurs</p>
+        <h1>Découvrez l’art.<span>Explorez ses univers.</span></h1>
+        <p className="xa-marketplace-hero__lead">
+          Art numérique, œuvres physiques et créations IA : explorez les collections
+          et leurs histoires. Les droits et la disponibilité sont précisés pour chaque univers.
+        </p>
+        <div className="xa-marketplace-hero__actions">
+          <a href="#xa-market-categories" className="xa-marketplace-hero__primary">
+            Explorer les œuvres <span aria-hidden="true">↓</span>
+          </a>
+          <Link to="/studio" className="xa-marketplace-hero__secondary">
+            Créer au Studio <span aria-hidden="true">↗</span>
+          </Link>
+        </div>
+        <div className="xa-marketplace-hero__links" aria-label="Autres parcours du marché">
+          <Link to="/rwa">Œuvres physiques</Link>
+          <Link to="/auction">Enchères · aperçu</Link>
+        </div>
       </div>
-      <p className="text-[11px] text-zinc-500">
-        Marketplace NFT : {live?'contrat compatible détecté — vérifier chaque transaction':'transactions désactivées tant que le contrat et son codehash ne sont pas validés'}.
-        Les certificats ne sont pas automatiquement des titres de propriété.
-      </p>
+      <div className="xa-marketplace-hero__index" aria-hidden="true">
+        <span className="xa-marketplace-hero__index-label">UNIVERS / 01—03</span>
+        <div><span>01</span><strong>Art numérique</strong></div>
+        <div><span>02</span><strong>Art physique</strong></div>
+        <div><span>03</span><strong>Intelligence créative</strong></div>
+      </div>
     </header>
 
-    <MainnetJourney current="market" />
+    <p className="xa-marketplace-status" role="note">
+      <span className="xa-marketplace-status__dot" aria-hidden="true" />
+      <span>
+        Marketplace NFT : {live?'contrat compatible détecté — vérifier chaque transaction':'transactions désactivées tant que le contrat et son codehash ne sont pas validés'}.
+        Les certificats ne sont pas automatiquement des titres de propriété.
+      </span>
+    </p>
 
-    <nav aria-label="Catégories d’œuvres" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
-      {SHELVES.map(s=><button key={s.id} type="button" onClick={()=>navigate(s.id)}
-        aria-current={selected===s.id?'page':undefined}
-        className={'min-h-[78px] rounded-2xl border px-4 py-3 text-left transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 '+
-          (selected===s.id?'border-cyan-400/50 bg-cyan-500/10 text-white':'border-white/10 bg-white/[0.025] text-zinc-300 hover:bg-white/5')}>
-        <span className="block text-sm font-semibold">{s.name}</span>
-        <span className="block mt-1 text-[11px] text-zinc-400 leading-relaxed">{s.summary}</span>
-      </button>)}
-    </nav>
+    <section className="xa-marketplace-categories" id="xa-market-categories" aria-labelledby="xa-market-categories-title">
+      <div className="xa-marketplace-categories__heading">
+        <h2 id="xa-market-categories-title">Explorer par univers</h2>
+        <p>Choisissez le type d’œuvre qui vous intéresse.</p>
+      </div>
+      <nav aria-label="Catégories d’œuvres" className="xa-marketplace-categories__grid">
+        {SHELVES.map((s,i)=><button key={s.id} type="button" onClick={()=>navigate(s.id)}
+          aria-current={selected===s.id?'page':undefined}
+          className={'xa-marketplace-category'+(selected===s.id?' is-active':'')}>
+          <span className="xa-marketplace-category__number">{String(i+1).padStart(2,'0')}</span>
+          <strong>{s.name}</strong>
+          <span className="xa-marketplace-category__summary">{s.summary}</span>
+        </button>)}
+      </nav>
+    </section>
 
     {selected==='art'&&<DriveArtShowcase compact />}
     {selected==='art'&&<LiaAndEscrowNfts />}
@@ -250,6 +261,8 @@ export default function MarketplacePage(){
       </div>
       <DigitalPacksPanel />
     </section>}
+
+    <MainnetJourney current="market" />
 
     <footer className="flex flex-wrap gap-3 border-t border-white/10 pt-5 text-xs text-zinc-400">
       <Link to="/studio" className="hover:text-cyan-200">Creator Studio</Link>
