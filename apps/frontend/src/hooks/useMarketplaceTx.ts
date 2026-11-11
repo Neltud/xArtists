@@ -11,7 +11,9 @@ import { egldTextToWei } from '../lib/egldExactAmount.mjs'
 import { verifyUserNftListPreflight } from '../lib/marketplaceUserListing.mjs'
 import {
   isMarketplaceLive,
+  isMarketplaceListingLive,
   marketplaceReceiverOrThrow,
+  marketplaceUserListingReceiverOrThrow,
   MARKETPLACE_ADDRESS,
 } from '../lib/scStatus'
 
@@ -101,15 +103,24 @@ export function useMarketplaceTx() {
   const walletNow = useRef(address)
   walletNow.current=address
   const live = isMarketplaceLive()
+  const sellerLive = isMarketplaceListingLive()
 
   const run = useCallback(
     async (
       tx: object,
       labels: { processing: string; success: string; fail: string },
+      kind: 'market' | 'list' = 'market',
     ) => {
-      if (!isMarketplaceLive()) {
-        setError(BLOCKED)
-        throw new Error(BLOCKED)
+      if (kind === 'list') {
+        if (!isMarketplaceListingLive()) {
+          setError(BLOCKED)
+          throw new Error(BLOCKED)
+        }
+      } else {
+        if (!isMarketplaceLive()) {
+          setError(BLOCKED)
+          throw new Error(BLOCKED)
+        }
       }
       // A cached wallet address is not proof of an active signing session.
       if (!address || !canAttemptSign) {
@@ -165,7 +176,7 @@ export function useMarketplaceTx() {
           (p.royaltyReceiver!==undefined && p.royaltyReceiver!==proof.royaltyReceiver))
         throw new Error('Royalties différentes des métadonnées vérifiées : refus.')
       const royaltyBps = proof.royaltyBps
-      const sc = marketplaceReceiverOrThrow()
+      const sc = marketplaceUserListingReceiverOrThrow()
       if(sc!==proof.escrowReceiver) throw new Error('Adresse contrat changée depuis la vérification.')
       const scHex = bech32ToHex(sc)
       const recvHex = bech32ToHex(proof.royaltyReceiver)
@@ -198,6 +209,7 @@ export function useMarketplaceTx() {
           success: 'TX soumise — listing non encore confirmé',
           fail: 'Échec list',
         },
+        'list',
       )
     },
     [address, run],
@@ -294,6 +306,7 @@ export function useMarketplaceTx() {
     error,
     lastTx,
     marketplaceLive: live,
+    marketplaceListLive: sellerLive,
     marketplaceAddress: MARKETPLACE_ADDRESS,
   }
 }

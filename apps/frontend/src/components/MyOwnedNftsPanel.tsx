@@ -20,7 +20,7 @@ export default function MyOwnedNftsPanel() {
   const openedFor=useRef<string | null>(null)
   const account = useUserAccount(connected ? address : null)
   const [listTarget, setListTarget] = useState<ListTarget | null>(null)
-  const live = useMarketplaceReadiness()
+  const live = useMarketplaceReadiness('seller')
 
   const items = useMemo(() => account.nfts.slice(0, 48), [account.nfts])
   // Studio links to /marketplace?list=<NFT-ID>. This only opens the

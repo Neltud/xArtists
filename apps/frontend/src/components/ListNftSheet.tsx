@@ -30,12 +30,12 @@ export default function ListNftSheet({ target, onClose }: Props) {
   const latestAddress = useRef(address)
   latestAddress.current = address
   const [checking, setChecking] = useState(false)
-  const { listNft, pending, error, lastTx, marketplaceLive } = useMarketplaceTx()
+  const { listNft, pending, error, lastTx, marketplaceListLive } = useMarketplaceTx()
   const [price, setPrice] = useState('1')
   const [msg, setMsg] = useState<string | null>(null)
   const [quote, setQuote] = useState<(UserNftListProof & {price:string}) | null>(null)
-  const ready = useMarketplaceReadiness()
-  const live = ready && marketplaceLive
+  const ready = useMarketplaceReadiness('seller')
+  const live = ready && marketplaceListLive
 
   if (!target) return null
   const currentQuote=quote && quote.identifier===target.identifier &&
