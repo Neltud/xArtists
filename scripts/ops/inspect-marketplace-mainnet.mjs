@@ -71,8 +71,8 @@ export async function inspectMarketplace({fetchImpl=fetch,registry,maxListings=8
   if(pausedData.length!==1||feeData.length!==1)fail('invalid_status_views')
   const paused=Buffer.from(pausedData[0],'base64')
   const fee=Buffer.from(feeData[0],'base64')
-  if(paused.length!==1||(paused[0]!==0&&paused[0]!==1)||fee.length!==2)fail('invalid_status_encoding')
-  const feeBps=fee.readUInt16BE(0)
+  if(!(paused.length===0||(paused.length===1&&(paused[0]===0||paused[0]===1)))||fee.length>2)fail('invalid_status_encoding')
+  const feeBps=fee.length===0?0:fee.length===1?fee[0]:fee.readUInt16BE(0)
   if(feeBps>1000)fail('unsafe_market_fee')
   const listings=[]
   for(let id=1;id<=maxListings;id++){
@@ -86,7 +86,7 @@ export async function inspectMarketplace({fetchImpl=fetch,registry,maxListings=8
   }
   return {
     network:'mainnet',chainId:'1',address,codeHash:account.codeHash,codehashMatchesRegistry:true,
-    payable:account.isPayable,paused:paused[0]===1,feeBps,
+    payable:account.isPayable,paused:paused.length===1&&paused[0]===1,feeBps,
     listings,activeListings:listings.filter(x=>x.active).map(x=>({id:x.id,token:x.token,nonce:x.nonce,priceAtomic:x.priceAtomic})),
     publicPurchaseReleased:false,ownerSignedProofComplete:false,
     note:'Read-only observation; requires a separate owner-signed listing, exact-price wallet buy and independent buyer NFT receipt before any sale claim.'
