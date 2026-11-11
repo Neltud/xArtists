@@ -131,7 +131,7 @@ export default function MarketplacePage(){
     <p className="xa-marketplace-status" role="note">
       <span className="xa-marketplace-status__dot" aria-hidden="true" />
       <span>
-        NFT Marketplace: {c(live?'marketStatusLive':'marketStatusOff')}.
+        {c('marketStatusPrefix')}: {c(live?'marketStatusLive':'marketStatusOff')}.
         {c('marketStatusOwnership')}
       </span>
     </p>
