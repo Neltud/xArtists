@@ -678,6 +678,21 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
   })
 
 
+  test('direct /lab network and simulation views render without lazy CSS preload failure',async({page})=>{
+    await page.setViewportSize({width:390,height:844})
+    await visit(page,'/lab?view=network&lang=fr')
+    const lab=page.locator('.xa-lab')
+    await expect(lab).toBeVisible({timeout:20000})
+    await expect(lab.getByRole('heading',{name:'Laboratoire'})).toBeVisible()
+    await expect(lab.getByRole('button',{name:'Réseau d’agents'})).toHaveAttribute('aria-pressed','true')
+    await expect(lab.locator('.xa-lab-switch')).toHaveCSS('display','grid')
+    await expect(page.getByText('Page unavailable')).toHaveCount(0)
+    await lab.getByRole('button',{name:'Simulations'}).click()
+    await expect(page).toHaveURL(/view=simulation/)
+    await expect(lab.getByRole('button',{name:'Simulations'})).toHaveAttribute('aria-pressed','true')
+    await expect(page.getByText('Page unavailable')).toHaveCount(0)
+  })
+
   test('canonical Studio deep link has its light-first styles before any wallet action',async({page})=>{
     for(const path of ['/create/studio/','/studio/']){
       await page.setViewportSize({width:390,height:844})
