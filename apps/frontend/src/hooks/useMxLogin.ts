@@ -1,10 +1,10 @@
 /**
  * Live connect — Web Wallet (recommandé), xPortal WC mainnet, extension.
  */
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { useWallet, LIA_WALLET, isValidErd } from '../context/WalletContext'
 import { DAPP_CALLBACK_BASE, sdkDappConfig } from '../config/sdkDapp'
-import { loginWithXPortalMainnet, type XPortalLoginProgress } from '../lib/xportalWc'
+import { loginWithXPortalMainnet, cancelXPortalLogin, type XPortalLoginProgress } from '../lib/xportalWc'
 
 export function buildWebWalletLoginUrl(): string {
   const callback = encodeURIComponent(`${DAPP_CALLBACK_BASE}/`)
@@ -14,14 +14,41 @@ export function buildWebWalletLoginUrl(): string {
 export function useMxLogin() {
   const wallet = useWallet()
   const [wcProgress, setWcProgress] = useState<XPortalLoginProgress | null>(null)
+  // Ignore late WalletConnect results when the user cancels or closes the panel.
+  const attempt = useRef(0)
+  // Only this hook's own in-flight request may be cancelled on unmount.
+  // LoginModal uses the same global WC client, but owns a separate attempt.
+  const activeAttempt = useRef<number | null>(null)
+
+  const cancelXPortal = useCallback(() => {
+    if (activeAttempt.current === null) return
+    activeAttempt.current = null
+    attempt.current++
+    cancelXPortalLogin()
+    setWcProgress(null)
+  }, [])
 
   const openWebWallet = useCallback(() => {
     window.location.href = buildWebWalletLoginUrl()
   }, [])
 
   const connectXPortal = useCallback(async () => {
+    const id = ++attempt.current
+    activeAttempt.current = id
     setWcProgress({ phase: 'init', message: 'Connexion xPortal mainnet…' })
-    const res = await loginWithXPortalMainnet(p => setWcProgress(p))
+    let res: Awaited<ReturnType<typeof loginWithXPortalMainnet>>
+    try {
+      res = await loginWithXPortalMainnet(p => {
+        if (attempt.current === id) setWcProgress(p)
+      })
+    } catch {
+      // The SDK normally returns an error object; keep unexpected exceptions fail-closed.
+      res = { ok: false, error: 'WalletConnect indisponible. Réessaie.' }
+    } finally {
+      if (activeAttempt.current === id) activeAttempt.current = null
+    }
+    // An approval arriving after an explicit cancellation must not attach a wallet.
+    if (attempt.current !== id) return { ok: false as const, error: 'Connexion annulée.' }
     if (!res.ok) {
       setWcProgress({ phase: 'error', message: res.error })
       return res
@@ -84,6 +111,7 @@ export function useMxLogin() {
     openWebWallet,
     openXPortalDeepLink,
     connectXPortal,
+    cancelXPortal,
     tryExtension,
     clearWcProgress: () => setWcProgress(null),
   }

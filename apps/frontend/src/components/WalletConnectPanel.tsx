@@ -2,11 +2,11 @@ import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as
 /**
  * Connect live — Web Wallet, xPortal WC + QR desktop, extension, lecture seule.
  */
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import WalletPairing from './WalletPairing'
 import { useMxLogin } from '../hooks/useMxLogin'
 import { isValidErd } from '../context/WalletContext'
-import { clearXPortalSession, cancelXPortalLogin } from '../lib/xportalWc'
+import { clearXPortalSession } from '../lib/xportalWc'
 
 export default function WalletConnectPanel() {
   xaUsePhraseLocale()
@@ -19,6 +19,7 @@ export default function WalletConnectPanel() {
     disconnect,
     openWebWallet,
     connectXPortal,
+    cancelXPortal,
     tryExtension,
     connect,
     wcProgress,
@@ -27,16 +28,11 @@ export default function WalletConnectPanel() {
   const [err, setErr] = useState('')
   const [wcUri, setWcUri] = useState<string | null>(null)
   const [busy,setBusy]=useState(false)
-  useEffect(()=>()=>{cancelXPortalLogin()},[])
-
-  useEffect(() => {
-    const onUri = (e: Event) => {
-      const d = (e as CustomEvent).detail as { uri?: string }
-      if (d?.uri) setWcUri(d.uri)
-    }
-    window.addEventListener('xartists-wc-uri', onUri)
-    return () => window.removeEventListener('xartists-wc-uri', onUri)
-  }, [])
+  const attempt = useRef(0)
+  useEffect(() => () => {
+    attempt.current++
+    cancelXPortal()
+  }, [cancelXPortal])
 
   useEffect(() => {
     if (wcProgress?.uri) setWcUri(wcProgress.uri)
@@ -94,13 +90,32 @@ export default function WalletConnectPanel() {
           className="btn-primary text-sm py-2.5"
           disabled={busy}
           onClick={async () => {
+            const id = ++attempt.current
             setBusy(true)
             setErr('')
             setWcUri(null)
-            try{const r = await connectXPortal();if (!r.ok) setErr(('error' in r && r.error) || 'Échec xPortal')}finally{setBusy(false)}
+            try {
+              const r = await connectXPortal()
+              if (id === attempt.current && !r.ok) setErr(('error' in r && r.error) || 'Échec xPortal')
+            } finally {
+              if (id === attempt.current) setBusy(false)
+            }
           }}
         >
           {xaRender("xPortal mainnet (QR / WalletConnect) ")}</button>
+        {busy && <button
+          type="button"
+          className="btn-secondary text-sm py-2"
+          onClick={() => {
+            attempt.current++
+            cancelXPortal()
+            setBusy(false)
+            setWcUri(null)
+            setErr('Connexion annulée. Tu peux relancer xPortal.')
+          }}
+        >
+          {xaRender("Annuler la connexion xPortal")}
+        </button>}
         <button type="button" className="btn-secondary text-sm py-2" onClick={openWebWallet}>
           {xaRender("Web Wallet — navigateur ")}</button>
         <button

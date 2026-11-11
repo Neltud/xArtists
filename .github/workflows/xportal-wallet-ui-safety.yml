@@ -1,0 +1,31 @@
+name: xPortal wallet UI cancellation safety (no wallet)
+on:
+  pull_request:
+    paths:
+      - 'apps/frontend/src/hooks/useMxLogin.ts'
+      - 'apps/frontend/src/components/WalletConnectPanel.tsx'
+      - 'apps/frontend/src/lib/xportalWc.ts'
+      - 'apps/frontend/tests/xportal-wallet-panel-cancel.test.mjs'
+      - 'apps/frontend/tests/xportal-mobile-relay-fallback.test.mjs'
+      - '.github/workflows/xportal-wallet-ui-safety.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      # These source-contract tests use only Node built-ins: no wallet, keys,
+      # dependencies, relay call, signing, pairing URI, mint or broadcast.
+      - name: Check xPortal cancellation and relay fallback invariants
+        run: |
+          node --test \
+            apps/frontend/tests/xportal-wallet-panel-cancel.test.mjs \
+            apps/frontend/tests/xportal-mobile-relay-fallback.test.mjs
