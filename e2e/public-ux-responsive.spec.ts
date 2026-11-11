@@ -27,7 +27,7 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
     test(`marketplace at ${width}px: hero stays readable with four choices and no wallet`, async ({ page }) => {
       await page.setViewportSize({ width, height: 844 })
       await page.emulateMedia({ reducedMotion: 'reduce' })
-      await visit(page, '/marketplace/')
+      await visit(page, '/marketplace/?lang=fr')
       const hero = page.locator('.xa-marketplace-hero')
       await expect(hero).toBeVisible()
       await expect(hero.getByRole('heading', { level: 1, name: /Découvrez l’art/ })).toBeVisible()
@@ -52,6 +52,35 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
       await expect(page).toHaveURL(/tab=rwa/)
     })
   }
+
+  test('marketplace visitor entry respects all eight selected languages', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    const cases: Array<[string,string,string]> = [
+      ['fr','Découvrez l’art.','Art numérique'],
+      ['en','Discover art.','Digital art'],
+      ['es','Descubre el arte.','Arte digital'],
+      ['de','Kunst entdecken.','Digitale Kunst'],
+      ['ru','Откройте искусство.','Цифровое искусство'],
+      ['uk','Відкрийте мистецтво.','Цифрове мистецтво'],
+      ['zh','发现艺术。','数字艺术'],
+      ['ar','اكتشف الفن.','الفن الرقمي'],
+    ]
+    for (const [lang, title, category] of cases) {
+      await visit(page, '/marketplace/?lang=' + lang)
+      const hero = page.locator('.xa-marketplace-hero')
+      await expect(hero.getByRole('heading', {level:1})).toContainText(title)
+      const tabs = page.locator('.xa-marketplace-category')
+      await expect(tabs).toHaveCount(4)
+      await expect(tabs.first()).toContainText(category)
+      await expect(page.locator('html')).toHaveAttribute('lang', lang)
+      await expect(page.locator('html')).toHaveAttribute('dir', lang==='ar'?'rtl':'ltr')
+      await expect(page.locator('.xa-marketplace-status')).toBeVisible()
+      const overflow=await page.evaluate(() => document.documentElement.scrollWidth-innerWidth)
+      expect(overflow, 'Localized marketplace overflow for '+lang).toBeLessThanOrEqual(12)
+    }
+  })
+
   for (const width of [390, 1440]) {
     test('NFT Factory guided flow at '+width+'px: create, verify and publish remain clear', async ({ page }) => {
       await page.setViewportSize({ width, height: 844 })
