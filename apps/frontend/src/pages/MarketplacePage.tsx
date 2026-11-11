@@ -14,6 +14,7 @@ import ExistingNftReadiness from '../components/market/ExistingNftReadiness'
 import LiaAndEscrowNfts from '../components/market/LiaAndEscrowNfts'
 import DriveArtShowcase from '../experience/DriveArtShowcase'
 import MainnetJourney from '../components/MainnetJourney'
+import {useCopy} from '../experience/state'
 import './marketplace-page.css'
 
 type Shelf='art'|'rwa'|'packs'|'opensea'
@@ -24,10 +25,10 @@ type Listing={
   url?:string;thumbnail?:string
 }
 const SHELVES:{id:Shelf;name:string;summary:string}[]=[
-  {id:'art',name:'Art numérique',summary:'NFT JPG, images et vidéos MP4 de créateurs'},
-  {id:'rwa',name:'Œuvres physiques',summary:'Provenance, livraison et certificats phygitaux'},
-  {id:'packs',name:'Packs IA',summary:'Pulse, Yield et Sentinel — droits d’accès distincts'},
-  {id:'opensea',name:'Polygon · Solana',summary:'NFT externes OpenSea · consultation et liens vérifiables'},
+  {id:'art',name:'marketShelfArtName',summary:'marketShelfArtSummary'},
+  {id:'rwa',name:'marketShelfRwaName',summary:'marketShelfRwaSummary'},
+  {id:'packs',name:'marketShelfPacksName',summary:'marketShelfPacksSummary'},
+  {id:'opensea',name:'marketShelfOpenSeaName',summary:'marketShelfOpenSeaSummary'},
 ]
 function asText(value:unknown,max=120):string{
   return typeof value==='string'?value.slice(0,max):value==null?'':String(value).slice(0,max)
@@ -56,6 +57,7 @@ function isNftId(v:string):boolean{
   return /^[A-Z0-9]{3,10}-[a-f0-9]{6}-[a-f0-9]+$/i.test(v)
 }
 export default function MarketplacePage(){
+  const c=useCopy()
   const live=canListBuyNft()
   const [params,setParams]=useSearchParams()
   const param=params.get('tab')
@@ -102,53 +104,50 @@ export default function MarketplacePage(){
   return <div className="xa-page xa-marketplace animate-fade-in space-y-6 pb-24 max-w-6xl mx-auto">
     <header className="xa-marketplace-hero">
       <div className="xa-marketplace-hero__copy">
-        <p className="xa-marketplace-hero__eyebrow">xArtists · Galerie des créateurs</p>
-        <h1>Découvrez l’art.<span>Explorez ses univers.</span></h1>
-        <p className="xa-marketplace-hero__lead">
-          Art numérique, œuvres physiques et créations IA : explorez les collections
-          et leurs histoires. Les droits et la disponibilité sont précisés pour chaque univers.
-        </p>
+        <p className="xa-marketplace-hero__eyebrow">{c('marketHeroEyebrow')}</p>
+        <h1>{c('marketHeroTitleA')}<span>{c('marketHeroTitleB')}</span></h1>
+        <p className="xa-marketplace-hero__lead">{c('marketHeroLead')}</p>
         <div className="xa-marketplace-hero__actions">
           <a href="#xa-market-categories" className="xa-marketplace-hero__primary">
-            Explorer les œuvres <span aria-hidden="true">↓</span>
+            {c('marketPrimaryCta')} <span aria-hidden="true">↓</span>
           </a>
           <Link to="/studio" className="xa-marketplace-hero__secondary">
-            Créer au Studio <span aria-hidden="true">↗</span>
+            {c('marketStudioCta')} <span aria-hidden="true">↗</span>
           </Link>
         </div>
-        <nav className="xa-marketplace-hero__links" aria-label="Autres parcours du marché">
-          <Link to="/rwa">Œuvres physiques</Link>
-          <Link to="/auction">Enchères · aperçu</Link>
+        <nav className="xa-marketplace-hero__links" aria-label={c('marketSecondaryLabel')}>
+          <Link to="/rwa">{c('marketPhysicalLink')}</Link>
+          <Link to="/auction">{c('marketAuctionPreview')}</Link>
         </nav>
       </div>
       <div className="xa-marketplace-hero__index" aria-hidden="true">
-        <span className="xa-marketplace-hero__index-label">UNIVERS / 01—03</span>
-        <div><span>01</span><strong>Art numérique</strong></div>
-        <div><span>02</span><strong>Art physique</strong></div>
-        <div><span>03</span><strong>Intelligence créative</strong></div>
+        <span className="xa-marketplace-hero__index-label">{c('marketIndexLabel')}</span>
+        <div><span>01</span><strong>{c('marketIndexDigital')}</strong></div>
+        <div><span>02</span><strong>{c('marketIndexPhysical')}</strong></div>
+        <div><span>03</span><strong>{c('marketIndexCreative')}</strong></div>
       </div>
     </header>
 
     <p className="xa-marketplace-status" role="note">
       <span className="xa-marketplace-status__dot" aria-hidden="true" />
       <span>
-        Marketplace NFT : {live?'contrat compatible détecté — vérifier chaque transaction':'transactions désactivées tant que le contrat et son codehash ne sont pas validés'}.
-        Les certificats ne sont pas automatiquement des titres de propriété.
+        NFT Marketplace: {c(live?'marketStatusLive':'marketStatusOff')}.
+        {c('marketStatusOwnership')}
       </span>
     </p>
 
     <section className="xa-marketplace-categories" id="xa-market-categories" aria-labelledby="xa-market-categories-title">
       <div className="xa-marketplace-categories__heading">
-        <h2 id="xa-market-categories-title">Explorer par univers</h2>
-        <p>Choisissez le type d’œuvre qui vous intéresse.</p>
+        <h2 id="xa-market-categories-title">{c('marketExploreTitle')}</h2>
+        <p>{c('marketExploreIntro')}</p>
       </div>
-      <nav aria-label="Catégories d’œuvres" className="xa-marketplace-categories__grid">
+      <nav aria-label={c('marketCategoriesLabel')} className="xa-marketplace-categories__grid">
         {SHELVES.map((s,i)=><button key={s.id} type="button" onClick={()=>navigate(s.id)}
           aria-current={selected===s.id?'page':undefined}
           className={'xa-marketplace-category'+(selected===s.id?' is-active':'')}>
           <span className="xa-marketplace-category__number">{String(i+1).padStart(2,'0')}</span>
-          <strong>{s.name}</strong>
-          <span className="xa-marketplace-category__summary">{s.summary}</span>
+          <strong>{c(s.name)}</strong>
+          <span className="xa-marketplace-category__summary">{c(s.summary)}</span>
         </button>)}
       </nav>
     </section>
