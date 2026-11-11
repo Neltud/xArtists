@@ -45,6 +45,7 @@ export default function CreatorMediaUpload({title,onReady}:Props){
   const {connected,address,method}=useWallet()
   const base=getAccessApiBase()
   const [enabled,setEnabled]=useState<boolean|null>(null)
+  const [statusRetry,setStatusRetry]=useState(0)
   const [modelEnabled,setModelEnabled]=useState(false)
   const [file,setFile]=useState<File|null>(null)
   const [preview,setPreview]=useState('')
@@ -77,12 +78,18 @@ export default function CreatorMediaUpload({title,onReady}:Props){
   useEffect(()=>{
     if(!base){setEnabled(false);setModelEnabled(false);return}
     const c=new AbortController()
+    // A sleeping Render instance can recover without forcing an app reload.
+    // A retry only re-reads public config: it never authorizes an upload.
+    const timeout=window.setTimeout(()=>c.abort(),12000)
+    setEnabled(null)
+    setModelEnabled(false)
     fetch(base+'/v1/studio/media/config',{signal:c.signal,cache:'no-store'})
       .then(async r=>r.ok?r.json():null)
       .then(j=>{if(!c.signal.aborted){setEnabled(j?.enabled===true);setModelEnabled(j?.modelEnabled===true)}})
       .catch(()=>{if(!c.signal.aborted){setEnabled(false);setModelEnabled(false)}})
-    return ()=>c.abort()
-  },[base])
+      .finally(()=>{window.clearTimeout(timeout);if(c.signal.aborted)setEnabled(false)})
+    return ()=>{window.clearTimeout(timeout);c.abort()}
+  },[base,statusRetry])
   const pick=(next:File|null)=>{
     // Android document providers may label .glb as application/octet-stream.
     // Normalize ONLY the exact .glb extension; backend verifies glTF magic/chunks.
@@ -179,6 +186,8 @@ export default function CreatorMediaUpload({title,onReady}:Props){
       {enabled===false&&<p role="status" className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 text-xs leading-relaxed text-amber-100">
         Upload IPFS indisponible : la photo ou vidéo sélectionnée reste uniquement sur votre appareil.
         L’aperçu local n’est pas un fichier publié, une transaction ou un NFT minté.
+        <button type="button" className="mt-2 inline-flex min-h-[44px] items-center rounded-lg border border-amber-400/40 px-3 py-2 text-xs font-semibold"
+          onClick={()=>setStatusRetry(n=>n+1)}>Retester la connexion IPFS</button>
         Pour préparer une œuvre, utilisez une URI IPFS/HTTPS que vous hébergez vous-même ;
         ne signez aucune transaction avant d’avoir vérifié le média, les droits et la collection.
       </p>}

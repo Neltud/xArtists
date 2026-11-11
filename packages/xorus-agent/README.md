@@ -9,3 +9,10 @@ Futur connecteur d’intelligence xArtists ; aucun endpoint MCP actif ni droit d
 Boucle maximale de quatre lectures, sans side effects et sous budget. Les résultats fournisseurs ne sont jamais des instructions. Adaptateurs réels, authentification, licences commerciales, tests et publication restent à construire.
 
 Référence : docs/XORUS_DATA_BROKER_RELEASE.md.
+
+## Connexions et gouvernance (11 novembre 2026)
+
+- Frontend : [xOrus paper](https://xartists.art/intelligence/xorus/). Routes historiques `/lia` en compatibilité.
+- Sources externes : vérifier pour chaque fournisseur les droits de réutilisation et les délais de fraîcheur ; ne pas transformer un catalogue de 120 signaux définis en 120 valeurs présumées.
+- Backend plugin : aucun secret, token API ou clé propriétaire dans le package navigateur ; JWT d'accès et droits payants doivent rester vérifiés sur le serveur.
+- La Marketplace NFT, l'IPFS Studio et Google Drive sont des **systèmes séparés** de xOrus. Aucun connecteur agent ne peut activer un mint, un pin, un trade ou un paiement.
