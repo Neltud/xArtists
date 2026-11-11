@@ -129,7 +129,7 @@ export default function MarketplaceVerifiedBuy({onQuoteStatus}:{onQuoteStatus?:(
       <input id="xa-market-receipt-hash" type="text" value={txHash}
         inputMode="text" autoComplete="off" spellCheck={false}
         placeholder="Hash de transaction (64 caractères)"
-        maxLength={64} onChange={e=>{setTxHash(e.target.value.trim());setReceiptStatus(null)}} />
+        maxLength={64} onChange={e=>{receiptSequence.current+=1;setTxHash(e.target.value.trim());setReceiptStatus(null)}} />
       <button type="button" className="xa-live-buy__refresh" disabled={checking||!txHash.trim()}
         onClick={()=>void verifyReceipt()}>{checking?'Vérification blockchain…':'Vérifier ma réception NFT'}</button>
       {receiptStatus&&<p role="status" className="xa-live-buy__description">{receiptMessage[receiptStatus]}</p>}
