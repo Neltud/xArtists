@@ -8,9 +8,9 @@ export const MARKETPLACE_CODEHASH: string
 export function isOwnedNftListCandidate(nft: UserNftToList | null | undefined): boolean
 export interface UserNftListProof {
  owner: string; identifier: string; collection: string; nonce: number;
- feeBps: number; royaltyBps: number; checkedAt: number; escrowReceiver: string
+ feeBps: number; royaltyBps: number; royaltyReceiver: string; checkedAt: number; escrowReceiver: string
 }
 export function verifyUserNftListPreflight(options: {
  address: string | null | undefined; identifier: string; collection: string;
- nonce: number; royaltyBps?: number; request?: typeof fetch
+ nonce: number; request?: typeof fetch
 }): Promise<UserNftListProof>

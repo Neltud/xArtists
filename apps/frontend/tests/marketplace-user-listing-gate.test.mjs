@@ -7,9 +7,12 @@ const addr='erd1'+'a'.repeat(58)
 const nft={identifier:'ART-abcdef-01',collection:'ART-abcdef',nonce:1,name:'Original',type:'NonFungibleESDT',balance:'1',
   uris:['ipfs://Qm'+'a'.repeat(44)]}
 const account={address:MARKETPLACE_MAINNET,codeHash:MARKETPLACE_CODEHASH,isPayable:true,code:'verified-code'}
+const creator='erd1'+'b'.repeat(58)
+const meta={identifier:nft.identifier,collection:nft.collection,nonce:nft.nonce,royalties:500,creator}
 function requestFor(row=nft,options={}){
   return async (url,opts)=>({ok:true,async json(){
     if(url.includes('/accounts/'+encodeURIComponent(addr)+'/nfts/'))return row
+    if(url.endsWith('/nfts/'+encodeURIComponent(nft.identifier)))return {...meta,...options.nft}
     if(url.endsWith('/accounts/'+MARKETPLACE_MAINNET))return {...account,...options.account}
     if(url.endsWith('/query')){
       const body=JSON.parse(opts.body)
@@ -31,6 +34,8 @@ test('trusted independent wallet and marketplace read opens only a preflight, no
   assert.equal(value.feeBps,300)
   assert.equal(value.escrowReceiver,MARKETPLACE_MAINNET)
   assert.equal(value.owner,addr)
+  assert.equal(value.royaltyBps,500)
+  assert.equal(value.royaltyReceiver,creator)
   assert.equal('txHash' in value,false)
 })
 test('reject transfer when ownership, fee, paused status, payable, codehash or API fails',async()=>{
@@ -39,6 +44,10 @@ test('reject transfer when ownership, fee, paused status, payable, codehash or A
     requestFor({...nft,balance:'0'}),requestFor({...nft,uris:[]}),
     requestFor(nft,{account:{codeHash:'drift'}}),requestFor(nft,{account:{isPayable:false}}),
     requestFor(nft,{fee:'A+w='}),requestFor(nft,{paused:'AQ=='}),
+    requestFor(nft,{nft:{creator:undefined}}),
+    requestFor(nft,{nft:{royalties:800}}),
+    requestFor(nft,{nft:{royalties:undefined}}),
+    requestFor(nft,{nft:{collection:'OTHER-abcdef'}}),
     async()=>({ok:false})
   ]) await assert.rejects(verifyUserNftListPreflight({...opts,request}))
 })
@@ -53,5 +62,9 @@ test('public Marketplace surfaces a user seller route but preserves a strict sig
   assert.match(sheet,/await verifyUserNftListPreflight/)
   assert.match(sheet,/Transaction soumise — vérifier la confirmation/)
   assert.match(hook,/if \(!isMarketplaceLive\(\)\)/)
+  assert.match(hook,/await verifyUserNftListPreflight/)
+  assert.match(hook,/const recvHex = bech32ToHex\(proof\.royaltyReceiver\)/)
+  assert.doesNotMatch(hook,/royaltyReceiver \|\| address|p\.royaltyBps \?\? 500/)
+  assert.match(sheet,/currentQuote\s*\? 'Signer listNft'/)
   assert.doesNotMatch(market+sheet,/AGENT_PACK_PUBLIC_COMMERCE_RELEASED\s*=\s*true|buyPack\(/)
 })

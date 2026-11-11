@@ -48,15 +48,17 @@ async function view(request,fn) {
 }
 /** An advisory eligibility check, not a token transfer or a settled listing. */
 export async function verifyUserNftListPreflight({
-  address,identifier,collection,nonce,royaltyBps=500,request=fetch,
+  address,identifier,collection,nonce,request=fetch,
 }={}) {
   if (typeof address!=='string'||!ACCOUNT.test(address)||
       typeof identifier!=='string'||!NFT_ID.test(identifier)||
       typeof collection!=='string'||!Number.isSafeInteger(nonce)||nonce<=0 ||
-      typeof royaltyBps!=='number'||!Number.isInteger(royaltyBps)||
-      royaltyBps<0||royaltyBps>750) fail('Paramètres NFT / wallet invalides.')
-  const [nft,market,paused,fee]=await Promise.all([
+      identifier!==collection+'-'+nonce.toString(16).padStart(2,'0'))
+    fail('Paramètres NFT / wallet invalides.')
+  const [nft,authoritativeNft,market,paused,fee]=await Promise.all([
     read(request,API+'/accounts/'+encodeURIComponent(address)+'/nfts/'+encodeURIComponent(identifier)),
+    // Independent public metadata, not wallet-supplied royalty fields.
+    read(request,API+'/nfts/'+encodeURIComponent(identifier)),
     read(request,API+'/accounts/'+MARKETPLACE_MAINNET),
     view(request,'isPaused'),view(request,'getFeeBps'),
   ])
@@ -66,8 +68,20 @@ export async function verifyUserNftListPreflight({
   if (market?.address!==MARKETPLACE_MAINNET || market?.codeHash!==MARKETPLACE_CODEHASH ||
       market?.isPayable!==true || typeof market.code!=='string'||!market.code)
     fail('Contrat mainnet non validé (codeHash / payable). Listing bloqué.')
+  // MultiversX NFT royalties are basis points (0..10000). Never substitute
+  // the seller for the creator or silently clamp the creator's on-chain rate.
+  const rawRoyalties=authoritativeNft?.royalties
+  const royaltyBps=(typeof rawRoyalties==='number' || typeof rawRoyalties==='string')
+    && String(rawRoyalties).trim()!=='' ? Number(rawRoyalties) : NaN
+  const royaltyReceiver=authoritativeNft?.creator
+  if (!authoritativeNft||authoritativeNft.identifier!==identifier||
+      authoritativeNft.collection!==collection||
+      Number(authoritativeNft.nonce)!==nonce||
+      !Number.isSafeInteger(royaltyBps)||royaltyBps<0||royaltyBps>10000||
+      typeof royaltyReceiver!=='string'||!ACCOUNT.test(royaltyReceiver))
+    fail('Royalties ou identité du créateur non vérifiables sur la chaîne.')
   if (paused!==0 || !Number.isInteger(fee)||fee<0||fee>1000||fee+royaltyBps>1000)
-    fail('Marketplace pausée ou frais et royalties incompatibles.')
+    fail('Marketplace pausée ou royalties NFT incompatibles avec le plafond contractuel.')
   return Object.freeze({owner:address,identifier,collection,nonce,feeBps:fee,
-    royaltyBps,checkedAt:Date.now(),escrowReceiver:MARKETPLACE_MAINNET})
+    royaltyBps,royaltyReceiver,checkedAt:Date.now(),escrowReceiver:MARKETPLACE_MAINNET})
 }
