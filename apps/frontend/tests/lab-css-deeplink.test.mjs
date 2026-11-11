@@ -14,10 +14,10 @@ test('Lab stylesheet is bundled before lazy JS resolution for /lab direct links'
   assert.match(css,/\.xa-lab/)
   assert.match(css,/\.xa-lab-switch/)
 })
-test('Lab confirms paper-only simulations and offers a user-controlled view switch',()=>{
-  assert.match(page,/Les résultats simulés ne sont pas des transactions mainnet/)
-  assert.match(page,/view === 'network' \? <Network\/> : <Simulation\/>/)
+test('Lab exposes paper-only sculpture turntable and simulations and offers a user-controlled view switch',()=>{
+  assert.match(page,/La rotation locale n’est pas un maillage 3D certifié/)
+  assert.match(page,/view === '3d' \? <SculptureTurntable\/> : view === 'network' \? <Network\/> : <Simulation\/>/)
   assert.match(page,/aria-pressed=\{view === 'network'\}/)
   assert.match(page,/setParams\(updated\)/)
-  assert.doesNotMatch(page,/sendTransaction|signWithXPortal|buyPack|mint/)
+  assert.doesNotMatch(page,/sendTransaction|signWithXPortal|buyPack|dispatchMintSculpture/)
 })
