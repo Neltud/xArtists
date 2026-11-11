@@ -9,6 +9,7 @@ import {DRIVE_EXHIBITION} from '../../experience/DriveArtShowcase'
 import {useCopy} from '../../experience/state'
 import {LIA_OPS,MAINNET_ADDRESSES} from '../../config/contracts'
 import {isMarketplaceArtwork} from '../../lib/marketplaceArtwork.mjs'
+import MarketplaceVerifiedBuy from './MarketplaceVerifiedBuy'
 
 type ChainNft={identifier?:string;name?:string;collection?:string;balance?:number|string;url?:string;media?:Array<{url?:string;thumbnailUrl?:string}>}
 type IndexListing={
@@ -77,6 +78,13 @@ export default function MarketplaceDiscoveryGrid({
       }).finally(()=>{if(!controller.signal.aborted)setChainLoading(false)})
     return()=>controller.abort()
   },[])
+  // Shared URL for buyer: /marketplace?buy=2 scrolls to the verified sale
+  // after the escrow inventory has actually loaded; no synthetic listing.
+  useEffect(()=>{
+    if(chainLoading||new URLSearchParams(window.location.search).get('buy')!=='2')return
+    const target=document.getElementById('xa-market-buy-2')
+    if(target)target.scrollIntoView({block:'center'})
+  },[chainLoading,escrow])
   const all=useMemo<GalleryCard[]>(()=>{
     // The four works are actual public xArtists media, not fake NFT listings.
     const studio:GalleryCard[]=DRIVE_EXHIBITION.map(w=>({
@@ -174,6 +182,7 @@ export default function MarketplaceDiscoveryGrid({
               :<a href={card.href} target="_blank" rel="noopener noreferrer" className="xa-market-grid__card-action">
                 {c('marketGridVerify')} <span aria-hidden="true">↗</span></a>)
               :<span className="xa-market-grid__card-inactive">{c('marketGridNoLink')}</span>}
+            {card.key==='escrow:ASFT-a6273a-01'&&<MarketplaceVerifiedBuy/>}
           </div>
         </li>
       })}
