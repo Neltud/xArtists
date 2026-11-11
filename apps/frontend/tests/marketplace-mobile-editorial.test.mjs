@@ -69,7 +69,8 @@ test('Marketplace visitor entry copy is complete in all eight supported language
     assert.equal(values.length, 8, key + ' must cover fr,en,es,de,ru,uk,zh,ar')
     for (const entry of values) assert.ok(typeof entry === 'string' && entry.trim().length > 0, key)
     assert.ok(market.includes("c('" + key + "')") || market.includes("name:'" + key + "'") ||
-      market.includes("summary:'" + key + "'") || market.includes("'"+key+"'"),
+      market.includes("summary:'" + key + "'") || market.includes("'"+key+"'") ||
+      gallery.includes("'"+key+"'"),
       key + ' needs to be consumed by the marketplace page')
   }
   assert.match(market, /const c=useCopy\(\)/)
@@ -83,7 +84,7 @@ test('Unverified index prices are never presented as confirmed on-chain offers',
   assert.match(gallery, /sourceReady&&listings\.length>0&&<p className="xa-market-grid__source-note" role="note"/)
   assert.match(gallery, /c\('marketIndexDataDisclaimer'\)/)
   assert.match(gallery, /c\('marketGridUnverified'\)/)
-  assert.match(gallery, /card\.price\.toFixed\(4\)\+' EGLD'/)
+  assert.match(gallery, /card\.price\.toFixed\(4\)\+' EGLD · '/)
   assert.match(market, /c\(live\?'marketStatusLive':'marketStatusOff'\)/)
   assert.match(market, /const live=canListBuyNft\(\)/)
 })
