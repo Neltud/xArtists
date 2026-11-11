@@ -36,9 +36,9 @@ export default function WalletConnectPanel() {
 
   useEffect(() => {
     if (wcProgress?.uri) setWcUri(wcProgress.uri)
+    // A finished or failed attempt must not show a stale pairing QR.
     if (wcProgress?.phase === 'done' || wcProgress?.phase === 'error') {
-      // keep QR until done; clear on done
-      if (wcProgress.phase === 'done') setWcUri(null)
+      setWcUri(null)
     }
   }, [wcProgress])
 

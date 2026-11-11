@@ -22,3 +22,24 @@ Sur Android et sur une session navigateur non authentifiée, le clic **xPortal /
 ## État de preuve
 
 Un test CI et une build ne prouvent pas une authentification réelle xPortal sur un Android utilisateur. La validation finale exige un retour utilisateur **sans communiquer de phrase de récupération**, puis, après achat volontaire, un hash public de transaction.
+
+## Patch de configuration — PR #515 (préparation, pas preuve d'allowlist)
+
+Le workflow Pages peut maintenant lire la **variable de dépôt** GitHub Actions
+`VITE_WALLETCONNECT_PROJECT_ID` (ID public Reown). Sans valeur, le site conserve le
+fallback historique compilé ; **ce fallback ne prouve pas l'autorisation du domaine**.
+Aucune clé secrète ne doit être exposée.
+
+**Action du propriétaire dans les consoles officielles :**
+1. Reown Dashboard → projet xArtists → Allowed Origins : inclure `https://xartists.art`
+   et `https://www.xartists.art` séparément (ancien `https://neltud.github.io`
+   facultatif si ce domaine est encore utilisé), puis attendre jusqu'à 15 minutes.
+2. GitHub → xArtists → Settings → Secrets and variables → Actions → Variables :
+   `VITE_WALLETCONNECT_PROJECT_ID` = ID public du même projet Reown.
+3. Après revue/merge de la PR et déploiement sur `main`, vérifier
+   `build-info.json.source_sha` puis retester Chrome Android / desktop sans
+   partager d'URI `wc:` ou d'approbation de transaction.
+
+La PR #515 isole aussi les QR : une tentative terminée/annulée ne peut plus
+laisser un ancien QR dans la modal/panneau, et le bus événementiel global ne
+transporte plus l'URI du pairing.
