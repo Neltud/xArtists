@@ -8,6 +8,7 @@ import {Link} from 'react-router-dom'
 import {DRIVE_EXHIBITION} from '../../experience/DriveArtShowcase'
 import {useCopy} from '../../experience/state'
 import {LIA_OPS,MAINNET_ADDRESSES} from '../../config/contracts'
+import {isMarketplaceArtwork} from '../../lib/marketplaceArtwork.mjs'
 
 type ChainNft={identifier?:string;name?:string;collection?:string;balance?:number|string;url?:string;media?:Array<{url?:string;thumbnailUrl?:string}>}
 type IndexListing={
@@ -64,7 +65,7 @@ export default function MarketplaceDiscoveryGrid({
       const data:unknown=await response.json()
       if(!Array.isArray(data))throw Error('nft_api_invalid')
       return data.filter((item):item is ChainNft=>Boolean(item)&&typeof item==='object'&&
-        NFT.test(String((item as ChainNft).identifier||''))&&
+        isMarketplaceArtwork(item)&&NFT.test(String((item as ChainNft).identifier||''))&&
         Number((item as ChainNft).balance??1)>0).slice(0,24)
     }
     Promise.allSettled([read(LIA_OPS),read(MAINNET_ADDRESSES.nft_marketplace)])
@@ -88,7 +89,7 @@ export default function MarketplaceDiscoveryGrid({
       .slice(0,24)
     const indexed:GalleryCard[]=sourceReady?listings.filter(l=>{
       const id=String(l.identifier||l.token||'')
-      return !id||!seen.has(id)
+      return isMarketplaceArtwork(l)&&(!id||!seen.has(id))
     }).slice(0,24).map((l,i)=>{
       const identifier=String(l.identifier||l.token||'')
       const media=typeof l.media==='string'?l.media:Array.isArray(l.media)?l.media[0]?.url:undefined
