@@ -1,8 +1,9 @@
 /** Explicit, user-signed purchase of the only mainnet listing verified for this pilot. */
-import {useCallback,useEffect,useState} from 'react'
+import {useCallback,useEffect,useRef,useState} from 'react'
 import {useWallet} from '../../context/WalletContext'
 import {useSendTransaction} from '../../hooks/useSendTransaction'
 import {requestOpenConnect} from '../../lib/walletEvents'
+import {getXPortalSession} from '../../lib/xportalWc'
 import {verifyMarketplacePurchaseReceipt,type MarketplaceReceiptStatus} from '../../lib/marketplacePurchaseReceipt.mjs'
 import {
   addressHex,readVerifiedSale,VERIFIED_MARKET_SALE,
@@ -10,7 +11,7 @@ import {
 } from '../../lib/verifiedMarketplaceBuy.mjs'
 
 export default function MarketplaceVerifiedBuy({onQuoteStatus}:{onQuoteStatus?:(value:'pending'|'verified'|'unavailable')=>void}) {
-  const {address,connected,canAttemptSign,isLiaAddress,disconnect}=useWallet()
+  const {address,connected,method,canAttemptSign,isLiaAddress,disconnect}=useWallet()
   const {send}=useSendTransaction()
   const [quote,setQuote]=useState<VerifiedMarketplaceQuote|null>(null)
   const [loading,setLoading]=useState(true)
@@ -20,6 +21,13 @@ export default function MarketplaceVerifiedBuy({onQuoteStatus}:{onQuoteStatus?:(
   const [txHash,setTxHash]=useState('')
   const [checking,setChecking]=useState(false)
   const [receiptStatus,setReceiptStatus]=useState<MarketplaceReceiptStatus|null>(null)
+  const receiptSequence=useRef(0)
+  // A receipt attested for one buyer must never be presented for a new wallet.
+  useEffect(()=>{
+    receiptSequence.current+=1
+    setReceiptStatus(null)
+    setTxHash('')
+  },[address])
 
   const refresh=useCallback(async()=>{
     setLoading(true);setUnavailable(false);setQuote(null);setStatus('')
@@ -42,6 +50,10 @@ export default function MarketplaceVerifiedBuy({onQuoteStatus}:{onQuoteStatus?:(
           fresh.identifier!==quote.identifier||fresh.receiver!==quote.receiver||
           !walletHex||walletHex===fresh.sellerHex) {
         throw Error('Annonce modifiée ou wallet vendeur. Achat bloqué.')
+      }
+      // Reject a WC identity switch during the asynchronous VM preflight.
+      if(method==='xportal'&&getXPortalSession()?.address?.toLowerCase()!==address.toLowerCase()) {
+        throw Error('Session xPortal modifiée. Reconnecte ton wallet acheteur.')
       }
       // No PayBox, Stripe or LIA. A genuine user click is required to sign.
       const result=await send([{
@@ -73,12 +85,14 @@ export default function MarketplaceVerifiedBuy({onQuoteStatus}:{onQuoteStatus?:(
 
   const verifyReceipt=async()=>{
     if(checking||!connected||!txHash.trim())return
+    const sequence=++receiptSequence.current
     setChecking(true);setReceiptStatus(null)
     try {
       const result=await verifyMarketplacePurchaseReceipt({hash:txHash.trim(),address})
-      setReceiptStatus(result.status)
-    } catch {setReceiptStatus('unavailable')}
-    finally {setChecking(false)}
+      if(sequence===receiptSequence.current)setReceiptStatus(result.status)
+    } catch {
+      if(sequence===receiptSequence.current)setReceiptStatus('unavailable')
+    } finally {setChecking(false)}
   }
   const receiptMessage:Record<MarketplaceReceiptStatus,string>={
     invalid:'Hash ou wallet invalide. Colle uniquement le hash public de la transaction.',
