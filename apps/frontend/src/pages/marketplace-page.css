@@ -664,3 +664,13 @@
 .xa-live-buy__button:disabled {opacity:.6;cursor:progress}
 .xa-live-buy__refresh {min-height:44px;align-self:flex-start;padding:8px 11px;border:1px solid var(--xa-border-strong);border-radius:9px;background:var(--xa-panel2);color:var(--xa-text);font-size:12px;cursor:pointer}
 .xa-live-buy__button:focus-visible,.xa-live-buy__refresh:focus-visible {outline:3px solid var(--xa-accent);outline-offset:2px}
+
+
+/* Buyer-side receipt: a submitted wallet request is never a paid NFT receipt. */
+.xa-live-buy__receipt {display:flex;flex-direction:column;gap:8px;min-width:0;margin-top:6px;padding:12px 0 0;border-top:1px solid var(--xa-border)}
+.xa-live-buy__receipt label {color:var(--xa-text);font-weight:680;font-size:12px;line-height:1.5}
+.xa-live-buy__receipt input {display:block;width:100%;min-width:0;min-height:44px;border:1px solid var(--xa-border-strong);border-radius:9px;padding:10px 11px;background:var(--xa-panel);color:var(--xa-text);font-size:12px;font-family:monospace}
+.xa-live-buy__receipt input::placeholder {color:var(--xa-muted);font-family:inherit}
+.xa-live-buy__receipt a {color:var(--xa-accent);font-size:12px;overflow-wrap:anywhere;text-decoration:underline;text-underline-offset:3px}
+.xa-live-buy__receipt input:focus-visible {outline:3px solid var(--xa-accent);outline-offset:2px}
+.xa-live-buy__refresh:disabled {opacity:.55;cursor:not-allowed}
