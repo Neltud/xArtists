@@ -21,7 +21,7 @@ noIndex: true
 | Site principal | `https://xartists.art/`; URL GitHub Pages historique redirigée | Frontend public, pas de preuve d'activation générale des rails commerciaux |
 | Chorus / LIA | 120 signaux définis, 9 alimentés, 4 familles dans le dernier board transmis ; `ABSTAIN / thin_tape` | **Paper uniquement** ; `executable=false` et `LIA_LIVE_TRADING` ignoré |
 | NFT Marketplace `…8txmm` | Bytecode et codeHash `8TTszCmN…` présents ; compte payable ; solde de contrat observé **0,0175 EGLD** | Contrat déployé ≠ achat automatiquement autorisé. Listing, prix, escrow, signature et réception se vérifient séparément |
-| Agents `…gdqwsg` | Bytecode et codeHash `igm9oUpg…` présents ; **non payable** ; solde observé **0,033 EGLD** | Prix packs on-chain rapportés : Pulse **10**, Yield **5**, Sentinel **2,5 EGLD**. Le solde du SC n'est pas un prix |
+| Agents `…gdqwsg` | Bytecode et codeHash `igm9oUpg…` présents ; **non payable** ; solde observé **0,033 EGLD** | **Prix packs à revérifier on-chain** : Pulse apparaît à **1 EGLD** dans un relevé du 8 novembre et à **10 EGLD** dans un autre dossier ; cet écart interdit de présenter l'un ou l'autre comme prix courant. Yield **5** et Sentinel **2,5 EGLD** sont également des observations historiques, pas des quotes. Le solde du SC n'est pas un prix |
 | Slot `…s4g34f` | Bytecode et codeHash `UZ0nX6dW…` présents ; solde **0,50 EGLD** ; `isPayable=false` | **Aucun spin réel**. Ne pas afficher « mode réel ouvert » |
 | TRO staking / venue split | Bytecode présent, soldes de contrats rapportés à **0** | Déploiement technique seulement, permissions et fonctionnalités à certifier |
 | Contrats legacy | Adresses `never_fund` du registre, codeHash non présent | **Ne jamais financer** |
