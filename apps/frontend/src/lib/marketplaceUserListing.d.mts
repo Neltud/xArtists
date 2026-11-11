@@ -1,7 +1,7 @@
 /** Browser-side read-only listing guard. Checks real API at submission time. */
 export type UserNftToList = {
  identifier?: string; collection?: string; nonce?: number; balance?: string | number;
- type?: string; uris?: string[]; [key: string]: unknown
+ type?: string; uris?: string[]
 }
 export const MARKETPLACE_MAINNET: string
 export const MARKETPLACE_CODEHASH: string
