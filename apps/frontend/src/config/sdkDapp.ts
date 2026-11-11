@@ -12,6 +12,9 @@ const projectId =
   'e07ac8e2a212711609b21dade4c9e37f'
 
 export const WALLET_CONNECT_V2_RELAY_URL = 'wss://relay.walletconnect.com'
+/** Alternative official WalletConnect relay domain used by newer Core SDKs.
+ * Only attempted if the primary relay cannot initialize/create a pairing. */
+export const WALLET_CONNECT_V2_FALLBACK_RELAY_URL = 'wss://relay.walletconnect.org'
 
 /** Site origin for WC callback / deep link return */
 export const DAPP_CALLBACK_BASE =
