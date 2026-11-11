@@ -52,9 +52,12 @@ export async function queryView(fetchImpl,address,funcName,args=[]){
   if(!res.ok)fail('vm_http_error')
   const body=await res.json()
   const vm=body?.data?.data
-  if(body?.code!=='successful'||vm?.ReturnCode!==0||!Array.isArray(vm?.ReturnData))fail('vm_query_failed')
-  if(vm.ReturnData.some(v=>typeof v!=='string'||v.length>8192))fail('vm_data_invalid')
-  return vm.ReturnData
+  const returnCode=vm?.ReturnCode??vm?.returnCode
+  const returnMessage=vm?.ReturnMessage??vm?.returnMessage??''
+  const data=vm?.ReturnData??vm?.returnData
+  if(body?.code!=='successful'||!(returnCode===0||returnCode==='ok')||returnMessage!==''||!Array.isArray(data))fail('vm_query_failed')
+  if(data.some(v=>typeof v!=='string'||v.length>8192))fail('vm_data_invalid')
+  return data
 }
 export async function inspectMarketplace({fetchImpl=fetch,registry,maxListings=8}={}){
   if(!registry||registry.chain_id!=='1')fail('wrong_chain')
