@@ -11,7 +11,8 @@ const u64=n=>{const b=Buffer.alloc(8);b.writeBigUInt64BE(BigInt(n));return b}
 const u16=n=>{const b=Buffer.alloc(2);b.writeUInt16BE(n);return b}
 function listing({active=true,price=250000000000000000n}={}){
   const token=Buffer.from('ASFT-a6273a')
-  const p=Buffer.from(price.toString(16).padStart(2,'0'),'hex')
+  const priceHex=price.toString(16)
+  const p=Buffer.from(priceHex.padStart(priceHex.length+(priceHex.length%2),'0'),'hex')
   return Buffer.concat([Buffer.alloc(32,1),u32(token.length),token,u64(1),
     u32(p.length),p,u16(200),Buffer.alloc(32,2),Buffer.from([active?1:0])]).toString('base64')
 }
