@@ -38,6 +38,19 @@ Contrôle reproductible : `node scripts/ops/check-xartists-mail-dns.mjs` ; tests
 5. Envoyer deux emails depuis des domaines externes indépendants vers `contact@`, confirmer leur présence et répondre depuis `contact@`. Vérifier les en-têtes et la délivrabilité ; faire de même avec `support@`.
 6. Enregistrer un **verdict opérateur** hors données personnelles (date, service, résultat) avant de remplacer le contact GitHub public en production. Ne pas inventer de tests ni déclarer une boîte « créée » sur la seule base d'un MX.
 
+## Discord et Telegram — contacts publics
+
+Le dépôt documente une **ancienne** invitation Discord `https://discord.gg/QkJgzeyWG`, mais son statut n'est pas confirmé au 11/11/2026 (la consultation API de l'invitation n'a pas abouti). Aucune destination Telegram propriétaire xArtists n'a été identifiée. **Ni une invitation ancienne, ni un pseudo supposé ne doivent être publiés comme officiels.**
+
+La page `/offres` affiche désormais deux emplacements Discord et Telegram avec la mention « lien officiel à confirmer », sans clic ni collecte de données. Le footer n'affiche un lien que lorsqu'il est configuré. Configurer uniquement après avoir contrôlé la destination dans l'interface propriétaire des services :
+
+- `VITE_XARTISTS_DISCORD_INVITE_URL=https://discord.gg/<code_valide>`
+- `VITE_XARTISTS_TELEGRAM_URL=https://t.me/<compte_ou_groupe_officiel>`
+
+Les deux variables sont **publiques** dans le frontend : elles ne doivent contenir **que les URLs publiques** validées, jamais un bot token, secret, lien de groupe privé, webhook, identifiant de chat admin ni credentials. Le validateur filtre protocoles/domaines/chemins non conformes ; il ne prouve pas la propriété du groupe, donc l'opérateur doit établir l'authenticité hors code. Une configuration invalide rend le lien indisponible.
+
+Tester sur mobile et desktop, puis confirmer l'accès aux deux destinations, les règles anti-arnaque et la modération. Les échanges de communauté ne remplacent pas un ticket de support privé authentifié : aucun responsable xArtists ne doit demander de seed phrase ni de paiement en DM. Discord/Telegram n'identifient pas automatiquement un compte client ni un wallet vérifié.
+
 ## Comptes dApp sans wallet, avec association facultative
 
 La source de vérité est l'identifiant serveur `xa_user_accounts.id`. L'adresse email n'est jamais un propriétaire de NFT, un wallet saisi n'est jamais une preuve de propriété, et une validation DNS n'est pas un mécanisme de login.
