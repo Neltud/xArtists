@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import PageGuide from '../components/PageGuide'
 import PaperSoulScore from '../components/PaperSoulScore'
+import { isStaleEntityReview } from '../lib/entityReviewStaleness.mjs'
 import { LINKS, LIA_WALLET } from '../config/links'
 
 const RAW = 'https://raw.githubusercontent.com/Neltud/xArtists/main/data'
@@ -162,7 +163,8 @@ export default function EntityMap() {
     return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib)
   })
   const review = doc?.review
-  const verdict = review?.verdict || 'GO_DEMO'
+  const reviewStale = isStaleEntityReview(review?.date)
+  const verdict = reviewStale ? 'ARCHIVE · REVALIDATION REQUISE' : (review?.verdict || 'NON ÉVALUÉ')
 
   return (
     <div className="animate-fade-in space-y-8 pb-12">
@@ -176,7 +178,7 @@ export default function EntityMap() {
           <span className="rounded-full border border-white/10 px-3 py-1 text-zinc-300">{xaRender(ent?.type)}</span>
           <span className="rounded-full border border-white/10 px-3 py-1 text-zinc-300">HQ {xaRender(ent?.hq)}</span>
           <span className="rounded-full border border-emerald-500/30 px-3 py-1 text-emerald-200">
-            ${xaRender('{')}{xaRender("ent?.token || 'TRO-94c925'")}{xaRender('}')} {xaRender(" · cap ")}{xaRender(ent?.supply_cap?.toLocaleString('fr-FR') ?? '500 000')}
+            {xaRender(ent?.token || 'TRO-94c925')} {xaRender(" · cap ")}{xaRender(ent?.supply_cap?.toLocaleString('fr-FR') ?? '500 000')}
           </span>
           <a href={ent?.github || LINKS.github} className="rounded-full border border-white/10 px-3 py-1 text-cyan-300 hover:bg-white/5" target="_blank" rel="noreferrer">
             {xaRender("GitHub ↗ ")}</a>
@@ -186,18 +188,17 @@ export default function EntityMap() {
       {/* Verdict bandeau */}
       <div
         className={`rounded-2xl border px-4 py-3 flex flex-wrap items-center justify-between gap-3 ${
-          verdict.includes('GO')
+          !reviewStale && verdict.includes('GO')
             ? 'border-emerald-500/40 bg-emerald-500/10'
             : 'border-amber-500/40 bg-amber-500/10'
         }`}
       >
         <div>
-          <p className="text-xs uppercase tracking-widest text-zinc-400">{xaRender("Revue entité")}</p>
+          <p className="text-xs uppercase tracking-widest text-zinc-400">{xaRender(reviewStale ? "Revue historique · non homologuée" : "Revue entité")}</p>
           <p className="text-lg font-black text-white">{xaRender(verdict)}</p>
           <p className="text-[11px] text-zinc-500">
-            {xaRender(review?.date || '—')} {xaRender(" · shell ")}{xaRender(review?.live_shell_ok ? 'OK' : '?')} {xaRender(" · SC market")}{xaRender(' ')}
-            {xaRender(review?.sc_marketplace || 'pending')} {xaRender(" · LIA live")}{xaRender(' ')}
-            {xaRender(review?.lia_live_trading ? 'ON' : 'OFF')}
+            {xaRender(review?.date || 'Date inconnue')} {xaRender(" · relevé archivé, sans valeur de validation mainnet courante")}
+            {reviewStale&&<span className="block text-amber-200 mt-1">Contrat Marketplace et modules à vérifier sur les pages live ; ce verdict ancien n'autorise aucune transaction.</span>}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -324,7 +325,7 @@ export default function EntityMap() {
       </section>
 
       <section className="card border-amber-500/20">
-        <h2 className="font-bold mb-2">{xaRender("Roadmap P0–P2")}</h2>
+        <h2 className="font-bold mb-2">{xaRender(reviewStale ? "Ancienne roadmap P0–P2 (archive)" : "Roadmap P0–P2")}</h2>
         <ol className="list-decimal pl-5 text-sm text-zinc-300 space-y-1">
           {xaRender((doc?.roadmap || []).map(r => (
             <li key={r}>{xaRender(r)}</li>
@@ -335,9 +336,9 @@ export default function EntityMap() {
       <section className="card text-xs text-zinc-500">
         <p className="font-semibold text-zinc-300 mb-1">{xaRender("Audit données")}</p>
         <ul className="space-y-1 list-disc pl-4">
-          <li>{xaRender("Prix EGLD / market cap / soldes LIA : API MultiversX")}</li>
+          <li>{xaRender("Prix EGLD, capitalisation et solde LIA : API MultiversX si disponible, sinon snapshot daté")}</li>
           <li>{xaRender("Board LIA / brain / fusion : JSON paper (Vellum production_run)")}</li>
-          <li>{xaRender("Marketplace & agents on-chain : codeHash null — pas de faux GMV")}</li>
+          <li>{xaRender("Les statuts de cette carte sont historiques. Le pilote Marketplace se revérifie dans Marché ; les ventes Agents restent fermées.")} <Link to="/marketplace" className="underline">Vérifier le Marketplace</Link></li>
           <li>{xaRender("Voyage / on-ramp / liquidity : paper ou demo — pas de booking ni bridge live")}</li>
           <li>{xaRender("entity_map mis à jour : ")}{xaRender(doc?.updated || '—')}</li>
         </ul>
