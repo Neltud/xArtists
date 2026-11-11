@@ -104,7 +104,7 @@ export function useMarketplaceTx() {
       tx: object,
       labels: { processing: string; success: string; fail: string },
     ) => {
-      if (!live) {
+      if (!isMarketplaceLive()) {
         setError(BLOCKED)
         throw new Error(BLOCKED)
       }
@@ -139,7 +139,7 @@ export function useMarketplaceTx() {
         setPending(false)
       }
     },
-    [send, live, address, canAttemptSign],
+    [send, address, canAttemptSign],
   )
 
   const listNft = useCallback(
@@ -149,6 +149,7 @@ export function useMarketplaceTx() {
         setError(msg)
         throw new Error(msg)
       }
+      if (!/^[A-Za-z0-9]{3,20}-[a-z0-9]{6}$/.test(p.tokenId) || !Number.isSafeInteger(p.nonce) || p.nonce <= 0) throw new Error('Collection ou nonce NFT invalide')
       const royaltyBps = Math.min(Math.max(p.royaltyBps ?? 500, 0), 750)
       const priceAtomic = egldToAtomic(p.priceEgld)
       const sc = marketplaceReceiverOrThrow()

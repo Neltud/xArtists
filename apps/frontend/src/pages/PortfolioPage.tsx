@@ -108,7 +108,7 @@ export default function PortfolioPage() {
           </div>
 
           <div className="flex flex-wrap gap-2">
-            <Link to="/marketplace" className="btn-primary text-sm">
+            <Link to="/marketplace#xa-market-sell" className="btn-primary text-sm">
               {xaRender("Marketplace ")}</Link>
             <Link to="/museum" className="btn-secondary text-sm">
               {xaRender("Musée ")}</Link>

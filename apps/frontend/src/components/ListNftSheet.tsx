@@ -2,9 +2,10 @@ import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as
 /**
  * Overlay listing — prix → listNft → TxShell overlay.
  */
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useMarketplaceTx } from '../hooks/useMarketplaceTx'
-import { canListBuyNft } from '../config/scStatus'
+import {useMarketplaceReadiness} from '../hooks/useMarketplaceReadiness'
+import {verifyUserNftListPreflight} from '../lib/marketplaceUserListing.mjs'
 import { requestOpenConnect } from '../lib/walletEvents'
 import { useWallet } from '../context/WalletContext'
 import { egldTextToWei } from '../lib/egldExactAmount.mjs'
@@ -26,11 +27,15 @@ type Props = {
 export default function ListNftSheet({ target, onClose, onListed }: Props) {
   xaUsePhraseLocale()
 
-  const { connected, canAttemptSign } = useWallet()
+  const { connected, address, canAttemptSign } = useWallet()
+  const latestAddress = useRef(address)
+  latestAddress.current = address
+  const [checking, setChecking] = useState(false)
   const { listNft, pending, error, lastTx, marketplaceLive } = useMarketplaceTx()
   const [price, setPrice] = useState('1')
   const [msg, setMsg] = useState<string | null>(null)
-  const live = canListBuyNft() && marketplaceLive
+  const ready = useMarketplaceReadiness()
+  const live = ready && marketplaceLive
 
   if (!target) return null
 
@@ -52,17 +57,22 @@ export default function ListNftSheet({ target, onClose, onListed }: Props) {
       setMsg('Marketplace non live (CODEHASH)')
       return
     }
+    setChecking(true)
     try {
+      await verifyUserNftListPreflight({
+        address, identifier: target.identifier, collection: target.collection, nonce: target.nonce,
+      })
+      if (latestAddress.current !== address || !address) throw new Error('Le wallet a changé : recommence la vérification.')
       await listNft({
         tokenId: target.collection,
         nonce: target.nonce,
         priceEgld: price,
       })
       setMsg('Transaction soumise — vérifier la confirmation et la garde NFT sur Explorer')
-      onListed?.()
+      // Submission is not confirmed custody. Refresh only after independent Explorer proof.
     } catch (e) {
       setMsg(e instanceof Error ? e.message : 'Échec list')
-    }
+    } finally { setChecking(false) }
   }
 
   return (
@@ -95,19 +105,20 @@ export default function ListNftSheet({ target, onClose, onListed }: Props) {
         </label>
 
         {xaRender(!live && (
-          <p className="text-xs text-amber-200">{xaRender("Marketplace gated — secret CODEHASH requis.")}</p>
+          <p className="text-xs text-amber-200">{xaRender("Marketplace fermée : contrôle du contrat et de sa sécurité requis. Aucun listing ne sera soumis.")}</p>
         ))}
 
+        <p className="text-[11px] text-zinc-400">Prix en EGLD · royalties proposées 5 % · frais marketplace affichés après vérification (estimés 3 %). Un NFT mis en vente est déposé en garde dans le contrat, pas vendu immédiatement.</p>
         <div className="flex gap-2">
           <button type="button" className="btn-secondary flex-1 text-sm" onClick={onClose}>
             {xaRender("Annuler ")}</button>
           <button
             type="button"
             className="btn-primary flex-1 text-sm"
-            disabled={pending || !live}
+            disabled={pending || checking || !live || !connected || !canAttemptSign}
             onClick={() => void onSubmit()}
           >
-            {xaRender(pending ? '…' : 'Signer listNft')}
+            {xaRender(pending || checking ? 'Vérification…' : 'Signer listNft')}
           </button>
         </div>
 

@@ -1,0 +1,24 @@
+name: Marketplace user listing safety — read only preflight
+on:
+  pull_request:
+    paths:
+      - 'apps/frontend/src/components/MyOwnedNftsPanel.tsx'
+      - 'apps/frontend/src/components/ListNftSheet.tsx'
+      - 'apps/frontend/src/pages/MarketplacePage.tsx'
+      - 'apps/frontend/src/lib/marketplaceUserListing.mjs'
+      - 'apps/frontend/tests/marketplace-user-listing-gate.test.mjs'
+      - '.github/workflows/marketplace-user-listing-ci.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 20
+      - name: Read-only listing validator and source gates
+        run: node --test apps/frontend/tests/marketplace-user-listing-gate.test.mjs

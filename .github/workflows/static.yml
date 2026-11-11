@@ -112,7 +112,10 @@ jobs:
           VITE_GENESIS_COMMERCIAL_GO: ${{ vars.VITE_GENESIS_COMMERCIAL_GO || '0' }}
           VITE_VELLUM_8008_WEBHOOK: ${{ secrets.VITE_VELLUM_8008_WEBHOOK }}
           VITE_TRO_STAKING_CODEHASH_OK: ${{ secrets.VITE_TRO_STAKING_CODEHASH_OK }}
-          VITE_MARKETPLACE_CODEHASH_OK: ${{ secrets.VITE_MARKETPLACE_CODEHASH_OK }}
+          # Public Mainnet NFT marketplace only, never agent packs or payments.
+          # Explicit opt-in remains OFF unless configured; a value 1 ALSO needs
+          # fresh codeHash + payable observation and user wallet signature.
+          VITE_MARKETPLACE_CODEHASH_OK: ${{ vars.VITE_MARKETPLACE_CODEHASH_OK || secrets.VITE_MARKETPLACE_CODEHASH_OK || '0' }}
           VITE_VENUE_CODEHASH_OK: ${{ secrets.VITE_VENUE_CODEHASH_OK }}
           VITE_AGENTS_CODEHASH_OK: ${{ secrets.VITE_AGENTS_CODEHASH_OK }}
           VITE_NFT_STAKING_CODEHASH_OK: ${{ secrets.VITE_NFT_STAKING_CODEHASH_OK }}
