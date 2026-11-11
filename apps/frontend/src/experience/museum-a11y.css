@@ -155,3 +155,45 @@
     transition: none;
   }
 }
+
+
+/* A working WebGL context is not proof that the phone is drawing pixels.
+   Keep a one-tap CSS 3D museum path visible above the canvas at all widths. */
+.xa-museum-engine {
+  min-width: 0;
+}
+.xa-museum-engine-controls {
+  display: flex;
+  justify-content: flex-end;
+  padding-block: 4px 9px;
+}
+.xa-museum-engine-switch {
+  min-height: 44px;
+  max-width: 100%;
+  border: 1px solid var(--xa-border-strong);
+  border-radius: 10px;
+  padding: 9px 14px;
+  background: var(--xa-panel);
+  color: var(--xa-text);
+  font-size: 13px;
+  line-height: 1.4;
+  font-weight: 650;
+  cursor: pointer;
+}
+.xa-museum-engine-switch[aria-pressed="true"] {
+  border-color: var(--xa-accent);
+  background: var(--xa-accent-soft);
+}
+.xa-museum-engine-switch:focus-visible {
+  outline: 3px solid var(--xa-accent);
+  outline-offset: 2px;
+}
+@media (max-width: 540px) {
+  .xa-museum-engine-controls {
+    justify-content: stretch;
+  }
+  .xa-museum-engine-switch {
+    width: 100%;
+    min-height: 48px;
+  }
+}

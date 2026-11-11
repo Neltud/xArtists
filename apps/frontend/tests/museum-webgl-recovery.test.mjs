@@ -1,0 +1,40 @@
+import test from 'node:test'
+import assert from 'node:assert/strict'
+import {readFileSync} from 'node:fs'
+const read=p=>readFileSync(new URL('../src/'+p,import.meta.url),'utf8')
+const hall=read('components/museum/MuseumHall.tsx')
+const webgl=read('components/museum/MuseumWebGLHallLive.tsx')
+const css=read('experience/museum-a11y.css')
+const page=read('pages/MuseumPage.tsx')
+
+test('museum visitors can switch to artwork-filled CSS 3D without WebGL',()=>{
+  assert.match(hall,/const \[compatible, setCompatible\] = useState\(false\)/)
+  assert.match(hall,/aria-label="Mode d’affichage du musée"/)
+  assert.match(hall,/aria-pressed=\{compatible\}/)
+  assert.match(hall,/Écran vide \? Afficher le musée en mode compatible/)
+  assert.match(hall,/Revenir au musée WebGL/)
+  assert.match(hall,/onClick=\{\(\) => setCompatible\(v => !v\)\}/)
+  assert.match(hall,/!webgl \|\| compatible/)
+  assert.match(hall,/<MuseumBlueprintRoom/)
+  assert.match(hall,/<MuseumWebGLHall/)
+  assert.match(page,/title=\{xaLocalize\("Œuvres de la salle"\)\}/)
+  assert.doesNotMatch(hall,/requestOpenConnect|sendTransaction|buyNft|LIA_LIVE_TRADING/)
+})
+test('Three.js only declares success after a frame and gracefully recovers from GPU draw failure',()=>{
+  assert.match(webgl,/let firstFrame = true/)
+  assert.match(webgl,/renderer\.render\(scene, camera\)\s+if \(firstFrame\)/)
+  assert.match(webgl,/firstFrame = false\s+setReady\(true\)/)
+  assert.match(webgl,/catch \{\s*\/\/ A mobile GPU can accept context creation/)
+  assert.match(webgl,/setSceneError\(true\)/)
+  assert.match(webgl,/new ResizeObserver\(resize\)/)
+  assert.match(webgl,/ro\.observe\(mount\)\s+resize\(\)/)
+  assert.match(webgl,/camera\.aspect = w \/ h/)
+  assert.match(webgl,/if\(sceneError\)return <div className="xa-museum-fallback"/)
+})
+test('mobile mode switch is usable on touch and keyboard, with light/dark contrast',()=>{
+  assert.match(css,/\.xa-museum-engine-switch:focus-visible/)
+  assert.match(css,/min-height: 44px/)
+  assert.match(css,/\.xa-museum-engine-switch\[aria-pressed="true"\]/)
+  assert.match(css,/@media \(max-width: 540px\)/)
+  assert.match(css,/\.xa-museum-engine-switch \{\s*width: 100%/)
+})

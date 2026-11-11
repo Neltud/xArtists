@@ -250,6 +250,30 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
     })
   }
 
+  test('museum at 390px: blank WebGL can be replaced by real artwork CSS 3D and restored', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    await visit(page, '/museum')
+    await page.getByRole('link', { name: 'Accéder directement à la visite' }).click()
+    const switcher = page.getByRole('group', { name: 'Mode d’affichage du musée' })
+      .getByRole('button')
+    await expect(switcher).toBeVisible({ timeout: 25000 })
+    await expect(switcher).toHaveAttribute('aria-pressed', 'false')
+    await switcher.click()
+    await expect(switcher).toHaveAttribute('aria-pressed', 'true')
+    const fallback = page.locator('.xa-museum-page [role="application"][aria-label^="Salle 3D"]')
+    await expect(fallback).toBeVisible()
+    const artworks = fallback.locator('[data-art]')
+    await expect(artworks.first()).toBeAttached()
+    await expect(artworks.first().locator('img')).toBeAttached()
+    await expect(page.locator('.xa-museum-stage')).toHaveCount(0)
+    await switcher.click()
+    await expect(switcher).toHaveAttribute('aria-pressed', 'false')
+    await expect(page.locator('.xa-museum-stage')).toBeVisible({ timeout: 25000 })
+    await page.screenshot({ animations: 'disabled',
+      path: 'artifacts/ux-mobile/museum-webgl-recovery-390.png' })
+  })
+
   test('touch museum at 390px: joystick and fullscreen controls remain reachable', async ({ browser }) => {
     const context = await browser.newContext({
       viewport: { width: 390, height: 844 },
