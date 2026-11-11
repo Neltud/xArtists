@@ -136,7 +136,7 @@ export default function MarketplacePage(){
 
     {selected==='art'&&<details className="xa-market-tech">
       <summary>{c('marketGridTechTitle')}</summary>
-      <div><LiaAndEscrowNfts/><ExistingNftReadiness/></div>
+      <div><LiaAndEscrowNfts /><ExistingNftReadiness /></div>
     </details>}
 
     <p className="xa-marketplace-status" role="note">
