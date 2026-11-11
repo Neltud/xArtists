@@ -1,7 +1,7 @@
 /**
  * xPortal / WalletConnect V2 — login + multi-TX + session stability.
  */
-import { sdkDappConfig, WALLET_CONNECT_V2_RELAY_URL } from '../config/sdkDapp'
+import { sdkDappConfig, WALLET_CONNECT_V2_RELAY_URL, WALLET_CONNECT_V2_FALLBACK_RELAY_URL } from '../config/sdkDapp'
 import * as WcNs from '@multiversx/sdk-wallet-connect-provider'
 import type { Message } from '@multiversx/sdk-core'
 import {activateWalletSession,withDeadline} from './walletSession'
@@ -55,7 +55,7 @@ let lastPing = 0
 let loginInFlight=false
 let loginAbort:AbortController|null=null
 export function cancelXPortalLogin(){loginAbort?.abort()}
-function makeProvider(Ctor:WcCtor,projectId:string){
+function makeProvider(Ctor:WcCtor,projectId:string,relayUrl=WALLET_CONNECT_V2_RELAY_URL){
  const origin=typeof window!=='undefined'?window.location.origin:'https://neltud.github.io'
  const appUrl=new URL(import.meta.env.BASE_URL,origin).href
  // Official existing xArtists brand assets only (never use a generated wallet logo).
@@ -66,7 +66,7 @@ function makeProvider(Ctor:WcCtor,projectId:string){
    new URL('xartists-logo.png',appUrl).href,
  ]
  let provider:XcProvider
- provider=new Ctor(makeCallbacks(()=>provider),MAINNET,WALLET_CONNECT_V2_RELAY_URL,projectId,{metadata:{name:'xArtists',description:'Art, NFT and creative intelligence on MultiversX',url:appUrl,icons:walletIcons}})
+ provider=new Ctor(makeCallbacks(()=>provider),MAINNET,relayUrl,projectId,{metadata:{name:'xArtists',description:'Art, NFT and creative intelligence on MultiversX',url:appUrl,icons:walletIcons}})
  return provider
 }
 
@@ -323,10 +323,38 @@ export async function loginWithXPortalMainnet(
     }
     activeProvider=null
     activeAddress=null
-    const provider = makeProvider(WalletConnectV2Provider,projectId)
-    const initialized=await withDeadline(provider.init(),30000,'Relais WalletConnect indisponible. Réessayez.',signal)
-    if(!initialized)throw new Error('Initialisation WalletConnect impossible. Vérifiez le projet et le domaine autorisé.')
-    const {uri,approval}=await withDeadline(provider.connect(),30000,'Association WalletConnect expirée. Réessayez.',signal)
+    // The primary relay sometimes never returns a pairing URI in mobile
+    // browser tabs. Try a second official relay BEFORE showing a wallet prompt.
+    // Fail closed: do not treat a timeout or a QR link as authentication.
+    let provider: XcProvider | null = null
+    let uri: string | undefined
+    let approval: (() => Promise<unknown>) | undefined
+    const relayUrls=[WALLET_CONNECT_V2_RELAY_URL,WALLET_CONNECT_V2_FALLBACK_RELAY_URL]
+    for(let n=0;n<relayUrls.length;n++){
+      if(signal.aborted)throw new Error('Connexion annulée.')
+      if(n>0)onProgress?.({phase:'init',message:'Relais principal indisponible. Nouvel essai de connexion xPortal…'})
+      try {
+        const candidate=makeProvider(WalletConnectV2Provider,projectId,relayUrls[n])
+        const initialized=await withDeadline(candidate.init(),12000,'Relais WalletConnect indisponible.',signal)
+        if(!initialized)throw new Error('Initialisation WalletConnect impossible.')
+        const session=await withDeadline(candidate.connect(),12000,'Aucune proposition WalletConnect reçue.',signal)
+        if(typeof session.uri!=='string'||!/^wc:[^\s]{8,2048}$/.test(session.uri)||
+            typeof session.approval!=='function')throw new Error('Proposition WalletConnect invalide.')
+        provider=candidate
+        uri=session.uri
+        approval=session.approval
+        break
+      }catch(err){
+        if(signal.aborted)throw new Error('Connexion annulée.')
+        const message=err instanceof Error?err.message:String(err)
+        // An authorization error cannot be fixed by rotating relay servers.
+        if(/unauthorized|forbidden|origin|project.?id|401|403/i.test(message))throw err
+        if(n===relayUrls.length-1)throw new Error(
+          'Connexion WalletConnect impossible (deux relais). Ouvre xartists.art dans Chrome, vérifie le réseau puis réessaie.'
+        )
+      }
+    }
+    if(!provider||!uri||!approval)throw new Error('Connexion WalletConnect indisponible.')
 
     if (uri) {
       onProgress?.({
