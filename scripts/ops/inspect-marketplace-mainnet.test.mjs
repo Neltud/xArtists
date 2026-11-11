@@ -41,9 +41,9 @@ test('only exact active on-chain listing is shown; historical #1 stays inactive'
  assert.equal(x.publicPurchaseReleased,false)
  assert.equal(x.ownerSignedProofComplete,false)
  assert.equal(x.feeBps,300)
- assert.ok(m.calls.every(q=>!q.opts||q.opts.method==='POST'))
- assert.ok(m.calls.filter(q=>q.opts).every(q=>q.url.endsWith('/vm-values/query')))
- assert.ok(m.calls.filter(q=>q.opts).every(q=>JSON.parse(q.opts.body).value===undefined))
+ assert.ok(m.calls.every(q=>q.url.includes('/accounts/') ? !q.opts.method : q.opts.method==='POST'))
+ assert.ok(m.calls.filter(q=>q.opts.method==='POST').every(q=>q.url.endsWith('/vm-values/query')))
+ assert.ok(m.calls.filter(q=>q.opts.method==='POST').every(q=>JSON.parse(q.opts.body).value===undefined))
 })
 
 test('paused market does not silently imply public purchases',async()=>{
