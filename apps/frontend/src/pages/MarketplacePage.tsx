@@ -118,7 +118,9 @@ export default function MarketplacePage(){
     <section className="xa-marketplace-categories" id="xa-market-categories" aria-labelledby="xa-market-categories-title">
       <div className="xa-marketplace-categories__heading">
         <h2 id="xa-market-categories-title">{c('marketExploreTitle')}</h2>
-        <p>{c('marketExploreIntro')}</p>
+        <p>{c('marketExploreIntro')} {selected==='art'&&<a href="#xa-market-sell"
+          className="inline-flex min-h-[40px] items-center font-semibold underline underline-offset-4"
+          aria-label="Vendre un NFT de mon wallet">Vendre mon NFT →</a>}</p>
       </div>
       <nav aria-label={c('marketCategoriesLabel')} className="xa-marketplace-categories__grid">
         {SHELVES.map((s,i)=><button key={s.id} type="button" onClick={()=>navigate(s.id)}
