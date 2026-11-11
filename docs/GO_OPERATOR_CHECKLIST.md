@@ -116,19 +116,17 @@ re-check on chain before any separate operator-approved operation.
 
 LIA trade · Solana bridge · Studio/Physical prod without separate GO
 
-## Domaine officiel et email — statut externe critique du 09/11/2026
+## Domaine officiel et email — historique du 09/11 et nouvelle vérification
 
-Le registre RDAP public (`https://rdap.org/domain/xartists.art`) indique
+Au **9 novembre 2026**, le registre RDAP public (`https://rdap.org/domain/xartists.art`) indiquait
 `client hold` pour `xartists.art` (expiration enregistrée au **15/10/2027**),
 avec serveurs déclarés `dns107.ovh.net` et `ns107.ovh.net`.
-Une résolution publique Google (`https://dns.google/resolve?name=xartists.art&type=MX`)
-retourne `Status:3` / **NXDOMAIN**. Le statut `client hold` bloque la
+À cette date, une résolution Google (`https://dns.google/resolve?name=xartists.art&type=MX`)
+retournait `Status:3` / **NXDOMAIN**. Un statut `client hold` encore présent bloque la
 publication DNS et donc la réception email du domaine ; corriger uniquement
 MX/SPF/DKIM/DMARC n'est pas suffisant avant levée du hold.
 
-**Opération externe** : se connecter à OVH via profil navigateur sécurisé,
-consulter la cause exacte de ce statut (validation, administratif, autre,
-sans présumer du motif) et faire lever `client hold` par le registrar.
+**Règle de fraîcheur (11 novembre)** : les relevés du 9 novembre sont **historiques**. Depuis, le domaine public répond et des enregistrements MX ont été observés ; voir la préparation mail [#500](https://github.com/Neltud/xArtists/pull/500). Vérifier **à nouveau** RDAP et la délégation avant de conclure à un hold actuel. En cas de hold confirmé, examiner la cause côté OVH et demander sa levée au registrar. Aucun état DNS seul ne démontre la création ou la délivrabilité d'une boîte.
 Après restauration de la délégation DNS, vérifier les MX, SPF, DKIM,
 DMARC et la réception **et** l'envoi réel avec `hello@xartists.art`.
 Ne pas envoyer d'email commercial sur cette adresse avant preuve.
