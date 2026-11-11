@@ -52,7 +52,9 @@ def _brief_score(market: dict[str, Any]) -> tuple[float, str]:
         return 0.0, "invalid_brief"
     stance = brief.get("stance")
     confidence = brief.get("confidence")
-    if stance not in ("abstain", "flat", "long", "short") or isinstance(confidence, bool):
+    if (stance not in ("abstain", "flat", "long", "short")
+            or isinstance(confidence, bool)
+            or not isinstance(confidence, (int, float))):
         return 0.0, "invalid_brief"
     try:
         conf = float(confidence)
