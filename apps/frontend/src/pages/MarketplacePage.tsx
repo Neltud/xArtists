@@ -85,7 +85,7 @@ export default function MarketplacePage(){
     setParams(v)
   }
   return <div className={"xa-page xa-marketplace animate-fade-in space-y-6 pb-24 max-w-6xl mx-auto"+(selected==='art'?" xa-marketplace--art":"")}>
-    <header className="xa-marketplace-hero">
+    {selected!=='art'&&<header className="xa-marketplace-hero">
       <div className="xa-marketplace-hero__copy">
         <p className="xa-marketplace-hero__eyebrow">{c('marketHeroEyebrow')}</p>
         <h1>{c('marketHeroTitleA')}<span>{c('marketHeroTitleB')}</span></h1>
@@ -109,7 +109,7 @@ export default function MarketplacePage(){
         <div><span>02</span><strong>{c('marketIndexPhysical')}</strong></div>
         <div><span>03</span><strong>{c('marketIndexCreative')}</strong></div>
       </div>
-    </header>
+    </header>}
 
 
 
