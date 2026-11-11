@@ -1,56 +1,56 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-10T22:52:23.832Z",
+  "updatedAt": "2026-11-11T04:51:17.443Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1794351143301",
-      "timestamp": "22:52",
+      "id": "egld-1794372676866",
+      "timestamp": "04:51",
       "source": "EGLD",
-      "title": "Cotation publique · $2.96 (API MultiversX economics)",
+      "title": "Cotation publique · $2.95 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
-      "id": "rss-CoinTelegraph-0-1794348287000",
+      "id": "rss-CoinTelegraph-0-1794366465000",
+      "timestamp": "03:07",
+      "source": "CoinTelegraph",
+      "title": "Crypto ally Tom Emmer elected House GOP minority whip",
+      "link": "https://cointelegraph.com/news/crypto-ally-tom-emmer-elected-house-gop-minority-whip?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1794359818000",
+      "timestamp": "01:16",
+      "source": "CoinTelegraph",
+      "title": "LNbits rushes emergency patch after reported Bitcoin wallet thefts",
+      "link": "https://cointelegraph.com/news/lnbits-rushes-emergency-patch-after-reported-bitcoin-wallet-thefts?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1794354591000",
+      "timestamp": "23:49",
+      "source": "CoinTelegraph",
+      "title": "CFTC warns Kalshi of imminent charges over notification of contracts: Politico",
+      "link": "https://cointelegraph.com/news/cftc-warns-kalshi-imminent-charges-over-contracts?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1794352108000",
+      "timestamp": "23:08",
+      "source": "CoinTelegraph",
+      "title": "Global banks commit $270M to stablecoin venture targeting 2027 launch",
+      "link": "https://cointelegraph.com/news/banks-270m-project-faro-stablecoin-2027?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1794348287000",
       "timestamp": "22:04",
       "source": "CoinTelegraph",
       "title": "Here’s what happened in crypto today",
       "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-1-1794346480000",
+      "id": "rss-CoinTelegraph-5-1794346480000",
       "timestamp": "21:34",
       "source": "CoinTelegraph",
       "title": "Can crypto trust firms compete with banks in US derivatives settlements?",
       "link": "https://cointelegraph.com/news/crypto-trust-firms-compete-banks-us-derivatives-settlements?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1794345876000",
-      "timestamp": "21:24",
-      "source": "CoinTelegraph",
-      "title": "Across Protocol warns users to avoid app amid reports of drained wallets",
-      "link": "https://cointelegraph.com/news/across-protocol-warns-avoid-app-drained-wallets?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1794344864000",
-      "timestamp": "21:07",
-      "source": "CoinTelegraph",
-      "title": "Ava Labs exec says NYSE deal marks end of blockchain’s ‘general purpose era’",
-      "link": "https://cointelegraph.com/interview/ava-labs-nyse-general-purpose-chains?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1794342362000",
-      "timestamp": "20:26",
-      "source": "CoinTelegraph",
-      "title": "Kimber Digital Securities gains broker-dealer status for tokenized assets",
-      "link": "https://cointelegraph.com/news/kimber-digital-securities-broker-dealer-tokenization?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1794334327000",
-      "timestamp": "18:12",
-      "source": "CoinTelegraph",
-      "title": "Mercado Bitcoin to resume cash withdrawals after $49M hack",
-      "link": "https://cointelegraph.com/news/pix-withdrawals-resume-mercado-bitcoin-hack?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "rss-CoinDesk-0-1794342993000",
@@ -79,6 +79,41 @@
       "source": "CoinDesk",
       "title": "Crypto is now teamed up with U.S. government in two legal battles over perps",
       "link": "https://www.coindesk.com/news-analysis/2026/11/10/crypto-teams-up-with-u-s-government-to-defend-stock-perps-in-legal-fight"
+    },
+    {
+      "id": "egld-1794351143301",
+      "timestamp": "22:52",
+      "source": "EGLD",
+      "title": "Cotation publique · $2.96 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1794345876000",
+      "timestamp": "21:24",
+      "source": "CoinTelegraph",
+      "title": "Across Protocol warns users to avoid app amid reports of drained wallets",
+      "link": "https://cointelegraph.com/news/across-protocol-warns-avoid-app-drained-wallets?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1794344864000",
+      "timestamp": "21:07",
+      "source": "CoinTelegraph",
+      "title": "Ava Labs exec says NYSE deal marks end of blockchain’s ‘general purpose era’",
+      "link": "https://cointelegraph.com/interview/ava-labs-nyse-general-purpose-chains?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1794342362000",
+      "timestamp": "20:26",
+      "source": "CoinTelegraph",
+      "title": "Kimber Digital Securities gains broker-dealer status for tokenized assets",
+      "link": "https://cointelegraph.com/news/kimber-digital-securities-broker-dealer-tokenization?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1794334327000",
+      "timestamp": "18:12",
+      "source": "CoinTelegraph",
+      "title": "Mercado Bitcoin to resume cash withdrawals after $49M hack",
+      "link": "https://cointelegraph.com/news/pix-withdrawals-resume-mercado-bitcoin-hack?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "egld-1794329304392",
@@ -163,41 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Crypto exchanges need hard dollar caps on hot wallets, CertiK says",
       "link": "https://cointelegraph.com/news/crypto-exchanges-need-dollar-caps-on-hot-wallets-certik?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1794279894000",
-      "timestamp": "03:04",
-      "source": "CoinTelegraph",
-      "title": "OpenAI builds kill switch to stop rogue agents within 35 seconds",
-      "link": "https://cointelegraph.com/news/openai-builds-kill-switch-stop-rogue-agents?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1794271359000",
-      "timestamp": "00:42",
-      "source": "CoinTelegraph",
-      "title": "HIVE, MARA mine more Bitcoin but earn less as crypto prices fall",
-      "link": "https://cointelegraph.com/markets/hives-bitcoin-output-jumps-49-but-mining-revenue-falls?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1794258000000",
-      "timestamp": "21:00",
-      "source": "CoinTelegraph",
-      "title": "Should you leave Australia to avoid paying 47% tax on crypto gains?",
-      "link": "https://cointelegraph.com/magazine/should-you-leave-australia-to-avoid-47-tax-on-crypto-gains?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1794255994000",
-      "timestamp": "20:26",
-      "source": "CoinTelegraph",
-      "title": "North Korean hackers create memecoins to launder funds from Binance hack: Elliptic",
-      "link": "https://cointelegraph.com/news/north-korean-hackers-memecoins-launder-binance-hack-elliptic?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1794253954000",
-      "timestamp": "19:52",
-      "source": "CoinTelegraph",
-      "title": "Formation Securities plans Solana stock trading venue under SEC exemption",
-      "link": "https://cointelegraph.com/news/formation-securities-solana-stock-trading-venue-sec-exemption?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
