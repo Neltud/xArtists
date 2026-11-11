@@ -21,10 +21,9 @@ export type ListTarget = {
 type Props = {
   target: ListTarget | null
   onClose: () => void
-  onListed?: () => void
 }
 
-export default function ListNftSheet({ target, onClose, onListed }: Props) {
+export default function ListNftSheet({ target, onClose }: Props) {
   xaUsePhraseLocale()
 
   const { connected, address, canAttemptSign } = useWallet()
