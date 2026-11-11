@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import math
 import statistics
 import time
 from typing import Any, Optional
@@ -28,35 +29,42 @@ def _clip(x: float) -> float:
 
 
 def _num(market: dict[str, Any], *keys: str) -> Optional[float]:
+    """Only finite measured numbers count as data. No bool, NaN or Infinity."""
     for k in keys:
         if k in market and market[k] is not None and market[k] != "":
-            try:
-                return float(market[k])
-            except (TypeError, ValueError):
+            value = market[k]
+            if isinstance(value, bool):
                 return None
+            try:
+                number = float(value)
+            except (TypeError, ValueError, OverflowError):
+                return None
+            return number if math.isfinite(number) else None
     return None
 
 
 def _brief_score(market: dict[str, Any]) -> tuple[float, str]:
-    brief = market.get("chatgpt_brief") or market.get("external_brief") or {}
-    if isinstance(brief, str):
-        brief = {"note": brief}
-    if not isinstance(brief, dict) or not (brief.get("note") or brief.get("stance")):
+    """External chair may vote only with an explicit bounded, finite stance."""
+    brief = market.get("chatgpt_brief") or market.get("external_brief")
+    if brief is None:
         return 0.0, "awaiting_chatgpt_brief"
-    stance = str(brief.get("stance") or "").lower()
-    if any(w in stance for w in ("short", "risk", "off", "sell", "baisse")):
-        raw = -0.6
-    elif any(w in stance for w in ("long", "bid", "buy", "hausse")):
-        raw = 0.6
-    else:
-        raw = 0.0
-    conf = brief.get("confidence")
+    if not isinstance(brief, dict):
+        return 0.0, "invalid_brief"
+    stance = brief.get("stance")
+    confidence = brief.get("confidence")
+    if (stance not in ("abstain", "flat", "long", "short")
+            or isinstance(confidence, bool)
+            or not isinstance(confidence, (int, float))):
+        return 0.0, "invalid_brief"
     try:
-        c = float(conf) if conf is not None else 0.5
-    except (TypeError, ValueError):
-        c = 0.5
-    c = max(0.0, min(1.0, c))
-    return _clip(raw * c), "chatgpt_brief_capped"
+        conf = float(confidence)
+    except (TypeError, ValueError, OverflowError):
+        return 0.0, "invalid_brief"
+    if not math.isfinite(conf) or not 0.0 <= conf <= 1.0:
+        return 0.0, "invalid_brief"
+    if stance == "abstain" or conf == 0.0:
+        return 0.0, "abstain"
+    return _clip({"long": 0.6, "short": -0.6, "flat": 0.0}[stance] * conf), "scored"
 
 
 def score_signal(sig: dict[str, Any], market: dict[str, Any]) -> dict[str, Any]:
@@ -153,7 +161,8 @@ def crosscut(rows: list[dict[str, Any]], means: dict[str, float]) -> dict[str, A
             fed_fams.append(means[fam])
     core = sum(fed_fams) / len(fed_fams) if fed_fams else 0.0
     ext = max(-CHATGPT_CAP, min(CHATGPT_CAP, means["external"] * CHATGPT_CAP))
-    blended = core + ext
+    # True weighted blend: the chair cannot exceed a 15% contribution.
+    blended = (1 - CHATGPT_CAP) * core + ext
     dissent = statistics.pstdev(fed_fams) if len(fed_fams) > 1 else 1.0
     agreement = round(1 - min(1.0, dissent), 4) if len(fed_fams) > 1 else 0.0
     risk = means["risk"]
@@ -206,7 +215,7 @@ def run_chorus(
     m = dict(market or {})
     if chatgpt_brief is not None:
         m["chatgpt_brief"] = chatgpt_brief
-    m.setdefault("slot_payable", False)
+    # Missing chain evidence stays unscored. Never infer Slot non-payability.
     rows = [score_signal(s, m) for s in catalog()]
     means = _family_means(rows)
     cut = crosscut(rows, means)
