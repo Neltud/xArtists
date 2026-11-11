@@ -8,11 +8,13 @@ import { useEffect, useState, useRef } from 'react'
 import { useWallet } from '../context/WalletContext'
 import { loginWithXPortalMainnet, cancelXPortalLogin } from '../lib/xportalWc'
 import { OPEN_CONNECT_EVENT } from '../lib/walletEvents'
+import { XPORTAL_DEEP_LINKS } from '../config/sdkDapp'
 import { useI18n } from '../i18n/I18nContext'
 import Dialog from '../experience/Dialog'
 import WalletPairing from './WalletPairing'
 
 const WEB_WALLET = 'https://wallet.multiversx.com/unlock'
+const SLOW_INIT_MS = 12_000
 
 export function generateGuestReceiveId(): string {
   const t = Date.now().toString(36)
@@ -52,7 +54,7 @@ export default function LoginModal({ open: controlledOpen, onClose, onConnected 
   xaUsePhraseLocale()
 
   const { t } = useI18n()
-  const attempt=useRef(0)
+  const attempt = useRef(0)
   const { connect } = useWallet()
   const [internalOpen, setInternalOpen] = useState(false)
   const open = controlledOpen ?? internalOpen
@@ -60,6 +62,8 @@ export default function LoginModal({ open: controlledOpen, onClose, onConnected 
   const [wcUri, setWcUri] = useState<string | null>(null)
   const [manual, setManual] = useState('')
   const [busy, setBusy] = useState(false)
+  const [phase, setPhase] = useState<'idle' | 'init' | 'uri' | 'waiting' | 'error'>('idle')
+  const [slowInit, setSlowInit] = useState(false)
   const [mode, setMode] = useState<'classic' | 'simple'>('classic')
 
   useEffect(() => {
@@ -68,6 +72,8 @@ export default function LoginModal({ open: controlledOpen, onClose, onConnected 
       setInternalOpen(true)
       setError('')
       setWcUri(null)
+      setPhase('idle')
+      setSlowInit(false)
     }
     window.addEventListener(OPEN_CONNECT_EVENT, on)
     return () => window.removeEventListener(OPEN_CONNECT_EVENT, on)
@@ -82,54 +88,95 @@ export default function LoginModal({ open: controlledOpen, onClose, onConnected 
     return () => window.removeEventListener('xartists-wc-uri', onUri)
   }, [])
 
+  useEffect(() => {
+    if (!busy || phase !== 'init') {
+      setSlowInit(false)
+      return
+    }
+    const t = window.setTimeout(() => setSlowInit(true), SLOW_INIT_MS)
+    return () => window.clearTimeout(t)
+  }, [busy, phase])
+
   const reset = () => {
     setInternalOpen(false)
     onClose?.()
     setError('')
     setWcUri(null)
+    setPhase('idle')
+    setSlowInit(false)
   }
 
-  const close = () => {attempt.current++;cancelXPortalLogin();setBusy(false);reset()}
+  const close = () => {
+    attempt.current++
+    cancelXPortalLogin()
+    setBusy(false)
+    setPhase('idle')
+    setSlowInit(false)
+    reset()
+  }
+
+  const cancelAndRetry = () => {
+    attempt.current++
+    cancelXPortalLogin()
+    setBusy(false)
+    setWcUri(null)
+    setPhase('idle')
+    setSlowInit(false)
+    setError('Connexion annulée. Réessaie xPortal ou utilise Accès simplifié.')
+  }
 
   if (!open) return null
 
   const runXPortal = async () => {
-    const id=++attempt.current
+    const id = ++attempt.current
     setBusy(true)
-    setError('xPortal…')
+    setPhase('init')
+    setSlowInit(false)
+    setError('Initialisation de WalletConnect…')
     setWcUri(null)
     try {
       const res = await loginWithXPortalMainnet(p => {
-        if(id!==attempt.current)return
+        if (id !== attempt.current) return
         if (p.uri) setWcUri(p.uri)
+        if (p.phase === 'init') setPhase('init')
+        else if (p.phase === 'uri') setPhase('uri')
+        else if (p.phase === 'waiting') setPhase('waiting')
+        else if (p.phase === 'error') setPhase('error')
+        else if (p.phase === 'done') setPhase('idle')
         if (p.message) setError(p.message)
       })
-      if(id!==attempt.current)return
+      if (id !== attempt.current) return
       if (!res.ok) {
+        setPhase('error')
         setError(res.error)
         return
       }
       const linked = connect(res.address, 'xportal')
       if (!linked.ok) {
+        setPhase('error')
         setError(linked.error || 'Session refusée')
         return
       }
       onConnected?.(res.address)
       reset()
     } catch (e) {
-      if(id===attempt.current)setError(e instanceof Error ? e.message : 'Erreur xPortal')
+      if (id === attempt.current) {
+        setPhase('error')
+        setError(e instanceof Error ? e.message : 'Erreur xPortal')
+      }
     } finally {
-      if(id===attempt.current)setBusy(false)
+      if (id === attempt.current) setBusy(false)
     }
   }
 
   const runExtension = async () => {
     setBusy(true)
     setError('')
+    setPhase('idle')
     try {
       const w = window as unknown as { elrondWallet?: { getAddress?: () => Promise<string> } }
       if (!w.elrondWallet?.getAddress) {
-        setError('Extension MultiversX introuvable')
+        setError('Extension MultiversX introuvable — sur mobile utilise xPortal ou Accès simplifié.')
         return
       }
       const addr = await w.elrondWallet.getAddress()
@@ -176,6 +223,15 @@ export default function LoginModal({ open: controlledOpen, onClose, onConnected 
     )
   }
 
+  const primaryLabel =
+    busy && phase === 'init'
+      ? 'Initialisation…'
+      : busy && phase === 'waiting'
+        ? 'En attente d’approbation…'
+        : busy
+          ? 'En attente…'
+          : 'xPortal / WalletConnect'
+
   return (
     <Dialog title={t('common.connect')} onClose={close} className="xa-wallet-dialog">
       <div
@@ -186,9 +242,10 @@ export default function LoginModal({ open: controlledOpen, onClose, onConnected 
           <div>
             <h2 className="text-lg font-semibold text-[color:var(--xa-text)] font-tech">{xaRender(t('common.connect'))}</h2>
             <p className="mt-1 text-[12px] text-[color:var(--xa-text-muted)]">
-              {xaRender("Non-custodial — aucune clé privée stockée par xArtists. ")}</p>
+              {xaRender('Non-custodial — aucune clé privée stockée par xArtists. ')}
+            </p>
           </div>
-          <button type="button" className="modal-close-btn" onClick={close} aria-label={xaLocalize("Fermer")}>
+          <button type="button" className="modal-close-btn" onClick={close} aria-label={xaLocalize('Fermer')}>
             ×
           </button>
         </div>
@@ -203,7 +260,8 @@ export default function LoginModal({ open: controlledOpen, onClose, onConnected 
                 : 'border-white/10 text-zinc-500'
             }`}
           >
-            {xaRender("Classique ")}</button>
+            {xaRender('Classique ')}
+          </button>
           <button
             type="button"
             onClick={() => setMode('simple')}
@@ -213,43 +271,104 @@ export default function LoginModal({ open: controlledOpen, onClose, onConnected 
                 : 'border-white/10 text-zinc-500'
             }`}
           >
-            {xaRender("Accès simplifié ")}</button>
+            {xaRender('Accès simplifié ')}
+          </button>
         </div>
 
-        {xaRender(mode === 'classic' && (
-          <div className="space-y-3">
-            {wcUri&&<WalletPairing uri={wcUri}/>}
-            <button type="button" className="btn-primary w-full" disabled={busy} onClick={() => void runXPortal()}>
-              {xaRender(busy ? 'En attente…' : 'xPortal / WalletConnect')}
-            </button>
-            <button type="button" className="btn-secondary w-full" disabled={busy} onClick={() => void runExtension()}>
-              {xaRender("Extension DeFi Wallet ")}</button>
-            <div className="space-y-2 border-t border-white/10 pt-3">
-              <p className="text-[11px] text-zinc-600">{xaRender("Lecture seule — coller erd1")}</p>
-              <input
-                value={manual}
-                onChange={e => setManual(e.target.value)}
-                placeholder="erd1…"
-                className="mono w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-[color:var(--xa-accent)]"
-              />
-              <button type="button" className="btn-secondary w-full text-xs" onClick={runPaste}>
-                {xaRender("Lecture seule ")}</button>
-            </div>
-          </div>
-        ))}
+        {xaRender(
+          mode === 'classic' && (
+            <div className="space-y-3">
+              {wcUri && <WalletPairing uri={wcUri} />}
+              <button
+                type="button"
+                className="btn-primary w-full"
+                disabled={busy}
+                onClick={() => void runXPortal()}
+              >
+                {xaRender(primaryLabel)}
+              </button>
 
-        {xaRender(mode === 'simple' && (
-          <div className="space-y-3">
-            <p className="text-[12px] text-zinc-400 leading-relaxed">
-              {xaRender("Pour un achat ")}<strong className="text-zinc-200">{xaRender("Fiat")}</strong> {xaRender(" sans extension : crée un wallet via le Web Wallet officiel MultiversX (ou passkey côté wallet quand dispo), puis reviens coller ton ")}<span className="mono text-zinc-300">erd1</span>{xaRender(". xArtists ne détient jamais tes fonds. ")}</p>
-            <button type="button" className="btn-primary w-full" onClick={runSimpleWebWallet}>
-              {xaRender("Ouvrir Web Wallet MVX ↗ ")}</button>
-            <button type="button" className="btn-secondary w-full text-sm" onClick={runGuestForFiat}>
-              {xaRender("Identifiant temporaire (fiat sans erd1 encore) ")}</button>
-            <p className="text-[10px] text-zinc-600">
-              {xaRender("L’ID temporaire lie le paiement au futur mint — tu devras revendiquer avec un erd1 (claim). Pas un compte titres. ")}</p>
-          </div>
-        ))}
+              {busy && !wcUri && (
+                <div className="space-y-2 rounded-xl border border-white/10 bg-black/20 px-3 py-2">
+                  <p className="text-[11px] text-zinc-400 leading-relaxed">
+                    {xaRender(
+                      phase === 'init'
+                        ? 'Connexion au relais WalletConnect… Sur mobile, le bouton Ouvrir xPortal apparaît dès que le lien est prêt.'
+                        : 'En attente du lien de pairing…',
+                    )}
+                  </p>
+                  <a
+                    href={XPORTAL_DEEP_LINKS.storeAndOpen}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="block text-center text-[12px] text-[color:var(--xa-accent)] underline-offset-2 hover:underline"
+                  >
+                    {xaRender('Installer / ouvrir xPortal ↗')}
+                  </a>
+                  {slowInit && (
+                    <button type="button" className="btn-secondary w-full text-xs" onClick={cancelAndRetry}>
+                      {xaRender('Annuler et réessayer')}
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {!busy && phase === 'error' && (
+                <button type="button" className="btn-secondary w-full text-xs" onClick={() => void runXPortal()}>
+                  {xaRender('Réessayer xPortal')}
+                </button>
+              )}
+
+              <button
+                type="button"
+                className="btn-secondary w-full"
+                disabled={busy}
+                onClick={() => void runExtension()}
+              >
+                {xaRender('Extension DeFi Wallet ')}
+              </button>
+              <div className="space-y-2 border-t border-white/10 pt-3">
+                <p className="text-[11px] text-zinc-600">{xaRender('Lecture seule — coller erd1')}</p>
+                <input
+                  value={manual}
+                  onChange={e => setManual(e.target.value)}
+                  placeholder="erd1…"
+                  className="mono w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-[color:var(--xa-accent)]"
+                />
+                <button type="button" className="btn-secondary w-full text-xs" onClick={runPaste}>
+                  {xaRender('Lecture seule ')}
+                </button>
+              </div>
+            </div>
+          ),
+        )}
+
+        {xaRender(
+          mode === 'simple' && (
+            <div className="space-y-3">
+              <p className="text-[12px] text-zinc-400 leading-relaxed">
+                {xaRender('Pour un achat ')}
+                <strong className="text-zinc-200">{xaRender('Fiat')}</strong>
+                {xaRender(
+                  ' sans extension : crée un wallet via le Web Wallet officiel MultiversX (ou passkey côté wallet quand dispo), puis reviens coller ton ',
+                )}
+                <span className="mono text-zinc-300">erd1</span>
+                {xaRender('. xArtists ne détient jamais tes fonds. ')}
+              </p>
+              <button type="button" className="btn-primary w-full" onClick={runSimpleWebWallet}>
+                {xaRender('Ouvrir Web Wallet MVX ↗ ')}
+              </button>
+              <button type="button" className="btn-secondary w-full text-sm" onClick={runGuestForFiat}>
+                {xaRender('Identifiant temporaire (fiat sans erd1 encore) ')}
+              </button>
+              <p className="text-[10px] text-zinc-600">
+                {xaRender(
+                  'L’ID temporaire lie le paiement au futur mint — tu devras revendiquer avec un erd1 (claim). Pas un compte titres. ',
+                )}
+              </p>
+            </div>
+          ),
+        )}
 
         {xaRender(error && <p className="text-[12px] leading-relaxed text-amber-200/90">{xaRender(error)}</p>)}
       </div>
