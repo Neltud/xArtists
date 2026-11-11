@@ -28,7 +28,7 @@ function mock({active=true,paused=false,fee=300,price=250000000000000000n,escrow
   const {funcName}=JSON.parse(opts.body)
   const d=funcName==='isPaused'?[paused?'AQ==':'']:
     funcName==='getFeeBps'?[u16(fee).toString('base64')]:[fixture({active,price,royalty})]
-  if(url.endsWith('/query'))return success({returnCode:'ok',returnMessage:'',returnData:d})
+  if(url==='https://api.multiversx.com/query')return success({returnCode:'ok',returnMessage:'',returnData:d})
   if(!gatewayOk)throw Error('cross_origin_gateway_unavailable')
   return success({code:'successful',data:{data:{ReturnCode:'ok',ReturnMessage:'',ReturnData:d}}})
  }
@@ -81,7 +81,7 @@ test('single-listing wallet UI rechecks quote and uses existing user signer only
  const grid=readFileSync(new URL('../src/components/market/MarketplaceDiscoveryGrid.tsx',import.meta.url),'utf8')
  const gate=readFileSync(new URL('../src/config/scStatus.ts',import.meta.url),'utf8')
  assert.match(grid,/card\.key==='escrow:ASFT-a6273a-01'&&<MarketplaceVerifiedBuy\/>/)
- assert.match(grid,/new URLSearchParams\(window\.location\.search\)\.get\('buy'\)==='2'/)
+ assert.match(grid,/new URLSearchParams\(window\.location\.search\)\.get\('buy'\)!=='2'/)
  assert.match(ui,/const fresh=await readVerifiedSale\(\)/)
  assert.match(ui,/receiver:VERIFIED_MARKET_SALE\.marketplace/)
  assert.match(ui,/value:fresh\.priceAtomic/)
