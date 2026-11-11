@@ -1,5 +1,6 @@
 import {useEffect,useState} from 'react'
 import {LIA_OPS,MAINNET_ADDRESSES} from '../../config/contracts'
+import {isMarketplaceArtwork} from '../../lib/marketplaceArtwork.mjs'
 
 type Nft={identifier:string;name?:string;collection?:string;balance?:string|number;url?:string;media?:Array<{url?:string;thumbnailUrl?:string}>}
 const API='https://api.multiversx.com'
@@ -22,7 +23,7 @@ export default function LiaAndEscrowNfts(){
    if(!r.ok)throw Error('nft_index_unavailable')
    const json:unknown=await r.json()
    if(!Array.isArray(json))throw Error('invalid_nft_index')
-   return json.filter((n):n is Nft=>Boolean(n)&&typeof n==='object'&&NFT.test(String((n as Nft).identifier||''))&&Number((n as Nft).balance??1)>0).slice(0,100)
+   return json.filter((n):n is Nft=>Boolean(n)&&typeof n==='object'&&isMarketplaceArtwork(n)&&NFT.test(String((n as Nft).identifier||''))&&Number((n as Nft).balance??1)>0).slice(0,100)
   }
   Promise.all([read(LIA_OPS),read(MAINNET_ADDRESSES.nft_marketplace)])
    .then(([lia,market])=>{if(!controller.signal.aborted){setOwned(lia);setEscrow(market)}})
