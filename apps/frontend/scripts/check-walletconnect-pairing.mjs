@@ -49,3 +49,6 @@ for(const [index,relay] of relays.entries()){
   }
 }
 console.log(process.exitCode===0?'PAIRING_PROBE_SUCCESS':'PAIRING_PROBE_BLOCKED_'+errors.join('_'))
+
+// Stop relay sockets after this anonymous preflight. Never approve a session.
+process.exit(process.exitCode ?? 0)
