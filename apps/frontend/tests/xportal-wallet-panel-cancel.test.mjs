@@ -26,3 +26,12 @@ test('stale or cancelled xPortal login must never be attached to wallet state', 
   assert.match(wc, /export function cancelXPortalLogin\(\)\{loginAbort\?\.abort\(\)\}/)
   assert.doesNotMatch(panel, /addEventListener\('xartists-wc-uri'/)
 })
+
+test('xPortal publicly separates relay initialization from QR pairing without leaking URI', () => {
+  assert.match(wc, /phase: 'init' \| 'pairing' \| 'uri'/)
+  assert.match(wc, /relayPhase:'init'\|'pairing'='init'/)
+  assert.match(wc, /relayPhase='pairing'/)
+  assert.match(wc, /Génération du QR xPortal/)
+  assert.match(wc, /WalletConnect bloqué avant QR/)
+  assert.match(wc, /if\(signal\.aborted\)throw new Error\('Connexion annulée\.'\)/)
+})
