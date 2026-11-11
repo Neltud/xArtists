@@ -26,6 +26,7 @@ const publicStages: Record<string, PublicStage> = {
  agents: 'preview',
  command: 'preview',
  lightning: 'preview',
+ lab: 'preview',
  simulation: 'preview',
  entities: 'preview',
  trading: 'roadmap',
