@@ -9,7 +9,7 @@ test('Marketplace exposes a fourth, discoverable tab, without changing Multivers
   assert.match(marketplace, /id:'opensea'/)
   assert.match(marketplace, /selected==='opensea'&&<OpenSeaCollectionPanel/)
   assert.match(marketplace, /to="\/marketplace\?tab=opensea"/)
-  assert.match(marketplace, /const live=canListBuyNft\(\)/)
+  assert.match(marketplace, /const live=useMarketplaceReadiness\(\)/)
 })
 test('OpenSea panel is external read-only, with no wallet transaction or checkout flow', () => {
   assert.match(panel, /'v1\/marketplace\/opensea\/collection'|\/v1\/marketplace\/opensea\/collection/)
