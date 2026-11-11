@@ -50,6 +50,18 @@ Le SC **ne dispose pas** d'une fonction `offer` universelle distincte : `placeBi
 
 Ces preuves établissent que le **bon contrat** fonctionne historiquement. Elles ne prouvent **pas** l'état actuel de `getListing(2)`, le solde d'un wallet acheteur futur ou une nouvelle vente complète après cette date. L'étiquette « payable » n'est pas une permission commerciale.
 
+## Relecture VM effective du 11 novembre 2026, 13:06:14 UTC
+
+**Ce qui était historique est désormais confirmé par lecture fraîche** sur le contrat principal, via le job de CI read-only :
+[Actions — offline-safety / VM probe](https://github.com/Neltud/xArtists/actions/runs/43026084998/job/130541012750).
+
+- `codehashMatchesRegistry=true` et `payable=true`.
+- `isPaused=false` ; `getFeeBps=300` (= 3 %).
+- `getListing(1)` : `ASFT-a6273a`, nonce `1`, **inactif**, prix historique `250000000000000000` wei.
+- `getListing(2)` : **actif**, même token `ASFT-a6273a`, nonce `1`, prix on-chain `250000000000000000` wei = **0,25 EGLD**.
+- Vente possible dans l'état observé, si non modifié avant la signature. La transaction utilisateur attend `receiver=<contrat_marketplace>`, `value=250000000000000000`, `data=buyNft@02`, `chainID=1`, et du gas supplémentaire. Vérifier de nouveau les vues juste avant tout achat.
+- **Aucune signature, aucun achat ni broadcast effectués** dans ce contrôle. La grille publique reste volontairement sans achat généralisé, en attendant revue du flux utilisateur et réconciliation transactionnelle. Utiliser un wallet utilisateur distinct du vendeur et de LIA ops pour une preuve de réception indépendante.
+
 ## Livrable du lot read-only
 
 - Script : `node scripts/ops/inspect-marketplace-mainnet.mjs` — refuse toute divergence codeHash / mauvais réseau, interroge le SC, `isPaused`, `getFeeBps`, puis `getListing(1..8)`. Jamais de signature, mutation ou paiement.
