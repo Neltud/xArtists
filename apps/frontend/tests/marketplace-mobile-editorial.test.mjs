@@ -104,10 +104,12 @@ test('Marketplace is an artwork grid first, not a technical dashboard', () => {
   assert.match(market, /import MarketplaceDiscoveryGrid from/)
   assert.doesNotMatch(market, /<DriveArtShowcase compact/)
   const gridPos=market.indexOf("<MarketplaceDiscoveryGrid")
-  const techPos=market.indexOf('<details className="xa-market-tech">')
+  const techPos=market.indexOf('<details className="xa-market-tech"')
   const statusPos=market.indexOf('<p className="xa-marketplace-status"')
   assert.ok(gridPos>0 && techPos>gridPos && statusPos>gridPos,
     'real artworks must appear before technical stock data and legal status')
+  assert.match(market, /selected!=='art'&&<header className="xa-marketplace-hero"/)
+  assert.match(market, /showTech&&<div><LiaAndEscrowNfts/)
   assert.match(gallery, /DRIVE_EXHIBITION\.map/)
   assert.match(gallery, /art\/drive\//)
   assert.match(gallery, /<ul className="xa-market-grid__cards"/)
