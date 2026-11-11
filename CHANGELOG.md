@@ -1,5 +1,34 @@
 # Changelog — xArtists
 
+## [0.133.0](https://github.com/Neltud/xArtists/compare/v0.132.0...v0.133.0) (2026-11-11)
+
+
+### Features
+
+* **market:** expose seller listings with independent on-chain ownership and codehash preflight ([e7e1cb9](https://github.com/Neltud/xArtists/commit/e7e1cb92ca2a4a2654cbcac7fe90e1225834be26))
+* **marketplace:** signed user NFT listing with verified creator rights ([#518](https://github.com/Neltud/xArtists/issues/518)) ([cb60341](https://github.com/Neltud/xArtists/commit/cb60341acc68a2d2ef078456ca04894ab0c6c5c5))
+* **marketplace:** vente NFT utilisateur — UI publique, propriété vérifiée et signature mainnet ([cb60341](https://github.com/Neltud/xArtists/commit/cb60341acc68a2d2ef078456ca04894ab0c6c5c5))
+
+
+### Bug Fixes
+
+* **chorus:** entrées strictement vérifiées, abstention réelle et plafond chair 15 % — paper only ([226b7d8](https://github.com/Neltud/xArtists/commit/226b7d8f266e78a3ce0df2e2c2756b7151ee5c16))
+* **market:** authenticate creator royalties on chain and require seller fee confirmation ([51531e0](https://github.com/Neltud/xArtists/commit/51531e064e3a7572c6e93d21c8566081823092cf))
+* **market:** avoid claiming a listing exists before confirmed escrow ([756164a](https://github.com/Neltud/xArtists/commit/756164a4ea1cce0eea76d719ebb81f35ab30e5fc))
+* **market:** avoid claiming a listing exists before confirmed escrow ([93eee42](https://github.com/Neltud/xArtists/commit/93eee42fab24139ba37e347f4a80113257a1b88c))
+* **p0,xPortal:** isoler les URI de pairing et supprimer les QR expirés ([d73316c](https://github.com/Neltud/xArtists/commit/d73316cb8090d523ecee11c08048ca9c7f174b01))
+* **types:** accept structural NFT metadata without index signature ([c1a20f7](https://github.com/Neltud/xArtists/commit/c1a20f778ce1c23457ee0118c361843412c1749d))
+* **ux:** keep first artwork row visible on mobile before seller panel ([626badc](https://github.com/Neltud/xArtists/commit/626badc29dcc9935d87af359b64f9ac1ec7df3d7))
+* **xorus:** fail-closed signal observations and advisory cap ([#513](https://github.com/Neltud/xArtists/issues/513)) ([226b7d8](https://github.com/Neltud/xArtists/commit/226b7d8f266e78a3ce0df2e2c2756b7151ee5c16))
+* **xportal:** isolate pairing URIs per dialog and clear failed QR ([3a66845](https://github.com/Neltud/xArtists/commit/3a66845971d77de72759d18f219c78ddbf9a0a61))
+* **xPortal:** isolate QR and prepare Reown public origin config ([#515](https://github.com/Neltud/xArtists/issues/515)) ([d73316c](https://github.com/Neltud/xArtists/commit/d73316cb8090d523ecee11c08048ca9c7f174b01))
+* **xportal:** make official Reown project ID configurable in Pages and document exact origins ([d18c338](https://github.com/Neltud/xArtists/commit/d18c3386b482f0062446525639c3b7e207da9b2a))
+
+
+### Documentation
+
+* **p0:** quarantine contradictory Pulse mainnet price pending fresh query ([28a84ee](https://github.com/Neltud/xArtists/commit/28a84eef789ad1159a67c9005583390c11541b78))
+
 ## [0.132.0](https://github.com/Neltud/xArtists/compare/v0.131.0...v0.132.0) (2026-11-11)
 
 
