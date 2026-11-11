@@ -52,6 +52,7 @@ class ChorusSafetyTests(unittest.TestCase):
                       {"stance": "long", "confidence": float("nan")},
                       {"stance": "short", "confidence": float("inf")},
                       {"stance": "long", "confidence": True},
+                      {"stance": "long", "confidence": "0.9"},
                       {"stance": "please buy", "confidence": 1.0},
                       {"stance": "long", "confidence": 1.1},
                       {"stance": "short", "confidence": -0.1}):
