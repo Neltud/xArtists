@@ -6,6 +6,8 @@ description: >-
 
 # Prix, droits et livraison
 
+> **Mise à jour du 11 novembre 2026.** Les hypothèses tarifaires et les chiffres Genesis ci-dessous décrivent un **dossier historique du 8 novembre**, pas des prix payables aujourd'hui. L'unique pilote NFT Marketplace observé est **BlackArtPass `ASFT-a6273a-01` (listing #2, 0,25 EGLD)**, signé volontairement via wallet acheteur et revérifié on-chain. Les abonnements **EUR** et les packs **EGLD** sont des produits séparés ; aucun checkout/entitlement pack public n'est validé. Le frais marketplace observé est **3 %**, et le cumul frais + royalties doit rester **≤ 10 %** selon le contrat. Une requête envoyée à xPortal ne prouve pas une réception NFT.
+
 ### Règle produit retenue
 
 Le client paie Pulse **110 €**, Yield **75 €**, Sentinel **50 €**. Les 4 % sont internes au prix, sans supplément vitrine et sans réduction de 4 % du montant crypto équivalent.

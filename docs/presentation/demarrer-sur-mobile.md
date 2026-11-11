@@ -5,11 +5,13 @@ description: >-
 icon: mobile-screen-button
 ---
 
-# Démarrer : web, mobile et xPortal
+# Démarrer sur web, mobile et xPortal
+
+> **Mise à jour 11 novembre 2026.** L'adresse publique recommandée est [xartists.art](https://xartists.art), et non l'ancienne URL GitHub Pages. La connexion xPortal via Chrome Android a été confirmée physiquement (QR/lien puis adresse `erd1…`). L'annulation avant QR et la réception d'un NFT restent à valider séparément. Si le musée 3D est vide sur votre téléphone, choisissez **« Écran vide ? Afficher le musée en mode compatible »** au-dessus de la scène, puis revenez à WebGL si souhaité. Ne signez jamais une transaction que vous n'avez pas demandée.
 
 xArtists s’utilise comme une application web. On peut commencer par une visite dans son navigateur, puis connecter son propre portefeuille pour les fonctions qui le demandent. La [page de disponibilité](etat-du-produit.md) distingue la version de découverte et l’adresse GitHub Pages.
 
-[Ouvrir la dapp sur GitHub Pages](https://neltud.github.io/xArtists/). Pour partager xArtists, utiliser cette adresse GitHub ; le lien et le QR de partage doivent renvoyer à la même adresse.
+[Ouvrir la dApp xArtists](https://xartists.art/). Pour partager xArtists, utiliser l'adresse xartists.art ; le lien et le QR de partage doivent renvoyer à la même adresse.
 
 ### Commencer sans portefeuille
 
