@@ -20,7 +20,7 @@ class XorusCompatibilityTest(unittest.TestCase):
         self.assertFalse(board["crosscut"]["live_trading"])
         self.assertFalse(board["live_trading"])
         self.assertTrue(board["live_locked"])
-        self.assertTrue(board["handoff_for_chatgpt"].startswith("XORUS →"))
+        self.assertTrue(board["handoff_for_chatgpt"].startswith("xOrus →"))
 
     def test_market_request_cannot_enable_execution(self):
         board = run_xorus(market={"LIA_LIVE_TRADING": True, "live_trading": True, "executable": True})
