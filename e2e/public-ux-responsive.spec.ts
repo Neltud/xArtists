@@ -42,9 +42,23 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
       await expect(hero.getByRole('link', { name: /Créer au Studio/ })).toBeVisible()
       const categories = page.locator('.xa-marketplace-category')
       await expect(categories).toHaveCount(4)
-      const columns = await page.locator('.xa-marketplace-categories__grid').evaluate(el =>
+      const navigationDisplay = await page.locator('.xa-marketplace-categories__grid').evaluate(el =>
+        getComputedStyle(el).display)
+      expect(navigationDisplay, 'compact horizontally scrolling marketplace categories').toBe('flex')
+      const grid = page.locator('.xa-market-grid__cards')
+      await expect(grid).toBeVisible()
+      await expect(grid.locator('.xa-market-grid__card')).toHaveCount(4, { timeout: 1000 }).catch(async () => {
+        // On-chain cards can load after the four guaranteed curated artworks.
+        expect(await grid.locator('.xa-market-grid__card').count()).toBeGreaterThanOrEqual(4)
+      })
+      const columns = await grid.evaluate(el =>
         getComputedStyle(el).gridTemplateColumns.split(' ').filter(Boolean).length)
-      expect(columns, 'compact two-column mobile category grid').toBe(2)
+      expect(columns, 'two visual artwork columns on mobile').toBe(2)
+      await expect(grid.locator('img[src*="/art/drive/"]')).toHaveCount(4)
+      await expect(page.locator('.xa-market-tech')).not.toHaveAttribute('open', '')
+      await expect(page.locator('.xa-market-grid__card').first()).toContainText('xArtists0279')
+      const firstRowTop = await grid.evaluate(el => el.getBoundingClientRect().top)
+      expect(firstRowTop, 'first artwork row should start near the initial mobile viewport').toBeLessThan(850)
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)
       expect(overflow, `Marketplace horizontal overflow at ${width}px`).toBeLessThanOrEqual(12)
       await page.screenshot({ animations: 'disabled', path: `artifacts/ux-mobile/marketplace-editorial-${width}.png` })
@@ -52,6 +66,28 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
       await expect(page).toHaveURL(/tab=rwa/)
     })
   }
+
+  test('FrameIT-like catalog filters work without wallet or false sale actions', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 })
+    await visit(page, '/marketplace/?lang=fr')
+    const gallery = page.locator('.xa-market-grid')
+    await expect(gallery.getByRole('heading', { name: 'Œuvres à découvrir' })).toBeVisible()
+    await expect(gallery.locator('.xa-market-grid__card').first()).toContainText('xArtists0279')
+    await expect(gallery.getByText('Exposition · hors vente').first()).toBeVisible()
+    await expect(gallery.getByRole('link', { name: /Voir la collection/ }).first()).toHaveAttribute('href', /museum/)
+    await expect(gallery.getByRole('button', { name: /Acheter|Buy now|Enchérir/i })).toHaveCount(0)
+    await gallery.getByRole('searchbox').fill('xArtists0291')
+    await expect(gallery.locator('.xa-market-grid__card')).toHaveCount(1)
+    await expect(gallery.locator('.xa-market-grid__card').first()).toContainText('xArtists0291')
+    await gallery.getByRole('searchbox').fill('')
+    await gallery.getByRole('button', { name: 'Atelier xArtists' }).click()
+    await expect(gallery.getByRole('button', { name: 'Atelier xArtists' })).toHaveAttribute('aria-pressed','true')
+    await expect(gallery.locator('.xa-market-grid__card')).toHaveCount(4)
+    await gallery.getByRole('button', { name: 'NFT MultiversX' }).click()
+    await expect(gallery.getByRole('button', { name: 'NFT MultiversX' })).toHaveAttribute('aria-pressed','true')
+    await gallery.getByRole('button', { name: 'Tout voir' }).click()
+    await expect(gallery.locator('.xa-market-grid__card').first()).toContainText('xArtists0279')
+  })
 
   test('marketplace visitor entry respects all eight selected languages', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 })
