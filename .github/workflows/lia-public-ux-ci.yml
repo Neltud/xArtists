@@ -1,4 +1,4 @@
-name: LIA public-first Control Room — safe UX gate
+name: xOrus public-first Control Room — safe UX gate
 
 on:
   pull_request:
@@ -55,6 +55,7 @@ jobs:
         run: |
           npm run check:routes
           npm run verify:site
+          test -s dist/intelligence/xorus/index.html
           test -s dist/intelligence/lia/index.html
-          grep -q '/xArtists/assets/' dist/intelligence/lia/index.html
-          echo 'LIA read-only route built. No payment, mint or live trading enabled.'
+          grep -Eq '(/xArtists)?/assets/' dist/intelligence/xorus/index.html
+          echo 'xOrus canonical + LIA legacy alias built; read-only, no agent transactions.'

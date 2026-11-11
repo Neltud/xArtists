@@ -86,6 +86,7 @@ export default function DigitalTwinPage() {
       <div className="rounded-xl border border-white/15 bg-black/20 p-3 text-sm text-zinc-300">
         <p>Déjà 4 à 36 photos ou une vidéo MP4 ? Commence par la rotation interactive locale avant la photogrammétrie.</p>
         <Link to="/lab?view=3d" className="mt-2 inline-flex min-h-[44px] items-center text-cyan-300 underline underline-offset-4">Ouvrir le Lab sculpture 3D →</Link>
+        <Link to="/studio?mode=sculpture" className="mt-2 ml-2 inline-flex min-h-[44px] items-center text-cyan-300 underline underline-offset-4">Créer le NFT de ma sculpture →</Link>
         <p className="mt-1 text-xs text-zinc-500">Aperçu local uniquement. Un vrai GLB UV nécessite calibration, recouvrement et reconstruction COLMAP ou Meshroom.</p>
       </div>
       <section className="rounded-2xl border border-cyan-500/25 bg-cyan-950/20 p-4 space-y-3 text-[13px] text-zinc-300">

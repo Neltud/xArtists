@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ChangeEvent, type PointerEvent } from 'react'
+import { Link } from 'react-router-dom'
 import { extractLocalMp4Frames, inspectLocalMp4, STUDIO_VIDEO_FRAME_COUNTS, type VideoInfo } from '../lib/studioVideoFrames'
 
 /**
@@ -362,6 +363,11 @@ export default function ArtworkTurntableLab() {
         </div>
       )}
       {motionReduced && <p className="text-xs text-zinc-600">Rotation automatique désactivée selon les préférences d’accessibilité de l’appareil.</p>}
+      <div className="flex flex-wrap gap-2 rounded-xl border border-cyan-300 bg-cyan-50 p-3">
+        <Link to="/studio?mode=sculpture" className="min-h-[44px] inline-flex items-center rounded-lg bg-zinc-900 px-3 py-2 text-sm font-semibold text-white">Créer le NFT de ma sculpture</Link>
+        <Link to="/create/digital-twin" className="min-h-[44px] inline-flex items-center rounded-lg border border-zinc-300 px-3 py-2 text-sm">Reconstruction 3D et certificat</Link>
+        <p className="basis-full text-xs text-zinc-600">Ces photos restent locales. L'étape Studio demandera un fichier réellement épinglé sur IPFS ou une URI déjà hébergée et un wallet autorisé.</p>
+      </div>
     </section>
   )
 }

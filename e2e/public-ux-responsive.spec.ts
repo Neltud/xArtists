@@ -684,7 +684,7 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
     const lab=page.locator('.xa-lab')
     await expect(lab).toBeVisible({timeout:20000})
     await expect(lab.getByRole('heading',{name:'Laboratoire'})).toBeVisible()
-    await expect(lab.getByRole('button',{name:'Réseau d’agents'})).toHaveAttribute('aria-pressed','true')
+    await expect(lab.getByRole('button',{name:'Réseau xOrus'})).toHaveAttribute('aria-pressed','true')
     await expect(lab.locator('.xa-lab-switch')).toHaveCSS('display','grid')
     await expect(page.getByText('Page unavailable')).toHaveCount(0)
     await lab.getByRole('button',{name:'Simulations'}).click()

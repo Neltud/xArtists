@@ -26,9 +26,13 @@ export default function LabPage() {
         <button type="button" className="xa-button secondary" aria-pressed={view === '3d'} onClick={() => select('3d')}>{fr ? 'Sculpture 3D' : '3D sculpture'}</button>
         <Link className="xa-button secondary" to="/agents">{fr ? 'Découvrir les agents' : 'Discover agents'}</Link>
         <Link className="xa-button secondary" to="/create/digital-twin">{fr ? 'Photogrammétrie et certificat' : 'Photogrammetry and certificate'}</Link>
+        <Link className="xa-button primary" to="/studio?mode=sculpture">{fr ? 'Créer le NFT de ma sculpture' : 'Mint my sculpture NFT'}</Link>
         <Link className="xa-button secondary" to="/create/nft-factory">{fr ? 'Préparer un distributeur NFT' : 'Prepare an NFT distributor'}</Link>
       </nav>
     </header>
+    {view === '3d' && <p role="note" className="text-sm text-[color:var(--xa-text-secondary)]">{fr
+      ? 'Étapes : import des vues → vérification du modèle ou de la photographie → publication IPFS → mint signé dans Studio. Le mode rotation ne fournit ni GLB ni certificat métrique.'
+      : 'Steps: import frames → verify model or photo → publish to IPFS → sign NFT mint in Studio. Turntable mode is not a GLB mesh or metric certificate.'}</p>}
     <Suspense fallback={<p role="status">{fr ? 'Chargement…' : 'Loading…'}</p>}>
       {view === '3d' ? <SculptureTurntable/> : view === 'network' ? <Network/> : <Simulation/>}
     </Suspense>
