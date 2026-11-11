@@ -1,0 +1,27 @@
+name: Phase A Marketplace mainnet inventory (read-only)
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/ops/inspect-marketplace-mainnet.mjs'
+      - 'scripts/ops/inspect-marketplace-mainnet.test.mjs'
+      - 'artifacts/SPRINT_NEXT_2026-11-11.md'
+      - '.github/workflows/phase-a-mvx-market-inventory.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  offline-safety:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify no-transfer read-only parser and codehash tests
+        run: node --test scripts/ops/inspect-marketplace-mainnet.test.mjs
+      - name: Inspect mainnet without signature (manual dispatch only)
+        if: github.event_name == 'workflow_dispatch'
+        run: node scripts/ops/inspect-marketplace-mainnet.mjs
