@@ -1,0 +1,28 @@
+name: Xorus paper compatibility (offline, no deployment)
+
+on:
+  pull_request:
+    paths:
+      - 'lia/xorus/**'
+      - 'lia/chorus/**'
+      - 'tests/test_xorus_alias.py'
+      - '.github/workflows/xorus-compat.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  xorus-compat:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run Xorus alias safety regression without any network transaction
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+          LIA_LIVE_TRADING: '0'
+        run: python3 -m unittest discover -s tests -p 'test_xorus_alias.py' -v
