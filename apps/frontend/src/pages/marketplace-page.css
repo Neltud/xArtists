@@ -624,3 +624,15 @@
   .xa-market-grid__media img { transition: none; }
   .xa-market-grid__card:hover .xa-market-grid__media img { transform: none; }
 }
+
+
+/* Preserve the single-column hero at tablet/mobile widths after the compact
+ * desktop override above. Otherwise a hidden index leaves an empty grid track. */
+@media (max-width: 850px) {
+  .xa-marketplace-hero { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 540px) {
+  .xa-marketplace-hero__actions { flex-wrap: wrap; }
+  .xa-marketplace-hero__primary { flex: 1 1 148px; }
+  .xa-marketplace-hero__secondary { flex: 0 1 auto; }
+}
