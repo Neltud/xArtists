@@ -89,6 +89,20 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
     await expect(gallery.locator('.xa-market-grid__card').first()).toContainText('xArtists0279')
   })
 
+  for (const [width, expectedColumns] of [[768, 3], [1440, 4]] as const) {
+    test(`artwork catalog at ${width}px uses ${expectedColumns} card columns`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 })
+      await visit(page, '/marketplace/?lang=fr')
+      const cards = page.locator('.xa-market-grid__cards')
+      await expect(cards).toBeVisible()
+      const columns = await cards.evaluate(el =>
+        getComputedStyle(el).gridTemplateColumns.split(' ').filter(Boolean).length)
+      expect(columns, 'responsive desktop / tablet grid column count').toBe(expectedColumns)
+      await expect(cards.locator('img[src*="/art/drive/"]')).toHaveCount(4)
+      await expect(page.locator('.xa-marketplace-hero')).toHaveCount(0)
+    })
+  }
+
   test('marketplace visitor entry respects all eight selected languages', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 })
     await page.emulateMedia({ reducedMotion: 'reduce' })
