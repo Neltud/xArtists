@@ -22,7 +22,7 @@ function mock({paused=false,hashOverride=hash,listingError=false}={}){
     calls.push({url,opts})
     if(url.includes('/accounts/'))return {ok:true,json:async()=>({address,codeHash:hashOverride,code:'0061736d',isPayable:true})}
     const {funcName,args}=JSON.parse(opts.body)
-    if(funcName==='isPaused')return {ok:true,json:async()=>({code:'successful',data:{data:{ReturnCode:0,ReturnData:[Buffer.from([paused?1:0]).toString('base64')]}}})}
+    if(funcName==='isPaused')return {ok:true,json:async()=>({code:'successful',data:{data:{ReturnCode:0,ReturnData:[paused?'AQ==':'']}}})}
     if(funcName==='getFeeBps')return {ok:true,json:async()=>({code:'successful',data:{data:{ReturnCode:0,ReturnData:[u16(300).toString('base64')]}}})}
     if(funcName==='getListing'&&!listingError&&args[0]==='01')return {ok:true,json:async()=>({code:'successful',data:{data:{ReturnCode:0,ReturnData:[listing({active:false})]}}})}
     if(funcName==='getListing'&&!listingError&&args[0]==='02')return {ok:true,json:async()=>({code:'successful',data:{data:{ReturnCode:0,ReturnData:[listing()]}}})}
