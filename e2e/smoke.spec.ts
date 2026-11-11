@@ -20,7 +20,7 @@ test.describe('xArtists published Pages — no wallet or transactions', () => {
   });
 
   for (const route of [
-    { path: '/marketplace/', heading: /L’art physique rencontre le Web3|Découvrez l’art.*Explorez ses univers|Physical art meets Web3/i },
+    { path: '/marketplace/', heading: /L’art physique rencontre le Web3|Découvrez l’art.*Explorez ses univers|Physical art meets Web3|Discover art.*Explore its worlds/i },
     { path: '/auction/', heading: /Salle des enchères|Auction room/i },
     { path: '/finance/tro/sale/', heading: null },
   ]) {

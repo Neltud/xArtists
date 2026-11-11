@@ -23,7 +23,7 @@ test('Marketplace hero is a light-first, readable editorial surface in both them
 test('Mobile marketplace shows four categories without oversized stacked CTA buttons', () => {
   assert.match(market, /href="#xa-market-categories"/)
   assert.match(market, /id="xa-market-categories"/)
-  assert.match(market, /<nav aria-label="Catégories d’œuvres"/)
+  assert.match(market, /<nav aria-label=\{c\('marketCategoriesLabel'\)\}/)
   assert.match(market, /SHELVES\.map\(\(s,i\)/)
   assert.match(market, /aria-current=\{selected===s\.id\?'page':undefined\}/)
   assert.match(css, /@media \(max-width: 540px\)/)
@@ -39,8 +39,34 @@ test('Browsing is walletless and NFT transaction safeguards remain unchanged', (
   assert.match(market, /<Link to="\/auction"/)
   assert.doesNotMatch(market, /requestOpenConnect|useWallet/)
   assert.match(market, /const live=canListBuyNft\(\)/)
-  assert.match(market, /transactions désactivées tant que le contrat et son codehash/)
-  assert.match(market, /Les certificats ne sont pas automatiquement des titres de propriété/)
+  assert.match(market, /c\(live\?'marketStatusLive':'marketStatusOff'\)/)
+  assert.match(market, /c\('marketStatusOwnership'\)/)
   assert.match(market, /<MainnetJourney current="market" \/>/)
   assert.match(market, /selected==='opensea'&&<OpenSeaCollectionPanel/)
+})
+
+test('Marketplace visitor entry copy is complete in all eight supported languages', () => {
+  const locale = read('../src/experience/locale.ts')
+  const keys = [
+    'marketHeroEyebrow','marketHeroTitleA','marketHeroTitleB','marketHeroLead',
+    'marketPrimaryCta','marketStudioCta','marketSecondaryLabel','marketPhysicalLink',
+    'marketAuctionPreview','marketIndexLabel','marketIndexDigital','marketIndexPhysical',
+    'marketIndexCreative','marketStatusPrefix','marketStatusLive','marketStatusOff',
+    'marketStatusOwnership','marketExploreTitle','marketExploreIntro','marketCategoriesLabel',
+    'marketShelfArtName','marketShelfArtSummary','marketShelfRwaName','marketShelfRwaSummary',
+    'marketShelfPacksName','marketShelfPacksSummary','marketShelfOpenSeaName','marketShelfOpenSeaSummary',
+  ]
+  for (const key of keys) {
+    const line = locale.split('\n').find(value => value.trim().startsWith(key + ': '))
+    assert.ok(line, 'Missing localized key: ' + key)
+    const values = JSON.parse(line.trim().slice((key + ': ').length).replace(/,\s*$/, ''))
+    assert.equal(values.length, 8, key + ' must cover fr,en,es,de,ru,uk,zh,ar')
+    for (const entry of values) assert.ok(typeof entry === 'string' && entry.trim().length > 0, key)
+    assert.ok(market.includes("c('" + key + "')") || market.includes("name:'" + key + "'") ||
+      market.includes("summary:'" + key + "'") || market.includes("'"+key+"'"),
+      key + ' needs to be consumed by the marketplace page')
+  }
+  assert.match(market, /const c=useCopy\(\)/)
+  assert.match(market, /<strong>\{c\(s\.name\)\}<\/strong>/)
+  assert.match(market, /<span className="xa-marketplace-category__summary">\{c\(s\.summary\)\}<\/span>/)
 })
