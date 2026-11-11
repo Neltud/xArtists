@@ -33,6 +33,10 @@ jobs:
           node-version: 20
       - name: Revalidate independent read-only marketplace inspector
         run: node --test scripts/ops/inspect-marketplace-mainnet.test.mjs
+      - name: Offline sale receipt scan regression
+        run: node --test scripts/ops/scan-marketplace-sale-proof.test.mjs
+      - name: Observe buyer receipt after a successful historical listing (no wallet)
+        run: node scripts/ops/scan-marketplace-sale-proof.mjs
       - name: Verify production codeHash, payable, pause, fees and listing views (no transactions)
         run: |
           node --input-type=module <<'NODE'
