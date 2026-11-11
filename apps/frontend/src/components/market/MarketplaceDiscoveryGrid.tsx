@@ -95,7 +95,7 @@ export default function MarketplaceDiscoveryGrid({
       return {key:'index:'+String(l.listing_id??identifier??i)+':'+i,
         title:String(l.name||identifier||'NFT').slice(0,120),
         sub:String(l.creator||l.collection||identifier||'').slice(0,80),
-        image:imageUrl(l.thumbnail||media||l.url),
+        image:imageUrl(l.thumbnail||media),
         href:explorer(identifier),price:indexedEgld(l.price_egld),source:'index'}
     }):[]
     return [...studio,...onChain,...indexed]
@@ -148,6 +148,7 @@ export default function MarketplaceDiscoveryGrid({
       </button>
     </div>
     <p className="xa-market-grid__notice" role="note">{c('marketGridNotice')}</p>
+    {sourceReady&&listings.length>0&&<p className="xa-market-grid__source-note" role="note">{c('marketIndexDataDisclaimer')}</p>}
     {cards.length>0?<ul className="xa-market-grid__cards" aria-label={c('marketGridTitle')}>
       {cards.map((card,i)=>{
         const badge=card.source==='studio'?'marketGridExhibit':card.source==='owned'?
