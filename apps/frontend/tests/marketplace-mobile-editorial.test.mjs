@@ -43,7 +43,7 @@ test('Browsing is walletless and NFT transaction safeguards remain unchanged', (
   assert.match(market, /<Link to="\/rwa"/)
   assert.match(market, /<Link to="\/auction"/)
   assert.doesNotMatch(market, /requestOpenConnect|useWallet/)
-  assert.match(market, /const live=canListBuyNft\(\)/)
+  assert.match(market, /const live=useMarketplaceReadiness\(\)/)
   assert.match(market, /c\(live\?'marketStatusLive':'marketStatusOff'\)/)
   assert.match(market, /c\('marketStatusOwnership'\)/)
   assert.match(market, /<MainnetJourney current="market" \/>/)
@@ -86,7 +86,7 @@ test('Unverified index prices are never presented as confirmed on-chain offers',
   assert.match(gallery, /c\('marketGridUnverified'\)/)
   assert.match(gallery, /card\.price\.toFixed\(4\)\+' EGLD · '/)
   assert.match(market, /c\(live\?'marketStatusLive':'marketStatusOff'\)/)
-  assert.match(market, /const live=canListBuyNft\(\)/)
+  assert.match(market, /const live=useMarketplaceReadiness\(\)/)
 })
 
 test('Marketplace critical CSS is bundled eagerly instead of requiring lazy CSS preloading', () => {

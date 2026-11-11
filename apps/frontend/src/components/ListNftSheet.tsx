@@ -2,9 +2,10 @@ import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as
 /**
  * Overlay listing — prix → listNft → TxShell overlay.
  */
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useMarketplaceTx } from '../hooks/useMarketplaceTx'
-import { canListBuyNft } from '../config/scStatus'
+import {useMarketplaceReadiness} from '../hooks/useMarketplaceReadiness'
+import {verifyUserNftListPreflight, type UserNftListProof} from '../lib/marketplaceUserListing.mjs'
 import { requestOpenConnect } from '../lib/walletEvents'
 import { useWallet } from '../context/WalletContext'
 import { egldTextToWei } from '../lib/egldExactAmount.mjs'
@@ -20,19 +21,25 @@ export type ListTarget = {
 type Props = {
   target: ListTarget | null
   onClose: () => void
-  onListed?: () => void
 }
 
-export default function ListNftSheet({ target, onClose, onListed }: Props) {
+export default function ListNftSheet({ target, onClose }: Props) {
   xaUsePhraseLocale()
 
-  const { connected, canAttemptSign } = useWallet()
+  const { connected, address, canAttemptSign } = useWallet()
+  const latestAddress = useRef(address)
+  latestAddress.current = address
+  const [checking, setChecking] = useState(false)
   const { listNft, pending, error, lastTx, marketplaceLive } = useMarketplaceTx()
   const [price, setPrice] = useState('1')
   const [msg, setMsg] = useState<string | null>(null)
-  const live = canListBuyNft() && marketplaceLive
+  const [quote, setQuote] = useState<(UserNftListProof & {price:string}) | null>(null)
+  const ready = useMarketplaceReadiness()
+  const live = ready && marketplaceLive
 
   if (!target) return null
+  const currentQuote=quote && quote.identifier===target.identifier &&
+    quote.owner===address && quote.price===price ? quote : null
 
   const onSubmit = async () => {
     setMsg(null)
@@ -52,17 +59,33 @@ export default function ListNftSheet({ target, onClose, onListed }: Props) {
       setMsg('Marketplace non live (CODEHASH)')
       return
     }
+    setChecking(true)
     try {
-      await listNft({
-        tokenId: target.collection,
-        nonce: target.nonce,
-        priceEgld: price,
+      const fresh=await verifyUserNftListPreflight({
+        address, identifier: target.identifier, collection: target.collection, nonce: target.nonce,
       })
+      if (latestAddress.current !== address || !address) throw new Error('Le wallet a changé : recommence la vérification.')
+      if (!currentQuote) {
+        setQuote({...fresh, price})
+        setMsg('Contrôles validés. Relis les frais et la rémunération du créateur avant de signer.')
+        return
+      }
+      if (fresh.feeBps!==currentQuote.feeBps ||
+          fresh.royaltyBps!==currentQuote.royaltyBps ||
+          fresh.royaltyReceiver!==currentQuote.royaltyReceiver ||
+          fresh.escrowReceiver!==currentQuote.escrowReceiver)
+        throw new Error('Les frais ou royalties ont changé. Recommence la vérification.')
+      await listNft({
+        tokenId: target.collection, nonce: target.nonce, priceEgld: price,
+        royaltyBps:fresh.royaltyBps, royaltyReceiver:fresh.royaltyReceiver,
+      })
+      setQuote(null)
       setMsg('Transaction soumise — vérifier la confirmation et la garde NFT sur Explorer')
-      onListed?.()
+      // Submission is not confirmed custody. Refresh only after independent Explorer proof.
     } catch (e) {
+      setQuote(null)
       setMsg(e instanceof Error ? e.message : 'Échec list')
-    }
+    } finally { setChecking(false) }
   }
 
   return (
@@ -89,25 +112,34 @@ export default function ListNftSheet({ target, onClose, onListed }: Props) {
             type="text"
             inputMode="decimal"
             value={price}
-            onChange={e => setPrice(e.target.value)}
+            onChange={e => {setPrice(e.target.value);setQuote(null)}}
             className="mt-1 w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2.5 text-white"
           />
         </label>
 
         {xaRender(!live && (
-          <p className="text-xs text-amber-200">{xaRender("Marketplace gated — secret CODEHASH requis.")}</p>
+          <p className="text-xs text-amber-200">{xaRender("Marketplace fermée : contrôle du contrat et de sa sécurité requis. Aucun listing ne sera soumis.")}</p>
         ))}
 
+        <p className="text-[11px] text-zinc-400">Prix en EGLD. Les frais marketplace et les royalties du créateur sont lus sur la chaîne. Un NFT mis en vente est déposé en garde dans le contrat, pas vendu immédiatement.</p>
+        {currentQuote && <section className="rounded-lg border border-amber-400/30 p-3 text-xs text-zinc-200" aria-label="Frais et royalties vérifiés">
+          <p className="font-semibold">Relire et confirmer avant signature</p>
+          <p>Frais marketplace : {currentQuote.feeBps / 100} %</p>
+          <p>Royalties créateur : {currentQuote.royaltyBps / 100} %</p>
+          <p>Montant vendeur théorique : {(10000-currentQuote.feeBps-currentQuote.royaltyBps)/100} % du prix</p>
+          <p className="break-all">Destinataire des royalties : {currentQuote.royaltyReceiver}</p>
+          <p>Escrow : {currentQuote.escrowReceiver}</p>
+        </section>}
         <div className="flex gap-2">
           <button type="button" className="btn-secondary flex-1 text-sm" onClick={onClose}>
             {xaRender("Annuler ")}</button>
           <button
             type="button"
             className="btn-primary flex-1 text-sm"
-            disabled={pending || !live}
+            disabled={pending || checking || !live || !connected || !canAttemptSign}
             onClick={() => void onSubmit()}
           >
-            {xaRender(pending ? '…' : 'Signer listNft')}
+            {xaRender(pending || checking ? 'Vérification…' : currentQuote ? 'Signer listNft' : 'Vérifier frais et royalties')}
           </button>
         </div>
 

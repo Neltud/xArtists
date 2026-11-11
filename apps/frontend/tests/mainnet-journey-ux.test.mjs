@@ -62,7 +62,7 @@ test('Studio retains real artist-signed MultiversX mainnet issue, role and mint 
 })
 
 test('marketplace transactions retain fresh on-chain codehash and build gate',()=>{
-  assert.match(market, /const live=canListBuyNft\(\)/)
+  assert.match(market, /const live=useMarketplaceReadiness\(\)/)
   assert.match(gates, /isLiveGate\(MARKETPLACE_LIVE, runtimeCodehashOk\('marketplace'\)\)/)
   assert.match(gates, /isUsableScAddress\(MARKETPLACE_ADDRESS\)/)
   assert.match(marketGrid, /c\('marketGridVerify'\)/)

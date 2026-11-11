@@ -5,7 +5,6 @@
  */
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { canListBuyNft } from '../config/scStatus'
 import RwaPhysicalPanel from '../components/market/RwaPhysicalPanel'
 import DigitalPacksPanel from '../components/market/DigitalPacksPanel'
 import OpenSeaCollectionPanel from '../components/market/OpenSeaCollectionPanel'
@@ -14,6 +13,8 @@ import ExistingNftReadiness from '../components/market/ExistingNftReadiness'
 import LiaAndEscrowNfts from '../components/market/LiaAndEscrowNfts'
 import MarketplaceDiscoveryGrid from '../components/market/MarketplaceDiscoveryGrid'
 import MainnetJourney from '../components/MainnetJourney'
+import MyOwnedNftsPanel from '../components/MyOwnedNftsPanel'
+import {useMarketplaceReadiness} from '../hooks/useMarketplaceReadiness'
 import {useCopy} from '../experience/state'
 
 type Shelf='art'|'rwa'|'packs'|'opensea'
@@ -41,7 +42,7 @@ function isPackListing(l:Listing):boolean{
 }
 export default function MarketplacePage(){
   const c=useCopy()
-  const live=canListBuyNft()
+  const live=useMarketplaceReadiness()
   const [params,setParams]=useSearchParams()
   const param=params.get('tab')
   const selected:Shelf=param==='rwa'||param==='packs'||param==='opensea'?param:'art'
@@ -134,6 +135,15 @@ export default function MarketplacePage(){
       listings={items} sourceReady={sourceReady} loading={loading} query={query} sort={sort}
       onQuery={setQuery} onSort={setSort} onRefresh={()=>void refresh()}
     />}
+
+    {selected==='art'&&<section id="xa-market-sell" className="space-y-3 rounded-2xl border border-white/10 p-3 sm:p-5" aria-label="Vendre mes NFT">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div><h2 className="text-lg font-semibold">Vendre mes NFT</h2>
+          <p className="text-sm text-zinc-400">Connecte un wallet signataire, choisis un NFT détenu et son prix EGLD. Les fonds et le NFT ne bougent qu'après signature et confirmation blockchain.</p></div>
+        <Link to="/portfolio" className="btn-secondary text-sm">Mon portefeuille</Link>
+      </div>
+      <MyOwnedNftsPanel />
+    </section>}
 
     {selected==='art'&&<details className="xa-market-tech"
       onToggle={e=>setShowTech(e.currentTarget.open)}>
