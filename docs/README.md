@@ -1,5 +1,5 @@
 ---
-description: Guide public xArtists. Art, musée, Studio, LIA, NFT et disponibilité vérifiée au 3 novembre 2026.
+description: Guide public xArtists. Studio sculpture, marketplace, xOrus, IPFS et plugins au 11 novembre 2026.
 icon: house
 ---
 
@@ -9,19 +9,23 @@ icon: house
 
 **xArtists** réunit des artistes, des œuvres numériques et physiques, un musée immersif, un Studio créatif et des outils d'intelligence artificielle sur MultiversX. **La visite est libre, sans wallet.**
 
-[**Explorer la dApp**](https://neltud.github.io/xArtists/) · [**Visiter le musée**](https://neltud.github.io/xArtists/museum/) · [**Marketplace**](https://neltud.github.io/xArtists/marketplace/) · [**Enchères**](https://neltud.github.io/xArtists/auction/)
+[**Explorer la dApp**](https://xartists.art/) · [**Visiter le musée**](https://xartists.art/museum/) · [**Marketplace**](https://xartists.art/marketplace/) · [**Enchères**](https://xartists.art/auction/)
+
+[**Vendre un NFT**](https://xartists.art/marketplace/#xa-market-sell) · [**Créer le NFT de ma sculpture**](https://xartists.art/studio/?mode=sculpture) · [**Lab 3D**](https://xartists.art/lab/?view=3d) · [**Plugins xArtists**](presentation/plugins-xartists.md) · [**Utiliser Drive/IPFS**](presentation/creer-vendre-nft-ipfs-drive.md)
+
+Les **291 PNG** de la galerie Drive xArtists et les **4 MP4** du dossier vidéo historique sont des **fichiers privés inventoriés**, non des NFT mintés ; aucune propriété, licence ni publication IPFS n'est présumée. Le backend média nécessite le contrôle effectif de PostgreSQL (migrations 004 et 005), Pinata et de la signature wallet avant activation.
 
 ## Découvrir l'écosystème
 
 | Expérience | Accès public | Ce qui reste fermé |
 | --- | --- | --- |
 | Musée | Visiter et découvrir les œuvres | L'exposition n'atteste pas la possession d'un NFT |
-| Marketplace | Explorer les catalogues d'œuvres et de packs | Achat et listing on-chain non certifiés |
+| Marketplace | Explorer le marché et préparer la vente d'un NFT détenu | Le premier nouveau listing signé et confirmé en escrow reste à prouver ; achat et bid ont des gates séparés |
 | Enchères | Voir la salle et les exemples d'œuvres | Enchères et adjudications réelles |
-| Studio | Prévisualiser localement JPG, PNG, WebP et MP4 | Upload IPFS et mint réels |
-| LIA Control Room | Voir des données publiées, agents et simulations | Trading autonome : mode paper/shadow |
+| Studio | Photo/MP4/GLB local, préparation d'IPFS et mint par signature | L'upload réel dépend du backend ; premier mint de sculpture non attesté |
+| xOrus | Voir des données publiées, agents et simulations | Trading autonome : mode paper/shadow |
 
-[**Ouvrir LIA Control Room**](https://neltud.github.io/xArtists/intelligence/lia) · [**État des fonctionnalités**](presentation/etat-du-produit.md) · [**Guide mobile**](presentation/demarrer-sur-mobile.md)
+[**Ouvrir xOrus**](https://xartists.art/intelligence/lia) · [**État des fonctionnalités**](presentation/etat-du-produit.md) · [**Guide mobile**](presentation/demarrer-sur-mobile.md)
 
 ## Les offres : ne pas confondre les produits
 
@@ -29,11 +33,11 @@ Les packs Genesis **Pulse (110 €), Yield (75 €), Sentinel (50 €)** sont pr
 
 **Whop / TCA Membership** correspond à des abonnements de services séparés, sans NFT Genesis inclus. Aucun de ces produits ne garantit un rendement financier.
 
-[**Packs IA et Whop**](security/guide-public-packs-whop.md) · [**Offres xArtists**](https://neltud.github.io/xArtists/offres/)
+[**Packs IA et Whop**](security/guide-public-packs-whop.md) · [**Offres xArtists**](https://xartists.art/offres/)
 
 ## Transparence et lancement
 
-**3 novembre 2026 : GO découverte publique, NO-GO transactions commerciales.** Navigation Marketplace/Enchères et interface LIA améliorées dans le dépôt GitHub. Une fusion de PR n'est pas en soi la preuve du déploiement sur tous les appareils.
+**11 novembre 2026 : code xOrus, Lab GLB et listing vendeur déployés au commit [969b3a96…](https://github.com/Neltud/xArtists/actions/runs/43093538589).** Un premier listing et le mint de sculpture signés restent à valider. Navigation Marketplace/Enchères et interface xOrus améliorées dans le dépôt GitHub. Une fusion de PR n'est pas en soi la preuve du déploiement sur tous les appareils.
 
 Paiement, enchères réelles, mint automatique, bridge et trading nécessitent une vérification de bout en bout et des autorisations distinctes. Les données paper/shadow ne sont pas des gains réels.
 
