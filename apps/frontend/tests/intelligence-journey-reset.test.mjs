@@ -10,6 +10,7 @@ const simulation=read('../src/pages/SimulationLab.tsx')
 const xorus=read('../src/pages/XorusPage.tsx')
 const css=read('../src/pages/lab-page.css')
 const routes=read('../src/experience/modules.ts')
+const directory=read('../src/experience/Pages.tsx')
 
 test('a single understandable journey connects xOrus, Agents and Lab',()=>{
   for(const path of ['/intelligence/xorus','/intelligence/agents','/intelligence/lab'])
@@ -19,6 +20,11 @@ test('a single understandable journey connects xOrus, Agents and Lab',()=>{
   assert.match(css,/\.xa-intelligence-path/)
   assert.match(css,/@media\(max-width:760px\)/)
   assert.match(routes,/import '\.\.\/pages\/lab-page\.css'/)
+  assert.match(directory,/const coreIntelligence=new Set\(\['lia','agents','lab'\]\)/)
+  assert.match(directory,/showIntelligenceAdvanced/)
+  assert.match(directory,/group==='intelligence'/)
+  assert.match(directory,/<IntelligencePath\/>/)
+
 })
 
 test('Agents leads with real understandable paper roles; historical NFT packs are optional',()=>{
