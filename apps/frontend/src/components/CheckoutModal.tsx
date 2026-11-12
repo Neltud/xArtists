@@ -7,6 +7,7 @@ import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phra
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getPack, PACK_VISUAL, AGENT_PACK_SC_SNAPSHOT, type PackId } from '../config/agentPacks'
+import { FIAT_PACK_NFT_PURCHASE_SUPPORTED } from '../config/commercialTargets'
 import { useWallet } from '../context/WalletContext'
 import { canBuyAgent, AGENT_PACK_PUBLIC_COMMERCE_RELEASED } from '../config/scStatus'
 import { requestOpenConnect } from '../lib/walletEvents'
@@ -53,6 +54,7 @@ function saveIntent(payload: Record<string, unknown>) {
  * No mutation, no secrets, no payment.
  */
 async function confirmGenesisCommerceNow(rail: 'fiat' | 'crypto', method?: PayMethod): Promise<boolean> {
+  if (rail === 'fiat' && !FIAT_PACK_NFT_PURCHASE_SUPPORTED) return false
   if (!AGENT_PACK_PUBLIC_COMMERCE_RELEASED || import.meta.env.VITE_GENESIS_COMMERCIAL_GO !== '1') return false
   const api = getAccessApiBase() || 'https://xartists-access-api.onrender.com'
   const abort = new AbortController()
@@ -110,6 +112,10 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
   const visual = PACK_VISUAL[pack.id]
 
   const launchFiat = async () => {
+    if (!FIAT_PACK_NFT_PURCHASE_SUPPORTED) {
+      setMsg('Un abonnement EUR donne accès aux services, jamais à un NFT. Consulte les offres séparées.')
+      return
+    }
     if (!hasFiat) {
       setMsg(t('checkout.msg.fiatNotConfigured'))
       return
@@ -234,7 +240,7 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
               <span className="text-[11px] font-normal text-zinc-500">{xaRender(pack.tierLabel)}</span>
             </h2>
             <p className="text-[12px] text-[color:var(--xa-text-secondary)] mt-0.5 mono tabular-nums">
-              <strong className="text-base text-[color:var(--xa-text)]">{xaRender(pack.priceEur.list)} €</strong>
+              <strong className="text-base text-[color:var(--xa-text)]">{xaRender('NFT Genesis · devis crypto uniquement')}</strong>
               {' · '}{xaRender('Crypto : tarif à revalider sur la chaîne')}
             </p>
             <p
@@ -286,9 +292,9 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
 
           <button
             type="button"
-            disabled={railLocked}
+            disabled={railLocked || !FIAT_PACK_NFT_PURCHASE_SUPPORTED}
             onClick={() => {
-              if (railLocked) return
+              if (railLocked || !FIAT_PACK_NFT_PURCHASE_SUPPORTED) return
               setRail('fiat')
               setMsg('')
             }}
@@ -296,13 +302,13 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
             style={rail === 'fiat' ? { borderColor: visual.border, background: visual.accentSoft } : undefined}
             aria-pressed={rail === 'fiat'}
           >
-            <p className="text-sm font-semibold text-white">{xaRender(t('checkout.rail.card'))}</p>
-            <p className="text-[11px] text-zinc-400 mt-0.5">{xaRender('Un portefeuille connecté est requis.')}</p>
+            <p className="text-sm font-semibold text-white">{xaRender('Abonnement EUR · services seulement')}</p>
+            <p className="text-[11px] text-zinc-400 mt-0.5">{xaRender('Aucun NFT ne peut être acheté par carte dans cette fenêtre.')}</p>
             <p className="text-[11px] mt-1 mono" style={{ color: visual.accent }}>
-              {xaRender(pack.priceEur.list)} € ·{xaRender(' ')}
-              {xaRender(hasFiat ? t('checkout.rail.fiat.ready') : t('checkout.rail.fiat.soon'))}
+              {xaRender('Voir les offres d’abonnement séparées · sans mint')}
             </p>
           </button>
+          <Link to="/offres" className="inline-flex min-h-[44px] items-center text-sm underline underline-offset-4 text-[color:var(--xa-text)]">Offres d’abonnement EUR (sans NFT)</Link>
         </div>
 
         {xaRender(rail === 'fiat' && hasFiat && (

@@ -27,3 +27,8 @@ export const GENESIS_TARGETS_BY_ID = {
 // Deliberately separate from AGENT_PACK_SC_SNAPSHOT (chain data).
 export const PUBLIC_COMMERCE_TARGETS_ONLY = true as const
 export const PUBLIC_PURCHASE_ENABLED = false as const
+
+// Permanent product boundary: an EUR subscription grants service access only.
+// Never use a one-off PayBox/Stripe card charge to buy, reserve or mint a Genesis NFT.
+// There is no environment override. New commercial rails need a separate review.
+export const FIAT_PACK_NFT_PURCHASE_SUPPORTED = false as const

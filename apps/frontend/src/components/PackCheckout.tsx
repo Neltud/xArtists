@@ -1,11 +1,12 @@
 import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
- * Checkout packs — opens CheckoutModal (crypto | fiat). Full i18n.
+ * Checkout packs — crypto-only NFT intent; fiat subscriptions live separately (no NFT). Full i18n.
  * Device preview is never presented as a purchase.
  */
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { AGENT_PACKS, AGENT_PACK_SC_SNAPSHOT, type PackId } from '../config/agentPacks'
+import { FIAT_PACK_NFT_PURCHASE_SUPPORTED } from '../config/commercialTargets'
 import { useWallet } from '../context/WalletContext'
 import CheckoutModal from './CheckoutModal'
 import { canBuyAgent, AGENT_PACK_PUBLIC_COMMERCE_RELEASED } from '../config/scStatus'
@@ -61,7 +62,7 @@ export default function PackCheckout({
           health?.mint_live_enabled === true &&
           health?.mint_dry_run === false
         const payboxReady =
-          hasPaidRail && methods.includes('paybox') &&
+          FIAT_PACK_NFT_PURCHASE_SUPPORTED && hasPaidRail && methods.includes('paybox') &&
           health?.paybox_checkout_enabled === true &&
           deliveryReady
         // Crypto cannot bypass the independent operator release flag merely
