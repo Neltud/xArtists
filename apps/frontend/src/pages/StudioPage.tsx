@@ -6,7 +6,7 @@ import { useWallet } from '../context/WalletContext'
 import { useUserAccount } from '../hooks/useUserAccount'
 import { useStudioMintTx } from '../hooks/useStudioMintTx'
 import { requestOpenConnect } from '../lib/walletEvents'
-import { canListBuyNft, canBuyAgent } from '../config/scStatus'
+import { canListOwnedNft, canBuyAgent } from '../config/scStatus'
 import PhysicalNftCertifier from '../components/PhysicalNftCertifier'
 import CreatorMediaUpload from '../components/CreatorMediaUpload'
 import ArtworkTurntableLab from '../components/ArtworkTurntableLab'
@@ -23,7 +23,7 @@ export default function StudioPage() {
   const { connected, address, canAttemptSign } = useWallet()
   const account = useUserAccount(connected ? address : null)
   const nfts = account.nfts || []
-  const listLive = canListBuyNft()
+  const listLive = canListOwnedNft()
   const agentMint = canBuyAgent()
   const [picked, setPicked] = useState<string | null>(null)
   const [name, setName] = useState('Atelier')
@@ -130,6 +130,15 @@ export default function StudioPage() {
       </header>
 
       <MainnetJourney current="studio" />
+      <aside aria-label="Depuis Google Drive ou une collection privée" className="rounded-2xl border border-[color:var(--xa-border)] p-3 text-sm text-[color:var(--xa-text-secondary)]">
+        <strong className="text-[color:var(--xa-text)]">Importer une œuvre depuis Google Drive</strong>
+        <p className="mt-1">Choisis un fichier dont tu possèdes les droits, télécharge une copie sur ton appareil, puis sélectionne cette copie ci-dessous. Les dossiers Drive privés ne sont ni importés ni publiés automatiquement.</p>
+        <div className="mt-2 flex flex-wrap gap-2">
+          <a href="#xa-studio-mint" className="btn-secondary text-xs">Choisir mon fichier</a>
+          <Link to="/create/nft-factory" className="btn-secondary text-xs">Préparer une collection</Link>
+          <Link to="/create/world-rights" className="btn-secondary text-xs">Préparer une licence</Link>
+        </div>
+      </aside>
       <section aria-label="Parcours création sculpture" className="card space-y-2 border border-cyan-500/25">
         <h2 className="font-semibold text-[color:var(--xa-text)]">Ma sculpture → NFT sur MultiversX</h2>
         <p className="text-sm text-[color:var(--xa-text-secondary)]">
@@ -318,7 +327,7 @@ export default function StudioPage() {
         ))}
         <div className="flex flex-wrap gap-2">
           <Link to="/marketplace" className="btn-secondary text-sm inline-block">
-            {xaRender("Marketplace")}{xaRender(listLive ? ' · live' : '')}
+            {xaRender("Marketplace")}{xaRender(listLive ? ' · vérification vendeur active' : '')}
           </Link>
           <Link to="/my-packs" className="btn-secondary text-sm inline-block">
             {xaRender("Mes salles ")}</Link>

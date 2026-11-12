@@ -1,8 +1,8 @@
 # xRights — public workbench preview 0.6.0 (commerce OFF)
 
 This repository package imports the former private prototype and adds a downloadable browser tool to xArtists.
-Canonical page: https://neltud.github.io/xArtists/create/world-rights/
-Standalone: https://neltud.github.io/xArtists/plugins/xa-world-rights/app.html
+Canonical page: https://xartists.art/create/world-rights/
+Standalone: https://xartists.art/plugins/xa-world-rights/app.html
 Public premium plugin download: **DISABLED**. The old unauthenticated ZIP has been removed from the source tree; commercial deliveries need server-side signed entitlements.
 
 ## Included and usable
@@ -41,3 +41,11 @@ The current software notice (LICENSE) reserves distribution rights subject to ve
 ## Nom public et compatibilité
 
 La marque de présentation est désormais **xRights**. Le nom technique `xartists-social-rights`, le chemin `packages/xa-world-rights` et l’URL embarquée `/plugins/xa-world-rights/` restent conservés pour compatibilité et historique des licences. Ce renommage ne change ni le propriétaire du droit d’auteur, ni les permissions existantes, ni les droits des anciens exemplaires sous MIT, ni les obligations d’autorisation des plateformes.
+
+## Mise à jour d'intégration frontend (11 novembre 2026)
+
+Page canonique [xRights](https://xartists.art/create/world-rights/) et [atelier autonome](https://xartists.art/plugins/xa-world-rights/app.html) sont des **outils de dossier et de préparation de licence**, non un logiciel commercial librement téléchargeable.
+
+**Distribution premium : toujours fermée** jusqu'à l'implémentation de la licence payante / exemption du compte propriétaire par un entitlement **serveur** signé. Un ZIP anonyme ou un jeton d'admin dans le navigateur serait contraire à cette politique. Le connecteur YouTube, quand configuré, est lecture seule et ne prouve jamais les droits sur chaque publication.
+
+Les collections privées Google Drive ne sont ni aspirées ni publiées par xRights. Le montage de dossiers ou de licences ne déclenche pas de mint, vente ou transfert.

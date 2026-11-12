@@ -205,6 +205,14 @@ export default function NftDistributorPage() {
       </div>
     </header>
 
+    <aside className="rounded-xl border border-[color:var(--xa-border)] p-4 text-sm text-[color:var(--xa-muted)]">
+      <strong className="text-[color:var(--xa-text)]">Des œuvres existent déjà dans votre Drive ?</strong>
+      <p className="mt-1">Téléchargez une copie autorisée, vérifiez ses droits et préparez une fiche par œuvre. Aucun accès Google Drive automatique, aucune publication IPFS, aucun NFT minté ni distributeur commercial activé depuis ce brouillon.</p>
+      <div className="mt-2 flex flex-wrap gap-2">
+        <Link to="/studio?mode=sculpture" className="btn-primary text-sm">Publier un NFT dans le Studio</Link>
+        <Link to="/lab?view=3d" className="btn-secondary text-sm">Prévisualiser ma sculpture</Link>
+      </div>
+    </aside>
     <nav aria-label="Étapes de création NFT" className="xa-factory-steps grid gap-2 sm:grid-cols-3" id="factory-steps">
       {([
         { id: 'create', number: '1', title: 'Créer', hint: 'Votre collection' },
