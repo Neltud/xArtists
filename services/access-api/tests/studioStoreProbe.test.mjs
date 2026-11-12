@@ -57,17 +57,18 @@ test('operator diagnostics are fixed-schema reason codes and deduplicated per ch
       reason,private:'wallet=erd1private secret=super_secret'})})
   const one=await probe()
   assert.equal(one.ok,false)
-  assert.deepEqual(lines,['backend=postgres reason=migration_004_missing'])
+  assert.equal(lines.length,1)
+  assert.match(lines[0],/^backend=postgres reason=migration_004_missing endpoint_fp=[a-f0-9]{20}$/)
   await probe()
   assert.equal(lines.length,1,'cached requests do not duplicate logs')
   now=31000
   reason='postgres://user:password@host private wallet=erd1'
   await probe()
-  assert.deepEqual(lines.at(-1),'backend=postgres reason=studio_schema_incomplete')
+  assert.match(lines.at(-1),/^backend=postgres reason=studio_schema_incomplete endpoint_fp=[a-f0-9]{20}$/)
   now=62000
   ready=true
   await probe()
-  assert.deepEqual(lines.at(-1),'backend=postgres reason=verified')
+  assert.match(lines.at(-1),/^backend=postgres reason=verified endpoint_fp=[a-f0-9]{20}$/)
   assert.equal(JSON.stringify(lines).includes('super_secret'),false)
   assert.equal(JSON.stringify(lines).includes('password'),false)
   assert.equal(JSON.stringify(lines).includes('erd1'),false)
