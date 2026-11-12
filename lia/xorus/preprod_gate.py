@@ -180,7 +180,7 @@ def assess_preproduction(
         if not valid_from or not valid_until or not valid_from <= moment < valid_until:
             errors.append(f"{sid}:license_expired_or_invalid")
         products = {p.strip() for p in str(lic.get("permitted_products", "")).split(";")}
-        if product not in products or (product == "nft_data_pack" and lic.get("nft_pack_allowed") != "yes"):
+        if not isinstance(product, str) or product not in products or (product == "nft_data_pack" and lic.get("nft_pack_allowed") != "yes"):
             errors.append(f"{sid}:product_rights_missing")
     return {
         "preflight": "PASS_REQUIRES_INDEPENDENT_HUMAN_REVIEW" if not errors else "FAIL",
