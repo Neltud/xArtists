@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { LIA_WALLET } from '../config/links'
 
 const MVX_API = 'https://api.multiversx.com'
@@ -78,14 +78,15 @@ function categoriseToken(ticker: string, tokenName: string, _identifier: string)
   return 'esdt'
 }
 
-async function fetchAllTokens(address: string): Promise<WalletToken[]> {
+async function fetchAllTokens(address: string, signal: AbortSignal): Promise<WalletToken[]> {
   const results: WalletToken[] = []
   let from = 0
   const size = 250
   while (true) {
-    const res = await fetch(`${MVX_API}/accounts/${address}/tokens?size=${size}&from=${from}`)
-    if (!res.ok) break
+    const res = await fetch(`${MVX_API}/accounts/${address}/tokens?size=${size}&from=${from}`, { signal, cache: 'no-store' })
+    if (!res.ok) throw new Error(`Tokens HTTP ${res.status}`)
     const batch: any[] = await res.json()
+    if (!Array.isArray(batch)) throw new Error('Réponse tokens invalide')
     if (!batch.length) break
     for (const t of batch) {
       const decimals = t.decimals ?? 18
@@ -108,14 +109,15 @@ async function fetchAllTokens(address: string): Promise<WalletToken[]> {
     }
     if (batch.length < size) break
     from += size
+    if (from >= 5000) throw new Error('Trop de tokens : lecture incomplète')
   }
   return results
 }
 
-async function fetchHatomPosition(address: string): Promise<HatomPosition | null> {
+async function fetchHatomPosition(address: string, signal: AbortSignal): Promise<HatomPosition | null> {
   try {
     const res = await fetch(`${HATOM_API}/lend/v2/userPosition/${address}`, {
-      headers: { Accept: 'application/json' },
+      headers: { Accept: 'application/json' }, signal,
     })
     if (res.ok) {
       const data = await res.json()
@@ -143,7 +145,7 @@ async function fetchHatomPosition(address: string): Promise<HatomPosition | null
     /* fallback */
   }
   try {
-    const res = await fetch(`${MVX_API}/accounts/${address}/tokens?size=250`)
+    const res = await fetch(`${MVX_API}/accounts/${address}/tokens?size=250`, { signal, cache: 'no-store' })
     if (!res.ok) return null
     const allTokens: any[] = await res.json()
     const hTokens = allTokens.filter((t: any) => HATOM_TICKERS.has((t.ticker || '').toUpperCase()))
@@ -202,75 +204,62 @@ export function useWalletTokens(address?: string | null): WalletData {
   const resolved =
     address === null ? '' : typeof address === 'string' && address.trim() ? address.trim() : LIA_WALLET
 
-  const [egldBalance, setEgldBalance] = useState(0)
-  const [egldPrice, setEgldPrice] = useState(0)
-  const [tokens, setTokens] = useState<WalletToken[]>([])
-  const [hatomPosition, setHatomPosition] = useState<HatomPosition | null>(null)
-  const [loading, setLoading] = useState(Boolean(resolved))
-  const [error, setError] = useState<string | null>(null)
-
+  const [snapshot, setSnapshot] = useState({ ...EMPTY })
+  const activeRequest = useRef<AbortController | null>(null)
+  const latestOwner = useRef(resolved)
+  latestOwner.current = resolved
   const isLia = resolved.length > 0 && resolved.toLowerCase() === LIA_WALLET.toLowerCase()
 
   const fetchAll = useCallback(async () => {
-    if (!resolved) {
-      setEgldBalance(0)
-      setTokens([])
-      setHatomPosition(null)
-      setLoading(false)
-      return
+    if (latestOwner.current !== resolved) return
+    activeRequest.current?.abort()
+    const controller = new AbortController()
+    activeRequest.current = controller
+    const current = () => activeRequest.current === controller && latestOwner.current === resolved
+    setSnapshot({ ...EMPTY, address: resolved, isLia, loading: Boolean(resolved) })
+    if (!resolved) return
+    const timeout = setTimeout(() => controller.abort(), 12000)
+    const read = async (url: string) => {
+      const response = await fetch(url, { signal: controller.signal, cache: 'no-store' })
+      if (!response.ok) throw new Error(`Wallet HTTP ${response.status}`)
+      return response.json()
     }
-    setLoading(true)
-    setError(null)
     try {
-      const [accountRes, econRes] = await Promise.all([
-        fetch(`${MVX_API}/accounts/${resolved}`).then(r => r.json()),
-        fetch(`${MVX_API}/economics`).then(r => r.json()),
+      const [account, economics, tokens, hatomPosition] = await Promise.all([
+        read(`${MVX_API}/accounts/${resolved}`), read(`${MVX_API}/economics`),
+        fetchAllTokens(resolved, controller.signal), fetchHatomPosition(resolved, controller.signal),
       ])
-      const egld = Number(accountRes.balance ?? 0) / 1e18
-      const price = econRes.price ?? 0
-      setEgldBalance(egld)
-      setEgldPrice(price)
-      const [allTokens, hatom] = await Promise.all([
-        fetchAllTokens(resolved),
-        fetchHatomPosition(resolved),
-      ])
-      setTokens(allTokens.sort((a, b) => b.valueUsd - a.valueUsd))
-      setHatomPosition(hatom)
+      const egldBalance = Number(account.balance) / 1e18
+      const price = Number(economics.price)
+      if (!Number.isFinite(egldBalance) || egldBalance < 0 || !Number.isFinite(price) || price < 0)
+        throw new Error('Réponse wallet invalide')
+      const sorted = tokens.sort((a, b) => b.valueUsd - a.valueUsd)
+      if (current() && !controller.signal.aborted) setSnapshot({
+        address: resolved, isLia, egldBalance, egldValueUsd: egldBalance * price,
+        tokens: sorted,
+        hatomTokens: sorted.filter(t => t.category === 'hatom'),
+        lpTokens: sorted.filter(t => t.category === 'lp'),
+        farmTokens: sorted.filter(t => t.category === 'farm'),
+        standardTokens: sorted.filter(t => t.category === 'esdt'),
+        totalEsdtUsd: sorted.reduce((sum, t) => sum + t.valueUsd, 0) + egldBalance * price,
+        hatomPosition, loading: false, error: null,
+      })
     } catch (e) {
-      setError(String(e))
-    } finally {
-      setLoading(false)
-    }
-  }, [resolved])
+      if (current()) setSnapshot({ ...EMPTY, address: resolved, isLia,
+        error: controller.signal.aborted ? 'Lecture wallet expirée. Réessaie.' : String(e) })
+    } finally { clearTimeout(timeout) }
+  }, [resolved, isLia])
 
   useEffect(() => {
-    fetchAll()
+    void fetchAll()
+    return () => {
+      activeRequest.current?.abort()
+      activeRequest.current = null
+    }
   }, [fetchAll])
 
-  if (!resolved) {
-    return { ...EMPTY, refresh: fetchAll }
+  const data = snapshot.address === resolved ? snapshot : {
+    ...EMPTY, address: resolved, isLia, loading: Boolean(resolved),
   }
-
-  const hatomTokens = tokens.filter(t => t.category === 'hatom')
-  const lpTokens = tokens.filter(t => t.category === 'lp')
-  const farmTokens = tokens.filter(t => t.category === 'farm')
-  const standardTokens = tokens.filter(t => t.category === 'esdt')
-  const totalEsdtUsd = tokens.reduce((s, t) => s + t.valueUsd, 0) + egldBalance * egldPrice
-
-  return {
-    address: resolved,
-    isLia,
-    egldBalance,
-    egldValueUsd: egldBalance * egldPrice,
-    tokens,
-    hatomTokens,
-    lpTokens,
-    farmTokens,
-    standardTokens,
-    totalEsdtUsd,
-    hatomPosition,
-    loading,
-    error,
-    refresh: fetchAll,
-  }
+  return { ...data, refresh: fetchAll }
 }
