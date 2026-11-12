@@ -1,5 +1,26 @@
 # Changelog — xArtists
 
+## [0.137.0](https://github.com/Neltud/xArtists/compare/v0.136.0...v0.137.0) (2026-11-12)
+
+
+### Features
+
+* **ops:** portable OVH API with fail-closed HTTPS parallel deployment ([#534](https://github.com/Neltud/xArtists/issues/534)) ([7a02906](https://github.com/Neltud/xArtists/commit/7a0290664cbf5a5efe991271037fc7ee832e9602))
+
+
+### Bug Fixes
+
+* **auth-ui:** truthful walletless entry and no fiat guest NFT claim ([#532](https://github.com/Neltud/xArtists/issues/532)) ([bc20fd4](https://github.com/Neltud/xArtists/commit/bc20fd4052a2e1793c2c36bff97e1bc2208f1498))
+* **p0,commerce:** fiat subscriptions never buy Genesis NFTs ([#538](https://github.com/Neltud/xArtists/issues/538)) ([4beed26](https://github.com/Neltud/xArtists/commit/4beed2632f788da55a967343558ac4ec225dbff2))
+* **p0,studio:** sanitized operator readiness diagnostics ([#537](https://github.com/Neltud/xArtists/issues/537)) ([c15b768](https://github.com/Neltud/xArtists/commit/c15b768fb7e08f33d62aa0ea680e69c8f6ed7ddc))
+* **p0,xPortal:** redact walletconnect public error messages ([#539](https://github.com/Neltud/xArtists/issues/539)) ([ef4eafc](https://github.com/Neltud/xArtists/commit/ef4eafcb8e222b9136d184cdbaf4e8f58c32ed16))
+* **xorus:** unify paper-mode wording in eight languages and public routes ([#536](https://github.com/Neltud/xArtists/issues/536)) ([d2d0dec](https://github.com/Neltud/xArtists/commit/d2d0dec30229f1ebe5cf1070f4781536683c8ccd))
+
+
+### Documentation
+
+* **ops:** verified xArtists v0.136.0 source of truth and OVH cutover ([#535](https://github.com/Neltud/xArtists/issues/535)) ([bf111c3](https://github.com/Neltud/xArtists/commit/bf111c304b617f2b79615bf12da67137ea89a5be))
+
 ## [0.136.0](https://github.com/Neltud/xArtists/compare/v0.135.0...v0.136.0) (2026-11-12)
 
 
