@@ -1,0 +1,33 @@
+name: xOrus Data preproduction gates (offline, no deploy)
+
+on:
+  pull_request:
+    paths:
+      - 'lia/xorus/preprod_gate.py'
+      - 'lia/xorus/catalog.py'
+      - 'lia/chorus/catalog.py'
+      - 'tests/test_xorus_preprod_gate.py'
+      - '.github/workflows/xorus-data-preprod.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preproduction-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install signature verifier for offline test
+        run: python -m pip install 'cryptography>=44,<49'
+      - name: Verify xOrus catalog, signature and immutable NO-GO
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+          LIA_LIVE_TRADING: '0'
+        run: |
+          python -m unittest discover -s tests -p 'test_xorus_preprod_gate.py' -v
+          python -m unittest discover -s tests -p 'test_xorus_data_rewards.py' -v
