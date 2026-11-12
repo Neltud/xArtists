@@ -1,0 +1,30 @@
+name: xOrus PayBox.sh wallet source (offline, no funding)
+
+on:
+  pull_request:
+    paths:
+      - 'lia/xorus/paybox_wallet_source.py'
+      - 'data/xorus_paybox_wallet_source.json'
+      - 'tests/test_xorus_paybox_wallet_source.py'
+      - '.github/workflows/xorus-paybox-wallet.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  wallet-source-fail-closed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate public candidate references and never-send invariants
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+          LIA_LIVE_TRADING: '0'
+        run: |
+          python -m unittest discover -s tests -p 'test_xorus_paybox_wallet_source.py' -v
+          python -m unittest discover -s tests -p 'test_xorus_alias.py' -v

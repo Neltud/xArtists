@@ -120,6 +120,29 @@ export default function LiaPage() {
         </p>
       </header>
 
+      <section aria-labelledby="xorus-paybox-wallet" className="min-w-0 rounded-2xl border border-amber-400/20 bg-black/30 p-4 sm:p-5">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="space-y-2">
+            <h2 id="xorus-paybox-wallet" className="text-base font-semibold text-zinc-100">xOrus wallet · PayBox.sh</h2>
+            <p className="max-w-2xl text-sm text-zinc-300">
+              Owner PayBox wallet: read-only preparation. Wallet control and network are not yet verified.
+              The xOrus MultiversX wallet has not been provisioned, and no funding has been sent.
+            </p>
+            <p className="text-xs text-amber-200">
+              Pending owner proof · No auto-funding · No bridge · No trading or signing authorization.
+            </p>
+          </div>
+          <span className="rounded-full border border-amber-400/30 px-3 py-1 text-xs text-amber-200">Not linked</span>
+        </div>
+        <div className="mt-3 flex flex-wrap gap-3 text-xs">
+          <a href="https://paybox.sh/" target="_blank" rel="noopener noreferrer"
+             className="underline underline-offset-4 hover:text-white">Verify my PayBox wallet</a>
+          <a href="https://github.com/Neltud/xArtists/blob/main/docs/XORUS_PAYBOX_WALLET_LINK.md"
+             target="_blank" rel="noopener noreferrer"
+             className="underline underline-offset-4 hover:text-white">Wallet verification &amp; funding policy</a>
+        </div>
+      </section>
+
       <LiaHubControlRoomLazy />
 
       <nav aria-label="Explore xArtists" className="flex flex-wrap gap-2">
