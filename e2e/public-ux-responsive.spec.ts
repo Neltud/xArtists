@@ -678,6 +678,35 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
   })
 
 
+  test('Intelligence is readable on mobile: understand, agents, one local experiment',async({page})=>{
+    await page.setViewportSize({width:390,height:844})
+    await page.emulateMedia({reducedMotion:'reduce'})
+    await visit(page,'/intelligence/xorus/?lang=fr')
+    const journey=page.getByRole('navigation',{name:'Parcours Intelligence xOrus'})
+    await expect(journey.getByRole('link')).toHaveCount(3)
+    await expect(page.getByRole('heading',{name:'xOrus, l’intelligence expliquée simplement'})).toBeVisible()
+    await expect(page.getByRole('button',{name:'Afficher les outils avancés'})).toHaveAttribute('aria-expanded','false')
+    await expect(page.locator('#xorus-paybox-wallet')).toHaveCount(0)
+    await page.screenshot({animations:'disabled',path:'artifacts/ux-mobile/intelligence-xorus-390.png'})
+
+    await visit(page,'/intelligence/agents/?lang=fr')
+    await expect(page.getByRole('heading',{name:'Les agents xOrus, simplement'})).toBeVisible()
+    const packs=page.locator('details').filter({hasText:'Catalogue Genesis NFT (distinct des agents)'})
+    await expect(packs).not.toHaveAttribute('open','')
+    await expect(page.getByText('Médias NFT mainnet non prêts · achats suspendus')).toHaveCount(0)
+    await page.screenshot({animations:'disabled',path:'artifacts/ux-mobile/intelligence-agents-390.png'})
+
+    await visit(page,'/intelligence/lab/?lang=fr')
+    await expect(page.getByRole('heading',{name:'Le laboratoire xOrus'})).toBeVisible()
+    await expect(page.getByRole('radio',{name:'Marché variable'})).toBeChecked()
+    await page.getByRole('radio',{name:'Marché calme'}).check()
+    await expect(page.getByText('Variation inventée')).toBeVisible()
+    await expect(page.getByText(/Simulation locale uniquement/)).toBeVisible()
+    const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)
+    expect(overflow,'Intelligence horizontal overflow at 390px').toBeLessThanOrEqual(12)
+    await page.screenshot({animations:'disabled',path:'artifacts/ux-mobile/intelligence-lab-390.png'})
+  })
+
   test('direct /lab network and simulation views render without lazy CSS preload failure',async({page})=>{
     await page.setViewportSize({width:390,height:844})
     await visit(page,'/lab?view=network&lang=fr')
