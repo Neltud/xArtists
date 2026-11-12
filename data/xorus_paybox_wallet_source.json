@@ -1,0 +1,34 @@
+{
+  "schema": "xorus-paybox-source-v0",
+  "mode": "watch_only_preparation",
+  "status": "unverified_historical_candidates",
+  "provider": "paybox.sh",
+  "paybox_public_candidates": [
+    {
+      "network_family": "solana",
+      "chain": "solana:mainnet",
+      "address": "Dmc7RKdPNKcDDeGVW37rPnZZ7jJiPYuCmgB1EMBbRRFN",
+      "note": "Historical public reference only; revalidate in the current PayBox session before funding"
+    },
+    {
+      "network_family": "evm",
+      "chain": null,
+      "address": "0xc603c5b2013bcbc54238a6f7ca503992493f2e41",
+      "note": "Historical public EVM reference; target chain/network is not verified"
+    }
+  ],
+  "xorus_multiversx_wallet": {
+    "address": null,
+    "network": "multiversx:1",
+    "note": "No xOrus MultiversX wallet was provisioned by this configuration"
+  },
+  "paybox_session_verified": false,
+  "owner_wallet_control_verified": false,
+  "auto_funding_enabled": false,
+  "trade_enabled": false,
+  "transfer_authorized": false,
+  "funded_confirmed": false,
+  "onchain_tx_hash": null,
+  "crosschain_bridge_enabled": false,
+  "warning": "PayBox.sh is not the Paybox System/Verifone card PSP; never send MultiversX funds to a Solana or EVM wallet"
+}
