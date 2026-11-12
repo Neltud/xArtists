@@ -1,6 +1,8 @@
 import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /** Packs Agents — Genesis limited · œuvres série Tuduri. */
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import IntelligencePath from '../components/intelligence/IntelligencePath'
+import { useI18n } from '../i18n/I18nContext'
 import { Link, useSearchParams } from 'react-router-dom'
 import Pack3DCockpit from '../components/packs/Pack3DCockpit'
 import { AGENT_PACKS, AGENT_PACK_SC_SNAPSHOT, AGENT_PACK_MEDIA_SNAPSHOT, PACK_EDITION, PACK_VISUAL, type PackId } from '../config/agentPacks'
@@ -18,16 +20,64 @@ function limitsFor(id: PackId): string[] {
 
 export default function Agents() {
   const [params] = useSearchParams()
+  const { lang } = useI18n()
+  const fr = lang === 'fr'
+  const genesisRef = useRef<HTMLDetailsElement>(null)
+  const [showPacks, setShowPacks] = useState(false)
   const [selected, setSelected] = useState<PackId | null>(null)
   const active = PACKS.find(p => p && p.id === selected) || null
 
   useEffect(() => {
     const q = params.get('pack')
-    if (q === 'pulse' || q === 'yield' || q === 'sentinel') setSelected(q)
+    if (q === 'pulse' || q === 'yield' || q === 'sentinel') {
+      setSelected(q)
+      setShowPacks(true)
+      if(genesisRef.current)genesisRef.current.open=true
+    }
   }, [params])
 
   return (
     <div className="xa-page xa-agents-discovery animate-fade-in mx-auto max-w-4xl space-y-8 px-4 pb-28 pt-6 sm:px-7">
+      <IntelligencePath />
+      <header className="xa-intelligence-hero">
+        <p className="xa-intelligence-eyebrow">{fr ? '02 · Qui fait quoi ?' : '02 · Who does what?'}</p>
+        <h1>{fr ? 'Les agents xOrus, simplement' : 'xOrus agents, made clear'}</h1>
+        <p>{fr
+          ? 'Trois domaines à comprendre : observer des signaux, explorer les données et surveiller les risques. Il s’agit de rôles présentés en mode paper, pas de robots qui achètent ou vendent pour vous.'
+          : 'Three areas to understand: observe signals, explore data, and assess risks. These are paper-mode roles, not bots buying or selling on your behalf.'}</p>
+        <p role="status" className="xa-intelligence-status">{fr
+          ? 'Mode lecture et simulation. Aucun trading automatique, aucun rendement, aucun achat requis.'
+          : 'Read-only and simulation mode. No automated trades, promised returns or purchase required.'}</p>
+      </header>
+      <section className="space-y-4" aria-label={fr ? 'Les trois rôles' : 'Three agent roles'}>
+        <h2 className="text-xl font-semibold">{fr ? 'Que pouvez-vous découvrir ?' : 'What can you explore?'}</h2>
+        <div className="xa-intelligence-cards">
+          <article className="xa-intelligence-card">
+            <p className="xa-intelligence-eyebrow">Pulse · 01</p>
+            <h3>{fr ? 'Observer les signaux' : 'Observe signals'}</h3>
+            <p>{fr ? 'Comprendre ce qu’un signal de marché décrit, quand il a été publié et ce qui manque pour le vérifier.' : 'Learn what a signal describes, when it was published, and what is still unverified.'}</p>
+            <Link to="/xorus">{fr ? 'Voir les signaux xOrus' : 'View xOrus signals'}</Link>
+          </article>
+          <article className="xa-intelligence-card">
+            <p className="xa-intelligence-eyebrow">Yield · 02</p>
+            <h3>{fr ? 'Explorer les données' : 'Explore the data'}</h3>
+            <p>{fr ? 'Lire des exemples et comprendre les limites des indicateurs, sans les confondre avec une performance réelle.' : 'Read examples and understand indicator limits without mistaking them for real performance.'}</p>
+            <Link to="/lab?view=simulation">{fr ? 'Essayer une simulation' : 'Try a simulation'}</Link>
+          </article>
+          <article className="xa-intelligence-card">
+            <p className="xa-intelligence-eyebrow">Sentinel · 03</p>
+            <h3>{fr ? 'Identifier les risques' : 'Understand risks'}</h3>
+            <p>{fr ? 'Distinguer des données fraîches, anciennes ou absentes et découvrir pourquoi une action non prouvée reste bloquée.' : 'Distinguish fresh, stale and missing data, and see why unverified actions remain blocked.'}</p>
+            <Link to="/xorus">{fr ? 'Consulter l’état de xOrus' : 'Check xOrus status'}</Link>
+          </article>
+        </div>
+      </section>
+      <details ref={genesisRef} className="xa-intelligence-advanced" onToggle={event=>setShowPacks(event.currentTarget.open)}>
+        <summary>{fr ? 'Catalogue Genesis NFT (distinct des agents)' : 'Genesis NFT catalogue (separate from the agents)'}</summary>
+        <p className="xa-intelligence-note mt-3 mb-4">{fr
+          ? 'Les éditions Pulse, Yield et Sentinel ci-dessous sont des projets de packs NFT. Elles ne donnent aucune preuve de trading actif. Ventes suspendues ; informations historiques conservées pour vérification.'
+          : 'Pulse, Yield and Sentinel below are NFT pack concepts, not proof of live automated trading. Sales are suspended; dated records remain available for verification.'}</p>
+        {showPacks && <div className="space-y-8">
       <header className="space-y-4 border-b border-[color:var(--xa-border)] pb-7">
         <p className="section-label">{xaRender('Genesis · Limited')}</p>
         <h1 className="section-title display">{xaRender('Pulse · Yield · Sentinel')}</h1>
@@ -213,6 +263,8 @@ export default function Agents() {
         <p>{xaRender('Parcours prévu (non actif) : choisir un pack → signer via wallet → paiement vérifié → NFT livré → accès confirmé.')}</p>
         <p>{xaRender('Pulse débloque hub CC + TCA + LIA full. Yield / Sentinel = salle dédiée.')}</p>
       </div>
+        </div>}
+      </details>
     </div>
   )
 }
