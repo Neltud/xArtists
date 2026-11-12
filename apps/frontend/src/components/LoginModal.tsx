@@ -1,10 +1,11 @@
 import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as xaUsePhraseLocale} from '../i18n/phraseRuntime'
 /**
- * Modal connexion — xPortal / extension + accès simplifié (Web Wallet / passkey path).
+ * Modal connexion — xPortal / extension + exploration sans wallet (aucun compte créé).
  * Shell tokens: acid accent, graphite surface.
  * Écoute OPEN_CONNECT_EVENT (requestOpenConnect).
  */
 import { useEffect, useState, useRef } from 'react'
+import { Link } from 'react-router-dom'
 import { useWallet } from '../context/WalletContext'
 import { loginWithXPortalMainnet, cancelXPortalLogin } from '../lib/xportalWc'
 import { OPEN_CONNECT_EVENT } from '../lib/walletEvents'
@@ -13,34 +14,6 @@ import Dialog from '../experience/Dialog'
 import WalletPairing from './WalletPairing'
 
 const WEB_WALLET = 'https://wallet.multiversx.com/unlock'
-
-export function generateGuestReceiveId(): string {
-  const t = Date.now().toString(36)
-  const r = Math.random().toString(36).slice(2, 10)
-  return `xa_guest_${t}_${r}`
-}
-
-export function saveGuestReceiveId(id: string, meta?: Record<string, unknown>) {
-  try {
-    localStorage.setItem(
-      'xartists_guest_receive',
-      JSON.stringify({ id, ...meta, ts: Date.now() }),
-    )
-  } catch {
-    /* */
-  }
-}
-
-export function loadGuestReceiveId(): string | null {
-  try {
-    const raw = localStorage.getItem('xartists_guest_receive')
-    if (!raw) return null
-    const j = JSON.parse(raw) as { id?: string }
-    return typeof j.id === 'string' ? j.id : null
-  } catch {
-    return null
-  }
-}
 
 type Props = {
   open?: boolean
@@ -171,18 +144,11 @@ export default function LoginModal({ open: controlledOpen, onClose, onConnected 
   const runSimpleWebWallet = () => {
     window.open(WEB_WALLET, '_blank', 'noopener,noreferrer')
     setError(
-      'Web Wallet ouvert. Crée ou déverrouille un compte, copie erd1, colle-la ci-dessous (ou reviens avec xPortal).',
+      'Web Wallet officiel ouvert. Une adresse erd1 collée sur xArtists permet la lecture seule, pas la signature. Pour signer, connecte xPortal ou une extension autorisée.',
     )
     setMode('classic')
   }
 
-  const runGuestForFiat = () => {
-    const id = generateGuestReceiveId()
-    saveGuestReceiveId(id, { purpose: 'fiat_pack_pending' })
-    setError(
-      `Identifiant réception temporaire : ${id}. Utilise-le au checkout Fiat — le mint sera lié après webhook dès qu’un erd1 est fourni (email / claim).`,
-    )
-  }
 
   return (
     <Dialog title={t('common.connect')} onClose={close} className="xa-wallet-dialog">
@@ -254,14 +220,26 @@ export default function LoginModal({ open: controlledOpen, onClose, onConnected 
 
         {xaRender(mode === 'simple' && (
           <div className="space-y-3">
-            <p className="text-[12px] text-zinc-400 leading-relaxed">
-              {xaRender("Pour un achat ")}<strong className="text-zinc-200">{xaRender("Fiat")}</strong> {xaRender(" sans extension : crée un wallet via le Web Wallet officiel MultiversX (ou passkey côté wallet quand dispo), puis reviens coller ton ")}<span className="mono text-zinc-300">erd1</span>{xaRender(". xArtists ne détient jamais tes fonds. ")}</p>
-            <button type="button" className="btn-primary w-full" onClick={runSimpleWebWallet}>
-              {xaRender("Ouvrir Web Wallet MVX ↗ ")}</button>
-            <button type="button" className="btn-secondary w-full text-sm" onClick={runGuestForFiat}>
-              {xaRender("Identifiant temporaire (fiat sans erd1 encore) ")}</button>
-            <p className="text-[10px] text-zinc-600">
-              {xaRender("L’ID temporaire lie le paiement au futur mint — tu devras revendiquer avec un erd1 (claim). Pas un compte titres. ")}</p>
+            <p className="text-[12px] text-[color:var(--xa-text-secondary)] leading-relaxed">
+              {xaRender("Explorer le musée, les NFT et les outils de création ne nécessite aucun wallet. Les comptes e-mail vérifiés et les abonnements sont en préparation : cet accès invité ne crée ni compte ni droit NFT.")}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <Link to="/marketplace" className="btn-primary flex-1 text-center text-sm" onClick={close}>
+                {xaRender("Découvrir sans wallet")}
+              </Link>
+              <Link to="/studio" className="btn-secondary flex-1 text-center text-sm" onClick={close}>
+                {xaRender("Préparer une œuvre")}
+              </Link>
+            </div>
+            <p className="text-[12px] text-[color:var(--xa-text-secondary)]">
+              {xaRender("Pour créer, vendre ou transférer un NFT, une signature d'un wallet que tu contrôles sera nécessaire.")}
+            </p>
+            <button type="button" className="btn-secondary w-full" onClick={runSimpleWebWallet}>
+              {xaRender("Ouvrir le Web Wallet MultiversX officiel ↗")}
+            </button>
+            <p className="text-[11px] text-[color:var(--xa-text-muted)]">
+              {xaRender("Coller une adresse erd1 permet uniquement de consulter ses actifs, jamais de prouver sa propriété ou de signer.")}
+            </p>
           </div>
         ))}
 
