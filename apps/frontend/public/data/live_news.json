@@ -1,8 +1,85 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-12T05:52:54.878Z",
+  "updatedAt": "2026-11-12T14:41:05.440Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1794494464911",
+      "timestamp": "14:41",
+      "source": "EGLD",
+      "title": "Cotation publique · $2.80 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1794491942000",
+      "timestamp": "13:59",
+      "source": "CoinTelegraph",
+      "title": "Jensen Huang resigns as NVIDIA CEO and board member",
+      "link": "https://cointelegraph.com/news/jensen-huang-resigns-nvidia-ceo-board-member?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1794491559000",
+      "timestamp": "13:52",
+      "source": "CoinTelegraph",
+      "title": "Bit Digital stock falls 5% in pre-market after Q3 revenue miss",
+      "link": "https://cointelegraph.com/news/bit-digital-stock-falls-q3-revenue-miss?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1794491043000",
+      "timestamp": "13:44",
+      "source": "CoinTelegraph",
+      "title": "Thailand proposes $148K daily cap on stablecoin deposits and withdrawals",
+      "link": "https://cointelegraph.com/news/thailand-tighter-stablecoin-rules-crypto-exchange?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1794490319000",
+      "timestamp": "13:31",
+      "source": "CoinTelegraph",
+      "title": "Crypto hack losses equal 57 cents per $1 earned onchain: Ark’s Valente",
+      "link": "https://cointelegraph.com/news/crypto-hackers-stole-57-cents-every-1-earned-ark?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1794490200000",
+      "timestamp": "13:30",
+      "source": "CoinTelegraph",
+      "title": "Are Alt-L1s over? Security, costs drive smaller chains to Ethereum",
+      "link": "https://cointelegraph.com/magazine/are-alt-l1s-over-security-costs-drive-smaller-chains-to-ethereum?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1794489716000",
+      "timestamp": "13:21",
+      "source": "CoinTelegraph",
+      "title": "Uber’s UK banking partner Griffin raises $20M for stablecoin services",
+      "link": "https://cointelegraph.com/news/digital-bank-griffin-100m-valuation-card-stablecoin?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1794469278000",
+      "timestamp": "07:41",
+      "source": "CoinDesk",
+      "title": "Canaan may sell more bitcoin for stock buybacks as mining-rig revenue falls 96%",
+      "link": "https://www.coindesk.com/markets/2026/11/12/canaan-may-sell-more-bitcoin-for-stock-buybacks-as-mining-rig-revenue-falls-96"
+    },
+    {
+      "id": "rss-CoinDesk-1-1794466837000",
+      "timestamp": "07:00",
+      "source": "CoinDesk",
+      "title": "MSCI is dropping Strategy from its index, and the exclusion could hit its bitcoin-buying machine",
+      "link": "https://www.coindesk.com/markets/2026/11/12/msci-is-dropping-strategy-from-its-index-and-the-exclusion-could-hit-its-bitcoin-buying-machine"
+    },
+    {
+      "id": "rss-CoinDesk-2-1794462584000",
+      "timestamp": "05:49",
+      "source": "CoinDesk",
+      "title": "Zcash holders to vote on pulling 50,000 ZEC, worth $50 million, from grants treasury",
+      "link": "https://www.coindesk.com/tech/2026/11/12/zcash-holders-to-vote-on-pulling-50-000-zec-from-grants-treasury"
+    },
+    {
+      "id": "rss-CoinDesk-3-1794460951000",
+      "timestamp": "05:22",
+      "source": "CoinDesk",
+      "title": "Bitcoin Core reveals bug that made thousands of nodes trust any stranger on Tor",
+      "link": "https://www.coindesk.com/tech/2026/11/12/bitcoin-core-reveals-bug-that-made-thousands-of-nodes-trust-any-stranger-on-tor"
+    },
     {
       "id": "egld-1794462774292",
       "timestamp": "05:52",
@@ -121,83 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Here’s what happened in crypto today",
       "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1794403800000",
-      "timestamp": "13:30",
-      "source": "CoinTelegraph",
-      "title": "Paraguay bank collapse shows stablecoins can offer a lifeline... of sorts",
-      "link": "https://cointelegraph.com/magazine/paraguay-bank-collapse-shows-stablecoins-can-offer-a-lifeline-of-sorts?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "egld-1794404247420",
-      "timestamp": "13:37",
-      "source": "EGLD",
-      "title": "Cotation publique · $2.92 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1794402150000",
-      "timestamp": "13:02",
-      "source": "CoinTelegraph",
-      "title": "CoreWeave stock jumps 15% premarket after Q3 revenue beats estimates",
-      "link": "https://cointelegraph.com/markets/coreweave-stock-surges-pre-market-q3-revenue?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1794401050000",
-      "timestamp": "12:44",
-      "source": "CoinTelegraph",
-      "title": "FSB urgest Turkey to tighten crypto oversight, set stablecoin rules",
-      "link": "https://cointelegraph.com/news/fsb-turkey-crypto-oversight-stablecoin-regulation?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1794400304000",
-      "timestamp": "12:31",
-      "source": "CoinTelegraph",
-      "title": "Zcash falls below $1,000 for first time since September",
-      "link": "https://cointelegraph.com/markets/zcash-falls-1k-grayscales-1m-ecosystem-commitment?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1794398183000",
-      "timestamp": "11:56",
-      "source": "CoinTelegraph",
-      "title": "Barclays boosts BlackRock Bitcoin ETF stake 48% as banks expand holdings",
-      "link": "https://cointelegraph.com/news/barclays-blackrock-ibit-boost-key-q3-filings?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1794396636000",
-      "timestamp": "11:30",
-      "source": "CoinTelegraph",
-      "title": "Kraken parent adds over 200 tokenized UK and EU stocks to xStocks",
-      "link": "https://cointelegraph.com/news/kraken-xstocks-200-tokenized-uk-eu-equities?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1794395126000",
-      "timestamp": "11:05",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin short-term holders send 47K BTC to exchanges at a loss",
-      "link": "https://cointelegraph.com/markets/bitcoin-speculators-btc-exchanges-unrealized-loss-727k?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1794342993000",
-      "timestamp": "20:36",
-      "source": "CoinDesk",
-      "title": "Warren: What is White House doing to prevent a repeat of teleprompter's Trump bets?",
-      "link": "https://www.coindesk.com/policy/2026/11/10/warren-what-is-white-house-doing-to-prevent-a-repeat-of-teleprompter-s-trump-bets"
-    },
-    {
-      "id": "rss-CoinDesk-1-1794341708000",
-      "timestamp": "20:15",
-      "source": "CoinDesk",
-      "title": "Former NYSE president says stock issuers hold the key to tokenization as Bullish builds its platform",
-      "link": "https://www.coindesk.com/business/2026/11/10/former-nyse-president-says-stock-issuers-hold-the-key-to-tokenization-as-bullish-builds-its-platform"
-    },
-    {
-      "id": "rss-CoinDesk-2-1794331942000",
-      "timestamp": "17:32",
-      "source": "CoinDesk",
-      "title": "Goldman Sachs, Citi among banks said to commit $270 million to stablecoin venture",
-      "link": "https://www.coindesk.com/business/2026/11/10/goldman-sachs-citi-among-banks-said-to-commit-usd270-million-to-stablecoin-venture"
     }
   ]
 }
