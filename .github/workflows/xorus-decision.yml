@@ -1,0 +1,33 @@
+name: xOrus Decision Agent (paper, offline, no deploy)
+
+on:
+  pull_request:
+    paths:
+      - 'lia/xorus/decision_agent.py'
+      - 'lia/xorus/swarm.py'
+      - 'lia/chorus/swarm.py'
+      - 'lia/chorus/catalog.py'
+      - 'tests/test_xorus_decision_agent.py'
+      - '.github/workflows/xorus-decision.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  xorus-decision:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify paper board, Chair cap and Sentinel veto
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+          LIA_LIVE_TRADING: '0'
+        run: |
+          python -m unittest discover -s tests -p 'test_xorus_decision_agent.py' -v
+          python -m unittest discover -s tests -p 'test_chorus_paper_safety.py' -v
+          python -m unittest discover -s tests -p 'test_xorus_alias.py' -v
