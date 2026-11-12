@@ -4,6 +4,7 @@
  * IPFS CIDs, wallet addresses or credential-bearing connection strings.
  */
 import {inspectStudioDatabase} from './studioPreflight.mjs'
+import {fingerprintStudioDbEndpoint} from './studioDbIdentity.mjs'
 
 const SAFE_REASONS=new Set([
   'verified','database_url_missing','migration_004_missing',
@@ -26,11 +27,13 @@ export function createStudioStoreProbe({env=process.env,inspect=inspectStudioDat
       try{schema=await inspect({env})}
       catch{schema={ready:false,reason:'database_probe_failed'}}
       const reason=safeReason(schema)
-      const marker=backend+':'+reason
+      const endpointId=backend==='postgres'?fingerprintStudioDbEndpoint(env.DATABASE_URL):null
+      const marker=backend+':'+reason+':'+(endpointId||'unavailable')
       // Once per state transition; no user-supplied text in the audit trail.
       if(marker!==lastReported){
         lastReported=marker
-        try{report('backend='+backend+' reason='+reason)}catch{/* logging must not fail readiness */}
+        try{report('backend='+backend+' reason='+reason+' endpoint_fp='+(endpointId||'unavailable'))}
+        catch{/* logging must not fail readiness */}
       }
       return {ok:schema?.ready===true,backend,table_ready:schema?.tableReady===true,
         schema_ready:schema?.ready===true,model_schema_ready:schema?.modelReady===true}
