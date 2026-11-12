@@ -46,7 +46,7 @@ export function loadDailySignal() {
       date: new Date().toISOString().slice(0, 10),
       regime: 'observe',
       confidence: 0.4,
-      headline: 'LIA signal-only — no live trading',
+      headline: 'xOrus signal-only — no live trading',
       summary: 'Fallback signal: paper mode. No automatic execution.',
       disclaimer: 'Pas un conseil financier.',
       live_trading: 0,
