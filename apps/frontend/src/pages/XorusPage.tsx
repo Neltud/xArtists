@@ -160,7 +160,7 @@ export default function XorusPage() {
       <section aria-labelledby="xorus-advanced" className="min-w-0 space-y-4 rounded-2xl border border-white/10 bg-black/30 p-4 sm:p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="max-w-xl">
-            <h2 id="xorus-advanced" className="text-lg font-semibold text-white">Advanced intelligence &amp; diagnostics</h2>
+            <h2 id="xorus-advanced" className="text-lg font-semibold text-[color:var(--xa-text)]">{fr ? 'Outils avancés et diagnostics' : 'Advanced intelligence & diagnostics'}</h2>
             <p className="mt-1 text-xs leading-relaxed text-zinc-400">
               Optional technical dashboards, asset tickers, intent logs and simulations.
               These are not confirmations of trades, NFT deliveries or real-time xOrus execution.
@@ -169,7 +169,9 @@ export default function XorusPage() {
           <button type="button" onClick={() => setAdvancedOpen(open => !open)} aria-expanded={advancedOpen}
             aria-controls="xorus-advanced-content"
             className="min-h-[44px] rounded-xl border border-white/20 bg-white/5 px-4 py-2 text-sm font-semibold text-zinc-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300">
-            {advancedOpen ? 'Hide advanced dashboards' : 'Show advanced dashboards'}
+            {advancedOpen
+              ? (fr ? 'Masquer les outils avancés' : 'Hide advanced dashboards')
+              : (fr ? 'Afficher les outils avancés' : 'Show advanced dashboards')}
           </button>
         </div>
         {advancedOpen && (
