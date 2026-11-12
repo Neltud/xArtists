@@ -19,7 +19,6 @@ import {
   type PayMethod,
 } from '../lib/payments'
 import AccessTermsModal from './AccessTermsModal'
-import { generateGuestReceiveId, loadGuestReceiveId, saveGuestReceiveId } from './LoginModal'
 import { useWebglPauseWhen } from '../hooks/useWebglPause'
 import { useI18n } from '../i18n/I18nContext'
 import { useAgentPackTx } from '../hooks/useAgentPackTx'
@@ -90,7 +89,6 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
   const [termsOpen, setTermsOpen] = useState(false)
   const [busy, setBusy] = useState(false)
   const [msg, setMsg] = useState('')
-  const [guestId, setGuestId] = useState<string | null>(() => loadGuestReceiveId())
   const methods = availablePayMethods().filter(m => m !== 'paper')
   const hasFiat = methods.length > 0
   const mintLive = canBuyAgent()
@@ -111,16 +109,6 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
   const railLocked = busy || packTxPending || termsOpen
   const visual = PACK_VISUAL[pack.id]
 
-  const ensureGuestId = () => {
-    let id = guestId || loadGuestReceiveId()
-    if (!id) {
-      id = generateGuestReceiveId()
-      saveGuestReceiveId(id, { packId: pack.id, purpose: 'fiat_pack_pending' })
-      setGuestId(id)
-    }
-    return id
-  }
-
   const launchFiat = async () => {
     if (!hasFiat) {
       setMsg(t('checkout.msg.fiatNotConfigured'))
@@ -131,34 +119,26 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
       setMsg('Paiement indisponible : validation commerciale ou API manquante.')
       return
     }
-    if (method === 'paybox' && !hasErd1) {
+    if (!hasErd1) {
       setMsg(t('checkout.msg.cryptoNeedsWallet'))
       requestOpenConnect()
       return
     }
-    const buyer = hasErd1 ? address! : ensureGuestId()
     setBusy(true)
-    setMsg(
-      hasErd1
-        ? method === 'stripe'
-          ? t('checkout.msg.redirectStripe')
-          : t('checkout.msg.redirectPaybox')
-        : t('checkout.msg.guestPay', { id: buyer }),
-    )
+    setMsg(method === 'stripe' ? t('checkout.msg.redirectStripe') : t('checkout.msg.redirectPaybox'))
     saveIntent({
       packId: pack.id,
       provider: method,
       amount: pack.priceEur.list,
       currency: 'EUR',
-      address: hasErd1 ? address : undefined,
-      guestReceiveId: hasErd1 ? undefined : buyer,
+      address,
       kind: 'fiat_checkout',
       rail: 'fiat',
       rule: '1_pack_1_esdt_nft_via_relayer',
     })
     try {
       let accessToken: string | undefined
-      if (method === 'paybox' && hasErd1) {
+      if (method === 'paybox') {
         accessToken =
           getAccessToken(address!) ||
           (await ensureAccessToken({ address: address! })) ||
@@ -171,7 +151,7 @@ export default function CheckoutModal({ open, packId, onClose, onStarted, onPrev
       const result = await startPackPayment({
         method,
         packId: pack.id,
-        buyerAddress: hasErd1 ? address! : `guest:${buyer}`,
+        buyerAddress: address!,
         amountEur: pack.priceEur.list,
         accessToken,
       })
