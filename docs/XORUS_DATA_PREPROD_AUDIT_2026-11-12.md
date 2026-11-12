@@ -43,3 +43,17 @@ Le refus commercial restera nécessaire jusqu'à preuve externe et indépendante
 6. Passer par une revue sécurité et juridique séparée avant toute mise en production.
 
 **Décision recommandée :** conserver la PR en *draft* jusqu'à intégration et tests de sécurité reproductibles. Aucun merge/deploy automatique sur la base de cette note.
+
+
+## Mise en oeuvre additionnelle dans la PR #524
+
+Le dépôt dispose désormais de `lia/xorus/preprod_gate.py`, un **préflight purement hors ligne** qui :
+- compare chaque ID au catalogue sémantique dynamique de `lia.xorus.catalog` ;
+- vérifie les octets des pièces de preuve sous une racine limitée, leur SHA-256 et la validité temporelle ;
+- refuse un ID numérique historique, un doublon, un produit non autorisé, des champs malformés et tout flag financier actif ;
+- contrôle une attestation Ed25519 indépendante couvrant les registres et sa date d'expiration (clé publique fournie uniquement par une configuration de confiance) ;
+- retourne **commercial = NO_GO dans tous les cas**, même si son préflight technique passe : seule une revue humaine et une intégration serveur distincte pourront envisager une offre commerciale.
+
+Tests : `tests/test_xorus_preprod_gate.py` avec un simulateur de signature éphémère, faux justificatifs, traversée de répertoire, flags interdits, IDs legacy et entrées malformées. CI en lecture seule : `.github/workflows/xorus-data-preprod.yml`. Ces vérifications ne délivrent aucun entitlement et n'émettent aucune transaction.
+
+**Limites :** ce nouveau module n'est pas branché sur la dApp, l'API, la blockchain ou un backend commercial. Le kit d'archives complet reste hors dépôt. Une signature apposée sur des documents fictifs peut prouver leur intégrité technique sans prouver les droits légaux : le préflight ne s'annonce jamais comme un certificat de licence. Cette PR reste en **draft**.
