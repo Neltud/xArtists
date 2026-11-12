@@ -1,5 +1,35 @@
 # Changelog — xArtists
 
+## [0.134.0](https://github.com/Neltud/xArtists/compare/v0.133.0...v0.134.0) (2026-11-12)
+
+
+### Features
+
+* **lab:** preview safe local GLB models alongside sculpture photo turntables ([413ff21](https://github.com/Neltud/xArtists/commit/413ff21641c561776dd1ace79880bafa6f89f736))
+* **market:** add obvious sell-my-NFT shortcut without pushing art gallery down ([bd4a1c2](https://github.com/Neltud/xArtists/commit/bd4a1c2977e2faf18617c590061a5abdbcab9ff3))
+* **market:** separate owner NFT listing gate from payment and bidding ([219323c](https://github.com/Neltud/xArtists/commit/219323c648b2444378114a4649830f3e764b3efd))
+* **market:** user listing signer uses runtime-only gate, purchases and bids remain locked ([b7a9c3c](https://github.com/Neltud/xArtists/commit/b7a9c3cb9086a1f9837997d1a173f6d574c79381))
+* **xOrus:** offline data-release preflight, evidence tests & audit (NO-GO) ([#524](https://github.com/Neltud/xArtists/issues/524)) ([c0c27e5](https://github.com/Neltud/xArtists/commit/c0c27e57ffb255f24b2bd7ffc35e4fdab8258829))
+* **xOrus:** public routes, sculpture NFT Lab and seller-only listing ([#514](https://github.com/Neltud/xArtists/issues/514)) ([969b3a9](https://github.com/Neltud/xArtists/commit/969b3a96c38aba5a1ab596535490f097079e3c8e))
+
+
+### Bug Fixes
+
+* **i18n:** catalog every xOrus rename in all eight locales for verified site ([771683f](https://github.com/Neltud/xArtists/commit/771683f29907329c146819edb63cb9e4eb932f9c))
+* **market:** normalize MultiversX NFT media, nonce and royalty formats ([#521](https://github.com/Neltud/xArtists/issues/521)) ([6ce3991](https://github.com/Neltud/xArtists/commit/6ce3991963f73f9be291995ed41eb033c3e98460))
+* **wallet:** isolate account snapshots and cancel stale portfolio reads ([#522](https://github.com/Neltud/xArtists/issues/522)) ([c4763d2](https://github.com/Neltud/xArtists/commit/c4763d2ebf251cbe3af11059901154293756bd31))
+
+
+### Refactoring
+
+* **xorus:** canonical public page entry and legacy LiaPage implementation alias ([08d38bc](https://github.com/Neltud/xArtists/commit/08d38bc44894a0a18d3a45f259d7d5676a376950))
+* **xOrus:** nouvelle marque intelligence, Chorus conservé en compatibilité paper ([969b3a9](https://github.com/Neltud/xArtists/commit/969b3a96c38aba5a1ab596535490f097079e3c8e))
+
+
+### Documentation
+
+* **xorus:** publish beginner seller and sculpture NFT journey with live evidence gates ([fbd312d](https://github.com/Neltud/xArtists/commit/fbd312d331dcd21d53d42a1f0338229f51d6cf36))
+
 ## [0.133.0](https://github.com/Neltud/xArtists/compare/v0.132.0...v0.133.0) (2026-11-11)
 
 
