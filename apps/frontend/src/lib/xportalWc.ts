@@ -5,6 +5,7 @@ import { sdkDappConfig, WALLET_CONNECT_V2_RELAY_URL, WALLET_CONNECT_V2_FALLBACK_
 import * as WcNs from '@multiversx/sdk-wallet-connect-provider'
 import type { Message } from '@multiversx/sdk-core'
 import {activateWalletSession,withDeadline} from './walletSession'
+import {safeXPortalLoginError} from './xportalDiagnostics'
 
 const MAINNET = '1'
 const SESSION_ADDR_KEY = 'xartists_xportal_addr'
@@ -390,14 +391,10 @@ export async function loginWithXPortalMainnet(
     activeProvider = null
     activeAddress = null
     persistAddr(null)
-    const msg = e instanceof Error ? e.message : String(e)
-    onProgress?.({ phase: 'error', message: msg })
-    if (/reject/i.test(msg)) {
-      return { ok: false, error: 'Connexion refusée dans xPortal.' }
-    }
-    const error=/unauthorized|forbidden|origin|project.?id|401|403/i.test(msg)
-      ? `WalletConnect refuse ce domaine. Ajoutez ${typeof window !== 'undefined' ? window.location.host : 'neltud.github.io'} aux domaines autorisés du projet WalletConnect.`
-      : msg
+    // Never display a raw SDK/relay exception: it may embed wc: URI, symKey,
+    // project ID or other ephemeral session material.
+    const error=safeXPortalLoginError(e)
+    onProgress?.({ phase: 'error', message: error })
     return {ok:false,error}
   } finally {
     loginInFlight=false
