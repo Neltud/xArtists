@@ -1,5 +1,25 @@
 # Changelog — xArtists
 
+## [0.136.0](https://github.com/Neltud/xArtists/compare/v0.135.0...v0.136.0) (2026-11-12)
+
+
+### Features
+
+* **docs/studio:** actualiser README, GitBook, plugins et intégration Drive/IPFS ([#520](https://github.com/Neltud/xArtists/issues/520)) ([515150d](https://github.com/Neltud/xArtists/commit/515150da6cdde90c76b38413f8c8527422631cbd))
+* **xorus:** prepare PayBox.sh wallet source without funding or credentials ([#526](https://github.com/Neltud/xArtists/issues/526)) ([cb7328d](https://github.com/Neltud/xArtists/commit/cb7328de7f517c9147920e467281bd8aaee61dd8))
+
+
+### Bug Fixes
+
+* **studio:** isolate mint signatures and IPFS steps by active wallet session ([#530](https://github.com/Neltud/xArtists/issues/530)) ([90a5f68](https://github.com/Neltud/xArtists/commit/90a5f68833e7a0ec9098eb0b4ad181e4c746a4a5))
+* **studio:** release GLB resources on rejection and late loading ([#523](https://github.com/Neltud/xArtists/issues/523)) ([8c1020e](https://github.com/Neltud/xArtists/commit/8c1020e28e412faf9c78b6083826a1d95007195f))
+* **studio:** validate GLB schema and portable API database readiness ([#531](https://github.com/Neltud/xArtists/issues/531)) ([dc260be](https://github.com/Neltud/xArtists/commit/dc260beb6e5853cb1f9795adb017d794dbdf4a8d))
+
+
+### Refactoring
+
+* **xorus:** own public intelligence page and preserve legacy LIA facade ([#529](https://github.com/Neltud/xArtists/issues/529)) ([17a9506](https://github.com/Neltud/xArtists/commit/17a950659c349a8883365a953e187db0065abb95))
+
 ## [0.135.0](https://github.com/Neltud/xArtists/compare/v0.134.0...v0.135.0) (2026-11-12)
 
 
