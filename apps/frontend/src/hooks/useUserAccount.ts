@@ -88,96 +88,59 @@ function mapNft(r: Record<string, unknown>): UserNft {
   }
 }
 
-export function useUserAccount(address: string | null | undefined): UserAccount {
-  const [balanceAtomic, setBalanceAtomic] = useState('0')
-  const [nonce, setNonce] = useState(0)
-  const [shard, setShard] = useState<number | undefined>()
-  const [nfts, setNfts] = useState<UserNft[]>([])
-  const [tokens, setTokens] = useState<UserToken[]>([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [refreshedAt, setRefreshedAt] = useState<number | null>(null)
-  const [tick, setTick] = useState(0)
+const EMPTY_ACCOUNT = {
+  balanceAtomic: '0', nonce: 0, shard: undefined as number | undefined,
+  nfts: [] as UserNft[], tokens: [] as UserToken[],
+  loading: false, error: null as string | null, refreshedAt: null as number | null,
+}
 
+export function useUserAccount(address: string | null | undefined): UserAccount {
+  const owner = address && /^erd1[a-z0-9]{58}$/.test(address) ? address : ''
+  const [snapshot, setSnapshot] = useState({ ...EMPTY_ACCOUNT, owner: '' })
+  const [tick, setTick] = useState(0)
   const refresh = useCallback(() => setTick(t => t + 1), [])
 
   useEffect(() => {
-    if (!address || !/^erd1[a-z0-9]{58}$/i.test(address)) {
-      setBalanceAtomic('0')
-      setNonce(0)
-      setNfts([])
-      setTokens([])
-      setError(null)
-      setLoading(false)
-      setRefreshedAt(null)
-      return
+    const controller = new AbortController()
+    let active = true
+    setSnapshot({ ...EMPTY_ACCOUNT, owner, loading: Boolean(owner) })
+    if (!owner) return () => { active = false; controller.abort() }
+    const timeout = setTimeout(() => controller.abort(), 12000)
+    const read = async (path: string) => {
+      const response = await fetch(`${API}/accounts/${owner}${path}`, {
+        signal: controller.signal, cache: 'no-store',
+      })
+      if (!response.ok) throw new Error(`Account HTTP ${response.status}`)
+      return response.json()
     }
-    let cancelled = false
-    setNfts([])
-    setTokens([])
-    setRefreshedAt(null)
-    ;(async () => {
-      setLoading(true)
-      setError(null)
+    void (async () => {
       try {
-        const [accRes, nftRes, tokRes] = await Promise.all([
-          fetch(`${API}/accounts/${address}`),
-          fetch(
-            `${API}/accounts/${address}/nfts?size=100&type=NonFungibleESDT,SemiFungibleESDT`
-          ),
-          fetch(`${API}/accounts/${address}/tokens?size=200`),
+        const [acc, nftRows, tokenRows] = await Promise.all([
+          read(''), read('/nfts?size=100&type=NonFungibleESDT,SemiFungibleESDT'),
+          read('/tokens?size=200'),
         ])
-        if (!accRes.ok) throw new Error(`Account HTTP ${accRes.status}`)
-        const acc = await accRes.json()
-        if (cancelled) return
-        setBalanceAtomic(String(acc.balance ?? '0'))
-        setNonce(Number(acc.nonce ?? 0))
-        setShard(typeof acc.shard === 'number' ? acc.shard : undefined)
-
-        let nftList: UserNft[] = []
-        if (nftRes.ok) {
-          const rows = await nftRes.json()
-          if (Array.isArray(rows)) nftList = rows.map(mapNft)
-        }
-
-        let tokList: UserToken[] = []
-        if (tokRes.ok) {
-          const rows = await tokRes.json()
-          if (Array.isArray(rows)) {
-            tokList = rows
-              .map(mapToken)
-              .filter((x): x is UserToken => x != null)
-              .sort((a, b) => b.valueUsd - a.valueUsd || b.balance - a.balance)
-          }
-        }
-
-        if (!cancelled) {
-          setNfts(nftList)
-          setTokens(tokList)
-          setRefreshedAt(Date.now())
-        }
+        if (!acc || !/^[0-9]+$/.test(String(acc.balance)) ||
+            !Array.isArray(nftRows) || !Array.isArray(tokenRows)) throw new Error('Réponse wallet invalide')
+        const nfts = nftRows.map(mapNft)
+        const tokens = tokenRows.map(mapToken).filter((x): x is UserToken => x != null)
+          .sort((a, b) => b.valueUsd - a.valueUsd || b.balance - a.balance)
+        if (active && !controller.signal.aborted) setSnapshot({
+          owner, balanceAtomic: String(acc.balance), nonce: Number(acc.nonce ?? 0),
+          shard: typeof acc.shard === 'number' ? acc.shard : undefined,
+          nfts, tokens, loading: false, error: null, refreshedAt: Date.now(),
+        })
       } catch (e) {
-        if (!cancelled) setError(e instanceof Error ? e.message : 'fetch failed')
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
+        if (active) setSnapshot({ ...EMPTY_ACCOUNT, owner,
+          error: controller.signal.aborted ? 'Lecture wallet expirée. Réessaie.' :
+            e instanceof Error ? e.message : 'Lecture wallet indisponible',
+        })
+      } finally { clearTimeout(timeout) }
     })()
-    return () => {
-      cancelled = true
-    }
-  }, [address, tick])
+    return () => { active = false; clearTimeout(timeout); controller.abort() }
+  }, [owner, tick])
 
-  return {
-    balanceEgld: atomicToEgld(balanceAtomic),
-    balanceAtomic,
-    nonce,
-    shard,
-    nftCount: nfts.length,
-    nfts,
-    tokens,
-    loading,
-    error,
-    refreshedAt,
-    refresh,
-  }
+  // Hide the previous owner's data during render, before effect cleanup runs.
+  const data = snapshot.owner === owner ? snapshot : { ...EMPTY_ACCOUNT, loading: Boolean(owner) }
+  return { ...data, balanceEgld: atomicToEgld(data.balanceAtomic),
+    nftCount: data.nfts.length, refresh }
 }
