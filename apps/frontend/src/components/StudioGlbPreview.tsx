@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { disposeModelResources } from '../lib/disposeModelResources'
 
 /**
  * Local GLB preview. Must never fetch external model dependencies:
@@ -73,6 +74,7 @@ export default function StudioGlbPreview({ file }: { file: File }) {
     setReady(false)
     setPaused(true)
     const build = async () => {
+      if (file.size > MAX_GLB) throw new Error('Taille de GLB invalide (32 Mio maximum).')
       const bytes = await file.arrayBuffer()
       if (destroyed) return
       checkLocalGlb(bytes)
@@ -84,7 +86,8 @@ export default function StudioGlbPreview({ file }: { file: File }) {
       if (destroyed) return
       const loader = new GLTFLoader()
       const gltf = await loader.parseAsync(bytes, '')
-      if (destroyed) return
+      dispose = () => disposeModelResources(gltf.scene)
+      if (destroyed) {dispose();dispose=undefined;return}
       let triangles = 0
       gltf.scene.traverse((node: any) => {
         if (node.isMesh) {
@@ -110,9 +113,17 @@ export default function StudioGlbPreview({ file }: { file: File }) {
       camera.position.copy(center).add(new THREE.Vector3(extent * 1.5, extent * .5, extent * 1.8))
       camera.lookAt(center)
       const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'low-power' })
+      const disposeModel = dispose
+      dispose = () => {disposeModel();renderer.dispose();renderer.forceContextLoss()}
       renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5))
       renderer.outputColorSpace = THREE.SRGBColorSpace
       const controls = new OrbitControls(camera, canvas)
+      const disposeRenderer = dispose
+      dispose = () => {
+        controls.dispose()
+        if (controlsRef.current === controls) controlsRef.current = null
+        disposeRenderer()
+      }
       controlsRef.current = controls
       controls.target.copy(center)
       controls.enableDamping = true
@@ -142,33 +153,21 @@ export default function StudioGlbPreview({ file }: { file: File }) {
         if (document.hidden) {cancelAnimationFrame(animationFrame);animationFrame = 0}
       }
       document.addEventListener('visibilitychange', onVisibility)
-      draw()
+      const disposeControls = dispose
       dispose = () => {
         cancelAnimationFrame(animationFrame)
         window.removeEventListener('resize', resize)
         document.removeEventListener('visibilitychange', onVisibility)
         watcher?.disconnect()
-        controls.dispose()
-        controlsRef.current = null
-        gltf.scene.traverse((node: any) => {
-          if (!node.isMesh) return
-          node.geometry?.dispose()
-          const materials = Array.isArray(node.material) ? node.material : [node.material]
-          for (const material of materials) {
-            if (!material) continue
-            for (const val of Object.values(material)) {
-              if (val && typeof val === 'object' && (val as any).isTexture) (val as import('three').Texture).dispose()
-            }
-            material.dispose()
-          }
-        })
-        renderer.dispose()
-        renderer.forceContextLoss()
+        disposeControls()
       }
       if (destroyed) {dispose();dispose=undefined;return}
+      draw()
       setReady(true)
     }
     void build().catch(reason => {
+      dispose?.()
+      dispose = undefined
       if (!destroyed) setError(reason instanceof Error ? reason.message : 'Aperçu 3D indisponible sur cet appareil.')
     })
     return () => {
