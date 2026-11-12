@@ -6,7 +6,7 @@ const ACTIONS = [
   { to: '/agents', label: 'Packs IA', sub: 'Pulse · Yield · Sentinel', emoji: '🧠' },
   { to: '/tours', label: 'Tours art', sub: 'Visites & expos', emoji: '🗺️' },
   { to: '/marketplace', label: 'Market NFT', sub: 'SC soon', emoji: '🛒' },
-  { to: '/trading', label: 'Board LIA', sub: 'Paper only', emoji: '⚡' },
+  { to: '/xorus', label: 'xOrus · Intelligence', sub: 'Signaux paper · aucun trading', emoji: '⚡' },
 ] as const
 
 export default function HomeQuickActions() {
