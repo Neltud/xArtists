@@ -15,13 +15,13 @@ xArtists est une dApp d'art et de création : découverte sans wallet, œuvres p
 
 Les identifiants historiques `/lia` et `lia/` restent en compatibilité pendant la migration vers **xOrus**. L'archive Vellum/Chorus n'est plus un moteur autorisé à lancer des transactions. Le vote externe ChatGPT est au plus de 15 % ; Sentinel garde son veto.
 
-## État confirmé au 11 novembre 2026
+## État confirmé au 12 novembre 2026
 
-- **GitHub Pages** : déploiement de `969b3a96c38aba5a1ab596535490f097079e3c8e` sur `xartists.art` vérifié par [l'Action Pages](https://github.com/Neltud/xArtists/actions/runs/43093538589), y compris lecture publique du `source_sha`. Les commits ultérieurs demandent une nouvelle vérification.
+- **GitHub Pages** : version **0.136.0**, SHA de référence `7a0290664cbf5a5efe991271037fc7ee832e9602` vérifié le 12 novembre dans [build-info.json](https://xartists.art/build-info.json). La lecture du SHA public **actuel** prime sur toute version imprimée dans le README. Le backend API Render suit `main` séparément.
 - **Marketplace vendeurs** : PR [#518](https://github.com/Neltud/xArtists/pull/518) et [#514](https://github.com/Neltud/xArtists/pull/514) intégrées ; préparation du listing de **ses propres NFT**, contrôle frais/royalties depuis la chaîne, codeHash/payable et signature wallet. **Un listing utilisateur signé sur cette version et son dépôt confirmé en escrow restent à prouver** ([issue #428](https://github.com/Neltud/xArtists/issues/428)). Les gates achat/enchères/packs sont distincts.
 - **Creator Studio** : collection NFT mainnet, rôle `ESDTRoleNFTCreate`, création d'un NFT par signature personnelle. Le premier mint d'une sculpture depuis le parcours complet n'est **pas** documenté comme confirmé.
-- **IPFS / GLB** : le frontend et l'API existent, mais le service sécurisé d'upload peut être **OFF** en production. Pour l'activer, vérifier les migrations PostgreSQL `004` puis `005`, le compte Pinata, le JWT serveur, les quotas et les tests de publication. Le switch GLB est supplémentaire. **Aucune clé n'est placée dans Vite, GitHub ou le navigateur.**
-- **Comptes sans wallet et abonnement EUR** : parcours de préparation/sandbox, pas de lien production ou droit NFT présumé. Les offres Genesis/PayBox, RWA, enchères payables et trading autonome restent soumis à des GO/NO-GO séparés ; pas de promesse de rendement ni de livraison implicite.
+- **IPFS / GLB** : le frontend et l'API existent, mais l'upload est **OFF** en production. Les migrations PostgreSQL `004`, `005` puis `006` (MIME GLB / 32 Mio) existent dans le repo ; leur application à la **base réelle de production n'est pas prouvée**. Le diagnostic public Studio retourne actuellement HTTP 503. Avant activation, vérifier backup/restauration, schéma, Pinata, JWT, quotas, IPFS readback et propriétaire wallet. **Aucune clé serveur dans Vite, GitHub ou le navigateur.**
+- **Comptes sans wallet et abonnement EUR** : parcours de préparation/sandbox, pas de compte email production ni de droit NFT présumé. Le bouton « accès simplifié » est un **accès visiteur sans inscription** ; le faux identifiant invité fiat→mint a été supprimé (#532). Les offres Genesis/PayBox, RWA, enchères payables et trading autonome restent soumis à des GO/NO-GO séparés. Stripe et MoonPay ne sont pas configurés en production.
 
 ## Google Drive et originaux de collection
 
@@ -50,6 +50,6 @@ npm run typecheck
 npm run build
 ```
 
-Le frontend est React/Vite/TypeScript ; l'API séparée vit dans `services/access-api`. Le déploiement du site est géré par [`.github/workflows/static.yml`](.github/workflows/static.yml). Un build vert **ne prouve pas** un déploiement ni un paiement. Aucun script de documentation ne doit activer `LIA_LIVE_TRADING`, PayBox, Stripe ou l'upload IPFS.
+Le frontend est React/Vite/TypeScript ; l'API séparée vit dans `services/access-api`. Le déploiement public est géré par [`.github/workflows/static.yml`](.github/workflows/static.yml). Le futur backend parallèle **OVH** (image API autonome et Caddy HTTPS) est préparé dans [deploy/ovh](deploy/ovh/README.md) et validé par [#534](https://github.com/Neltud/xArtists/pull/534) ; **aucun serveur OVH n'a encore été migré ou basculé**. Le statut technique et les priorités courantes sont dans [ACTIVE_CONTEXT.md](ACTIVE_CONTEXT.md). Un build vert ne prouve ni déploiement ni paiement. Aucun script de documentation ne doit activer trading, PayBox, Stripe ou upload IPFS.
 
 **Sécurité :** jamais de seed, PEM, JWT Pinata, jetons Google, secrets PSP ou clé de portefeuille dans les issues, commits ou captures d'écran. Toute action NFT, mint, vente ou dépense exige une vérification et une signature personnelle. [Issues](https://github.com/Neltud/xArtists/issues) · [Licence et conditions](LICENSE) · [Gates de lancement](docs/security/launch-gates.md).

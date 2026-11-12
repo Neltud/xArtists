@@ -1,14 +1,45 @@
-# ACTIVE_CONTEXT — xArtists / Vellum.ia
+# ACTIVE_CONTEXT — xArtists / xOrus
 
-**Mis à jour :** 11 novembre 2026 (audit du déploiement public)  
-**Branche de référence :** `main`  
-**Release public :** **0.131.0**, GitHub Pages `https://xartists.art/`  
-**SHA public vérifié :** `bab174959ddbb118e8d2acdeb024496bdedc6b7c`  
-**Build UTC :** `2026-11-11T11:47:09.896Z`  
-**Preuve :** `https://xartists.art/build-info.json` · [Actions 43014671657](https://github.com/Neltud/xArtists/actions/runs/43014671657)  
-**Ne pas confondre :** nouvelle interface publique **≠** mise en vente / achat / trading mainnet activé.
+**Relevé technique :** 12 novembre 2026, 17:02 UTC (snapshot, jamais un feu vert commercial).  
+**Branche :** `main` · **release publique :** `0.136.0`.  
+**Dernier SHA de référence observé :** `7a0290664cbf5a5efe991271037fc7ee832e9602`, vérifié sur **GitHub Pages** et l'API Render.  
+**Vérité déployée :** [build-info.json](https://xartists.art/build-info.json) — relire le SHA exact **au moment de toute action**, car ce document lui-même crée un nouveau commit.  
+**API publique :** [health](https://xartists-access-api.onrender.com/health) · [Studio DB readiness](https://xartists-access-api.onrender.com/v1/ops/studio-store/status).
+
+## Situation réelle et parcours simples
+
+| Parcours / module | État vérifié ou limite |
+| --- | --- |
+| Accueil, musée, exploration NFT, xOrus | Dapp publique, 133 routes référencées. Consultation possible sans wallet ; xOrus **paper**, aucun trading automatique |
+| Marketplace | Grille réelle de découverte ; vente d'un NFT détenu préparée, mais **parcours listing signé → achat → règlement → réception non certifié**. Pas de Buy/Bid/Offer public déclaré opérationnel |
+| Studio et sculpture 3D | Préparation de collections, rendu GLB, protections de session. Le schéma PostgreSQL GLB est livré en code (#531), **pas migré/certifié en production** ; son diagnostic HTTP 503 interdit tout GO upload |
+| Comptes utilisateurs | Distinguer exploration sans wallet, compte email authentifié et wallet signataire. **Pas de comptes walletless de production prouvés**. Neon `xartists-access-sandbox` avec vérification email OTP n'est pas la preuve de la base API live |
+| Fiat et cryptomonnaies | Stripe et MoonPay non configurés en production ; PayBox checkout désactivé. Aucun achat, subscription ou conversion fiat→NFT auto revendiqué |
+| Distributeur NFT, xRights, Artprice | Distributeur paper sans livraison prouvée ; droits/licences et entitlements premium à certifier ; données Artprice B2B sans licence vérifiée |
+| Infrastructure | GitHub Pages public + API Render opérationnelle. Image autonome Node/Caddy OVH (#534) validée en CI, **aucun serveur OVH basculé ni base migrée**. Akash reste une option de calcul sans données clients |
+
+## Lots livrés et preuves du 12 novembre
+
+- [#528](https://github.com/Neltud/xArtists/pull/528) : release `0.136.0`, manifest et changelog mis à jour.
+- [#531](https://github.com/Neltud/xArtists/pull/531) : migration `006_creator_media_glb.sql` et endpoint de diagnostic PostgreSQL portable ; tests PostgreSQL éphémères réussis, **production non migrée**.
+- [#532](https://github.com/Neltud/xArtists/pull/532) : suppression du faux identifiant invité fiat→mint, accès lecture seule sans wallet, lien public xOrus. **9 workflows verts**, déploiement public du commit de fusion vérifié.
+- [#534](https://github.com/Neltud/xArtists/pull/534) : image Access API autonome Node 22 + Docker Compose/Caddy HTTPS OVH, fichiers sans secrets, vérifications et rollback. **8 workflows verts**, code publié sur `main` et API Render, **pas d'installation OVH**.
+
+## Priorités ordonnées, avec conditions d'arrêt
+
+1. **Données Studio :** identifier la base réellement reliée à l'API, tester backup/restauration, puis contrôler 004/005/006. Aucune migration ou activation IPFS aveugle ; vérifier un vrai CID et la lecture retour.
+2. **xPortal :** confirmer l'allowlist Reown pour `xartists.art` et `www.xartists.art`, puis générer un QR depuis un vrai navigateur. Un test SDK CI ne prouve ni QR ni connexion. [#506](https://github.com/Neltud/xArtists/issues/506).
+3. **Transactions :** vérifier le smart contract déployé, ABI/codeHash, propriété du NFT, frais et destinataire ; démontrer un listing signé et une livraison on-chain réelle, sans prétendre qu'un bouton frontend suffit. [#428](https://github.com/Neltud/xArtists/issues/428).
+4. **Comptes / fiat :** brancher l'auth email réellement vérifiée, liaison SIWX, commandes cloisonnées et abonnements récurrents seulement après preuve webhooks/révocations et accès serveur. Pas de faux droit NFT pour un achat fiat invité.
+5. **OVH :** utiliser [deploy/ovh/README.md](deploy/ovh/README.md) pour déploiement **parallèle** sur hôte confirmé avec DNS/HTTPS ; tester les parcours et la reprise avant modification de l'URL API publique. Conserver Render pour retour arrière.
+
+**Sécurité :** aucun changement de flag financier, signature/mint, trade, clé privée, DNS, paiement ou migration de production n'est autorisé par une CI ou par ce document.
 
 ---
+
+## Archive historique — snapshot du 11 novembre 2026
+
+Les lignes suivantes sont conservées pour traçabilité : anciens SHA/versions/prix et anciens statuts de PR **ne décrivent pas le déploiement actuel**. Le tableau ci-dessus et les sondes publiques priment.
 
 ## Décision de publication — Marketplace #495
 
