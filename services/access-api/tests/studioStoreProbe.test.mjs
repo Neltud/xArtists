@@ -47,3 +47,39 @@ test('Studio unreachable database returns safe booleans with no connection detai
     assert.equal(JSON.parse(body).backend,'postgres')
   }finally{await server.close()}
 })
+
+test('operator diagnostics are fixed-schema reason codes and deduplicated per change',async()=>{
+  let now=0,reason='migration_004_missing',ready=false
+  const lines=[]
+  const probe=createStudioStoreProbe({env:{DATABASE_URL:'postgres://super_secret@private.invalid/db'},
+    now:()=>now,report:s=>lines.push(s),
+    inspect:async()=>({ready,tableReady:ready,modelReady:ready,
+      reason,private:'wallet=erd1private secret=super_secret'})})
+  const one=await probe()
+  assert.equal(one.ok,false)
+  assert.deepEqual(lines,['backend=postgres reason=migration_004_missing'])
+  await probe()
+  assert.equal(lines.length,1,'cached requests do not duplicate logs')
+  now=31000
+  reason='postgres://user:password@host private wallet=erd1'
+  await probe()
+  assert.deepEqual(lines.at(-1),'backend=postgres reason=studio_schema_incomplete')
+  now=62000
+  ready=true
+  await probe()
+  assert.deepEqual(lines.at(-1),'backend=postgres reason=verified')
+  assert.equal(JSON.stringify(lines).includes('super_secret'),false)
+  assert.equal(JSON.stringify(lines).includes('password'),false)
+  assert.equal(JSON.stringify(lines).includes('erd1'),false)
+  assert.equal(JSON.stringify(one).includes('private'),false)
+  assert.equal(lines.length,3)
+})
+
+test('failed or unavailable logger never changes fail-closed public probe',async()=>{
+  const probe=createStudioStoreProbe({env:{DATABASE_URL:''},
+    report:()=>{throw Error('logger_failed')},
+    inspect:async()=>{throw Error('postgres://private_user:private_password@host')}})
+  const status=await probe()
+  assert.deepEqual(status,{ok:false,backend:'unconfigured',
+    table_ready:false,schema_ready:false,model_schema_ready:false})
+})
