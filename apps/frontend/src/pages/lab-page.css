@@ -1,1 +1,28 @@
 .xa-lab{max-width:1440px;margin:auto;padding:clamp(16px,3vw,40px);color:var(--xa-text)}.xa-lab>header{margin-bottom:24px}.xa-lab>header p{max-width:72ch;color:var(--xa-muted);line-height:1.6}.xa-lab-switch{display:flex;flex-wrap:wrap;gap:12px}.xa-lab-switch .xa-button{min-height:44px;white-space:normal}.xa-lab-switch [aria-pressed=true]{outline:2px solid var(--xa-accent);outline-offset:2px}.xa-lab-switch :focus-visible{outline:3px solid var(--xa-accent);outline-offset:3px}@media(max-width:560px){.xa-lab-switch{display:grid;grid-template-columns:1fr}.xa-lab-switch .xa-button{width:100%}}
+
+/* Unified, calm public Intelligence journey. Tokens work in light/dark themes. */
+.xa-intelligence-path{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0 0 24px}
+.xa-intelligence-step{display:flex;align-items:center;gap:12px;min-height:76px;padding:14px;border:1px solid var(--xa-border);border-radius:16px;background:var(--xa-bg-elevated);color:var(--xa-text);text-decoration:none;transition:border-color .15s,background .15s}
+.xa-intelligence-step[data-current="true"]{border-color:var(--xa-accent);background:var(--xa-accent-soft)}
+.xa-intelligence-step-number{display:grid;place-items:center;flex:none;width:34px;height:34px;border-radius:10px;background:var(--xa-accent-soft);font-weight:700;font-variant-numeric:tabular-nums;color:var(--xa-accent)}
+.xa-intelligence-step strong,.xa-intelligence-step small{display:block}
+.xa-intelligence-step strong{font-size:14px;line-height:1.35}
+.xa-intelligence-step small{font-size:12px;color:var(--xa-text-secondary);margin-top:3px;line-height:1.35}
+.xa-intelligence-layout{max-width:1100px;margin:0 auto;padding:clamp(16px,3vw,36px) 16px 80px;color:var(--xa-text)}
+.xa-intelligence-hero{padding:clamp(18px,3vw,32px);border:1px solid var(--xa-border);border-radius:22px;background:var(--xa-bg-elevated)}
+.xa-intelligence-eyebrow{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:var(--xa-accent)}
+.xa-intelligence-hero h1{font-size:clamp(25px,3.2vw,38px);line-height:1.12;letter-spacing:-.025em;margin:10px 0}
+.xa-intelligence-hero p{max-width:65ch;line-height:1.65;color:var(--xa-text-secondary)}
+.xa-intelligence-status{margin-top:14px;padding:12px 14px;border-left:3px solid var(--xa-accent);border-radius:8px;background:var(--xa-bg);font-size:13px;line-height:1.6;color:var(--xa-text-secondary)}
+.xa-intelligence-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.xa-intelligence-card{min-width:0;padding:20px;border:1px solid var(--xa-border);border-radius:18px;background:var(--xa-bg-elevated)}
+.xa-intelligence-card h2,.xa-intelligence-card h3{font-size:17px;font-weight:700;line-height:1.4;color:var(--xa-text)}
+.xa-intelligence-card p{font-size:14px;line-height:1.65;margin-top:7px;color:var(--xa-text-secondary)}
+.xa-intelligence-card a{display:inline-flex;align-items:center;min-height:44px;padding-top:10px;font-weight:600;font-size:13px;color:var(--xa-accent);text-decoration:underline;text-underline-offset:3px}
+.xa-intelligence-advanced{border:1px solid var(--xa-border);border-radius:18px;background:var(--xa-bg-elevated);padding:20px}
+.xa-intelligence-advanced>summary{cursor:pointer;min-height:44px;font-weight:700;line-height:1.6}
+.xa-intelligence-advanced>summary::marker{color:var(--xa-accent)}
+.xa-intelligence-note{font-size:13px;line-height:1.65;color:var(--xa-text-secondary)}
+.xa-intelligence-step:focus-visible,.xa-intelligence-card a:focus-visible,.xa-intelligence-advanced>summary:focus-visible{outline:3px solid var(--xa-accent);outline-offset:3px}
+@media(max-width:760px){.xa-intelligence-path,.xa-intelligence-cards{grid-template-columns:1fr}.xa-intelligence-step{min-height:64px;padding:10px 14px}.xa-intelligence-layout{padding-bottom:90px}}
+@media(prefers-reduced-motion:reduce){.xa-intelligence-step{transition:none}}

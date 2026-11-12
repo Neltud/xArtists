@@ -9,6 +9,7 @@ import Icon from './Icon'
 import {matchesModuleSearch} from './moduleSearch'
 import RouteErrorBoundary from '../components/RouteErrorBoundary'
 import GenesisPackShelf from '../components/packs/GenesisPackShelf'
+import IntelligencePath from '../components/intelligence/IntelligencePath'
 import HomeHeroSculpture from './HomeHeroSculpture'
 import DriveArtShowcase from './DriveArtShowcase'
 import MainnetJourney from '../components/MainnetJourney'
@@ -99,7 +100,10 @@ export function Home(){
 export function GroupPage({group}:{group:Group}){
  const c=useCopy(),{lang}=useI18n()
  const [q,setQ]=useState('')
+ const [showIntelligenceAdvanced,setShowIntelligenceAdvanced]=useState(false)
+ const coreIntelligence=new Set(['lia','agents','lab'])
  const list=modules.filter(m=>m.group===group&&
+  (group!=='intelligence'||showIntelligenceAdvanced||q.trim().length>0||coreIntelligence.has(m.id))&&
   matchesModuleSearch(q,[c(m.label),c(m.group),...m.tags,m.path,...m.aliases],lang)).sort((a,b)=>stageRank(a.id)-stageRank(b.id))
  return <div className={`xa-container xa-group-page group-${group}`}>
   <div className="xa-page-intro">
@@ -109,6 +113,18 @@ export function GroupPage({group}:{group:Group}){
     <p>{c('welcomeToolsLead')}</p>
    </div>
   </div>
+  {group==='intelligence'&&<section className="mb-5" aria-label={lang==='fr'?'Commencer avec xOrus':'Start with xOrus'}>
+   <p className="xa-intelligence-note mb-3">{lang==='fr'
+     ? 'Commencez par ces trois pages. Les consoles techniques et outils spécialisés sont regroupés en accès avancé.'
+     : 'Start with these three pages. Technical consoles and specialized tools are available under advanced access.'}</p>
+   <IntelligencePath/>
+   <button type="button" className="xa-button secondary" aria-expanded={showIntelligenceAdvanced}
+     onClick={()=>setShowIntelligenceAdvanced(open=>!open)}>
+     {showIntelligenceAdvanced
+       ? (lang==='fr'?'Masquer les outils avancés':'Hide advanced tools')
+       : (lang==='fr'?'Afficher les outils avancés':'Show advanced tools')}
+   </button>
+  </section>}
   <div className="xa-directory-head">
    <h2>{c('modules')}<span role="status" aria-live="polite" aria-atomic="true">{list.length}</span></h2>
    <label className="xa-filter-search"><Icon name="search" size={17}/>

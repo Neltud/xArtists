@@ -1,202 +1,92 @@
-import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
- * Simulation Lab — exhaustive client-side demo of LIA trades, user journey, modules.
- * SC deploy soon: UI already models every path; on-chain gates stay fail-closed.
+ * xOrus educational simulator. All inputs and outputs are fictional browser
+ * examples. No feeds, automatic ticks, wallet, account or network requests.
  */
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import PageGuide from '../components/PageGuide'
+import { useI18n } from '../i18n/I18nContext'
 
-type SimTrade = {
-  id: string
-  ts: number
-  echelon: number
-  pair: string
-  side: 'BUY' | 'SELL'
-  sizeUsd: number
-  entry: number
-  exit: number
-  feeUsd: number
-  gasUsd: number
-  pnlNet: number
-  strategy: string
-  stopLoss: number
+type Scenario = 'calme' | 'variable' | 'stress'
+const SCENARIOS: Record<Scenario,{move:number; fr:string;en:string;frNote:string;enNote:string}> = {
+  calme:{move:2,fr:'Marché calme',en:'Calm market',
+    frNote:'Exemple pédagogique : variation modérée de +2 %.',enNote:'Illustration: moderate +2% move.'},
+  variable:{move:-5,fr:'Marché variable',en:'Changing market',
+    frNote:'Exemple pédagogique : variation défavorable de −5 %.',enNote:'Illustration: unfavorable −5% move.'},
+  stress:{move:-15,fr:'Marché sous tension',en:'Stressed market',
+    frNote:'Exemple pédagogique : baisse de −15 %, sans protection garantie.',enNote:'Illustration: −15% drop, with no guaranteed protection.'},
 }
-
-const PAIRS = ['TRO/USDC', 'WEGLD/USDC', 'MEX/WEGLD', 'UTK/WEGLD', 'TRO/WEGLD']
-const STRATS = ['S1-1pct', 'S05-scalp', 'S2-swing', 'GSN-elite', 'ARB-xEx']
-
-function rng(seed: number) {
-  let s = seed >>> 0
-  return () => {
-    s = (s * 1664525 + 1013904223) >>> 0
-    return s / 0xffffffff
-  }
-}
-
-function genTrades(n: number, seed = 42): SimTrade[] {
-  const r = rng(seed)
-  const out: SimTrade[] = []
-  let t = Date.now() - n * 45_000
-  for (let i = 0; i < n; i++) {
-    const pair = PAIRS[Math.floor(r() * PAIRS.length)]
-    const side: 'BUY' | 'SELL' = r() > 0.45 ? 'BUY' : 'SELL'
-    const entry = 0.5 + r() * 40
-    const move = (r() - 0.42) * 0.04
-    const exit = entry * (1 + move)
-    const sizeUsd = 20 + r() * 180
-    const feeUsd = sizeUsd * 0.0025
-    const gasUsd = 0.02 + r() * 0.08
-    const raw = side === 'BUY' ? (exit - entry) / entry : (entry - exit) / entry
-    const pnlNet = sizeUsd * raw - feeUsd - gasUsd
-    const stopLoss = side === 'BUY' ? entry * 0.97 : entry * 1.03
-    out.push({
-      id: `sim-${i}`,
-      ts: t,
-      echelon: 1 + Math.floor(r() * 10),
-      pair,
-      side,
-      sizeUsd: Math.round(sizeUsd * 100) / 100,
-      entry: Math.round(entry * 10000) / 10000,
-      exit: Math.round(exit * 10000) / 10000,
-      feeUsd: Math.round(feeUsd * 1000) / 1000,
-      gasUsd: Math.round(gasUsd * 1000) / 1000,
-      pnlNet: Math.round(pnlNet * 100) / 100,
-      strategy: STRATS[Math.floor(r() * STRATS.length)],
-      stopLoss: Math.round(stopLoss * 10000) / 10000,
-    })
-    t += 30_000 + Math.floor(r() * 60_000)
-  }
-  return out.reverse()
-}
+const fmt=(value:number)=>Number.isFinite(value)?value.toFixed(2):'0.00'
 
 export default function SimulationLab() {
-  const [trades, setTrades] = useState<SimTrade[]>(() => genTrades(24))
-  const [running, setRunning] = useState(false)
-  const [seed, setSeed] = useState(42)
-
-  const stats = useMemo(() => {
-    const n = trades.length
-    const wins = trades.filter(t => t.pnlNet > 0).length
-    const pnl = trades.reduce((a, t) => a + t.pnlNet, 0)
-    const fees = trades.reduce((a, t) => a + t.feeUsd + t.gasUsd, 0)
-    return {
-      n,
-      wins,
-      winRate: n ? (wins / n) * 100 : 0,
-      pnl: Math.round(pnl * 100) / 100,
-      fees: Math.round(fees * 100) / 100,
-    }
-  }, [trades])
-
-  useEffect(() => {
-    if (!running) return
-    const id = window.setInterval(() => {
-      setTrades(prev => {
-        const batch = genTrades(1, Date.now() % 1_000_000)
-        return [...batch, ...prev].slice(0, 40)
-      })
-    }, 2200)
-    return () => clearInterval(id)
-  }, [running])
-
-  const reshuffle = useCallback(() => {
-    const s = seed + 1
-    setSeed(s)
-    setTrades(genTrades(24, s))
-  }, [seed])
-
-  return (
-    <div className="animate-fade-in space-y-6 pb-10">
-      <PageGuide page="sim" defaultOpen />
-
-      <header className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className="text-[10px] uppercase tracking-[0.2em] text-purple-400/80">{xaRender("Demo lab")}</p>
-          <h1 className="text-3xl font-black">{xaRender("Simulation Lab")}</h1>
-          <p className="text-sm text-zinc-500 mt-1 max-w-xl">
-            {xaRender("Trades LIA paper côté client — fees & gas inclus. Les SC on-chain restent fail-closed jusqu’au deploy. ")}</p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <button type="button" className="btn-secondary text-xs py-2 px-3" onClick={reshuffle}>
-            {xaRender("Nouveau tirage ")}</button>
-          <button
-            type="button"
-            className="btn-primary text-xs py-2 px-3"
-            onClick={() => setRunning(v => !v)}
-          >
-            {xaRender(running ? 'Pause stream' : 'Stream paper')}
-          </button>
-          <Link to="/trading" className="btn-secondary text-xs py-2 px-3">
-            {xaRender("Board réel → ")}</Link>
-          <Link to="/entity" className="btn-secondary text-xs py-2 px-3">
-            {xaRender("Entité ")}</Link>
-        </div>
-      </header>
-
-      <section className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div className="card">
-          <p className="text-[10px] text-zinc-500 uppercase">{xaRender("Trades")}</p>
-          <p className="text-2xl font-bold mono">{xaRender(stats.n)}</p>
-        </div>
-        <div className="card">
-          <p className="text-[10px] text-zinc-500 uppercase">{xaRender("Win rate")}</p>
-          <p className="text-2xl font-bold mono">{xaRender(stats.winRate.toFixed(1))}%</p>
-        </div>
-        <div className="card">
-          <p className="text-[10px] text-zinc-500 uppercase">{xaRender("PnL net")}</p>
-          <p className={`text-2xl font-bold mono ${stats.pnl >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-            {xaRender(stats.pnl)}
-          </p>
-        </div>
-        <div className="card">
-          <p className="text-[10px] text-zinc-500 uppercase">{xaRender("Fees+gas")}</p>
-          <p className="text-2xl font-bold mono text-zinc-300">{xaRender(stats.fees)}</p>
-        </div>
-      </section>
-
-      <div className="card overflow-x-auto">
-        <h2 className="font-bold mb-3">{xaRender("Journal simulé")}</h2>
-        <table className="w-full text-sm min-w-[720px]">
-          <thead>
-            <tr className="text-zinc-500 border-b border-white/10 text-left">
-              <th className="py-2">#</th>
-              <th>{xaRender("Pair")}</th>
-              <th>{xaRender("Strat")}</th>
-              <th>{xaRender("Side")}</th>
-              <th className="text-right">{xaRender("Size")}</th>
-              <th className="text-right">{xaRender("Fee")}</th>
-              <th className="text-right">{xaRender("PnL")}</th>
-              <th className="text-right">SL</th>
-            </tr>
-          </thead>
-          <tbody>
-            {xaRender(trades.map(t => (
-              <tr key={t.id + t.ts} className="border-b border-white/5">
-                <td className="py-1.5 text-xs text-zinc-500">E{xaRender(t.echelon)}</td>
-                <td>{xaRender(t.pair)}</td>
-                <td className="text-xs text-purple-300">{xaRender(t.strategy)}</td>
-                <td>{xaRender(t.side)}</td>
-                <td className="text-right mono">{xaRender(t.sizeUsd)}</td>
-                <td className="text-right mono text-zinc-500">{xaRender(t.feeUsd)}</td>
-                <td
-                  className={`text-right mono ${t.pnlNet >= 0 ? 'text-emerald-400' : 'text-red-400'}`}
-                >
-                  {xaRender(t.pnlNet)}
-                </td>
-                <td className="text-right mono text-xs text-zinc-500">{xaRender(t.stopLoss)}</td>
-              </tr>
-            )))}
-          </tbody>
-        </table>
-      </div>
-
-      <p className="text-[11px] text-zinc-600">
-        {xaRender("Simulation locale navigateur — indépendante du board Vellum JSON. Pour le vrai paper board →")}{xaRender(' ')}
-        <Link to="/trading" className="text-purple-400 underline">
-          {xaRender("Trading ")}</Link>
-        .
-      </p>
+  const { lang } = useI18n()
+  const fr=lang==='fr'
+  const [scenario,setScenario]=useState<Scenario>('variable')
+  const [amount,setAmount]=useState(100)
+  const model=SCENARIOS[scenario]
+  const gross=amount*model.move/100
+  const fees=amount*0.0025+0.08
+  const net=gross-fees
+  return <section className="space-y-5" aria-labelledby="xa-sim-heading">
+    <div className="xa-intelligence-hero">
+      <p className="xa-intelligence-eyebrow">{fr?'Exercice interactif · 100 % fictif':'Interactive exercise · 100% fictional'}</p>
+      <h2 id="xa-sim-heading" className="!text-2xl">{fr?'Comprendre le risque en 3 étapes':'Understand risk in three steps'}</h2>
+      <p>{fr
+        ? 'Changez le scénario et le montant fictif pour voir comment un résultat peut varier. Les nombres ne sont ni des prix de marché, ni une prévision, ni une performance réelle d’agent.'
+        : 'Change the fictional scenario and amount to see how an outcome can vary. These numbers are not market prices, forecasts or actual agent performance.'}</p>
     </div>
-  )
+
+    <fieldset className="xa-intelligence-card">
+      <legend className="text-base font-semibold">{fr?'1. Choisir une situation imaginaire':'1. Pick an imaginary situation'}</legend>
+      <div className="mt-3 grid gap-3 sm:grid-cols-3">
+        {(Object.keys(SCENARIOS) as Scenario[]).map(key=><label key={key}
+          className="flex min-h-[52px] cursor-pointer items-center gap-2 rounded-xl border border-[color:var(--xa-border)] p-3">
+          <input type="radio" name="xorus-example" value={key} checked={scenario===key}
+            onChange={()=>setScenario(key)}/>
+          <span className="text-sm font-medium">{fr?SCENARIOS[key].fr:SCENARIOS[key].en}</span>
+        </label>)}
+      </div>
+    </fieldset>
+
+    <div className="xa-intelligence-card">
+      <label htmlFor="xorus-demo-amount" className="block text-base font-semibold">
+        {fr?'2. Choisir un montant fictif':'2. Choose an imaginary amount'}
+      </label>
+      <p className="xa-intelligence-note mt-2">{fr?'Il ne sera ni débité ni investi.':'Nothing is charged or invested.'}</p>
+      <div className="mt-3 flex flex-wrap items-center gap-4">
+        <input id="xorus-demo-amount" type="range" min="100" max="1000" step="50"
+          value={amount} onChange={event=>setAmount(Number(event.target.value))}
+          className="min-w-[180px] flex-1" />
+        <output htmlFor="xorus-demo-amount" className="min-w-[90px] text-right text-lg font-bold tabular-nums">{amount} €</output>
+      </div>
+    </div>
+
+    <section className="xa-intelligence-card" aria-label={fr?'Résultat simulé':'Simulated result'}>
+      <h3>{fr?'3. Voir ce qui peut changer':'3. See what can change'}</h3>
+      <p>{fr?model.frNote:model.enNote}</p>
+      <dl className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <div><dt className="text-xs text-[color:var(--xa-text-secondary)]">{fr?'Variation inventée':'Invented change'}</dt>
+          <dd className="mt-1 font-bold tabular-nums">{model.move>0?'+':''}{model.move} %</dd></div>
+        <div><dt className="text-xs text-[color:var(--xa-text-secondary)]">{fr?'Gain/perte théorique':'Hypothetical P/L'}</dt>
+          <dd className="mt-1 font-bold tabular-nums">{fmt(gross)} €</dd></div>
+        <div><dt className="text-xs text-[color:var(--xa-text-secondary)]">{fr?'Frais fictifs':'Fictional fees'}</dt>
+          <dd className="mt-1 font-bold tabular-nums">{fmt(fees)} €</dd></div>
+        <div><dt className="text-xs text-[color:var(--xa-text-secondary)]">{fr?'Résultat fictif net':'Fictional net'}</dt>
+          <dd className="mt-1 font-bold tabular-nums">{fmt(net)} €</dd></div>
+      </dl>
+      <p role="status" className="xa-intelligence-status">{fr
+        ? 'Simulation locale uniquement. Aucune transaction envoyée, aucun rendement promis, aucun agent actif.'
+        : 'Local simulation only. No transaction sent, no promised return, no active agent.'}</p>
+    </section>
+
+    <details className="xa-intelligence-advanced">
+      <summary>{fr?'Comment sont calculés ces exemples ?':'How are these examples calculated?'}</summary>
+      <p className="xa-intelligence-note mt-3">{fr
+        ? 'Gain/perte = montant × variation fictive. Frais fictifs = montant × 0,25 % + 0,08 €. Résultat net = gain/perte − frais. Ceci est une démonstration mathématique ; les frais réels et l’exécution varieraient.'
+        : 'P/L = amount × imaginary change. Example fees = amount × 0.25% + €0.08. Net = P/L − fees. This is a mathematical illustration; real costs and execution would differ.'}</p>
+    </details>
+    <div className="flex flex-wrap gap-3 text-sm">
+      <Link to="/xorus" className="xa-button secondary">{fr?'Comprendre xOrus':'Understand xOrus'}</Link>
+      <Link to="/agents" className="xa-button secondary">{fr?'Explorer les agents':'Explore agents'}</Link>
+    </div>
+  </section>
 }
