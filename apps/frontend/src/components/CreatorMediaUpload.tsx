@@ -63,7 +63,10 @@ export default function CreatorMediaUpload({title,onReady}:Props){
     revision.current+=1
     setPinned(null)
     onReady(null)
-  },[title,address])
+    // A request already sent may still finish server-side. On leaving the
+    // page or changing signer, never open the next prompt or publish metadata.
+    return ()=>{revision.current+=1}
+  },[title,address,connected,method])
   useEffect(()=>{
     if(!file){setPreview('');return}
     const url=URL.createObjectURL(file);setPreview(url)
