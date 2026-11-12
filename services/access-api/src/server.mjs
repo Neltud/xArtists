@@ -28,6 +28,7 @@ import { loadOrders } from './orders.mjs'
 import { troBridgeStatus } from './troBridgeStatus.mjs'
 import { createOpenSeaPreviewService } from './openseaPreview.mjs'
 import { artpriceReadiness } from './artpriceLicensed.mjs'
+import { probeStudioStore } from './studioStoreProbe.mjs'
 import { tryHandleAuction, auctionPublicConfig } from './auctionHttp.mjs'
 import {studioMediaConfig,mediaJwt,mediaActor,readCreatorMedia,
   uploadStudioMedia,pinStudioMetadata} from './creatorMedia.mjs'
@@ -213,6 +214,15 @@ async function handleRequest(req, res) {
   if (req.method === 'GET' && pth === '/v1/ops/orders-store/status') {
     const status = await probeOrdersStore()
     json(res, status.ok ? 200 : 503, status)
+    return
+  }
+
+  // Portable Studio schema evidence from this runtime's database. No artist rows,
+  // provider credential checks, automatic migration, upload, or wallet operation.
+  if (pth === '/v1/ops/studio-store/status') {
+    if (req.method !== 'GET') { json(res,405,{ok:false,error:'method_not_allowed'});return }
+    const status=await probeStudioStore()
+    json(res,status.ok?200:503,status)
     return
   }
 

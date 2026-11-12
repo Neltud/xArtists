@@ -56,3 +56,34 @@ jobs:
       - name: Production build
         working-directory: apps/frontend
         run: npm run build
+  studio-schema-postgres:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: xartists_studio_probe
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres -d xartists_studio_probe"
+          --health-interval 2s --health-timeout 3s --health-retries 20
+    env:
+      TEST_STUDIO_DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/xartists_studio_probe
+      ALLOW_EPHEMERAL_STUDIO_PG_TEST: '1'
+      MINT_LIVE_ENABLED: '0'
+      CREATOR_MEDIA_UPLOAD_ENABLED: '0'
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: services/access-api/package-lock.json
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+        working-directory: services/access-api
+      - name: Real migrations, MIME constraints, model size and SELECT-only schema probe
+        run: node --test tests/studioMigrationsPostgres.test.mjs
+        working-directory: services/access-api
