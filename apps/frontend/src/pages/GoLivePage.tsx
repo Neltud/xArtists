@@ -121,7 +121,7 @@ export default function GoLivePage() {
         <nav aria-label="Parcours publics" className="flex flex-wrap gap-3">
           <Link className="btn-secondary inline-flex min-h-[44px] items-center px-4 text-sm" to="/marketplace">Marketplace</Link>
           <Link className="btn-secondary inline-flex min-h-[44px] items-center px-4 text-sm" to="/studio">Studio</Link>
-          <Link className="btn-secondary inline-flex min-h-[44px] items-center px-4 text-sm" to="/lia">LIA · Paper</Link>
+          <Link className="btn-secondary inline-flex min-h-[44px] items-center px-4 text-sm" to="/xorus">xOrus · Paper</Link>
         </nav>
       </header>
       <button type="button" onClick={() => setShowDiagnostics(v => !v)} aria-expanded={showDiagnostics}
