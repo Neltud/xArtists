@@ -1,0 +1,10 @@
+# API_HOSTNAME must be set in the proxy container. Caddy handles HTTPS renewal.
+# Never expose port 8787 directly to the internet.
+{$API_HOSTNAME} {
+  encode zstd gzip
+  reverse_proxy api:8787
+  header {
+    X-Content-Type-Options "nosniff"
+    Referrer-Policy "no-referrer"
+  }
+}

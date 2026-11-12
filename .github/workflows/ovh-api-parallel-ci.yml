@@ -1,0 +1,37 @@
+name: OVH standalone API parallel preflight
+
+on:
+  pull_request:
+    paths:
+      - 'deploy/ovh/**'
+      - 'services/access-api/Dockerfile'
+      - 'services/access-api/tests/ovhDeployment.test.mjs'
+      - '.github/workflows/ovh-api-parallel-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'deploy/ovh/**'
+      - 'services/access-api/Dockerfile'
+      - 'services/access-api/tests/ovhDeployment.test.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ovh-api-preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check non-commercial infrastructure contract
+        run: node --test services/access-api/tests/ovhDeployment.test.mjs
+      - name: Validate Compose without real DNS, secrets, or writes
+        env:
+          API_HOSTNAME: api-staging.example.org
+        run: |
+          cp deploy/ovh/api.env.template deploy/ovh/.env.api
+          docker compose -f deploy/ovh/compose.yaml config --quiet
+          rm deploy/ovh/.env.api
+      - name: Build locked standalone API image
+        run: docker build --pull -f services/access-api/Dockerfile services/access-api
