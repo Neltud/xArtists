@@ -2,12 +2,18 @@ import assert from 'node:assert/strict'
 import {test} from 'node:test'
 import {checkStudioIpfsReadiness,validateStudioSchema} from '../src/studioPreflight.mjs'
 
-const columns=[
+const names=[
   'id','wallet','mime','bytes','sha256','uri','status','created_at',
   'metadata_uri','metadata_sha256',
 ]
+const columns=names.map(column_name=>({column_name,udt_name:
+  column_name==='bytes'?'int4':column_name==='created_at'?'timestamptz':'text'}))
 const definition="CHECK (((status = ANY (ARRAY['reserved'::text, 'pinned'::text, 'failed'::text, 'metadata_pinning'::text]))))"
-const indexes=['xartists_studio_media_wallet_created_idx']
+const mimeDefinition="CHECK (mime IN ('image/jpeg','image/png','image/webp','video/mp4'))"
+const indexes=[{indexname:'xartists_studio_media_wallet_created_idx',valid:true,
+  definition:'CREATE INDEX xartists_studio_media_wallet_created_idx ON public.xartists_studio_media USING btree (wallet, created_at DESC)'}]
+const schema={columns,statusDefinition:definition,statusValidated:true,
+  mimeDefinition,mimeValidated:true,indexes}
 const secret='not-for-output-'.repeat(6)
 const env={
   DATABASE_URL:'postgres://this-host-and-user-must-not-leak',
@@ -15,18 +21,18 @@ const env={
   ACCESS_JWT_SECRET:'signing-secret-for-test-only'.repeat(2),
   CREATOR_MEDIA_UPLOAD_ENABLED:'0',
 }
-function mockClient({table=true,cols=columns,status=definition,idx=indexes}={}){
+function mockClient({table=true,cols=columns,status=definition,idx=indexes,mime=mimeDefinition}={}){
   const calls=[]
   const client={
     query:async sql=>{
       calls.push(sql)
       if(sql.includes('to_regclass'))return {rows:[{table_ready:table}]}
       if(sql.includes('information_schema.columns'))
-        return {rows:cols.map(column_name=>({column_name}))}
+        return {rows:cols}
       if(sql.includes('pg_get_constraintdef'))
-        return {rows:[{definition:status}]}
-      if(sql.includes('pg_indexes'))
-        return {rows:idx.map(indexname=>({indexname}))}
+        return {rows:[{conname:'xartists_studio_media_status_check',convalidated:true,definition:status},
+          {conname:'xartists_studio_media_mime_check',convalidated:true,definition:mime}]}
+      if(sql.includes('pg_index'))return {rows:idx}
       throw Error('unexpected read-only query')
     },
     end:async()=>{},
@@ -34,11 +40,26 @@ function mockClient({table=true,cols=columns,status=definition,idx=indexes}={}){
   return {client,calls}
 }
 test('schema requires 004+005, metadata claim state and quota index',()=>{
-  const valid=validateStudioSchema({columns,statusDefinition:definition,indexes})
+  const valid=validateStudioSchema(schema)
   assert.equal(valid.ready,true)
-  assert.equal(validateStudioSchema({columns:columns.slice(0,-1),statusDefinition:definition,indexes}).ready,false)
-  assert.equal(validateStudioSchema({columns,statusDefinition:"CHECK (status IN ('reserved','pinned'))",indexes}).ready,false)
-  assert.equal(validateStudioSchema({columns,statusDefinition:definition,indexes:[]}).ready,false)
+  assert.equal(validateStudioSchema({...schema,columns:columns.slice(0,-1)}).ready,false)
+  assert.equal(validateStudioSchema({...schema,statusDefinition:"CHECK (status IN ('reserved','pinned'))"}).ready,false)
+  assert.equal(validateStudioSchema({...schema,indexes:[]}).ready,false)
+})
+test('a GLB upload gate requires migration 006 while image uploads still accept 004+005',()=>{
+  assert.equal(validateStudioSchema(schema).modelReady,false)
+  assert.equal(validateStudioSchema({...schema,requireModel:true}).ready,false)
+  assert.equal(validateStudioSchema({...schema,requireModel:true,
+    mimeDefinition:mimeDefinition.replace("'video/mp4'","'video/mp4','model/gltf-binary'")}).ready,true)
+})
+test('wrong column types, unvalidated constraints and a renamed wrong index fail readiness',()=>{
+  assert.equal(validateStudioSchema({...schema,columns:columns.map(c=>
+    c.column_name==='bytes'?{...c,udt_name:'text'}:c)}).ready,false)
+  assert.equal(validateStudioSchema({...schema,statusValidated:false}).ready,false)
+  assert.equal(validateStudioSchema({...schema,mimeValidated:false}).ready,false)
+  assert.equal(validateStudioSchema({...schema,indexes:[{...indexes[0],valid:false}]}).ready,false)
+  assert.equal(validateStudioSchema({...schema,indexes:[{...indexes[0],
+    definition:'CREATE INDEX xartists_studio_media_wallet_created_idx ON public.xartists_studio_media USING btree (id)'}]}).ready,false)
 })
 test('read-only preflight verifies pinned schema and JWT without leaking secrets',async()=>{
   const {client,calls}=mockClient()
