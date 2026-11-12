@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs'
 
 const source = (path) => readFileSync(new URL('../src/' + path, import.meta.url), 'utf8')
 
-test('LIA exposes read-only snapshots; unsourced immersive 3D is suspended', () => {
+test('xOrus exposes read-only snapshots; unsourced immersive 3D is suspended', () => {
   const lazy = source('components/lia/LiaHubControlRoomLazy.tsx')
   const legacy = source('components/lia/LiaHubControlRoom.tsx')
   const renderers = source('components/lia/holoRenderers.ts')
@@ -33,8 +33,8 @@ test('public status differentiates source age, checking time and simulated perfo
   assert.doesNotMatch(overview, /\{hub\.note\}/)
 })
 
-test('LIA top-level page remains browse-only and exposes market, auction and packs', () => {
-  const page = source('pages/LiaPage.tsx')
+test('xOrus top-level page remains browse-only and exposes market, auction and packs', () => {
+  const page = source('pages/XorusPage.tsx')
   assert.match(page, /PAPER \/ SHADOW/)
   assert.match(page, /advancedOpen &&/)
   assert.match(page, /aria-expanded=\{advancedOpen\}/)
@@ -46,4 +46,11 @@ test('LIA top-level page remains browse-only and exposes market, auction and pac
   assert.doesNotMatch(page, /LIVE user-sign xPortal/)
   assert.match(page, /Archived strategy withheld/)
   assert.match(page, /producerFreshness\.is_stale/)
+})
+
+test('legacy page delegates to xOrus without a second implementation', () => {
+  const legacy = source('pages/LiaPage.tsx')
+  assert.match(legacy, /export \{ default \} from '\.\/XorusPage'/)
+  assert.doesNotMatch(legacy, /useEffect|fetch\(|sendTransaction/)
+  assert.match(source('pages/XorusPage.tsx'), /function XorusPage\(/)
 })
