@@ -1,23 +1,21 @@
 /**
- * Journal d’intents · paper ou LIVE user-sign (xPortal).
- * VITE_LIA_LIVE_TRADING=1 → parcours signé explicitement dans xPortal.
+ * Journal d’intents · lecture et paper.
+ * Le client public ne broadcaste pas le wallet LIA Ops.
+ * publicOpsBroadcastAllowed() est figé à false : VITE_LIA_LIVE_TRADING ne réouvre pas send().
  */
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { LIA_BADGE, LIA_GUARDS, LIA_LIVE_TRADING } from '../config/liaConfig'
 import {
   attachUserTxHash,
-  ensureBootstrapIntent,
   explorerTxUrl,
   loadJournal,
   markAwaitingSignature,
-  markPending,
   type JournalEntry,
 } from '../lia/intentJournal'
 import { prepareIntentTx, describeTx } from '../lia/buildIntentTx'
-import { preflightLiveDraft } from '../lia/livePreflight'
+import { publicOpsBroadcastAllowed } from '../lia/publicCommand'
 import { useWallet, LIA_WALLET } from '../context/WalletContext'
-import { useSendTransaction } from '../hooks/useSendTransaction'
 import { requestOpenConnect } from '../lib/walletEvents'
 import { verifyUserSignedTx } from '../lia/verifyUserTx'
 
@@ -31,30 +29,24 @@ const STATUS_LABEL: Record<JournalEntry['status'], string> = {
 
 export default function IntentXPortalPanel() {
   const { connected, address } = useWallet()
-  const { send } = useSendTransaction()
   const [rows, setRows] = useState<JournalEntry[]>([])
   const [hashDraft, setHashDraft] = useState<Record<string, string>>({})
   const [busyId, setBusyId] = useState<string | null>(null)
   const [toast, setToast] = useState<string | null>(null)
+  const opsBroadcast = publicOpsBroadcastAllowed()
 
   const isLiaOps = !!address && address.toLowerCase() === LIA_WALLET.toLowerCase()
 
   const refresh = useCallback(() => {
-    if (LIA_LIVE_TRADING) ensureBootstrapIntent()
     setRows(loadJournal(12))
   }, [])
 
   useEffect(() => {
     refresh()
     const id = window.setInterval(refresh, 15_000)
-    const onIntent = (ev: Event) => {
-      const detail = (ev as CustomEvent<{ intentId?: string; payload?: { summary?: string } }>).detail
+    const onIntent = () => {
       refresh()
-      if (detail?.intentId) {
-        setToast(
-          `Intent ${detail.intentId.slice(0, 22)} prêt · ${detail.payload?.summary || 'signature xPortal'}`,
-        )
-      }
+      setToast('Intent journalisé en paper. Ce client ne le signe pas.')
     }
     window.addEventListener('lia-user-intent', onIntent)
     return () => {
@@ -64,6 +56,7 @@ export default function IntentXPortalPanel() {
   }, [refresh])
 
   const onPrepare = (entry: JournalEntry) => {
+    if (opsBroadcast) return
     const prepared = prepareIntentTx(entry)
     if (!prepared.ok) {
       setToast(prepared.reason)
@@ -73,61 +66,7 @@ export default function IntentXPortalPanel() {
       setToast('Cet intent est déjà soumis ou confirmé.')
       return
     }
-    const draft = prepared.draft
-    setToast(
-      LIA_LIVE_TRADING
-        ? `Prêt à signer · ${describeTx(draft)} · wallet protocole historique via xPortal`
-        : 'Suivi ouvert (paper). Active VITE_LIA_LIVE_TRADING=1 pour broadcaster une TX.',
-    )
-    refresh()
-  }
-
-  const onSignXPortal = async (entry: JournalEntry) => {
-    if (busyId !== null) return
-    if (!connected || !address) {
-      requestOpenConnect()
-      setToast('Connecte le wallet protocole historique dans xPortal.')
-      return
-    }
-    if (!LIA_LIVE_TRADING) {
-      setToast('LIA_LIVE_TRADING=0 — rebuild avec VITE_LIA_LIVE_TRADING=1.')
-      return
-    }
-    if (!isLiaOps) {
-      setToast(
-        `Connecte le wallet protocole LIA (${LIA_WALLET.slice(0, 12)}…) dans xPortal pour signer les intents ops.`,
-      )
-      return
-    }
-    const prepared = prepareIntentTx(entry)
-    if (!prepared.ok) {
-      setToast(prepared.reason)
-      return
-    }
-    setBusyId(entry.id)
-    const draft = prepared.draft
-    try {
-      const risk = await preflightLiveDraft(draft, loadJournal(60))
-      if (!markAwaitingSignature(entry.id)) throw new Error('Cet intent est déjà soumis ou confirmé.')
-      const res = await send([draft], {
-        processingMessage: `Intent ${entry.action}…`,
-        successMessage: 'Intent soumis à xPortal',
-        errorMessage: 'Signature / broadcast échoué',
-      })
-      if (res.error) {
-        setToast(res.error)
-        setBusyId(null)
-        refresh()
-        return
-      }
-      markPending(entry.id, res.sessionId || undefined, risk.usdNotional)
-      setToast(
-        `TX envoyée à xPortal · ${describeTx(draft)}. Confirme dans le wallet, puis colle le TxHash si besoin.`,
-      )
-    } catch (e) {
-      setToast(e instanceof Error ? e.message : 'Erreur signature')
-    }
-    setBusyId(null)
+    setToast(`Préparation locale seulement · ${describeTx(prepared.draft)}. Aucun broadcast.`)
     refresh()
   }
 
@@ -135,7 +74,7 @@ export default function IntentXPortalPanel() {
     const h = (hashDraft[id] || '').trim()
     if (!connected || !address) {
       requestOpenConnect()
-      setToast('Connecte le wallet qui a signé.')
+      setToast('Connecte le wallet qui a signé, hors de ce client.')
       return
     }
     const entry = rows.find(row => row.id === id)
@@ -155,7 +94,7 @@ export default function IntentXPortalPanel() {
       setToast('Ce hash est déjà lié à un autre intent.')
       return
     }
-    setToast('Tx confirmée on-chain · journal mis à jour.')
+    setToast('Tx déjà présente on-chain · journal mis à jour. Ce client ne l’a pas envoyée.')
     refresh()
   }
 
@@ -164,9 +103,9 @@ export default function IntentXPortalPanel() {
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
           <p className="text-[10px] uppercase tracking-[0.18em] text-cyan-300/80 font-tech">
-            Intent journal · {LIA_LIVE_TRADING ? 'LIVE user-sign' : 'paper'}
+            Intent journal · {opsBroadcast ? 'broadcast' : 'paper fermé'}
           </p>
-          <h3 className="text-sm font-semibold text-white">Signaux → signature xPortal</h3>
+          <h3 className="text-sm font-semibold text-white">Signaux → lecture, pas une signature ops</h3>
         </div>
         <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[10px] text-emerald-100 max-w-[16rem] leading-snug">
           {LIA_BADGE}
@@ -174,18 +113,15 @@ export default function IntentXPortalPanel() {
       </div>
 
       <p className="text-[11px] text-zinc-500 leading-relaxed">
-        Signature xPortal {LIA_LIVE_TRADING ? 'active' : 'désactivée'} · dépôt {LIA_GUARDS.bootstrapEgld} EGLD ·
-        plafond pré-signature {LIA_GUARDS.maxUsdPerTrade} $/opération.
-        Univers visé : EGLD + ESDT fongibles. Chaque swap exige une cotation et une transaction vérifiées.
-        {LIA_LIVE_TRADING
-          ? ' Connecte le wallet protocole historique ops dans xPortal puis « Signer xPortal ».'
-          : ' Mode paper : colle un hash après signature manuelle, ou rebuild avec VITE_LIA_LIVE_TRADING=1.'}
+        Broadcast LIA Ops {opsBroadcast ? 'inattendu' : 'fermé'} dans ce client.
+        VITE_LIA_LIVE_TRADING={LIA_LIVE_TRADING ? '1' : '0'} ne réouvre pas ce bouton.
+        Plafond documenté {LIA_GUARDS.maxUsdPerTrade} $/opération, {LIA_GUARDS.maxUsdPerDay} $/jour — inactif ici.
+        La revue EGLD 16–20 nov 2026 n’est pas une autorisation.
       </p>
 
-      {LIA_LIVE_TRADING && (
+      {isLiaOps && (
         <p className="text-[11px] text-amber-100/90 rounded-lg border border-amber-500/25 bg-amber-500/10 px-3 py-2 mono break-all">
-          Wallet protocole historique ops attendu : {LIA_WALLET}
-          {isLiaOps ? ' · ✅ connecté' : connected ? ' · ⚠️ autre adresse' : ' · non connecté'}
+          Wallet historique ops détecté ({LIA_WALLET}). Ce client ne le fait pas signer.
         </p>
       )}
 
@@ -196,21 +132,7 @@ export default function IntentXPortalPanel() {
       )}
 
       {rows.length === 0 ? (
-        <div className="space-y-2">
-          <p className="text-[12px] text-zinc-500">Aucun intent. En live, un bootstrap est injecté auto.</p>
-          {LIA_LIVE_TRADING && (
-            <button
-              type="button"
-              className="btn-secondary text-xs min-h-[44px]"
-              onClick={() => {
-                ensureBootstrapIntent()
-                refresh()
-              }}
-            >
-              Créer intent bootstrap live=1
-            </button>
-          )}
-        </div>
+        <p className="text-[12px] text-zinc-500">Aucun intent. Rien n’est injecté automatiquement.</p>
       ) : (
         <ul className="space-y-3 max-h-[28rem] overflow-y-auto">
           {rows.map(e => {
@@ -248,46 +170,34 @@ export default function IntentXPortalPanel() {
                   Tx {e.txHash.slice(0, 10)}…{e.txHash.slice(-8)} ↗ Explorer
                 </a>
               ) : (
-                <div className="flex flex-col gap-2">
-                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center flex-wrap">
-                    <button
-                      type="button"
-                      className="btn-secondary text-xs min-h-[44px]"
-                      disabled={busyId !== null || !prepared.ok || ['pending', 'executed'].includes(e.status)}
-                      onClick={() => onPrepare(e)}
-                    >
-                      Préparer TX
-                    </button>
-                    {LIA_LIVE_TRADING && (
-                      <button
-                        type="button"
-                        className="btn-primary text-xs min-h-[44px]"
-                        disabled={busyId !== null || !prepared.ok || ['pending', 'executed'].includes(e.status)}
-                        onClick={() => void onSignXPortal(e)}
-                      >
-                        {busyId === e.id ? 'xPortal…' : 'Signer xPortal'}
-                      </button>
-                    )}
-                    <input
-                      className="flex-1 rounded-lg border border-white/10 bg-black/50 px-2 py-1.5 text-[11px] text-white mono min-h-[44px]"
-                      placeholder="TxHash (64 hex) après signature"
-                      value={hashDraft[e.id] || ''}
-                      onChange={ev =>
-                        setHashDraft(d => ({
-                          ...d,
-                          [e.id]: ev.target.value,
-                        }))
-                      }
-                    />
-                    <button
-                      type="button"
-                      className="btn-secondary text-xs min-h-[44px] shrink-0"
-                      disabled={busyId === e.id}
-                      onClick={() => void onAttachHash(e.id)}
-                    >
-                      {busyId === e.id ? 'Vérif…' : 'Vérifier hash'}
-                    </button>
-                  </div>
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center flex-wrap">
+                  <button
+                    type="button"
+                    className="btn-secondary text-xs min-h-[44px]"
+                    disabled={busyId !== null || !prepared.ok || ['pending', 'executed'].includes(e.status)}
+                    onClick={() => onPrepare(e)}
+                  >
+                    Préparer en local
+                  </button>
+                  <input
+                    className="flex-1 rounded-lg border border-white/10 bg-black/50 px-2 py-1.5 text-[11px] text-white mono min-h-[44px]"
+                    placeholder="TxHash déjà signé ailleurs (64 hex)"
+                    value={hashDraft[e.id] || ''}
+                    onChange={ev =>
+                      setHashDraft(d => ({
+                        ...d,
+                        [e.id]: ev.target.value,
+                      }))
+                    }
+                  />
+                  <button
+                    type="button"
+                    className="btn-secondary text-xs min-h-[44px] shrink-0"
+                    disabled={busyId === e.id}
+                    onClick={() => void onAttachHash(e.id)}
+                  >
+                    {busyId === e.id ? 'Vérif…' : 'Vérifier hash'}
+                  </button>
                 </div>
               )}
             </li>
@@ -303,8 +213,8 @@ export default function IntentXPortalPanel() {
         <Link to="/command-center" className="hover:text-zinc-300">
           Command Center
         </Link>
-        <Link to="/agents" className="hover:text-zinc-300">
-          Packs Agent
+        <Link to="/go-live" className="hover:text-zinc-300">
+          État public
         </Link>
       </div>
     </section>
