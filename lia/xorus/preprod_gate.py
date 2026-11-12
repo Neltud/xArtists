@@ -9,7 +9,6 @@ from __future__ import annotations
 import base64
 import hashlib
 import json
-import math
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping, Sequence
@@ -88,7 +87,7 @@ def _verify_attestation(manifest: Mapping[str, Any],
                                sort_keys=True, separators=(",", ":")).encode("utf-8")
         key.verify(base64.b64decode(receipt["signature_base64"], validate=True), statement)
         return True
-    except (OSError, ValueError, TypeError, KeyError, ImportError, Exception):
+    except Exception:  # Always fail closed on absent/invalid trust material.
         return False
 
 
@@ -133,13 +132,14 @@ def assess_preproduction(
     if len(ids) != len(set(ids)):
         errors.append("duplicate_included_ids")
     product = manifest.get("product")
-    if product not in PRODUCTS:
+    if not isinstance(product, str) or product not in PRODUCTS:
         errors.append("invalid_product")
 
     def indexed(rows: Sequence[Mapping[str, Any]], label: str) -> dict[str, Mapping[str, Any]]:
         found: dict[str, Mapping[str, Any]] = {}
         for row in rows:
-            if not isinstance(row, Mapping) or row.get("signal_id") not in canonical:
+            if (not isinstance(row, Mapping) or not isinstance(row.get("signal_id"), str)
+                or row.get("signal_id") not in canonical):
                 errors.append(f"{label}:invalid_row")
                 continue
             sid = row["signal_id"]
@@ -155,7 +155,8 @@ def assess_preproduction(
             errors.append(f"{sid}:missing_source_or_license")
             continue
         if (obs.get("semantic_name") != sid or obs.get("provider") != lic.get("provider")
-            or not obs.get("provider") or obs.get("network") not in NETWORKS
+            or not obs.get("provider") or not isinstance(obs.get("network"), str)
+            or obs.get("network") not in NETWORKS
             or obs.get("observation_status") != "observed"):
             errors.append(f"{sid}:source_unverified")
         if not _digest_file(evidence_root, obs.get("proof_evidence_path"), obs.get("proof_sha256")):
