@@ -14,3 +14,6 @@ export function verifyUserNftListPreflight(options: {
  address: string | null | undefined; identifier: string; collection: string;
  nonce: number; request?: typeof fetch
 }): Promise<UserNftListProof>
+
+export function nftIdentifier(collection: string, nonce: number): string
+export function hasNftMediaUri(uris: unknown): boolean

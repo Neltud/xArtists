@@ -4,6 +4,7 @@
  */
 import { useEffect, useMemo, useState } from 'react'
 import { useWallet } from '../../context/WalletContext'
+import { hasNftMediaUri } from '../../lib/marketplaceUserListing.mjs'
 import { requestOpenConnect } from '../../lib/walletEvents'
 
 type OwnedNft = {
@@ -19,10 +20,7 @@ const PACK_COLLECTIONS = new Set(['XAIPLS-2cf72b','XAIYLD-987e24','XAISNT-3d8a6b
 const isRestrictedPack = (collection: string) => PACK_COLLECTIONS.has(collection)
 const addressPattern = /^erd1[a-z0-9]{58}$/
 const identifierPattern = /^[A-Za-z0-9]{3,12}-[a-f0-9]{6}-[a-f0-9]{2,16}$/
-const hasMetadataUri = (n: OwnedNft) =>
-  Array.isArray(n.uris) && n.uris.some(x => typeof x === 'string' &&
-    (/^ipfs:\/\/(bafy[a-z2-7]{20,}|Qm[1-9A-HJ-NP-Za-km-z]{44})/i.test(x) ||
-     /^https:\/\//i.test(x)))
+const hasMetadataUri = (n: OwnedNft) => hasNftMediaUri(n.uris)
 
 function exportDraft(collection: string, token: string, price: string, mediaUriPresent: boolean) {
   const matched = /^(?:0|[1-9][0-9]{0,4})(?:\.[0-9]{1,18})?$/.exec(price.trim())

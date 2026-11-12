@@ -1,14 +1,14 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import {readFileSync} from 'node:fs'
-import {isOwnedNftListCandidate,verifyUserNftListPreflight,MARKETPLACE_MAINNET,MARKETPLACE_CODEHASH} from '../src/lib/marketplaceUserListing.mjs'
+import {isOwnedNftListCandidate,verifyUserNftListPreflight,hasNftMediaUri,nftIdentifier,MARKETPLACE_MAINNET,MARKETPLACE_CODEHASH} from '../src/lib/marketplaceUserListing.mjs'
 const read=p=>readFileSync(new URL(p,import.meta.url),'utf8')
 const addr='erd1'+'a'.repeat(58)
 const nft={identifier:'ART-abcdef-01',collection:'ART-abcdef',nonce:1,name:'Original',type:'NonFungibleESDT',balance:'1',
   uris:['ipfs://Qm'+'a'.repeat(44)]}
 const account={address:MARKETPLACE_MAINNET,codeHash:MARKETPLACE_CODEHASH,isPayable:true,code:'verified-code'}
 const creator='erd1'+'b'.repeat(58)
-const meta={identifier:nft.identifier,collection:nft.collection,nonce:nft.nonce,royalties:500,creator}
+const meta={identifier:nft.identifier,collection:nft.collection,nonce:nft.nonce,royalties:5,creator}
 function requestFor(row=nft,options={}){
   return async (url,opts)=>({ok:true,async json(){
     if(url.includes('/accounts/'+encodeURIComponent(addr)+'/nfts/'))return row
@@ -45,7 +45,7 @@ test('reject transfer when ownership, fee, paused status, payable, codehash or A
     requestFor(nft,{account:{codeHash:'drift'}}),requestFor(nft,{account:{isPayable:false}}),
     requestFor(nft,{fee:'A+w='}),requestFor(nft,{paused:'AQ=='}),
     requestFor(nft,{nft:{creator:undefined}}),
-    requestFor(nft,{nft:{royalties:800}}),
+    requestFor(nft,{nft:{royalties:8}}),
     requestFor(nft,{nft:{royalties:undefined}}),
     requestFor(nft,{nft:{collection:'OTHER-abcdef'}}),
     async()=>({ok:false})
@@ -67,4 +67,42 @@ test('public Marketplace surfaces a user seller route but preserves a strict sig
   assert.doesNotMatch(hook,/royaltyReceiver \|\| address|p\.royaltyBps \?\? 500/)
   assert.match(sheet,/currentQuote\s*\? 'Signer listNft'/)
   assert.doesNotMatch(market+sheet,/AGENT_PACK_PUBLIC_COMMERCE_RELEASED\s*=\s*true|buyPack\(/)
+})
+
+
+test('API base64 URI is eligible without trusting media thumbnails',()=>{
+  const uri='https://ipfs.io/ipfs/Qm'+'a'.repeat(44)+'/image.png'
+  assert.equal(isOwnedNftListCandidate({...nft,uris:[btoa(uri)]}),true)
+  for(const value of ['javascript:alert(1)','data:image/png;base64,AA==','https://',
+    'https://user:password@example.com/a','https://example.com/\nimage','invalid base64']) {
+    assert.equal(hasNftMediaUri([value]),false,value)
+    assert.equal(hasNftMediaUri([btoa(value)]),false,value)
+  }
+  assert.equal(hasNftMediaUri([btoa(btoa(uri))]),false)
+  assert.equal(hasNftMediaUri([btoa('https://example.com/'+'a'.repeat(2048))]),false)
+  assert.equal(hasNftMediaUri(null),false)
+})
+
+test('nonce byte padding matches actual API identifiers at boundaries',async()=>{
+  for(const [nonce,suffix] of [[1,'01'],[255,'ff'],[256,'0100'],[307,'0133'],[4096,'1000'],[65536,'010000']]) {
+    const identifier='ART-abcdef-'+suffix
+    assert.equal(nftIdentifier(nft.collection,nonce),identifier)
+    const row={...nft,identifier,nonce,uris:[btoa(nft.uris[0])]}
+    const base=requestFor(row,{nft:{identifier,nonce}})
+    const request=(url,options)=>url.endsWith('/nfts/'+identifier) && !url.includes('/accounts/')
+      ? Promise.resolve({ok:true,json:async()=>({...meta,identifier,nonce})}) : base(url,options)
+    const proof=await verifyUserNftListPreflight({address:addr,identifier,collection:nft.collection,nonce,request})
+    assert.equal(proof.identifier,identifier)
+  }
+})
+
+test('REST percentages convert exactly to contract basis points',async()=>{
+  const opts={address:addr,identifier:nft.identifier,collection:nft.collection,nonce:1}
+  for(const [royalties,bps] of [[0,0],[5,500],[5.25,525],['0.29',29],[7,700]]) {
+    const proof=await verifyUserNftListPreflight({...opts,request:requestFor(nft,{nft:{royalties}})})
+    assert.equal(proof.royaltyBps,bps)
+  }
+  for(const royalties of [7.01,10,100,500,undefined,null,true,'',-1,'5.001','0x05','5e0']) {
+    await assert.rejects(verifyUserNftListPreflight({...opts,request:requestFor(nft,{nft:{royalties}})}))
+  }
 })

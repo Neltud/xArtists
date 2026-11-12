@@ -8,7 +8,7 @@ import { useCallback, useRef, useState } from 'react'
 import { useSendTransaction } from './useSendTransaction'
 import { useWallet } from '../context/WalletContext'
 import { egldTextToWei } from '../lib/egldExactAmount.mjs'
-import { verifyUserNftListPreflight } from '../lib/marketplaceUserListing.mjs'
+import { verifyUserNftListPreflight, nftIdentifier } from '../lib/marketplaceUserListing.mjs'
 import {
   isMarketplaceLive,
   isMarketplaceListingLive,
@@ -167,7 +167,7 @@ export function useMarketplaceTx() {
       // Hook-level revalidation prevents legacy NFTDetailModal callers from
       // bypassing ownership or on-chain creator royalties.
       const proof = await verifyUserNftListPreflight({
-        address, identifier:p.tokenId+'-'+p.nonce.toString(16).padStart(2,'0'),
+        address, identifier:nftIdentifier(p.tokenId,p.nonce),
         collection:p.tokenId, nonce:p.nonce,
       })
       if(walletNow.current!==address || !canAttemptSign) throw new Error('Signature wallet expirée ou compte changé.')
