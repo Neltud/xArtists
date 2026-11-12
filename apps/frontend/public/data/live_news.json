@@ -1,8 +1,85 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-11T21:44:50.002Z",
+  "updatedAt": "2026-11-12T05:52:54.878Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1794462774292",
+      "timestamp": "05:52",
+      "source": "EGLD",
+      "title": "Cotation publique · $2.87 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1794460031000",
+      "timestamp": "05:07",
+      "source": "CoinTelegraph",
+      "title": "Binance CSO unwittingly foreshadowed $6.3B hack tactic months before attack",
+      "link": "https://cointelegraph.com/news/binance-cso-foreshadowed-6b-hack-tactic-months-before-attack?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1794442153000",
+      "timestamp": "00:09",
+      "source": "CoinTelegraph",
+      "title": "MSCI confirms Strategy’s removal from indexes at end of November",
+      "link": "https://cointelegraph.com/news/msci-confirms-strategys-removal-from-indexes-end-november?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1794439124000",
+      "timestamp": "23:18",
+      "source": "CoinTelegraph",
+      "title": "Suiet wallet to shut down in latest exit from Sui ecosystem",
+      "link": "https://cointelegraph.com/news/suiet-wallet-shut-down-latest-exit-sui-ecosystem?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1794437087000",
+      "timestamp": "22:44",
+      "source": "CoinTelegraph",
+      "title": "Nvidia preparing to oust CEO Jensen Huang after affairs: WSJ",
+      "link": "https://cointelegraph.com/news/nvidia-preparing-to-oust-ceo-jensen-huang-reports?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1794434717000",
+      "timestamp": "22:05",
+      "source": "CoinTelegraph",
+      "title": "Uncalled US House races could send more crypto allies to Congress",
+      "link": "https://cointelegraph.com/news/uncalled-midterm-races-add-more-crypto-supporters-congress?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1794432961000",
+      "timestamp": "21:36",
+      "source": "CoinTelegraph",
+      "title": "Nomura explores sale of crypto unit Laser Digital: Bloomberg",
+      "link": "https://cointelegraph.com/news/nomura-sale-crypto-unit-laser-digital?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1794412845000",
+      "timestamp": "16:00",
+      "source": "CoinDesk",
+      "title": "Crypto Long & Short: The GENIUS Act’s guarantees don’t cover DeFi lending",
+      "link": "https://www.coindesk.com/coindesk-indices/2026/11/11/crypto-long-and-short-the-genius-act-s-guarantees-don-t-cover-defi-lending"
+    },
+    {
+      "id": "rss-CoinDesk-1-1794402000000",
+      "timestamp": "13:00",
+      "source": "CoinDesk",
+      "title": "OKXICE to debut tokenized stock trading with Strategy, Coinbase, Circle this month",
+      "link": "https://www.coindesk.com/business/2026/11/10/okxice-to-debut-tokenized-stock-trading-with-strategy-coinbase-circle-this-month"
+    },
+    {
+      "id": "rss-CoinDesk-2-1794401856000",
+      "timestamp": "12:57",
+      "source": "CoinDesk",
+      "title": "Meet Spiko, the largest tokenized fund in the world you’ve probably never heard about",
+      "link": "https://www.coindesk.com/business/2026/11/11/meet-spiko-the-largest-tokenized-fund-in-the-world-you-ve-probably-never-heard-about"
+    },
+    {
+      "id": "rss-CoinDesk-3-1794399684000",
+      "timestamp": "12:21",
+      "source": "CoinDesk",
+      "title": "Live news: Bitcoin remains under pressure as CoreWeave, Nvidia lead AI rebound",
+      "link": "https://www.coindesk.com/tech/2026/11/11/live-news-coreweave-jumps-14-as-earnings-fuel-rebound-across-battered-ai-stocks"
+    },
     {
       "id": "egld-1794433489437",
       "timestamp": "21:44",
@@ -51,34 +128,6 @@
       "source": "CoinTelegraph",
       "title": "Paraguay bank collapse shows stablecoins can offer a lifeline... of sorts",
       "link": "https://cointelegraph.com/magazine/paraguay-bank-collapse-shows-stablecoins-can-offer-a-lifeline-of-sorts?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1794412845000",
-      "timestamp": "16:00",
-      "source": "CoinDesk",
-      "title": "Crypto Long & Short: The GENIUS Act’s guarantees don’t cover DeFi lending",
-      "link": "https://www.coindesk.com/coindesk-indices/2026/11/11/crypto-long-and-short-the-genius-act-s-guarantees-don-t-cover-defi-lending"
-    },
-    {
-      "id": "rss-CoinDesk-1-1794402000000",
-      "timestamp": "13:00",
-      "source": "CoinDesk",
-      "title": "OKXICE to debut tokenized stock trading with Strategy, Coinbase, Circle this month",
-      "link": "https://www.coindesk.com/business/2026/11/10/okxice-to-debut-tokenized-stock-trading-with-strategy-coinbase-circle-this-month"
-    },
-    {
-      "id": "rss-CoinDesk-2-1794401856000",
-      "timestamp": "12:57",
-      "source": "CoinDesk",
-      "title": "Meet Spiko, the largest tokenized fund in the world you’ve probably never heard about",
-      "link": "https://www.coindesk.com/business/2026/11/11/meet-spiko-the-largest-tokenized-fund-in-the-world-you-ve-probably-never-heard-about"
-    },
-    {
-      "id": "rss-CoinDesk-3-1794399684000",
-      "timestamp": "12:21",
-      "source": "CoinDesk",
-      "title": "Live news: Bitcoin remains under pressure as CoreWeave, Nvidia lead AI rebound",
-      "link": "https://www.coindesk.com/tech/2026/11/11/live-news-coreweave-jumps-14-as-earnings-fuel-rebound-across-battered-ai-stocks"
     },
     {
       "id": "egld-1794404247420",
@@ -149,55 +198,6 @@
       "source": "CoinDesk",
       "title": "Goldman Sachs, Citi among banks said to commit $270 million to stablecoin venture",
       "link": "https://www.coindesk.com/business/2026/11/10/goldman-sachs-citi-among-banks-said-to-commit-usd270-million-to-stablecoin-venture"
-    },
-    {
-      "id": "rss-CoinDesk-3-1794330442000",
-      "timestamp": "17:07",
-      "source": "CoinDesk",
-      "title": "Crypto is now teamed up with U.S. government in two legal battles over perps",
-      "link": "https://www.coindesk.com/news-analysis/2026/11/10/crypto-teams-up-with-u-s-government-to-defend-stock-perps-in-legal-fight"
-    },
-    {
-      "id": "egld-1794372676866",
-      "timestamp": "04:51",
-      "source": "EGLD",
-      "title": "Cotation publique · $2.95 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1794366465000",
-      "timestamp": "03:07",
-      "source": "CoinTelegraph",
-      "title": "Crypto ally Tom Emmer elected House GOP minority whip",
-      "link": "https://cointelegraph.com/news/crypto-ally-tom-emmer-elected-house-gop-minority-whip?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1794359818000",
-      "timestamp": "01:16",
-      "source": "CoinTelegraph",
-      "title": "LNbits rushes emergency patch after reported Bitcoin wallet thefts",
-      "link": "https://cointelegraph.com/news/lnbits-rushes-emergency-patch-after-reported-bitcoin-wallet-thefts?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1794354591000",
-      "timestamp": "23:49",
-      "source": "CoinTelegraph",
-      "title": "CFTC warns Kalshi of imminent charges over notification of contracts: Politico",
-      "link": "https://cointelegraph.com/news/cftc-warns-kalshi-imminent-charges-over-contracts?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1794352108000",
-      "timestamp": "23:08",
-      "source": "CoinTelegraph",
-      "title": "Global banks commit $270M to stablecoin venture targeting 2027 launch",
-      "link": "https://cointelegraph.com/news/banks-270m-project-faro-stablecoin-2027?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1794346480000",
-      "timestamp": "21:34",
-      "source": "CoinTelegraph",
-      "title": "Can crypto trust firms compete with banks in US derivatives settlements?",
-      "link": "https://cointelegraph.com/news/crypto-trust-firms-compete-banks-us-derivatives-settlements?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
