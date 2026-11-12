@@ -1,5 +1,12 @@
 # Changelog — xArtists
 
+## [0.135.0](https://github.com/Neltud/xArtists/compare/v0.134.0...v0.135.0) (2026-11-12)
+
+
+### Features
+
+* **xorus:** paper-only Decision Agent with proof-gated abstention ([#525](https://github.com/Neltud/xArtists/issues/525)) ([c752bca](https://github.com/Neltud/xArtists/commit/c752bca7c183fa2ba4d5b6fe103d326b300a7803))
+
 ## [0.134.0](https://github.com/Neltud/xArtists/compare/v0.133.0...v0.134.0) (2026-11-12)
 
 
