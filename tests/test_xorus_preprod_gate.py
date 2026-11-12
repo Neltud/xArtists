@@ -97,6 +97,19 @@ class PreprodGateTests(unittest.TestCase):
         self.assertIn(SID + ":product_rights_missing",
                       assess_preproduction(manifest, observed, licenses, now=NOW)["errors"])
 
+    def test_malformed_unhashable_rows_fail_closed(self):
+        manifest, observed, licenses = fixture()
+        observed.append({"signal_id": []})
+        licenses.append({"signal_id": {}})
+        manifest["product"] = []
+        observed[0]["network"] = []
+        out = assess_preproduction(manifest, observed, licenses, now=NOW)
+        self.assertEqual(out["commercial"], "NO_GO")
+        self.assertIn("observations:invalid_row", out["errors"])
+        self.assertIn("licenses:invalid_row", out["errors"])
+        self.assertIn("invalid_product", out["errors"])
+        self.assertIn(SID + ":source_unverified", out["errors"])
+
     def test_root_escape_and_absent_proof_denied(self):
         with tempfile.TemporaryDirectory() as base:
             root = Path(base)
