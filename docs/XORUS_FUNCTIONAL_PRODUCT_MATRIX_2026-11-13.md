@@ -2,6 +2,8 @@
 
 **Objet :** la valeur du produit est l'analyse de données de marché, l'aide à la décision traçable, les alertes et les agents, **pas** une illustration 3D, un hologramme ou une carte NFT. Cette note sépare le code livré des preuves absentes.
 
+**Décision produit :** nous vendons nos analyses. Les données collectées servent d'entrées internes et ne sont pas revendues. Le lot `analysis_report` ajoute une projection client sans valeurs brutes ; les droits d'usage pour une analyse commerciale restent à vérifier par source, distinctement d'une licence de redistribution de feed.
+
 ## Inventaire hérité réel
 
 | Fonction historique LIA/Chorus | Entrée et sortie attendues | État du code vérifié | Critère de disponibilité |
@@ -9,7 +11,7 @@
 | Tape : prix/volume/volatilité/funding | Observations horodatées par marché, horizon 1h/24h | Catalogue défini ; quelques scoreurs Python existent ; flux manquants | Sources contractuelles, stabilité, licences, frais et timestamps |
 | Scout : DEX/on-chain | xExchange, OneDex, événements, liquidité et slippage | Scoreurs partiels, multiples axes non alimentés | Paires/adresses exactes, double lecture, timestamp et intégrité |
 | Crowd : social | mentions, qualité auteurs, sentiment et rumeurs | 10 IDs définis, aucune garantie de flux | Autorisations de source et gestion bot/rumeur |
-| Curator : art/NFT | transactions, floors, royalties, provenance | 10 IDs définis, valeurs absentes sur l'actuel board | Traçabilité NFT, anti-wash-trading et droits de redistribution |
+| Curator : art/NFT | transactions, floors, royalties, provenance | 10 IDs définis, valeurs absentes sur l'actuel board | Traçabilité NFT, anti-wash-trading et droits d'usage pour l'analyse |
 | Macro | contexte BTC/ETH/USD/événements | Catalogue, aucune implication automatique d'entrée | Données sourcées et périmètre |
 | Sentinel | veto sous -0,35, contrôles et blocage opérateur | Logique de veto incluse dans xOrus decision_agent | Veto ne peut être contourné par IA, manque de données ou un client |
 | Chair IA | 3 faits cités, 1 risque, poids ≤15% | Validation hors ligne, citations non attestées | Vérification indépendante des faits, aucune autorisation de signer |

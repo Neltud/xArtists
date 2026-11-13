@@ -29,9 +29,11 @@ test('a single understandable journey connects xOrus, Agents and Lab',()=>{
 
 test('Agents leads with real understandable paper roles; historical NFT packs are optional',()=>{
   assert.match(agents,/Les agents xOrus, simplement/)
-  assert.match(agents,/Observer les signaux/)
-  assert.match(agents,/Explorer les données/)
+  assert.match(agents,/Analyser les marchés/)
+  assert.match(agents,/Étudier les scénarios DeFi/)
   assert.match(agents,/Identifier les risques/)
+  assert.match(agents,/Nous vendons nos analyses/)
+  assert.match(agents,/données collectées restent des entrées internes/)
   assert.match(agents,/Catalogue Genesis NFT \(distinct des agents\)/)
   assert.match(agents,/<details ref=\{genesisRef\}/)
   assert.match(agents,/\{showPacks && <div/)

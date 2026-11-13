@@ -21,7 +21,7 @@ Le ZIP commercial, l'installation sur tous les navigateurs et la connexion OAuth
 
 ## xOrus — plugin d'intelligence en préparation
 
-[xOrus](https://xartists.art/intelligence/xorus/) publie des snapshots **paper** et des explications sourcées. Le paquet `packages/xorus-agent` définit une interface possible de données en lecture seule, **pas** une connexion MCP commerciale installable ni un agent autonome de trading.
+[xOrus](https://xartists.art/intelligence/xorus/) prépare **nos analyses** : synthèses, scénarios conditionnels et évaluations de risque. Les données collectées servent d'entrées internes et ne sont pas revendues. Le générateur local produit un rapport dérivé en mode **paper** ; l'aperçu public contient zéro entrée. Le paquet `packages/xorus-agent` définit une future interface de lecture de rapports d'analyse, **pas** une connexion MCP commerciale déjà disponible. La livraison privée, les sources actives et les droits d'accès restent à connecter.
 
 ## Limites communes
 

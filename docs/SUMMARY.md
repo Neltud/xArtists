@@ -12,6 +12,7 @@
   * [Collectionneurs et visiteurs](presentation/collectionneurs-et-visiteurs.md)
   * [Démarrer sur web, mobile et xPortal](presentation/demarrer-sur-mobile.md)
 * [xOrus et intelligence artificielle](presentation/lia-et-agents-ia.md)
+  * [Analyses xOrus : produit et limites](XORUS_DATA_BROKER_RELEASE.md)
   * [Control Room xOrus — données et simulation](presentation/lia-control-room-public.md)
   * [Packs IA et abonnements Whop](security/guide-public-packs-whop.md)
 * [Œuvres, offres et droits](presentation/ouverture-demandes-2026-11-03.md)

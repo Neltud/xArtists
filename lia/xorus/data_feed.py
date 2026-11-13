@@ -1,7 +1,9 @@
-"""xOrus read-only data broker. No network, payments, trades or mint.
+"""Historical internal provenance filter. No network, payments, trades or mint.
 
 Providers must be authenticated and licensed out of band. Model prompts and
 client payloads must never grant redistribution or entitlement rights.
+The legacy build_data_pack result is not the customer product: xArtists sells
+its analyses. Customer reports use analysis_report, without raw observations.
 """
 from __future__ import annotations
 

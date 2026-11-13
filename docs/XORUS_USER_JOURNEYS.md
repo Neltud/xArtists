@@ -26,4 +26,4 @@
 
 Entrée canonique : `/intelligence/xorus` (alias court `/xorus`). Les anciennes routes `/lia` et `/intelligence/lia` restent compatibles pendant la migration. Les identifiants internes `lia/` et certains champs des snapshots restent volontairement historiques et **ne doivent pas être renommés sans migration de schéma**.
 
-Les 120 signaux sont **définis**, pas 120 données garanties. xOrus reste paper/read-only, et aucune transaction ou acquisition de droits de redistribution n'est autorisée par un agent seul.
+Les 120 signaux sont **définis**, pas 120 données garanties. xOrus reste paper/read-only. Le produit porte sur **nos analyses** : synthèse, scénarios conditionnels et explication des risques. Les données collectées servent d'entrées internes et ne sont pas revendues. L'aperçu public reste sans entrée vérifiée ; les droits d'usage pour une future analyse commerciale et l'accès client doivent être vérifiés côté serveur.
