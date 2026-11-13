@@ -6,6 +6,7 @@ const source=p=>readFileSync(new URL(p,import.meta.url),'utf8')
 const analytics=source('../src/pages/MarketAnalyticsPage.tsx')
 const oldMatrix=source('../src/components/lia/MatrixBoard.tsx')
 const desk=source('../src/components/intelligence/XorusDecisionDesk.tsx')
+const liquidity=source('../src/components/defi/TroLiquidityPanel.tsx')
 
 test('public analytics serves actual source-backed xOrus decision, not simulated LIA table',()=>{
   assert.match(analytics,/import XorusDecisionDesk/)
@@ -23,4 +24,11 @@ test('retired matrix component can never fabricate BTC/TRO prices or a strategy'
   assert.match(oldMatrix,/L’ancienne matrice de démonstration a été retirée/)
   assert.doesNotMatch(oldMatrix,/matrixFromPulse\(|runDecisionCycle\(|fetchEgldPrice\(|priceUsd \*|confidence: 0\.55/)
   assert.doesNotMatch(analytics,/matrixFromPulse|runDecisionCycle/)
+})
+
+test('liquidity does not confuse browser check time with a certified source update',()=>{
+  assert.match(liquidity,/CONSULTÉ · source non certifiée/)
+  assert.match(liquidity,/Les horaires indiquent une consultation de l’API/)
+  assert.match(liquidity,/TVL et APR sont indicatifs/)
+  assert.doesNotMatch(liquidity,/\{xaRender\("LIVE "\)\}/)
 })
