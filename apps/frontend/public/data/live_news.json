@@ -1,8 +1,85 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-13T05:15:00.332Z",
+  "updatedAt": "2026-11-13T13:58:16.672Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1794578296196",
+      "timestamp": "13:58",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.00 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1794577286000",
+      "timestamp": "13:41",
+      "source": "CoinTelegraph",
+      "title": "Arthur Hayes ‘flattered’ as Coinbase backs US stock perps",
+      "link": "https://cointelegraph.com/news/arthur-hayes-coinbase-us-stock-perps-cftc?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1794575059000",
+      "timestamp": "13:04",
+      "source": "CoinTelegraph",
+      "title": "Nakamoto shares fall 6% premarket after Q3 revenue turns negative",
+      "link": "https://cointelegraph.com/news/nakamoto-shares-fall-after-negative-q3-revenue?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1794572341000",
+      "timestamp": "12:19",
+      "source": "CoinTelegraph",
+      "title": "Israeli police arrest five in $5M WhatsApp crypto trading probe",
+      "link": "https://cointelegraph.com/news/israel-police-arrest-five-5m-whatsapp-crypto-scheme?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1794563901000",
+      "timestamp": "09:58",
+      "source": "CoinTelegraph",
+      "title": "Unocoin keeps deposits and withdrawals halted over suspect transfers",
+      "link": "https://cointelegraph.com/news/unocoin-withdrawals-halted-bitgo-wallet-transfer-probe?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1794562745000",
+      "timestamp": "09:39",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin returns to 200-week trend line as analyst sees risk of $57.7K next",
+      "link": "https://cointelegraph.com/markets/bitcoin-returns-200-week-trend-line-analyst-sees-risk-57k-next?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1794562034000",
+      "timestamp": "09:27",
+      "source": "CoinTelegraph",
+      "title": "DOJ moves to seize $1.2B from Binance hack, disrupts FaceStealer scam",
+      "link": "https://cointelegraph.com/news/doj-12b-north-korean-crypto-seizure-400m-facestealer-scheme?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1794553529000",
+      "timestamp": "07:05",
+      "source": "CoinDesk",
+      "title": "Ethereum treasury firm BTCS sold ether at a loss to keep $64 million Aave loan healthy",
+      "link": "https://www.coindesk.com/markets/2026/11/13/ethereum-treasury-firm-btcs-sold-ether-at-a-loss-to-keep-usd64-million-aave-loan-healthy"
+    },
+    {
+      "id": "rss-CoinDesk-1-1794549821000",
+      "timestamp": "06:03",
+      "source": "CoinDesk",
+      "title": "Bitcoin firm Nakamoto owes Kraken $165 million, more than its entire market value",
+      "link": "https://www.coindesk.com/markets/2026/11/13/bitcoin-firm-nakamoto-owes-kraken-usd165-million-more-than-its-entire-market-value"
+    },
+    {
+      "id": "rss-CoinDesk-2-1794548726000",
+      "timestamp": "05:45",
+      "source": "CoinDesk",
+      "title": "Bitcoin ETFs are now down over $1.5 billion in net outflows for the year",
+      "link": "https://www.coindesk.com/markets/2026/11/13/bitcoin-etfs-are-now-down-over-usd1-5-billion-in-net-outflows-for-the-year"
+    },
+    {
+      "id": "rss-CoinDesk-3-1794546539000",
+      "timestamp": "05:08",
+      "source": "CoinDesk",
+      "title": "SpaceX-Tesla merger talks put 30,000 bitcoin back in focus",
+      "link": "https://www.coindesk.com/markets/2026/11/13/spacex-tesla-merger-talks-put-30-000-bitcoin-back-in-focus"
+    },
     {
       "id": "egld-1794546899804",
       "timestamp": "05:14",
@@ -121,83 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Bit Digital stock falls 5% in pre-market after Q3 revenue miss",
       "link": "https://cointelegraph.com/news/bit-digital-stock-falls-q3-revenue-miss?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1794491043000",
-      "timestamp": "13:44",
-      "source": "CoinTelegraph",
-      "title": "Thailand proposes $148K daily cap on stablecoin deposits and withdrawals",
-      "link": "https://cointelegraph.com/news/thailand-tighter-stablecoin-rules-crypto-exchange?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-1-1794498348000",
-      "timestamp": "15:45",
-      "source": "CoinDesk",
-      "title": "DTCC adds Solana to Wall Street tokenization plans, targeting 2027 rollout",
-      "link": "https://www.coindesk.com/business/2026/11/12/dtcc-adds-solana-to-wall-street-tokenization-plans-targeting-2027-rollout"
-    },
-    {
-      "id": "rss-CoinDesk-2-1794497669000",
-      "timestamp": "15:34",
-      "source": "CoinDesk",
-      "title": "Crypto for Advisors: The blockchain built to run financial markets",
-      "link": "https://www.coindesk.com/coindesk-indices/2026/11/12/crypto-for-advisors-the-blockchain-built-to-run-financial-markets"
-    },
-    {
-      "id": "rss-CoinDesk-3-1794494700000",
-      "timestamp": "14:45",
-      "source": "CoinDesk",
-      "title": "Jupiter adds Anchorage-backed USDGO to its $1 billion Solana lending platform",
-      "link": "https://www.coindesk.com/business/2026/11/12/jupiter-adds-anchorage-backed-usdgo-to-its-usd1-billion-solana-lending-platform"
-    },
-    {
-      "id": "egld-1794494464911",
-      "timestamp": "14:41",
-      "source": "EGLD",
-      "title": "Cotation publique · $2.80 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1794491942000",
-      "timestamp": "13:59",
-      "source": "CoinTelegraph",
-      "title": "Jensen Huang resigns as NVIDIA CEO and board member",
-      "link": "https://cointelegraph.com/news/jensen-huang-resigns-nvidia-ceo-board-member?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1794490319000",
-      "timestamp": "13:31",
-      "source": "CoinTelegraph",
-      "title": "Crypto hack losses equal 57 cents per $1 earned onchain: Ark’s Valente",
-      "link": "https://cointelegraph.com/news/crypto-hackers-stole-57-cents-every-1-earned-ark?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1794490200000",
-      "timestamp": "13:30",
-      "source": "CoinTelegraph",
-      "title": "Are Alt-L1s over? Security, costs drive smaller chains to Ethereum",
-      "link": "https://cointelegraph.com/magazine/are-alt-l1s-over-security-costs-drive-smaller-chains-to-ethereum?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1794489716000",
-      "timestamp": "13:21",
-      "source": "CoinTelegraph",
-      "title": "Uber’s UK banking partner Griffin raises $20M for stablecoin services",
-      "link": "https://cointelegraph.com/news/digital-bank-griffin-100m-valuation-card-stablecoin?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1794469278000",
-      "timestamp": "07:41",
-      "source": "CoinDesk",
-      "title": "Canaan may sell more bitcoin for stock buybacks as mining-rig revenue falls 96%",
-      "link": "https://www.coindesk.com/markets/2026/11/12/canaan-may-sell-more-bitcoin-for-stock-buybacks-as-mining-rig-revenue-falls-96"
-    },
-    {
-      "id": "rss-CoinDesk-1-1794466837000",
-      "timestamp": "07:00",
-      "source": "CoinDesk",
-      "title": "MSCI is dropping Strategy from its index, and the exclusion could hit its bitcoin-buying machine",
-      "link": "https://www.coindesk.com/markets/2026/11/12/msci-is-dropping-strategy-from-its-index-and-the-exclusion-could-hit-its-bitcoin-buying-machine"
     }
   ]
 }
