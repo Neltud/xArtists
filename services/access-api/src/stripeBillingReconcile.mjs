@@ -18,6 +18,16 @@ const TYPES=new Set([
   'invoice.paid','invoice.payment_failed',
   'customer.subscription.updated','customer.subscription.deleted',
 ])
+// In addition to the in-transaction database-name gate, reject all remote
+// servers even if someone creates a remote DB named xartists_billing_probe.
+const isDisposableLocalPool=pool=>{
+  try{
+    const url=new URL(pool.options?.connectionString||'')
+    return ['postgres:','postgresql:'].includes(url.protocol)&&
+      ['127.0.0.1','localhost'].includes(url.hostname)&&
+      url.pathname==='/xartists_billing_probe'&&!url.search&&!url.hash
+  }catch{return false}
+}
 const fail=reason=>Object.freeze({
   ok:false,reason,mode:'test',grant_access:false,checkout_enabled:false,
   delivery_verified:false,execution_authorized:false,
@@ -65,6 +75,7 @@ export function createStripeBillingSandboxReconciler({
   return Object.freeze({
     async reconcile({raw,signature,webhookSecret}={}){
       if(!enabled)return fail('sandbox_disabled')
+      if(!isDisposableLocalPool(pool))return fail('disposable_database_required')
       const now=clock()
       if(!Number.isSafeInteger(now)||now<=0)return fail('clock_unavailable')
       let event
