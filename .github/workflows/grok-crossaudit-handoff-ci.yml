@@ -1,0 +1,25 @@
+name: Grok cross-audit handoff — offline proof gates
+
+on:
+  pull_request:
+    paths:
+      - 'docs/prompts/GROK_XARTISTS_AUDIT_ROADMAP_2026-11-13.md'
+      - 'docs/security/grok-daily.md'
+      - 'scripts/ops/tests/grok-handoff-20261113.test.mjs'
+      - '.github/workflows/grok-crossaudit-handoff-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  safe-handoff:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate reviewer handoff without contacting xAI or reading secrets
+        run: node --test scripts/ops/tests/grok-handoff-20261113.test.mjs
