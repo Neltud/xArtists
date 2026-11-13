@@ -1,0 +1,34 @@
+name: Wallet observation trust — no URL/storage signing
+
+on:
+  pull_request:
+    paths:
+      - 'apps/frontend/src/context/WalletContext.tsx'
+      - 'apps/frontend/src/lib/walletObservation.mjs'
+      - 'apps/frontend/src/lib/walletObservation.d.mts'
+      - 'apps/frontend/tests/wallet-observation-trust.test.mjs'
+      - '.github/workflows/wallet-observation-trust-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'apps/frontend/src/context/WalletContext.tsx'
+      - 'apps/frontend/src/lib/walletObservation.mjs'
+      - 'apps/frontend/tests/wallet-observation-trust.test.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  no-forged-signer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run direct wallet observation and mismatched-session tests
+        run: node --test apps/frontend/tests/wallet-observation-trust.test.mjs
+      - name: No finance, signing or wallet connection performed
+        run: echo 'Offline-only state validation. Real xPortal pairing still requires independent #506 proof.' >> "$GITHUB_STEP_SUMMARY"
