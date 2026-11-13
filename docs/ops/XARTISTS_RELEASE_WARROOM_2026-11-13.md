@@ -58,7 +58,7 @@ implementation and a publicly observed final receipt are distinct evidence.
 | PR | Decision | Reason |
 | --- | --- | --- |
 | [#573](https://github.com/Neltud/xArtists/pull/573) | MERGED to main | Fail-close Jupiter signing until independent presign audit; not a live trade |
-| [#574](https://github.com/Neltud/xArtists/pull/574) | REVIEW + CI | Read-only Solana native SOL receipt; does not connect PayBox.sh or credit funds |
+| [#574](https://github.com/Neltud/xArtists/pull/574) | MERGED to main | Read-only finalized SOL native receipt; no PayBox.sh connection or funds credited |
 | [#454](https://github.com/Neltud/xArtists/pull/454) | CLOSED (not merged) | Legacy LIA NLP/HMAC mandate out of #367 scoped P0 and duplicates xOrus architecture |
 | [#476](https://github.com/Neltud/xArtists/pull/476) | HOLD / rebase | Domain RDAP DNS gate; avoid false mailbox GO, verify conflicts |
 | [#477](https://github.com/Neltud/xArtists/pull/477) | DRAFT / consolidate | Owner go-live decisions are prep, not payment proof |
