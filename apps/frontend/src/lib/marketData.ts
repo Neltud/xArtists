@@ -1,6 +1,7 @@
 /**
  * Marché public — A + B corr · C funding · D brief Vellum · E events.
  */
+import { parseFreshMarketAssets, parseFreshFearGreed, parseFundingRate } from './marketEvidence.mjs'
 
 export type FearGreed = {
   value: number
@@ -14,6 +15,7 @@ export type MarketAsset = {
   name: string
   price: number
   change24h: number
+  sourceUpdatedAt?: string
   marketCap?: number
   volume24h?: number
 }
@@ -120,43 +122,16 @@ async function fetchJson<T>(url: string, timeoutMs = 9000): Promise<T | null> {
 }
 
 async function loadFearGreed(): Promise<FearGreed | null> {
-  const j = await fetchJson<{ data?: { value?: string; value_classification?: string; timestamp?: string }[] }>(
-    'https://api.alternative.me/fng/?limit=1&format=json'
-  )
-  if (j?.data?.[0]?.value != null) {
-    const v = Number(j.data[0].value)
-    return {
-      value: v,
-      classification: j.data[0].value_classification || classifyFng(v),
-      timestamp: j.data[0].timestamp,
-    }
-  }
-  return null
+  const data = await fetchJson<unknown>('https://api.alternative.me/fng/?limit=1&format=json')
+  return parseFreshFearGreed(data)
 }
 
 async function loadAssets(): Promise<MarketAsset[]> {
   const url = `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${CG_IDS}&order=market_cap_desc&sparkline=false&price_change_percentage=24h`
-  const j = await fetchJson<
-    {
-      id: string
-      symbol: string
-      name: string
-      current_price: number
-      price_change_percentage_24h: number
-      market_cap: number
-      total_volume: number
-    }[]
-  >(url)
-  if (!Array.isArray(j) || !j.length) return []
-  return j.map(c => ({
-    id: c.id,
-    symbol: (c.symbol || '').toUpperCase(),
-    name: c.name,
-    price: c.current_price,
-    change24h: c.price_change_percentage_24h ?? 0,
-    marketCap: c.market_cap,
-    volume24h: c.total_volume,
-  }))
+  const data = await fetchJson<unknown>(url)
+  // CoinGecko's last_updated is a producer timestamp; the browser fetch time
+  // alone is not evidence. Invalid, missing or stale assets are excluded.
+  return parseFreshMarketAssets(data)
 }
 
 async function loadDominance(): Promise<number | undefined> {
@@ -228,15 +203,8 @@ async function loadCorrelation(): Promise<{ symbols: string[]; matrix: number[][
     }
   }
   if (series.length < 2) {
-    return {
-      symbols: ['BTC', 'ETH', 'SOL', 'XRP'],
-      matrix: [
-        [1, 0.72, 0.55, 0.48],
-        [0.72, 1, 0.61, 0.52],
-        [0.55, 0.61, 1, 0.44],
-        [0.48, 0.52, 0.44, 1],
-      ],
-    }
+    // No correlation estimate if the historical price API is missing.
+    return { symbols: [], matrix: [] }
   }
   const symbols = series.map(s => s.sym)
   const matrix = series.map(a => series.map(b => Number(pearson(a.rets, b.rets).toFixed(2))))
@@ -252,21 +220,12 @@ async function loadFunding(): Promise<FundingRow[]> {
       `https://fapi.binance.com/fapi/v1/fundingRate?symbol=${s}&limit=1`
     )
     const row = Array.isArray(j) ? j[0] : null
-    if (row?.lastFundingRate != null) {
-      rows.push({
-        symbol: s.replace('USDT', ''),
-        rate: Number(row.lastFundingRate) * 100,
-        source: 'binance',
-      })
+    const rate = parseFundingRate(row?.lastFundingRate)
+    if (rate !== null) {
+      rows.push({ symbol: s.replace('USDT', ''), rate, source: 'binance' })
     }
   }
-  if (!rows.length) {
-    return [
-      { symbol: 'BTC', rate: 0.01, source: 'fallback' },
-      { symbol: 'ETH', rate: 0.008, source: 'fallback' },
-      { symbol: 'SOL', rate: 0.012, source: 'fallback' },
-    ]
-  }
+
   return rows
 }
 
@@ -278,7 +237,7 @@ function liaBriefFrom(
 ): string[] {
   const top = [...assets].sort((a, b) => Math.abs(b.change24h) - Math.abs(a.change24h))[0]
   const avgFund =
-    funding.length > 0 ? funding.reduce((s, f) => s + f.rate, 0) / funding.length : 0
+    funding.length > 0 ? funding.reduce((s, f) => s + f.rate, 0) / funding.length : null
   const lines = [
     `Sentiment agrégé : ${fng.value} · ${fng.classification}.`,
     `Régime affiché : ${regime === 'risk_on' ? 'appétit pour le risque' : regime === 'risk_off' ? 'aversion' : 'transition'}.`,
@@ -288,14 +247,14 @@ function liaBriefFrom(
       `Mouvement marquant 24h : ${top.symbol} ${top.change24h >= 0 ? '+' : ''}${top.change24h.toFixed(1)}%.`
     )
   }
-  lines.push(
-    `Funding moyen (perp) : ${avgFund >= 0 ? '+' : ''}${avgFund.toFixed(4)}% — levier ${avgFund > 0.02 ? 'long crowded' : avgFund < -0.01 ? 'short bias' : 'calme'}.`
-  )
-  lines.push('Synthèse publique — détail modèle LIA / Vellum non exposé.')
+  lines.push(avgFund === null
+    ? 'Funding perp : indisponible — aucun taux de remplacement.'
+    : `Funding moyen (perp) : ${avgFund >= 0 ? '+' : ''}${avgFund.toFixed(4)}% — indicateur de positionnement, pas un ordre.`)
+  lines.push('Synthèse de marché xOrus · observations non éligibles au trading automatique.')
   return lines
 }
 
-/** D — brief « Vellum » public (agrégats ; vrai modèle côté ops) */
+/** D — xOrus public summary, no speculative legacy allocation. */
 function vellumPublicBrief(
   fng: FearGreed,
   regime: MarketRegime,
@@ -315,87 +274,50 @@ function vellumPublicBrief(
   }
   const highEv = events.filter(e => e.severity === 'high').length
   return [
-    `Vellum board (public) : régime ${regime} · F&G ${fng.value}.`,
+    `Contexte marché xOrus : régime ${regime} · F&G ${fng.value}.`,
     pair
       ? `Corrélation 7j la plus forte (hors diag.) : ${pair} ≈ ${maxOff.toFixed(2)} — association, pas causalité.`
       : 'Corrélation 7j en cours de calcul.',
     highEv
       ? `${highEv} événement(s) à sévérité haute dans le fil (légal / halt).`
       : 'Aucun event haute sévérité taggé dans le fil courant.',
-    'Allocation LIA : seuil ≥ 10 USDC · priorité MultiversX → Solana → Soul ($SO).',
+    'Aucune allocation automatique ni décision xOrus dérivée de ce tableau.',
   ]
-}
-
-async function loadFallback(): Promise<MarketSnapshot | null> {
-  const base = import.meta.env.BASE_URL || '/'
-  const j = await fetchJson<Partial<MarketSnapshot>>(`${base}data/market_snapshot.json`)
-  if (!j?.fearGreed) return null
-  return {
-    fearGreed: j.fearGreed,
-    regime: (j.regime as MarketRegime) || 'neutral',
-    regimeLabel: j.regimeLabel || 'Neutre',
-    btcDominance: j.btcDominance,
-    assets: j.assets || [],
-    news: j.news || [],
-    correlation: j.correlation || {
-      symbols: ['BTC', 'ETH', 'SOL', 'XRP'],
-      matrix: [
-        [1, 0.72, 0.55, 0.48],
-        [0.72, 1, 0.61, 0.52],
-        [0.55, 0.61, 1, 0.44],
-        [0.48, 0.52, 0.44, 1],
-      ],
-    },
-    funding: j.funding || [
-      { symbol: 'BTC', rate: 0.01, source: 'fallback' },
-      { symbol: 'ETH', rate: 0.008, source: 'fallback' },
-    ],
-    events: j.events || [],
-    liaBrief: j.liaBrief || [],
-    vellumBrief: j.vellumBrief || ['Brief Vellum fallback — données locales.'],
-    updatedAt: j.updatedAt || new Date().toISOString(),
-    source: 'fallback',
-  }
 }
 
 export async function loadMarketSnapshot(): Promise<MarketSnapshot> {
   const [fng, assets, dom, news, corr, funding] = await Promise.all([
-    loadFearGreed(),
-    loadAssets(),
-    loadDominance(),
-    loadNews(),
-    loadCorrelation(),
-    loadFunding(),
+    loadFearGreed(), loadAssets(), loadDominance(), loadNews(),
+    loadCorrelation(), loadFunding(),
   ])
-
-  if (!fng && !assets.length) {
-    const fb = await loadFallback()
-    if (fb) return fb
+  if (!fng || assets.length === 0) {
+    // Do not turn a partial network outage into a plausible market report.
+    throw new Error('Sources de marché horodatées indisponibles. Aucun cours de démonstration affiché.')
   }
-
-  const fearGreed: FearGreed = fng || { value: 50, classification: 'Neutral' }
-  const list = assets.length ? assets : (await loadFallback())?.assets || []
-  const avgChange =
-    list.length > 0 ? list.reduce((s, a) => s + a.change24h, 0) / list.length : 0
-  const { regime, label } = regimeFrom(fearGreed.value, avgChange)
-  const newsList = news.length > 0 ? news : (await loadFallback())?.news || []
-  const events = eventsFromNews(newsList)
-  const fund = funding.length ? funding : (await loadFallback())?.funding || []
-
+  const avgChange = assets.reduce((total, asset) => total + asset.change24h, 0) / assets.length
+  const { regime, label } = regimeFrom(fng.value, avgChange)
+  const events = eventsFromNews(news)
+  // Oldest observed asset time, not the browser's request date.
+  const observedTimes = assets
+    .map(asset => Date.parse(asset.sourceUpdatedAt || ''))
+    .filter(Number.isFinite)
+  if (observedTimes.length !== assets.length) {
+    throw new Error('Horodatage des actifs absent.')
+  }
   return {
-    fearGreed,
+    fearGreed: fng,
     regime,
     regimeLabel: label,
     btcDominance: dom,
-    assets: list,
-    news: newsList.slice(0, 6),
+    assets,
+    news: news.slice(0, 6),
     correlation: corr,
-    funding: fund,
+    funding,
     events,
-    liaBrief: liaBriefFrom(fearGreed, regime, list, fund),
-    vellumBrief: vellumPublicBrief(fearGreed, regime, corr, events),
-    updatedAt: new Date().toISOString(),
-    source: fng || assets.length ? 'live' : 'fallback',
+    liaBrief: liaBriefFrom(fng, regime, assets, funding),
+    vellumBrief: vellumPublicBrief(fng, regime, corr, events),
+    updatedAt: new Date(Math.min(...observedTimes)).toISOString(),
+    source: 'live',
   }
 }
 
