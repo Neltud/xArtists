@@ -246,7 +246,7 @@ test('signed partial refund and dispute permanently revoke test-ledger status wi
     assert.equal(result.outcome,'terminal_ignored')
     assert.equal((await status(disputeSub)).status,'unpaid')
     assert.deepEqual(await paymentCounts(),{linked:2,incidents:2})
-    assert.equal((await pool.query('SELECT count(*)::int n FROM xa_xorus_grants')).rows[0].n,0)
+    assert.equal((await pool.query("SELECT to_regclass('public.xa_xorus_grants') AS grants")).rows[0].grants,null)
   }finally{await pool.end()}
 })
 
