@@ -40,6 +40,16 @@ test('Google start is readonly, PKCE S256 and a secure first-party cookie',async
  const r=await call(s.handler,'/world-rights/youtube/start?returnOrigin=https://neltud.github.io')
  assert.match(r.headers['Set-Cookie'],/Secure; HttpOnly; SameSite=Lax; Path=\//)
 })
+test('canonical xartists.art is an exact readonly OAuth return origin, never a suffix match',async()=>{
+ const s=setup()
+ const allowed=await call(s.handler,'/world-rights/youtube/start?returnOrigin=https://xartists.art')
+ assert.equal(allowed.code,302)
+ assert.equal(new URL(allowed.headers.Location).searchParams.get('scope'),scope)
+ for(const origin of ['https://xartists.art.evil.example','http://xartists.art','https://xartists.art:444']){
+  assert.equal((await call(s.handler,'/world-rights/youtube/start?returnOrigin='+encodeURIComponent(origin))).code,400)
+ }
+ assert.equal(s.calls.length,0)
+})
 test('forged origins, duplicate parameters, missing cookie and state expiry block exchange',async()=>{
  const s=setup()
  assert.equal((await call(s.handler,'/world-rights/youtube/start?returnOrigin=https://evil.example')).code,400)

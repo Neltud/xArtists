@@ -11,7 +11,7 @@ import time
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
-PAGES = "https://neltud.github.io"
+PAGES = "https://xartists.art"
 RENDER = "https://xartists-services-and-products.onrender.com"
 API = "https://xartists-access-api.onrender.com"
 TRANSIENT = {408, 429, 500, 502, 503, 504}
@@ -106,9 +106,9 @@ def get_json(url: str, origin: str | None = None):
     return headers, doc
 
 
-def check_frontend(origin: str) -> None:
+def check_frontend(origin: str, *, base_path: str = "") -> None:
     for route in ("/", "/tro/sale/"):
-        url = origin + "/xArtists" + route
+        url = origin + base_path + route
         status, headers, body = fetch_public(url)
         require(status == 200, f"Frontend route status failed: {url}")
         require("text/html" in headers.get("content-type", ""), f"Not HTML: {url}")
@@ -118,8 +118,8 @@ def check_frontend(origin: str) -> None:
 
 
 def main() -> None:
-    for frontend in (PAGES, RENDER):
-        check_frontend(frontend)
+    check_frontend(PAGES)
+    check_frontend(RENDER, base_path="/xArtists")
 
     for frontend in (PAGES, RENDER):
         cors, bridge = get_json(API + "/v1/tro/bridge/status", origin=frontend)

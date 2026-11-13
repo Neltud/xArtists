@@ -12,6 +12,8 @@ on:
       - 'services/access-api/package-lock.json'
       - 'services/access-api/src/xorusAnalysis.mjs'
       - 'services/access-api/src/runtimeBuildInfo.mjs'
+      - 'services/access-api/src/publicOrigins.mjs'
+      - 'services/access-api/src/worldRightsHttp.mjs'
       - 'services/access-api/src/server.mjs'
       - 'lia/xorus/**'
       - 'lia/chorus/**'

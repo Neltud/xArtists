@@ -31,6 +31,7 @@ import { artpriceReadiness } from './artpriceLicensed.mjs'
 import { probeStudioStore } from './studioStoreProbe.mjs'
 import { createXorusAnalysisService } from './xorusAnalysis.mjs'
 import { createRuntimeBuildInfo } from './runtimeBuildInfo.mjs'
+import { PUBLIC_FRONTEND_ORIGINS } from './publicOrigins.mjs'
 import { tryHandleAuction, auctionPublicConfig } from './auctionHttp.mjs'
 import {studioMediaConfig,mediaJwt,mediaActor,readCreatorMedia,
   uploadStudioMedia,pinStudioMetadata} from './creatorMedia.mjs'
@@ -45,14 +46,13 @@ const PORT = Number(process.env.PORT || 8787)
 const JWT_SECRET = process.env.ACCESS_JWT_SECRET || process.env.JWT_SECRET || ''
 const STRIPE_KEY = process.env.STRIPE_SECRET_KEY || ''
 const CORS = process.env.CORS_ORIGIN || '*'
-const RENDER_PUBLIC_FRONTEND = 'https://xartists-services-and-products.onrender.com'
 
-// The canonical Pages origin is configured by CORS_ORIGIN in production.
-// The second official frontend is hosted on Render. Match exact origins;
+// The canonical domain must work even while CORS_ORIGIN still names old Pages.
+// Preserve the known Render and legacy origins. Match exact origins;
 // never reflect arbitrary websites or send Access-Control-Allow-Credentials.
 function responseCorsOrigin(origin) {
   if (CORS === '*') return '*'
-  if (origin === CORS || origin === RENDER_PUBLIC_FRONTEND) return origin
+  if (origin === CORS || PUBLIC_FRONTEND_ORIGINS.includes(origin)) return origin
   // Retain the legacy non-browser behavior for probes without Origin.
   if (!origin) return CORS
   return null
@@ -86,7 +86,7 @@ const LIA_SIMPLE = createSimpleIntentService({
 
 function liaSimpleOriginAllowed(origin) {
   if (!origin) return true // machine-to-machine with a real bearer token
-  if (origin === 'https://neltud.github.io' || origin === RENDER_PUBLIC_FRONTEND ||
+  if (PUBLIC_FRONTEND_ORIGINS.includes(origin) ||
       (CORS !== '*' && origin === CORS)) return true
   return process.env.NODE_ENV !== 'production' &&
     /^http:\/\/(?:127\.0\.0\.1|localhost):\d{2,5}$/.test(origin)
@@ -537,7 +537,7 @@ async function handleRequest(req, res) {
 
   if (req.method === 'POST' && pth === '/moonpay/sign') {
     const origin = String(req.headers.origin || '')
-    if (origin && origin !== 'https://neltud.github.io' && !origin.startsWith('http://127.0.0.1') && !origin.startsWith('http://localhost')) {
+    if (!liaSimpleOriginAllowed(origin)) {
       json(res, 403, { ok: false, error: 'origin_not_allowed' })
       return
     }
