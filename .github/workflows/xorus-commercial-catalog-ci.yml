@@ -1,0 +1,71 @@
+name: xOrus commercial catalogue — truth and frontend
+
+on:
+  pull_request:
+    paths:
+      - 'services/access-api/src/publicCommercialCatalog.mjs'
+      - 'services/access-api/src/commercialRails.mjs'
+      - 'services/access-api/src/xorusEntitlements.mjs'
+      - 'services/access-api/src/server.mjs'
+      - 'services/access-api/tests/publicCommercialCatalog.test.mjs'
+      - 'apps/frontend/src/config/commercialTargets.ts'
+      - 'apps/frontend/src/hooks/useCommercialCatalog.ts'
+      - 'apps/frontend/src/pages/CommercialLaunchPage.tsx'
+      - 'apps/frontend/tests/xorus-commercial-catalog-truth.test.mjs'
+      - 'apps/frontend/tests/commercial-prelaunch.test.mjs'
+      - 'apps/frontend/tests/public-offers-six-targets-no-go.test.mjs'
+      - '.github/workflows/xorus-commercial-catalog-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'services/access-api/src/publicCommercialCatalog.mjs'
+      - 'services/access-api/src/commercialRails.mjs'
+      - 'services/access-api/src/xorusEntitlements.mjs'
+      - 'services/access-api/src/server.mjs'
+      - 'apps/frontend/src/hooks/useCommercialCatalog.ts'
+      - 'apps/frontend/src/pages/CommercialLaunchPage.tsx'
+      - '.github/workflows/xorus-commercial-catalog-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  read-only-api-catalog:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: services/access-api/package-lock.json
+      - name: Install backend, without scripts
+        working-directory: services/access-api
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Validate closed public offers and GET-only HTTP response
+        working-directory: services/access-api
+        run: |
+          node --check src/publicCommercialCatalog.mjs
+          node --test tests/publicCommercialCatalog.test.mjs tests/commercialRails.test.mjs
+
+  offers-ui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: apps/frontend/package-lock.json
+      - name: Install frontend, without scripts
+        working-directory: apps/frontend
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Enforce prelaunch no-pay and accessible offers
+        working-directory: apps/frontend
+        run: |
+          node --test tests/xorus-commercial-catalog-truth.test.mjs tests/commercial-prelaunch.test.mjs tests/public-offers-six-targets-no-go.test.mjs
+          npm run typecheck
+          npm run build
