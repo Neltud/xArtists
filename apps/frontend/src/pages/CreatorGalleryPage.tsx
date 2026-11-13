@@ -19,7 +19,8 @@ const initial:Entry={title:'',artist:'',image:'',description:'',kind:'painting',
 const inputClass='w-full rounded-lg border border-[color:var(--xa-border)] bg-[color:var(--xa-panel)] px-3 py-2 text-sm'
 
 export default function CreatorGalleryPage(){
-  const [draft,setDraft]=useState<GalleryDraft>(()=>loadGalleryDraft(window.localStorage))
+  const [draft,setDraft]=useState<GalleryDraft>(()=>typeof window==='undefined'
+    ?newGalleryDraft():loadGalleryDraft(window.localStorage))
   const [form,setForm]=useState<Entry>(initial)
   const [notice,setNotice]=useState('')
   const {connected,address}=useWallet()
