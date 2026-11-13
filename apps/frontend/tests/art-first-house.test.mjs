@@ -13,13 +13,14 @@ test('Art-first hierarchy prioritizes museum, auction, RWA and Studio', () => {
   const indexes = ids.map(id => modules.indexOf("module('" + id + "'"))
   assert.ok(indexes.every(i => i >= 0))
   assert.deepEqual([...indexes].sort((a,b) => a-b), indexes)
-  assert.match(core, /'auction'/)
-  assert.match(core, /'rwa'/)
+  // Auction and RWA remain routed, but are not soft-launch starting surfaces.
+  assert.doesNotMatch(core, /^\s+'auction',/m)
+  assert.doesNotMatch(core, /^\s+'rwa',/m)
   // Desktop now surfaces Marketplace before Auctions; RWA remains discoverable
   // in the mobile menu and Explore. Do not assert the superseded desktop nav.
-  const links = ["/explore/museum',c('explore')","/create/studio',c('create')","/explore/market',c('market')","/finance/governance',c('dao')","/guide',c('help')"]
+  const links = ["/explore/museum',c('explore')","/create/studio',c('create')","/explore/market',c('market')","/intelligence/xorus',c('lia')","/guide',c('help')"]
   const navIndexes = links.map(link => nav.indexOf(link))
-  assert.ok(navIndexes.every(i => i >= 0), 'explore, create, market, DAO and beginner help must be direct desktop destinations')
+  assert.ok(navIndexes.every(i => i >= 0), 'explore, create, market, xOrus and beginner help must be direct desktop destinations')
   assert.deepEqual([...navIndexes].sort((a,b) => a-b), navIndexes)
   assert.match(nav, /to="\/rwa"/)
   assert.match(nav, /to="\/auction" onClick=\{closeMobile\}/)
