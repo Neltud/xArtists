@@ -33,19 +33,23 @@ return module.exports.default
 const Desk=compileDesk()
 const ServerDesk=compileDesk('https://analysis-api.test')
 
-async function harness(report=fixture,{server=false}={}){
+async function harness(report=fixture,{server=false,transientOnce=false,deniedStatus=null}={}){
   const originalFetch=globalThis.fetch,originalTimer=window.setTimeout,originalInterval=window.setInterval
-  let expire,ageTick,unavailable=false,resolveEconomics
+  let expire,ageTick,unavailable=false,resolveEconomics,firstTransient=transientOnce
   const economics=new Promise(resolve=>{resolveEconomics=resolve})
   const requested=[]
-  window.setTimeout=(fn,delay,...args)=>delay===10000?(expire=fn,12345):originalTimer.call(window,fn,delay,...args)
+  window.setTimeout=(fn,delay,...args)=>(delay===10000||delay===20000)?(expire=fn,12345):originalTimer.call(window,fn,delay,...args)
   window.setInterval=(fn,delay,...args)=>delay===30000?(ageTick=fn,12346):originalInterval.call(window,fn,delay,...args)
   globalThis.fetch=async url=>{
     requested.push(url)
     if(url.includes('/economics'))return economics
     if(url.endsWith('xorus_board.json'))return response(paper)
     if(url.endsWith('xorus_analysis_preview.json'))return unavailable?{ok:false}:response(report)
-    if(url==='https://analysis-api.test/v1/xorus/analysis')return unavailable?{ok:false}:response({ok:true,report})
+    if(url==='https://analysis-api.test/v1/xorus/analysis'){
+      if(firstTransient){firstTransient=false;return {ok:false,status:503}}
+      if(deniedStatus!==null)return {ok:false,status:deniedStatus}
+      return unavailable?{ok:false,status:403}:response({ok:true,report})
+    }
     assert.fail('unexpected source '+url)
   }
   const host=document.createElement('div');document.body.append(host)
@@ -130,6 +134,33 @@ test('configured server renders derived analysis and source time before a hung q
     assert.doesNotMatch(h.panel().textContent,/lecture positive|lecture négative|indicateurs contradictoires/)
     assert.equal(h.requested.some(url=>url.includes('xorus_analysis_preview.json')),false)
   }finally{await h.close()}
+})
+
+
+test('configured xOrus server retries a transient 503 once, without a static fallback',async()=>{
+  const report=structuredClone(collected)
+  report.generated_at=new Date().toISOString().slice(0,19)+'Z'
+  report.collection.received_at=report.generated_at
+  report.source_ts=new Date(Math.floor(Date.now()/3600000)*3600000-1000).toISOString().slice(0,19)+'Z'
+  const h=await harness(report,{server:true,transientOnce:true})
+  try{
+    await React.act(async()=>new Promise(resolve=>setTimeout(resolve,850)))
+    assert.match(h.panel().textContent,/Source consultée : Binance Spot · EGLD\/USDT/)
+    const apiReads=h.requested.filter(url=>url==='https://analysis-api.test/v1/xorus/analysis')
+    assert.equal(apiReads.length,2,'exactly one retry after a temporary 503')
+    assert.equal(h.requested.some(url=>url.includes('xorus_analysis_preview.json')),false)
+  }finally{await h.close()}
+})
+
+test('configured xOrus server never retries a forbidden or rate-limited API response',async()=>{
+  for(const deniedStatus of [401,403,429]){
+    const h=await harness(collected,{server:true,deniedStatus})
+    try{
+      assert.match(h.panel().textContent,/Rapport indisponible ou non conforme/)
+      assert.equal(h.requested.filter(url=>url==='https://analysis-api.test/v1/xorus/analysis').length,1)
+      assert.equal(h.requested.some(url=>url.includes('xorus_analysis_preview.json')),false)
+    }finally{await h.close()}
+  }
 })
 
 test('configured server cannot substitute the legacy offline preview',async()=>{
