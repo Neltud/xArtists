@@ -52,22 +52,36 @@ function validGrant(grant, actor, offer, scope, now) {
   return false
 }
 
+function validPrivateReport(report, reportId, offer, scope, now) {
+  return report && report.reportId === reportId && report.offer === offer &&
+    report.scope === scope && report.kind === 'derived_xartists_analysis' &&
+    report.visibility === 'private' && report.status === 'ready' &&
+    report.rawDataIncluded === false && report.commercialUsageApproved === true &&
+    validTime(report.sourceTs) && validTime(report.generatedAt) &&
+    validTime(report.expiresAt) && report.sourceTs <= report.generatedAt &&
+    report.generatedAt <= now && report.expiresAt > now
+}
+
 /**
  * Atomic private-report authorization, not an issuer or a public endpoint.
  * lookupGrant MUST fetch a current DB record scoped to authenticated actor+offer.
+ * lookupReport MUST fetch a private, licensed, derived report with validated digest
+ * and source timestamps, scoped to the same offer. Neither accepts HTTP parameters
+ * as authority; they read trusted, persistent server records.
  * reserveQuota MUST atomically reserve a fresh report read and refuse duplicate/replayed
  * reservations; an in-memory decrement is not sufficient for production.
  * No report contents or provider data are returned by this function.
  */
 export async function authorizeXorusReportRead({
   enabled = false, commercialUsageRightsVerified = false,
-  actor, offer, reportId, lookupGrant, reserveQuota, now = Date.now(),
+  actor, offer, reportId, lookupGrant, lookupReport, reserveQuota, now = Date.now(),
 } = {}) {
   if (!enabled || !commercialUsageRightsVerified) return deny('commercial_service_disabled', 503)
   if (!authenticatedActor(actor)) return deny('authenticated_session_required', 401)
   if (!Object.hasOwn(XORUS_OFFER_SCOPES, offer) || !REPORT_ID.test(reportId || ''))
     return deny('invalid_report_request', 400)
-  if (!validTime(now) || typeof lookupGrant !== 'function' || typeof reserveQuota !== 'function')
+  if (!validTime(now) || typeof lookupGrant !== 'function' ||
+      typeof lookupReport !== 'function' || typeof reserveQuota !== 'function')
     return deny('entitlement_store_unavailable', 503)
 
   const scope = XORUS_OFFER_SCOPES[offer]
@@ -78,6 +92,16 @@ export async function authorizeXorusReportRead({
     return deny('entitlement_store_unavailable', 503)
   }
   if (!validGrant(grant, actor, offer, scope, now)) return deny('not_entitled')
+
+  let report
+  try {
+    report = await lookupReport({ reportId, offer, scope })
+  } catch {
+    return deny('report_store_unavailable', 503)
+  }
+  if (!validPrivateReport(report, reportId, offer, scope, now))
+    return deny('report_not_accessible', 404)
+
   if (!Number.isSafeInteger(grant.quotaRemaining) || grant.quotaRemaining <= 0 ||
       !validTime(grant.quotaResetAt) || grant.quotaResetAt <= now)
     return deny('quota_exhausted', 429)
