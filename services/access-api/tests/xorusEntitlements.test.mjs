@@ -4,7 +4,7 @@ import { authorizeXorusReportRead, XORUS_OFFER_SCOPES } from '../src/xorusEntitl
 
 const now = 1_800_000_000_000
 const reportId = 'a'.repeat(64)
-const email = { kind: 'email', subject: 'usr_abcdefghijklmnop', verified: true,
+const email = { kind: 'email', subject: '550e8400-e29b-41d4-a716-446655440000', verified: true,
   proof: 'verified_email_session' }
 const wallet = { kind: 'wallet', subject: 'erd1' + 'q'.repeat(58), verified: true,
   proof: 'siwx_verified' }
@@ -43,7 +43,8 @@ test('never authorizes when feature or source commercial rights are absent', asy
 
 test('email identity must be server-verified and opaque; wallet text is not proof', async () => {
   for (const actor of [null, { ...email, verified: false }, { ...email, proof: 'jwt_claim' },
-    { ...email, subject: 'artist@example.com' }, { ...wallet, proof: 'wallet_address_text' }]) {
+    { ...email, subject: 'artist@example.com' },
+    { ...email, subject: 'usr_abcdefghijklmnop' }, { ...wallet, proof: 'wallet_address_text' }]) {
     assert.equal((await allow({ actor })).status, 401)
   }
 })
@@ -69,7 +70,7 @@ test('verified email subscription reserves quota once and reveals no provider fi
 })
 
 test('wrong account, wrong offer, cancellation/refund/expiry and stale ledger are denied', async () => {
-  for (const patch of [{ subject: 'usr_differentuser1234' }, { offer: 'yield' },
+  for (const patch of [{ subject: '550e8400-e29b-41d4-a716-446655440001' }, { offer: 'yield' },
     { status: 'cancelled' }, { revokedAt: now - 5 }, { refundedAt: now - 5 },
     { expiresAt: now - 1 }, { issuedAt: now + 10000 }, { ledgerCheckedAt: now - 61_000 }]) {
     let reservations = 0
@@ -133,4 +134,13 @@ test('every report is verified from a private derived authoritative record, not 
   }
   assert.equal((await allow({ lookupReport: async () => { throw Error('private storage path') } })).status, 503)
   assert.equal((await allow({ lookupReport: undefined })).status, 503)
+})
+
+test('real repository UUID account IDs work, but provider aliases never authorize', async () => {
+  const approved = await allow()
+  assert.equal(approved.allowed, true)
+  assert.equal(approved.offer, 'pulse')
+  assert.equal((await allow({ actor: { ...email, subject: 'usr_abcdefghijklmnop' } })).status, 401)
+  assert.equal((await allow({ actor: { ...email, subject: 'verified@example.test' } })).status, 401)
+  assert.equal((await allow({ actor: { ...email, subject: '550e8400-e29b-41d4-a716-446655440000' } })).allowed, true)
 })
