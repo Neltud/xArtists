@@ -1,7 +1,7 @@
 /**
  * Marché public — A + B corr · C funding · D brief Vellum · E events.
  */
-import { parseFreshMarketAssets, parseFreshFearGreed, parseFundingRate } from './marketEvidence.mjs'
+import { parseFreshMarketAssets, parseFreshFearGreed, parseFreshFundingQuote } from './marketEvidence.mjs'
 
 export type FearGreed = {
   value: number
@@ -42,6 +42,7 @@ export type FundingRow = {
   symbol: string
   rate: number
   source: string
+  sourceUpdatedAt?: string
 }
 
 export type MarketRegime = 'risk_on' | 'neutral' | 'risk_off'
@@ -215,17 +216,16 @@ async function loadCorrelation(): Promise<{ symbols: string[]; matrix: number[][
 async function loadFunding(): Promise<FundingRow[]> {
   const symbols = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT']
   const rows: FundingRow[] = []
-  for (const s of symbols) {
-    const j = await fetchJson<{ symbol?: string; lastFundingRate?: string }[]>(
-      `https://fapi.binance.com/fapi/v1/fundingRate?symbol=${s}&limit=1`
+  for (const symbol of symbols) {
+    // /fapi/v1/fundingRate returns historical fundingRate/fundingTime,
+    // NOT lastFundingRate. For a current mark quote use premiumIndex.
+    const quote = await fetchJson<unknown>(
+      `https://fapi.binance.com/fapi/v1/premiumIndex?symbol=${symbol}`
     )
-    const row = Array.isArray(j) ? j[0] : null
-    const rate = parseFundingRate(row?.lastFundingRate)
-    if (rate !== null) {
-      rows.push({ symbol: s.replace('USDT', ''), rate, source: 'binance' })
-    }
+    const validated = parseFreshFundingQuote(quote, symbol)
+    if (validated) rows.push(validated)
   }
-
+  // An unreachable Binance endpoint never produces synthetic neutral funding.
   return rows
 }
 
