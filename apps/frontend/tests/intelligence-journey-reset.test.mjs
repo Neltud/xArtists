@@ -43,6 +43,10 @@ test('Agents leads with real understandable paper roles; historical NFT packs ar
 
 test('Lab offers one selected workflow with separate sculpture preview and safe deep links',()=>{
   assert.match(lab,/params\.get\('view'\) === '3d'/)
+  assert.match(lab,/params\.get\('view'\) === 'simulation' \? 'simulation' : 'analysis'/)
+  assert.match(lab,/aria-pressed=\{view === 'analysis'\}/)
+  assert.match(lab,/view === 'analysis' \? <Analysis\/>/)
+  assert.match(lab,/Une source absente n’est jamais remplacée par de faux signaux/)
   assert.match(lab,/aria-pressed=\{view === 'network'\}/)
   assert.match(lab,/view === '3d' \? <SculptureTurntable\/>/)
   assert.match(lab,/to="\/studio\?mode=sculpture"/)
