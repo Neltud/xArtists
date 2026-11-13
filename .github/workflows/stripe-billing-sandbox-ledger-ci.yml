@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'services/access-api/migrations/20261113_xa_stripe_billing_reconcile_sandbox.sql'
+      - 'services/access-api/migrations/20261113_xa_stripe_billing_incident_hold_sandbox.sql'
       - 'services/access-api/src/stripeBillingReconcile.mjs'
       - 'services/access-api/src/stripeBillingCandidate.mjs'
       - 'services/access-api/src/stripeCheckout.mjs'
