@@ -1,17 +1,18 @@
 import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
- * /market — analyse publique + matrice + holders (onglets, anti-scroll).
+ * Public markets — provenance-aware analysis, risk and on-chain context.
  */
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import MarketPage from './MarketPage'
-import MatrixBoard from '../components/lia/MatrixBoard'
+import XorusDecisionDesk from '../components/intelligence/XorusDecisionDesk'
 import TroHolderBoard from '../components/analytics/TroHolderBoard'
 import TroLiquidityPanel from '../components/defi/TroLiquidityPanel'
 
 type Tab = 'dashboard' | 'liquidity' | 'holders'
 
 const TABS: { id: Tab; label: string }[] = [
-  { id: 'dashboard', label: '📊 Dashboard Hub & Signals' },
+  { id: 'dashboard', label: '📊 Marchés et décision xOrus' },
   { id: 'liquidity', label: '💧 Liquidité & Farming $TRO' },
   { id: 'holders', label: '🏆 Indexation & Top Holders' },
 ]
@@ -43,8 +44,12 @@ export default function MarketAnalyticsPage() {
       {xaRender(tab === 'dashboard' && (
         <div className="space-y-6">
           <MarketPage />
-          <div className="max-w-4xl mx-auto">
-            <MatrixBoard />
+          <div className="mx-auto max-w-5xl space-y-4">
+            <XorusDecisionDesk />
+            <p role="note" className="px-3 text-sm text-[color:var(--xa-text-secondary)]">
+              Les anciens tableaux de scores construits à partir de prix fictifs ont été retirés de cette page.
+              Consultez les décisions et leurs preuves sur <Link to="/intelligence/xorus" className="underline underline-offset-2">xOrus</Link>.
+            </p>
           </div>
         </div>
       ))}
