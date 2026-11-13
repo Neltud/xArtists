@@ -31,4 +31,5 @@ jobs:
       - name: Run direct wallet observation and mismatched-session tests
         run: node --test apps/frontend/tests/wallet-observation-trust.test.mjs
       - name: No finance, signing or wallet connection performed
-        run: echo 'Offline-only state validation. Real xPortal pairing still requires independent #506 proof.' >> "$GITHUB_STEP_SUMMARY"
+        run: |
+          echo 'Offline-only state validation. Real xPortal pairing still requires independent issue 506 proof.' >> "$GITHUB_STEP_SUMMARY"
