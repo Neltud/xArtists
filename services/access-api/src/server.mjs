@@ -5,6 +5,9 @@
  * Signals: read-only daily signal (never executes trades).
  */
 import http from 'node:http'
+import pg from 'pg'
+import { createNeonAuthIdentityVerifier, findOrCreateAccountFromNeonToken } from './neonAuthIdentity.mjs'
+import { createWalletlessSessionService } from './walletlessSession.mjs'
 import { createWorldRightsHandler } from './worldRightsHttp.mjs'
 import { handleStripe } from './stripeHttp.mjs'
 import { stripeSandboxConfig } from './stripeCheckout.mjs'
@@ -73,6 +76,28 @@ const PACK_CATALOG = {
 // Existing PSP checkout remains independently gated; this never calls createOrder or mint.
 const OPENSEA_PREVIEW = createOpenSeaPreviewService()
 const XORUS_ANALYSIS = createXorusAnalysisService({enabled:process.env.XORUS_ANALYSIS_ENABLED!=='0'})
+
+// Explicitly gated account-only session exchange. Never substitute the wallet JWT.
+// When disabled, no JWKS fetch, SQL connection or account mutation occurs.
+const WANT_EMAIL_SESSIONS = process.env.WALLETLESS_ACCOUNT_SESSION_ENABLED==='1' &&
+  process.env.WALLETLESS_DATABASE_TARGET_CONFIRMED==='1' &&
+  Boolean(process.env.NEON_AUTH_BASE_URL && process.env.DATABASE_URL)
+let emailSessionsLive = false
+let EMAIL_SESSIONS = createWalletlessSessionService()
+if (WANT_EMAIL_SESSIONS) {
+  try {
+    const verify = createNeonAuthIdentityVerifier({baseUrl:process.env.NEON_AUTH_BASE_URL})
+    const pool = new pg.Pool({connectionString:process.env.DATABASE_URL,
+      max:3,connectionTimeoutMillis:3000,idleTimeoutMillis:10000})
+    EMAIL_SESSIONS = createWalletlessSessionService({
+      enabled:true,originAllowed:origin=>liaSimpleOriginAllowed(origin),
+      resolveVerifiedAccount:token=>findOrCreateAccountFromNeonToken(pool,token,verify),
+    })
+    emailSessionsLive = true
+  } catch {
+    // An invalid operator configuration must never fall back to unverified login.
+  }
+}
 
 const LIA_SIMPLE = createSimpleIntentService({
   quoteProvider: async ({ packTier, nowMs }) => {
@@ -154,6 +179,16 @@ async function handleRequest(req, res) {
     json(res,known?200:503,{ok:known,...RUNTIME_BUILD})
     return
   }
+  if (pth === '/v1/account/session') {
+    if (req.method!=='POST') { json(res,405,{ok:false,error:'method_not_allowed'});return }
+    if (u.search) { json(res,400,{ok:false,error:'query_not_supported'});return }
+    const out=await EMAIL_SESSIONS.exchange({
+      authorization:req.headers.authorization,origin:req.headers.origin,
+      contentLength:req.headers['content-length'],transferEncoding:req.headers['transfer-encoding'],
+    })
+    json(res,out.status,out.body)
+    return
+  }
   if (pth === '/v1/xorus/analysis') {
     if (req.method !== 'GET') { json(res,405,{ok:false,error:'method_not_allowed'}); return }
     // A browser cannot select the provider URL, symbol, clock, prompt or inputs.
@@ -172,6 +207,7 @@ async function handleRequest(req, res) {
       ok: true,
       jwt: JWT_SECRET.length >= 16,
       require_siwx: requireSiwx(),
+      walletless_account_session_enabled: emailSessionsLive,
       moonpay_configured: Boolean(MOONPAY.ready),
       moonpay_mode: MOONPAY.ready ? MOONPAY.mode : 'off',
       stripe_configured: Boolean(STRIPE_KEY), // legacy key presence only, not checkout readiness
