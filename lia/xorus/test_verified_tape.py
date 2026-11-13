@@ -13,7 +13,8 @@ from pathlib import Path
 
 from lia.xorus.analysis_report import run_analysis_agent
 from lia.xorus.data_feed import (
-    build_data_pack, count_proof_bound_signals, count_verified_signals,
+    COMMERCIAL_SOURCE_POLICY, build_data_pack, commercial_analysis_source_allowed,
+    count_proof_bound_signals, count_verified_signals,
 )
 from lia.xorus.decision_agent import run_decision_agent
 
@@ -188,6 +189,90 @@ class XorusProvenanceBoundaryTests(unittest.TestCase):
             self.assertLessEqual(abs(result["chair"]["external_contribution"]), 0.15)
             self.assertFalse(result["board"]["crosscut"]["executable"])
             self.assertFalse(result["safety"]["live_trading"])
+
+
+    def test_commercial_registry_is_closed_and_deeply_immutable(self):
+        expected = (
+            "binance_spot_public", "binance_vision_dataset", "coingecko_api",
+            "artprice_b2b", "multiversx_public_api", "multiversx_native_chain",
+            "opensea_api", "social_platform",
+        )
+        self.assertEqual(set(COMMERCIAL_SOURCE_POLICY), set(expected))
+        for provider in expected:
+            row = COMMERCIAL_SOURCE_POLICY[provider]
+            self.assertIs(row["commercial_ok"], False)
+            self.assertIsNone(row["approved_license_ref"])
+            self.assertFalse(commercial_analysis_source_allowed(provider, {
+                "license_ref": "forged-paid-plan",
+                "redistribution_allowed": True,
+                "commercial_derivatives_allowed": True,
+                "verified_source": True,
+            }))
+        with self.assertRaises(TypeError):
+            COMMERCIAL_SOURCE_POLICY["coingecko_api"] = {}
+        with self.assertRaises(TypeError):
+            COMMERCIAL_SOURCE_POLICY["coingecko_api"]["commercial_ok"] = True
+
+    def test_unknown_and_all_known_providers_cannot_claim_commercial_go(self):
+        with tempfile.TemporaryDirectory() as root:
+            directory = Path(root)
+            for provider in (*COMMERCIAL_SOURCE_POLICY, "fake_enterprise", "synthetic_source"):
+                with self.subTest(provider=provider):
+                    obs = _obs()
+                    obs["provider"] = provider
+                    obs = _write_envelope(obs, directory)
+                    policy = {
+                        "redistribution_allowed": True,
+                        "commercial_derivatives_allowed": True,
+                        "commercial_ok": True,
+                        "verified_source": True,
+                        "license_ref": "forged_enterprise_rights",
+                        "expires_at": "2026-11-14T00:00:00Z",
+                    }
+                    pack = build_data_pack([obs], trusted_providers={provider: policy},
+                                           now=NOW, evidence_root=directory,
+                                           intended_use="commercial_analysis")
+                    self.assertEqual(pack["signals_fed"], 0)
+                    self.assertEqual(pack["proof_integrity_checked_signals"], 0)
+                    self.assertEqual(pack["commercial_analysis_source_count"], 0)
+                    self.assertFalse(pack["commercial_enabled"])
+                    self.assertEqual(pack["independently_verified_signals"], 0)
+                    self.assertEqual(count_verified_signals(pack), (0, 0))
+
+    def test_coingecko_paid_derivatives_not_equal_raw_redistribution(self):
+        # Even a legitimate paid analytics licence need not grant raw-feed resale.
+        policy = {
+            "redistribution_allowed": False,
+            "commercial_derivatives_allowed": True,
+            "verified_source": True,
+            "license_ref": "coingecko-paid-contract-claimed",
+            "expires_at": "2026-11-14T00:00:00Z",
+        }
+        self.assertFalse(commercial_analysis_source_allowed("coingecko_api", policy))
+        with tempfile.TemporaryDirectory() as root:
+            directory = Path(root)
+            row = _write_envelope({**_obs(), "provider": "coingecko_api"}, directory)
+            result = build_data_pack(
+                [row], trusted_providers={"coingecko_api": policy}, now=NOW,
+                evidence_root=directory, intended_use="commercial_analysis",
+            )
+            self.assertEqual(result["signals_fed"], 0)
+            self.assertFalse(result["commercial_enabled"])
+
+    def test_legacy_internal_path_unmodified_and_does_not_unlock_paid_rights(self):
+        paper = _pack([_obs()])
+        self.assertEqual(paper["signals_fed"], 1)
+        self.assertEqual(paper["intended_use"], "internal_research")
+        self.assertFalse(paper["commercial_enabled"])
+        self.assertEqual(paper["commercial_analysis_source_count"], 0)
+        self.assertEqual(paper["independently_verified_signals"], 0)
+
+    def test_invalid_commercial_context_is_not_silently_downgraded(self):
+        for value in (None, "commercial", "COMMERCIAL_ANALYSIS", True, 0, [], {}):
+            with self.subTest(value=repr(value)):
+                with self.assertRaises(ValueError):
+                    _ = build_data_pack([_obs()], trusted_providers=_policy(), now=NOW,
+                                        intended_use=value)
 
 
 if __name__ == "__main__":
