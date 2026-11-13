@@ -34,11 +34,12 @@ const Desk=compileDesk()
 const ServerDesk=compileDesk('https://analysis-api.test')
 
 async function harness(report=fixture,{server=false}={}){
-  const originalFetch=globalThis.fetch,originalTimer=window.setTimeout
-  let expire,unavailable=false,resolveEconomics
+  const originalFetch=globalThis.fetch,originalTimer=window.setTimeout,originalInterval=window.setInterval
+  let expire,ageTick,unavailable=false,resolveEconomics
   const economics=new Promise(resolve=>{resolveEconomics=resolve})
   const requested=[]
   window.setTimeout=(fn,delay,...args)=>delay===10000?(expire=fn,12345):originalTimer.call(window,fn,delay,...args)
+  window.setInterval=(fn,delay,...args)=>delay===30000?(ageTick=fn,12346):originalInterval.call(window,fn,delay,...args)
   globalThis.fetch=async url=>{
     requested.push(url)
     if(url.includes('/economics'))return economics
@@ -54,11 +55,12 @@ async function harness(report=fixture,{server=false}={}){
     panel:()=>host.querySelector('[data-testid=xorus-analysis-report]'),
     button:()=>host.querySelector('button'),
     expire:()=>React.act(async()=>expire()),
+    age:()=>React.act(async()=>ageTick()),
     removeReport:()=>{unavailable=true},
     resolveQuote:data=>React.act(async()=>resolveEconomics(response(data))),
     close:async()=>{
       await React.act(async()=>root.unmount())
-      host.remove();globalThis.fetch=originalFetch;window.setTimeout=originalTimer
+      host.remove();globalThis.fetch=originalFetch;window.setTimeout=originalTimer;window.setInterval=originalInterval
     },
   }
 }
@@ -137,4 +139,25 @@ test('configured server cannot substitute the legacy offline preview',async()=>{
     assert.equal(h.panel().querySelectorAll('article').length,0)
     assert.equal(h.requested.some(url=>url.includes('xorus_analysis_preview.json')),false)
   }finally{await h.close()}
+})
+
+test('aging an analysis never pretends the quote provider was consulted again',async()=>{
+  const originalNow=Date.now
+  let now=originalNow()
+  Date.now=()=>now
+  const report=structuredClone(collected)
+  report.generated_at=new Date(now).toISOString().slice(0,19)+'Z'
+  report.collection.received_at=report.generated_at
+  report.source_ts=new Date(Math.floor(now/3600000)*3600000-1000).toISOString().slice(0,19)+'Z'
+  const h=await harness(report,{server:true})
+  try{
+    await h.resolveQuote({price:2.5})
+    const checked=h.host.querySelector('[data-testid=xorus-quote-checked-at]').textContent
+    const requests=h.requested.length
+    now+=16*60000
+    await h.age()
+    assert.match(h.panel().textContent,/HISTORIQUE/)
+    assert.equal(h.host.querySelector('[data-testid=xorus-quote-checked-at]').textContent,checked)
+    assert.equal(h.requested.length,requests)
+  }finally{await h.close();Date.now=originalNow}
 })

@@ -28,6 +28,7 @@ export default function XorusDecisionDesk(){
   const [economics,setEconomics]=useState<unknown>(null)
   const [analysis,setAnalysis]=useState<unknown>(null)
   const [checkedAt,setCheckedAt]=useState<number>(Date.now())
+  const [clockNow,setClockNow]=useState<number>(Date.now)
   const [busy,setBusy]=useState(true)
   const [revision,setRevision]=useState(0)
   const source=`${import.meta.env.BASE_URL || '/'}data/xorus_board.json`
@@ -36,6 +37,7 @@ export default function XorusDecisionDesk(){
   const refresh=useCallback(()=>setRevision(v=>v+1),[])
   useEffect(()=>{
     const ctl=new AbortController()
+    setClockNow(Date.now())
     setBusy(true)
     setBoard(null)
     setEconomics(null)
@@ -59,13 +61,13 @@ export default function XorusDecisionDesk(){
     return ()=>{window.clearTimeout(timer);ctl.abort()}
   },[source,analysisSource,apiBase,revision])
   useEffect(()=>{
-    const timer=window.setInterval(()=>setCheckedAt(Date.now()),30000)
+    const timer=window.setInterval(()=>setClockNow(Date.now()),30000)
     return ()=>window.clearInterval(timer)
   },[])
 
-  const status=useMemo(()=>interpretXorusSnapshot(board,checkedAt),[board,checkedAt])
+  const status=useMemo(()=>interpretXorusSnapshot(board,clockNow),[board,clockNow])
   const market=useMemo(()=>parseMultiversxEconomics(economics),[economics])
-  const report=useMemo(()=>interpretXorusAnalysisReport(analysis,checkedAt),[analysis,checkedAt])
+  const report=useMemo(()=>interpretXorusAnalysisReport(analysis,clockNow),[analysis,clockNow])
   const sourceTs=apiBase?report?.sourceTs:status.sourceTs
   const fromSource=sourceTs
     ? new Date(sourceTs).toLocaleString(fr?'fr-FR':'en-GB',{dateStyle:'medium',timeStyle:'short'})
@@ -158,7 +160,7 @@ export default function XorusDecisionDesk(){
               : 'Value read from the public MultiversX API. This is the check time, not a verified price-source timestamp. Excluded from xOrus decisions.'}</p>
           </>
           : <p>{fr?'Prix indisponible : aucune valeur de remplacement inventée.':'Price unavailable: no invented fallback quote.'}</p>}
-        <p className="xa-intelligence-note mt-2">{fr?'Consulté':'Checked'} · {new Date(checkedAt).toLocaleString(fr?'fr-FR':'en-GB')}</p>
+        <p className="xa-intelligence-note mt-2" data-testid="xorus-quote-checked-at">{fr?'Consulté':'Checked'} · {new Date(checkedAt).toLocaleString(fr?'fr-FR':'en-GB')}</p>
         <a href="https://api.multiversx.com/economics" rel="noopener noreferrer" target="_blank">{fr?'Source : API MultiversX':'Source: MultiversX API'}</a>
       </article>
       <article className="xa-intelligence-card">
