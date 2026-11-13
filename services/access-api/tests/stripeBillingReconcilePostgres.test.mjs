@@ -262,7 +262,8 @@ test('sandbox reconciler refuses a non-disposable database before any ledger wri
     release:()=>{},
   }
   const guard=createStripeBillingSandboxReconciler({
-    enabled:true,clock:()=>clock,pool:{connect:async()=>client},
+    enabled:true,clock:()=>clock,pool:{connect:async()=>client,
+      options:{connectionString:'postgres://postgres:postgres@127.0.0.1:5432/xartists_billing_probe'}},
   })
   const outcome=await guard.reconcile(pay('evt_remoteprotected01'))
   safety(outcome)
@@ -271,6 +272,20 @@ test('sandbox reconciler refuses a non-disposable database before any ledger wri
   assert.deepEqual(issued,['BEGIN','SELECT current_database() AS database_name','ROLLBACK'])
 })
 
+
+test('sandbox reconciler refuses even a remote database named like its test database',async()=>{
+  let connected=0
+  const guard=createStripeBillingSandboxReconciler({
+    enabled:true,clock:()=>clock,pool:{
+      options:{connectionString:'postgres://postgres:fixture@remote.example/xartists_billing_probe'},
+      connect:async()=>{connected++;throw Error('MUST NOT CONNECT')},
+    },
+  })
+  const result=await guard.reconcile(pay('evt_remoteclone0001'))
+  safety(result)
+  assert.equal(result.reason,'disposable_database_required')
+  assert.equal(connected,0)
+})
 
 test('Real PostgreSQL FK and price checks prevent arbitrary subscription or unsafe pricing', {
   skip:!permitted&&'Requires disposable localhost PostgreSQL xartists_billing_probe with opt-in',
