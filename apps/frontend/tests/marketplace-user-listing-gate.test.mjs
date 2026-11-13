@@ -58,7 +58,9 @@ test('public Marketplace surfaces a user seller route but preserves a strict sig
   const hook=read('../src/hooks/useMarketplaceTx.ts')
   assert.match(market,/<MyOwnedNftsPanel \/>/)
   assert.match(market,/id="xa-market-sell"/)
-  assert.match(panel,/disabled=\{!live \|\| !canAttemptSign \|\| !eligible/)
+  assert.match(panel,/disabled=\{!eligible \|\| account.loading \|\| !!account.error\}/)
+  assert.match(panel,/live&&canAttemptSign \? 'Mettre en vente' : 'Préparer la mise en vente'/)
+  assert.match(sheet,/disabled=\{pending \|\| checking \|\| !live \|\| !connected \|\| !canAttemptSign\}/)
   assert.match(sheet,/await verifyUserNftListPreflight/)
   assert.match(sheet,/Transaction soumise — vérifier la confirmation/)
   assert.match(hook,/if \(!isMarketplaceLive\(\)\)/)
@@ -105,4 +107,22 @@ test('REST percentages convert exactly to contract basis points',async()=>{
   for(const royalties of [7.01,10,100,500,undefined,null,true,'',-1,'5.001','0x05','5e0']) {
     await assert.rejects(verifyUserNftListPreflight({...opts,request:requestFor(nft,{nft:{royalties}})}))
   }
+})
+
+test('owned-NFT search covers the entire loaded page, not only the first 48 visible cards',()=>{
+  const panel=read('../src/components/MyOwnedNftsPanel.tsx')
+  const sheet=read('../src/components/ListNftSheet.tsx')
+  assert.match(panel,/const matching = useMemo\(\(\)=>\{/)
+  assert.match(panel,/return account.nfts/)
+  assert.match(panel,/const items=matching.slice\(0,48\)/)
+  assert.match(panel,/const nft=account.nfts.find\(/,
+    'deep-linked NFTs must be found in the entire loaded page, not only the visible slice')
+  assert.match(panel,/type="search" value=\{search\}/)
+  assert.match(panel,/Inventaire partiel/)
+  assert.match(sheet,/const \[price, setPrice\] = useState\(''\)/)
+  assert.match(sheet,/\},\[target\?\.identifier\]\)/,
+    'switching NFTs clears the prior price and fee quote')
+  assert.match(sheet,/aria-modal="true"/)
+  assert.match(sheet,/if \(!live\) \{/,
+    'the seller confirmation must stay fail-closed when the contract is unavailable')
 })
