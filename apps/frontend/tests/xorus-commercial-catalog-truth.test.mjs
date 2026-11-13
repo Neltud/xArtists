@@ -11,7 +11,7 @@ test('3 EUR targets remain visibly independent of xOrus research tracks and NFT 
   assert.match(page,/MAINSTREAM_PREVIEW\.map/)
   assert.match(page,/GENESIS_PREVIEW\.map/)
   assert.match(page,/XORUS_ANALYSIS_TRACKS_PREVIEW\.map/)
-  assert.match(page,/scope_mapping_approved/)
+  assert.match(hook,/scope_mapping_approved/)
   // Product scopes are contract candidates, never extra NFT rights.
   assert.match(targets,/id: 'pulse', scope: 'analysis:markets'/)
   assert.match(targets,/id: 'yield', scope: 'analysis:defi'/)
