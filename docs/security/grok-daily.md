@@ -4,6 +4,8 @@ description: Passation quotidienne de travail Grok et ChatGPT, SHA et critères 
 
 # Passation quotidienne Grok
 
+**Mission active au 13 novembre 2026 :** [audit contradictoire et roadmap Grok xOrus](../prompts/GROK_XARTISTS_AUDIT_ROADMAP_2026-11-13.md). Les PR #200, #201 et états d'octobre ci-dessous sont des archives : revalider `main`, SHA publiés, API, licences, comptes et paiements avant toute reprise. Le rôle Grok est une seconde opinion non privilégiée, jamais une signature, une autorisation de paiement ou un signal d'exécution.
+
 ### Point de départ du 28 octobre
 
 Main `352de2dc8abcba08885506e4f5b44e4c67cc5c05` ; PR #200 head `21e043d33644da04facab8915ea55827f056d122`, ouverte ; CI installation rouge. Nouveau contrôle local : 59/61 tests, deux tests v2 async restent à adapter. Concurrence fichier 3/3 corrigée, TLS vérifié par défaut et pg déclaré. PR #201 release ouverte. LIA paper, Paybox frontend désactivé, API vide. Aucune fusion ou publication automatique autorisée.
