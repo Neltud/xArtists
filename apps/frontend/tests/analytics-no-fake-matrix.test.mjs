@@ -18,9 +18,9 @@ test('public analytics serves actual source-backed xOrus decision, not simulated
   assert.match(desk,/parseMultiversxEconomics/)
 })
 
-test('retired LIA matrix uses arbitrary prices and must never mount in public analytics',()=>{
-  assert.match(oldMatrix,/px\.priceUsd \* \(a\.id === 'TRO' \? 0\.001 : 20\)/)
-  assert.match(oldMatrix,/sentiment: 0\.1/)
-  assert.match(oldMatrix,/confidence: 0\.55/)
+test('retired matrix component can never fabricate BTC/TRO prices or a strategy',()=>{
+  assert.match(oldMatrix,/Compatibility-only stub/)
+  assert.match(oldMatrix,/L’ancienne matrice de démonstration a été retirée/)
+  assert.doesNotMatch(oldMatrix,/matrixFromPulse\(|runDecisionCycle\(|fetchEgldPrice\(|priceUsd \*|confidence: 0\.55/)
   assert.doesNotMatch(analytics,/matrixFromPulse|runDecisionCycle/)
 })
