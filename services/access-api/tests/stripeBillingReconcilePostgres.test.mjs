@@ -76,7 +76,7 @@ test('Signed sandbox recurring invoices reconcile atomically; late events and ca
 
     const billing=createStripeBillingSandboxReconciler({pool,clock:()=>clock,enabled:true})
     const corrupted=pay()
-    corrupted.signature=corrupted.signature.replace(/.$/,'0')
+    corrupted.signature='t='+Math.floor(clock/1000)+',v1='+('0'.repeat(64))
     const invalid=await billing.reconcile(corrupted);safety(invalid)
     assert.equal(invalid.ok,false)
     assert.equal((await read(pool)).events,0)
@@ -92,6 +92,23 @@ test('Signed sandbox recurring invoices reconcile atomically; late events and ca
     const duplicate=await billing.reconcile(pay('evt_notbound001'))
     assert.equal(duplicate.ok,true);assert.equal(duplicate.duplicate,true)
     safety(duplicate)
+    assert.equal((await read(pool)).receipts,1)
+
+    const replayConflict=await billing.reconcile(signed(
+      'evt_notbound001','invoice.paid',{...invoice,description:'different signed bytes'},
+    ))
+    safety(replayConflict)
+    assert.equal(replayConflict.ok,false)
+    assert.equal(replayConflict.reason,'conflicting_replayed_event')
+    assert.equal((await read(pool)).receipts,1,'Changed bytes cannot overwrite a consumed event ID')
+
+    const noPeriod=await billing.reconcile(signed(
+      'evt_missingperiod1','invoice.paid',
+      {...invoice,lines:{has_more:false,data:[{price:{id:price}}]}},
+    ))
+    safety(noPeriod)
+    assert.equal(noPeriod.ok,false)
+    assert.equal(noPeriod.reason,'invoice_service_period_unverified')
     assert.equal((await read(pool)).receipts,1)
 
     const mismatched=await billing.reconcile(signed(
@@ -132,6 +149,28 @@ test('Signed sandbox recurring invoices reconcile atomically; late events and ca
     assert.equal(expected.receipts,5)
   }finally{await pool.end()}
 })
+
+test('sandbox reconciler refuses a non-disposable database before any ledger write',async()=>{
+  const issued=[]
+  const client={
+    query:async sql=>{
+      issued.push(sql)
+      if(sql==='SELECT current_database() AS database_name')
+        return {rows:[{database_name:'xartists_access'}]}
+      return {rows:[]}
+    },
+    release:()=>{},
+  }
+  const guard=createStripeBillingSandboxReconciler({
+    enabled:true,clock:()=>clock,pool:{connect:async()=>client},
+  })
+  const outcome=await guard.reconcile(pay('evt_remoteprotected01'))
+  safety(outcome)
+  assert.equal(outcome.ok,false)
+  assert.equal(outcome.reason,'disposable_database_required')
+  assert.deepEqual(issued,['BEGIN','SELECT current_database() AS database_name','ROLLBACK'])
+})
+
 
 test('Real PostgreSQL FK and price checks prevent arbitrary subscription or unsafe pricing', {
   skip:!permitted&&'Requires disposable localhost PostgreSQL xartists_billing_probe with opt-in',
