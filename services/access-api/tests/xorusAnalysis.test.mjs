@@ -40,6 +40,20 @@ test('concurrent clients share one worker and cannot mutate the cached report',a
   assert.equal(calls,1)
 })
 
+test('cache is revalidated at response time even if the provider clock advances during fan-out',async()=>{
+  let time=now,calls=0
+  const limited=seal({...empty,schema:'xorus_analysis/v2',generated_at:fixture.generated_at,
+    input_provenance:'no_usable_provider_input',collection:{...fixture.collection,
+      state:'rate_limited',candles_used:0,payload_sha256:null,retry_after_seconds:3600},
+    limitations:fixture.limitations})
+  const service=createXorusAnalysisService({clock:()=>time,runCycle:async()=>{calls++;return limited}})
+  assert.equal((await service.read()).ok,true)
+  time+=15*60000+1
+  const stale=await Promise.all(Array.from({length:12},()=>service.read()))
+  assert.ok(stale.every(x=>x.ok===false&&x.error==='analysis_unavailable'))
+  assert.equal(calls,1,'cache backoff must remain effective after the report expires')
+})
+
 test('expired cache followed by worker failure removes prior findings and backs off',async()=>{
   let time=now,calls=0
   const service=createXorusAnalysisService({clock:()=>time,runCycle:async()=>++calls===1?fixture:null})
@@ -58,11 +72,17 @@ test('rate-limited source returns an empty report and honors provider backoff',a
     limitations:fixture.limitations})
   const service=createXorusAnalysisService({clock:()=>time,runCycle:async()=>{calls++;return limited}})
   assert.equal((await service.read()).report.coverage.signals_analyzed,0)
-  time+=1799000
+  time+=14*60000
   assert.equal((await service.read()).report.collection.state,'rate_limited')
   assert.equal(calls,1)
+  // The provider cooldown is 30 minutes, but report validity is 15 minutes.
+  // Between those cutoffs the API must deny, NOT return a stale HTTP 200.
+  time+=2*60000
+  assert.deepEqual(await service.read(),{ok:false,error:'analysis_unavailable'})
+  assert.deepEqual(await service.read(),{ok:false,error:'analysis_unavailable'})
+  assert.equal(calls,1,'provider backoff remains in force; no premature network retry')
   // After the provider backoff expires, a failed refresh may not reuse the report.
-  time+=2000
+  time+=14*60000+1000
   assert.equal((await service.read()).ok,false)
   assert.equal(calls,2)
 })
