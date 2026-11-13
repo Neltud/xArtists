@@ -6,6 +6,12 @@ export type AnalysisAgent={
 }
 export type XorusAnalysisReadout=Readonly<{
   reportId:string;generatedAt:string;ageMinutes:number;stale:boolean;sourceTimeVerified:false
+  sourceTs:string|null
+  collection:null|{
+    provider:'Binance Spot';instrument:'EGLD/USDT';interval:'1h'
+    state:'observed'|'unavailable'|'unauthorized'|'rate_limited'|'invalid_payload'|'stale_source'|'insufficient_history'
+    receivedAt:string;candlesUsed:number;sourceAgeMinutes:number|null
+  }
   stance:'ABSTAIN';reason:string;signalsAnalyzed:number;familiesAnalyzed:number
   independentlyVerifiedSignals:0;agents:AnalysisAgent[];rawDataIncluded:false
   commercialEnabled:false;executable:false

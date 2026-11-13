@@ -9,6 +9,10 @@ and the current Render API untouched until a separate, proven cutover.
 - **GitHub Pages** keeps the public dapp while the backend is moved.
 - **OVH** runs the existing Node Access API behind Caddy HTTPS (port 8787 is
   private to Docker). Persistent HTTPS certificate state uses named volumes.
+- The image also includes the bounded read-only Python xOrus analysis worker.
+  Compose builds from the repository root so it includes the shared contract and
+  Python sources. A manual equivalent is `docker build -f services/access-api/Dockerfile .`
+  from the repository root. Set `XORUS_ANALYSIS_ENABLED=0` to disable collection.
 - **PostgreSQL** stays on the already-identified, *verified* database during the
   first cutover. Do not confuse Neon sandbox projects with the production DB or
   migrate data without a tested restore.

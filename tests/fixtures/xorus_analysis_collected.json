@@ -1,0 +1,171 @@
+{
+  "schema": "xorus_analysis/v2",
+  "engine": "xorus",
+  "product": "proprietary_analysis",
+  "method": "deterministic_paper_synthesis/v1",
+  "mode": "paper_only",
+  "generated_at": "2026-11-13T09:30:00Z",
+  "source_ts": "2026-11-13T08:59:59Z",
+  "input_provenance": "provider_observed_unverified",
+  "raw_data_included": false,
+  "commercial_enabled": false,
+  "access_granted": false,
+  "decision": {
+    "stance": "ABSTAIN",
+    "reason": "thin_tape"
+  },
+  "coverage": {
+    "signals_defined": 120,
+    "signals_analyzed": 6,
+    "families_analyzed": 3,
+    "independently_verified_signals": 0
+  },
+  "confidence": null,
+  "agents": [
+    {
+      "agent": "scout",
+      "status": "no_input",
+      "families": [
+        {
+          "family": "onchain",
+          "signals_analyzed": 0,
+          "reading": "no_input"
+        },
+        {
+          "family": "dex",
+          "signals_analyzed": 0,
+          "reading": "no_input"
+        }
+      ]
+    },
+    {
+      "agent": "tape",
+      "status": "paper_unverified",
+      "families": [
+        {
+          "family": "price",
+          "signals_analyzed": 4,
+          "reading": "mixed"
+        },
+        {
+          "family": "volume",
+          "signals_analyzed": 1,
+          "reading": "positive"
+        },
+        {
+          "family": "volatility",
+          "signals_analyzed": 0,
+          "reading": "no_input"
+        },
+        {
+          "family": "liquidity",
+          "signals_analyzed": 0,
+          "reading": "no_input"
+        },
+        {
+          "family": "funding",
+          "signals_analyzed": 0,
+          "reading": "no_input"
+        }
+      ]
+    },
+    {
+      "agent": "crowd",
+      "status": "no_input",
+      "families": [
+        {
+          "family": "social",
+          "signals_analyzed": 0,
+          "reading": "no_input"
+        }
+      ]
+    },
+    {
+      "agent": "curator",
+      "status": "no_input",
+      "families": [
+        {
+          "family": "art",
+          "signals_analyzed": 0,
+          "reading": "no_input"
+        }
+      ]
+    },
+    {
+      "agent": "sentinel",
+      "status": "paper_unverified",
+      "families": [
+        {
+          "family": "risk",
+          "signals_analyzed": 1,
+          "reading": "balanced"
+        }
+      ]
+    },
+    {
+      "agent": "macro",
+      "status": "no_input",
+      "families": [
+        {
+          "family": "macro",
+          "signals_analyzed": 0,
+          "reading": "no_input"
+        }
+      ]
+    },
+    {
+      "agent": "chair",
+      "status": "no_input",
+      "families": [
+        {
+          "family": "external",
+          "signals_analyzed": 0,
+          "reading": "no_input"
+        }
+      ]
+    },
+    {
+      "agent": "scribe",
+      "status": "recorded",
+      "families": []
+    }
+  ],
+  "scenarios": [
+    {
+      "condition": "verified_quorum_and_source_review",
+      "outcome": "reassess_analysis"
+    },
+    {
+      "condition": "sentinel_veto_or_operator_halt",
+      "outcome": "maintain_abstention"
+    }
+  ],
+  "limitations": [
+    "single_venue_usdt_not_usd",
+    "hourly_closed_candles_only",
+    "provider_observation_not_independent_attestation",
+    "commercial_analysis_rights_not_verified",
+    "no_autonomous_execution"
+  ],
+  "safety": {
+    "executable": false,
+    "live_trading": false,
+    "signing_authorized": false,
+    "trade_authorized": false,
+    "mint_authorized": false,
+    "transfer_authorized": false,
+    "requires_human_review": true
+  },
+  "collection": {
+    "provider": "binance_spot_public",
+    "instrument": "EGLDUSDT",
+    "interval": "1h",
+    "state": "observed",
+    "received_at": "2026-11-13T09:30:00Z",
+    "source_max_age_seconds": 3900,
+    "candles_used": 49,
+    "payload_sha256": "e825ba1491de8357a9acd88152b1f62d71655d5dc70c0a55499d32e625a323de",
+    "retry_after_seconds": 60
+  },
+  "report_sha256": "d7d9b9a893d1a56fdd7340ea9194a37a93872e22023d01e4b596b02bcf5ebc1e"
+}

@@ -4,6 +4,7 @@
 # Other services safely default to the original frontend behavior.
 FROM node:20-alpine AS build
 WORKDIR /app
+ARG VITE_ACCESS_API_BASE=https://xartists-access-api.onrender.com
 
 # Keep existing frontend build behavior unchanged.
 COPY package.json package-lock.json* pnpm-workspace.yaml* ./
@@ -12,8 +13,10 @@ RUN npm install --legacy-peer-deps || true
 
 COPY apps/frontend ./apps/frontend
 COPY data ./data
+COPY packages/core/src/xorusAnalysisContract.mjs ./packages/core/src/xorusAnalysisContract.mjs
 WORKDIR /app/apps/frontend
-RUN npm install --legacy-peer-deps && npm run build
+# Render still serves the SPA below /xArtists/. Pages uses the origin root.
+RUN npm install --legacy-peer-deps && VITE_ACCESS_API_BASE="$VITE_ACCESS_API_BASE" npm run build -- --base=/xArtists/
 
 # Production API dependencies in a separate stage. No tokens, PATs or
 # production database credentials enter the image at build time.
@@ -28,10 +31,14 @@ COPY services/access-api/scripts/check-mint-store.mjs ./scripts/check-mint-store
 # Preserve nginx:1.27-alpine as the final image to avoid altering the
 # public frontend's Nginx routing or layout.
 FROM nginx:1.27-alpine
-RUN apk add --no-cache nodejs \
+RUN apk add --no-cache nodejs python3 \
     && node -e "if (Number(process.versions.node.split('.')[0]) < 20) process.exit(1)"
 COPY --from=build /app/apps/frontend/dist /usr/share/nginx/html/xArtists
 COPY --from=api /opt/xartists/access-api /opt/xartists/access-api
+# Relative imports from access-api/src resolve to /opt in this legacy layout.
+COPY packages/core/src/xorusAnalysisContract.mjs /opt/packages/core/src/xorusAnalysisContract.mjs
+COPY lia/chorus/__init__.py lia/chorus/catalog.py lia/chorus/swarm.py /opt/lia/chorus/
+COPY lia/xorus/__init__.py lia/xorus/swarm.py lia/xorus/decision_agent.py lia/xorus/analysis_report.py lia/xorus/analysis_cycle.py /opt/lia/xorus/
 COPY ops/write-render-build-info.mjs /usr/local/lib/xartists/write-render-build-info.mjs
 COPY ops/render-service-entrypoint.sh /usr/local/bin/xartists-entrypoint
 RUN chmod 755 /usr/local/bin/xartists-entrypoint

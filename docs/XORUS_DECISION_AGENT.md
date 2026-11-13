@@ -40,6 +40,56 @@ Ce travail de synthèse est déterministe, sans collecteur ni modèle connecté.
 
 Voir [le produit et ses limites](XORUS_DATA_BROKER_RELEASE.md).
 
+## Cycle serveur de collecte et d'analyse
+
+`lia.xorus.analysis_cycle` ajoute un collecteur distinct du moteur : un seul GET
+vers l'endpoint public Binance Spot, fixé à `EGLDUSDT`, `1h`, 49 bougies maximum.
+La documentation fournisseur décrit ce format dans
+[Kline/Candlestick data](https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md#klinecandlestick-data).
+Le collecteur n'utilise aucun compte, clé API ou endpoint de trading.
+
+Les heures doivent être consécutives, sans doublon, avec OHLC et volumes cohérents.
+La bougie en cours est exclue. Au moins 25 bougies clôturées et une dernière
+observation âgée de 65 minutes au plus sont nécessaires. Une erreur, un refus
+ou une série périmée produit zéro entrée ; aucun ancien résultat n'est substitué.
+
+Les entrées internes dérivées sont les variations de clôture à 1 h et 24 h,
+le RSI sur la moyenne arithmétique des gains/pertes de 14 heures (sans lissage
+Wilder), le VWAP des volumes quote/base sur 24 heures, le volume de la dernière
+heure comparé à la moyenne des 24 heures précédentes et le repli depuis le plus
+haut des 24 dernières heures clôturées. Un dénominateur nul laisse l'indicateur
+absent ; il ne crée pas de RSI neutre. Tous les prix sont en USDT, sans hypothèse
+de parité avec USD. Six indicateurs au plus, issus d'une seule place de marché,
+ne représentent ni six sources indépendantes ni 120 signaux alimentés.
+
+`GET /v1/xorus/analysis` exécute ce cycle et renvoie une projection publique
+`xorus_analysis/v2` : conclusions par agent, horodatages et état de collecte,
+sans valeurs brutes, bougies, scores, texte fournisseur ou prompt. Le moteur
+reste déterministe et paper ; les rôles ne sont pas présentés comme huit appels LLM.
+`independently_verified_signals=0`, `commercial_enabled=false` et `ABSTAIN`
+restent obligatoires. Ce point d'accès n'accorde aucun accès payant et ne vérifie
+pas de licence d'exploitation commerciale.
+
+Le worker possède une limite de huit secondes et de 32 Kio de sortie. Il ne
+reçoit pas les secrets API, PSP ou base de données. Les requêtes concurrentes
+partagent un seul cycle ; le cache dure au plus 60 secondes en cas de collecte
+valide et respecte le délai fournisseur en cas de limitation (60 à 3 600 secondes).
+Les paramètres client ne peuvent changer ni source, ni symbole, ni horloge.
+Le même contrat valide le rapport dans l'API et le navigateur, et l'API contrôle
+son digest de contenu sans l'assimiler à une preuve d'authenticité.
+
+Les deux images API embarquent Python et le moteur. L'image autonome se construit
+depuis la racine du dépôt :
+`docker build -f services/access-api/Dockerfile .`. Compose utilise ce contexte.
+La désactivation immédiate passe par `XORUS_ANALYSIS_ENABLED=0` côté API ; la
+route répond alors 503. Un retour au commit précédent retire ce collecteur.
+Le frontend configuré avec `VITE_ACCESS_API_BASE` n'utilise jamais l'ancien aperçu
+statique lors d'une panne serveur. Sans API configurée, cet aperçu reste hors ligne.
+
+Cette implémentation ne prouve pas que l'image est déployée ni que le fournisseur
+est joignable depuis l'hébergeur. La livraison privée des analyses payantes,
+les autres sources et leurs droits d'exploitation restent à connecter.
+
 Les 120 IDs ne signifient pas 120 fournisseurs, et les 12 familles ne signifient pas que 12 familles ont des observations. Le moteur historique n'implémente actuellement qu'une petite sélection de scoreurs. Tant que le seuil de signaux vérifiables n'est pas franchi, il abstient. Ajouter de vrais adaptateurs exige preuve de fraîcheur, provenance, licence et tests supplémentaires — aucun auto-fallback de simulé à live.
 
 ## Tests & CI

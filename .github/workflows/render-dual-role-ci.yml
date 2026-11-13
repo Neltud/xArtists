@@ -10,6 +10,10 @@ on:
       - '.github/workflows/render-dual-role-ci.yml'
       - 'services/access-api/package.json'
       - 'services/access-api/package-lock.json'
+      - 'services/access-api/src/xorusAnalysis.mjs'
+      - 'lia/xorus/**'
+      - 'lia/chorus/**'
+      - 'packages/core/src/xorusAnalysisContract.mjs'
   workflow_dispatch:
 
 permissions:
@@ -24,6 +28,13 @@ jobs:
 
       - name: Build exactly the repository-root Docker image used by BOTH Render services
         run: docker build --progress=plain -t xartists-shared-render:ci -f Dockerfile .
+
+      - name: Verify bundled analysis and API contract without a network or secrets
+        run: |
+          docker run --rm --network none --read-only -w /opt --entrypoint python3 xartists-shared-render:ci \
+            -S -B -c 'from lia.xorus.analysis_cycle import run_analysis_cycle; r=run_analysis_cycle(fetch_bytes=lambda: b"[]"); assert r["schema"]=="xorus_analysis/v2"; assert r["coverage"]["signals_analyzed"]==0; print("offline analysis image PASS")'
+          docker run --rm --network none --read-only --entrypoint node xartists-shared-render:ci \
+            --input-type=module -e 'import {createXorusAnalysisService} from "/opt/xartists/access-api/src/xorusAnalysis.mjs"; const out=await createXorusAnalysisService({enabled:false}).read(); if(out.error!=="analysis_disabled") process.exit(1); console.log("shared API contract PASS")'
 
       - name: Prove frontend and API roles independently without production secrets
         shell: bash
@@ -78,6 +89,7 @@ jobs:
           python3 - <<'PY'
           import json
           import os
+          import re
           from urllib.request import urlopen
           with urlopen('http://127.0.0.1:18080/xArtists/build-info.json', timeout=5) as r:
               assert r.status == 200
@@ -91,6 +103,16 @@ jobs:
           assert stamp['lia_live_trading'] is False
           assert 'built_at' not in stamp
           print('Render stamp PASS: JSON identity matches checkout, not fake HTML')
+          with urlopen('http://127.0.0.1:18080/xArtists/', timeout=5) as r:
+              html = r.read(262144).decode()
+          assets = re.findall(r'<script[^>]+src="([^"]+)"', html)
+          local = [asset for asset in assets if asset.startswith('/xArtists/assets/')]
+          assert local, 'Render HTML must use the actual /xArtists/ asset prefix'
+          with urlopen('http://127.0.0.1:18080' + local[0], timeout=5) as r:
+              assert r.status == 200
+              assert 'javascript' in r.headers.get_content_type()
+              assert b'<html' not in r.read(128).lower()
+          print('Render asset prefix PASS: actual bundled JavaScript, not a SPA fallback')
           PY
 
           # Without RENDER_GIT_COMMIT, the same image must FAIL CLOSED (404),

@@ -1,6 +1,6 @@
 /**
- * xOrus public analysis desk: actual published paper decision + independent
- * read-only MultiversX network context. Not a simulated trading screen.
+ * xOrus public analysis desk: server analysis when configured, otherwise the
+ * explicitly offline preview. Separate read-only MultiversX network context.
  * No illustrative or cached fallback market prices are used in this desk.
  */
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -28,13 +28,16 @@ export default function XorusDecisionDesk(){
   const [economics,setEconomics]=useState<unknown>(null)
   const [analysis,setAnalysis]=useState<unknown>(null)
   const [checkedAt,setCheckedAt]=useState<number>(Date.now())
+  const [clockNow,setClockNow]=useState<number>(Date.now)
   const [busy,setBusy]=useState(true)
   const [revision,setRevision]=useState(0)
   const source=`${import.meta.env.BASE_URL || '/'}data/xorus_board.json`
-  const analysisSource=`${import.meta.env.BASE_URL || '/'}data/xorus_analysis_preview.json`
+  const apiBase=((import.meta.env.VITE_ACCESS_API_BASE as string|undefined)||'').trim().replace(/\/+$/,'')
+  const analysisSource=apiBase?`${apiBase}/v1/xorus/analysis`:`${import.meta.env.BASE_URL || '/'}data/xorus_analysis_preview.json`
   const refresh=useCallback(()=>setRevision(v=>v+1),[])
   useEffect(()=>{
     const ctl=new AbortController()
+    setClockNow(Date.now())
     setBusy(true)
     setBoard(null)
     setEconomics(null)
@@ -44,21 +47,32 @@ export default function XorusDecisionDesk(){
     void Promise.allSettled([
       readJson(source,ctl.signal).then(value=>{if(!ctl.signal.aborted)setBoard(value)}),
       readJson(MVX_ECONOMICS,ctl.signal).then(value=>{if(!ctl.signal.aborted)setEconomics(value)}),
-      readJson(analysisSource,ctl.signal).then(value=>{if(!ctl.signal.aborted)setAnalysis(value)}),
+      readJson(analysisSource,ctl.signal).then(value=>{
+        if(ctl.signal.aborted)return
+        if(apiBase){
+          const envelope=value as {ok?:unknown;report?:{schema?:unknown}}|null
+          setAnalysis(envelope?.ok===true&&envelope.report?.schema==='xorus_analysis/v2'?envelope.report:null)
+        }else setAnalysis(value)
+      }),
     ]).finally(()=>{
       window.clearTimeout(timer)
       if(!ctl.signal.aborted){setCheckedAt(Date.now());setBusy(false)}
     })
     return ()=>{window.clearTimeout(timer);ctl.abort()}
-  },[source,analysisSource,revision])
+  },[source,analysisSource,apiBase,revision])
+  useEffect(()=>{
+    const timer=window.setInterval(()=>setClockNow(Date.now()),30000)
+    return ()=>window.clearInterval(timer)
+  },[])
 
-  const status=useMemo(()=>interpretXorusSnapshot(board,checkedAt),[board,checkedAt])
+  const status=useMemo(()=>interpretXorusSnapshot(board,clockNow),[board,clockNow])
   const market=useMemo(()=>parseMultiversxEconomics(economics),[economics])
-  const report=useMemo(()=>interpretXorusAnalysisReport(analysis,checkedAt),[analysis,checkedAt])
-  const fromSource=status.sourceTs
-    ? new Date(status.sourceTs).toLocaleString(fr?'fr-FR':'en-GB',{dateStyle:'medium',timeStyle:'short'})
+  const report=useMemo(()=>interpretXorusAnalysisReport(analysis,clockNow),[analysis,clockNow])
+  const sourceTs=apiBase?report?.sourceTs:status.sourceTs
+  const fromSource=sourceTs
+    ? new Date(sourceTs).toLocaleString(fr?'fr-FR':'en-GB',{dateStyle:'medium',timeStyle:'short'})
     : null
-  const reason=fr
+  const offlineReason=fr
     ? (status.reason==='stale_snapshot'
         ? 'Source trop ancienne pour décider. Une nouvelle consultation ne la rend pas récente.'
         : status.reason==='thin_tape'
@@ -74,6 +88,14 @@ export default function XorusDecisionDesk(){
             ? 'No usable evidence: missing or invalid snapshot.'
             : 'No independently verified input provenance: abstention is required.')
 
+  const reason=apiBase
+    ? !report?.collection||report.collection.state!=='observed'
+      ? (fr?'Source serveur indisponible ou inexploitable. Aucune ancienne conclusion réutilisée.':'Server source unavailable or unusable. Previous findings are not reused.')
+      : report.stale
+        ? (fr?'Observations trop anciennes : actualisez l’analyse.':'Observations are too old: refresh the analysis.')
+        : (fr?`Analyse calculée sur ${report.signalsAnalyzed} indicateurs de bougies horaires clôturées. Source unique, non attestée indépendamment : abstention.`
+          : `Analysis calculated from ${report.signalsAnalyzed} closed-hourly-candle indicators. Single source, not independently attested: abstain.`)
+    : offlineReason
   return <section aria-label={fr?'Analyse décisionnelle xOrus':'xOrus decision analysis'}
       className="space-y-4" data-testid="xorus-decision-desk">
     <div className="xa-intelligence-hero">
@@ -91,16 +113,18 @@ export default function XorusDecisionDesk(){
       </div>
       <div className="xa-intelligence-status" role="status" aria-live="polite">
         <strong className="block text-lg">{fr?'S’ABSTENIR':'ABSTAIN'} · {fr?'aucun ordre autorisé':'no order authorized'}</strong>
-        <p className="mt-1">{busy
+        <p className="mt-1">{busy&&!report
           ? (fr?'Lecture des sources…':'Reading sources…')
           : reason}</p>
-        <p className="mt-2 text-xs">{fr?'Décision issue d’un instantané paper — pas une recommandation financière.':'Decision derived from a paper snapshot — not investment advice.'}</p>
+        <p className="mt-2 text-xs">{apiBase
+          ? (fr?'Analyse serveur en mode paper. Pas une recommandation financière.':'Server analysis in paper mode. Not investment advice.')
+          : (fr?'Décision issue d’un instantané paper — pas une recommandation financière.':'Decision derived from a paper snapshot — not investment advice.')}</p>
       </div>
       <p className="xa-intelligence-note mt-3">{fromSource
         ? (fr?`Source publiée : ${fromSource}`:`Published source: ${fromSource}`)
         : (fr?'Date de source indisponible':'Source date unavailable')}
-        {status.ageMinutes!==null?` · ${status.ageMinutes} min`:''}
-        {status.isStale?' · '+(fr?'PÉRIMÉ':'STALE'):''}
+        {(apiBase?report?.collection?.sourceAgeMinutes:status.ageMinutes)!=null?` · ${apiBase?report?.collection?.sourceAgeMinutes:status.ageMinutes} min`:''}
+        {(apiBase?report?.stale:status.isStale)?' · '+(fr?'PÉRIMÉ':'STALE'):''}
       </p>
     </div>
 
@@ -111,14 +135,16 @@ export default function XorusDecisionDesk(){
         <p>{fr?'Signaux définis, pas tous alimentés':'Defined signals, not all populated'}</p>
       </article>
       <article className="xa-intelligence-card">
-        <h3>{fr?'Historique déclaré':'Reported historical feed'}</h3>
-        <p className="text-2xl font-bold tabular-nums">{status.signalsReported??'—'} / 12</p>
-        <p>{fr?'Seuil minimal de signaux. Instantané non temps réel.':'Minimum scored-signal threshold. Historical, not real-time.'}</p>
+        <h3>{apiBase?(fr?'Indicateurs analysés':'Analyzed indicators'):(fr?'Historique déclaré':'Reported historical feed')}</h3>
+        <p className="text-2xl font-bold tabular-nums">{(apiBase?report?.signalsAnalyzed:status.signalsReported)??'—'} / 12</p>
+        <p>{apiBase
+          ? (fr?'Indicateurs calculés ; ils ne constituent pas des preuves indépendantes.':'Calculated indicators; these are not independent evidence.')
+          : (fr?'Seuil minimal de signaux. Instantané non temps réel.':'Minimum scored-signal threshold. Historical, not real-time.')}</p>
       </article>
       <article className="xa-intelligence-card">
         <h3>{fr?'Preuves vérifiées':'Independently verified'}</h3>
         <p className="text-2xl font-bold tabular-nums">0</p>
-        <p>{fr?'Aucune attestation indépendante dans ce fichier public.':'No independent provider attestations in this public file.'}</p>
+        <p>{fr?'Aucune attestation indépendante des entrées analysées.':'No independent attestation of the analyzed inputs.'}</p>
       </article>
     </div>
 
@@ -134,7 +160,7 @@ export default function XorusDecisionDesk(){
               : 'Value read from the public MultiversX API. This is the check time, not a verified price-source timestamp. Excluded from xOrus decisions.'}</p>
           </>
           : <p>{fr?'Prix indisponible : aucune valeur de remplacement inventée.':'Price unavailable: no invented fallback quote.'}</p>}
-        <p className="xa-intelligence-note mt-2">{fr?'Consulté':'Checked'} · {new Date(checkedAt).toLocaleString(fr?'fr-FR':'en-GB')}</p>
+        <p className="xa-intelligence-note mt-2" data-testid="xorus-quote-checked-at">{fr?'Consulté':'Checked'} · {new Date(checkedAt).toLocaleString(fr?'fr-FR':'en-GB')}</p>
         <a href="https://api.multiversx.com/economics" rel="noopener noreferrer" target="_blank">{fr?'Source : API MultiversX':'Source: MultiversX API'}</a>
       </article>
       <article className="xa-intelligence-card">
@@ -145,7 +171,7 @@ export default function XorusDecisionDesk(){
           <li>{fr?'Sentinel conserve son veto même si les autres agents sont positifs.':'Sentinel keeps its veto even if other agents are positive.'}</li>
           <li>{fr?'L’avis IA ne dépasse jamais 15 %, et ne remplace pas une preuve.':'AI advice is capped at 15% and never replaces evidence.'}</li>
         </ol>
-        <a href={source} target="_blank" rel="noopener noreferrer">{fr?'Consulter le rapport source':'Inspect published report'}</a>
+        <a href={apiBase?analysisSource:source} target="_blank" rel="noopener noreferrer">{fr?'Consulter le rapport source':'Inspect published report'}</a>
       </article>
     </div>
 

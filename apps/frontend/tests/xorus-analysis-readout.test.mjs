@@ -6,6 +6,8 @@ import {interpretXorusAnalysisReport} from '../src/lib/xorusAnalysisReadout.mjs'
 const fixture=JSON.parse(readFileSync(new URL('../public/data/xorus_analysis_preview.json',import.meta.url),'utf8'))
 const now=Date.parse(fixture.generated_at)
 const copy=()=>structuredClone(fixture)
+const collected=JSON.parse(readFileSync(new URL('../../../tests/fixtures/xorus_analysis_collected.json',import.meta.url),'utf8'))
+const sourceNow=Date.parse(collected.generated_at)
 
 test('real Python preview is analysis without raw data or invented confidence',()=>{
   const out=interpretXorusAnalysisReport(fixture,now)
@@ -89,4 +91,45 @@ test('aging a report never changes its observation time or verification',()=>{
   assert.ok(out.stale)
   assert.equal(out.generatedAt,fixture.generated_at)
   assert.equal(out.sourceTimeVerified,false)
+})
+
+test('collected Python analysis has observed timestamps, six indicators and zero independent attestations',()=>{
+  const out=interpretXorusAnalysisReport(collected,sourceNow)
+  assert.ok(out)
+  assert.equal(out.signalsAnalyzed,6)
+  assert.equal(out.collection.state,'observed')
+  assert.equal(out.collection.instrument,'EGLD/USDT')
+  assert.equal(out.sourceTs,'2026-11-13T08:59:59Z')
+  assert.equal(out.sourceTimeVerified,false)
+  assert.equal(out.stance,'ABSTAIN')
+  const aged=interpretXorusAnalysisReport(collected,sourceNow+40*60000)
+  assert.equal(aged.stale,true)
+  assert.equal(aged.sourceTs,out.sourceTs)
+})
+
+test('source metadata cannot invent timestamps, markets, independent inputs or commercial rights',()=>{
+  for(const patch of [{source_ts:null},{source_ts:'2026-11-13T11:00:00Z'},
+    {source_ts:'2026-11-12T08:59:59Z'},{input_provenance:'provider_verified'},
+    {collection:{...collected.collection,state:'verified'}},
+    {collection:{...collected.collection,instrument:'BTCUSDT'}},
+    {collection:{...collected.collection,provider:'private-provider-secret'}},
+    {collection:{...collected.collection,candles_used:'49'}},
+    {collection:{...collected.collection,source_max_age_seconds:86400}},
+    {collection:{...collected.collection,received_at:fixture.generated_at}},
+    {collection:{...collected.collection,state:'unavailable'}},
+  ])assert.equal(interpretXorusAnalysisReport({...collected,...patch},sourceNow),null)
+})
+
+test('provider errors require zero findings and never expose arbitrary source text',()=>{
+  const raw={...copy(),schema:'xorus_analysis/v2',generated_at:collected.generated_at,
+    input_provenance:'no_usable_provider_input',collection:{...collected.collection,
+      state:'rate_limited',candles_used:0,payload_sha256:null,error:'private-provider-error'}}
+  const out=interpretXorusAnalysisReport(raw,sourceNow)
+  assert.ok(out)
+  assert.equal(out.signalsAnalyzed,0)
+  assert.equal(out.sourceTs,null)
+  assert.equal(out.collection.state,'rate_limited')
+  assert.equal(JSON.stringify(out).includes('private-provider-error'),false)
+  raw.coverage={...raw.coverage,signals_analyzed:1}
+  assert.equal(interpretXorusAnalysisReport(raw,sourceNow),null)
 })
