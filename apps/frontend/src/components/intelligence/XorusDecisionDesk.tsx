@@ -7,6 +7,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useI18n } from '../../i18n/I18nContext'
 import { interpretXorusSnapshot, parseMultiversxEconomics } from '../../lib/xorusDecisionReadout.mjs'
+import XorusSignalCatalog from './XorusSignalCatalog'
 
 const MVX_ECONOMICS='https://api.multiversx.com/economics?fields=price,marketCap,volume24h'
 const AGENTS=[
@@ -161,6 +162,7 @@ export default function XorusDecisionDesk(){
         ? 'Ces rôles décrivent le moteur. Leur présence ne prouve pas qu’un collecteur produit des données actuellement.'
         : 'These roles describe the engine. Their listing does not prove a live data collector is active.'}</p>
     </details>
+    <XorusSignalCatalog />
     <nav className="flex flex-wrap gap-3" aria-label={fr?'Poursuivre l’analyse':'More analysis'}>
       <Link to="/market" className="xa-button secondary">{fr?'Analyse des marchés':'Market analysis'}</Link>
       <Link to="/intelligence/agents" className="xa-button secondary">{fr?'Comprendre les agents':'Understand agents'}</Link>
