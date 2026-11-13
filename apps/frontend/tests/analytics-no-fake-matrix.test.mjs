@@ -17,6 +17,8 @@ test('public analytics serves actual source-backed xOrus decision, not simulated
   assert.match(desk,/data\/xorus_board\.json/)
   assert.match(desk,/ABSTAIN|S’ABSTENIR/)
   assert.match(desk,/parseMultiversxEconomics/)
+  assert.match(desk,/to="\/explore\/analytics"/)
+  assert.doesNotMatch(desk,/to="\/market"/)
 })
 
 test('retired matrix component can never fabricate BTC/TRO prices or a strategy',()=>{
