@@ -1,6 +1,6 @@
 import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
- * Analyse marché — F&G · TRO hype · LIA · assets.
+ * Analyse marché xOrus — never promote demo numbers to public quotes.
  */
 import { useEffect, useState } from 'react'
 import {
@@ -98,18 +98,25 @@ export default function MarketPage() {
         <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-zinc-500">{xaRender("Marché")}</p>
         <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-white">{xaRender("Analyse")}</h1>
         <p className="text-zinc-400 text-[15px] leading-relaxed max-w-xl inline-flex flex-wrap items-center gap-1">
-          {xaRender("Indicateurs publics · TRO hype · LIA ")}<InfoTip>
+          {xaRender("Indicateurs horodatés · xOrus · lecture seule ")}<InfoTip>
             <strong className="text-white block mb-1">{xaRender("Transparence")}</strong>
             <span className="text-zinc-400">{xaRender("Données ouvertes. Placement LIA si USDC ≥ ")}{xaRender(MIN_USDC_DEPLOY)}.</span>
           </InfoTip>
         </p>
         {xaRender(snap && (
           <p className="text-[11px] text-zinc-600">
-            {xaRender("Maj ")}{xaRender(new Date(snap.updatedAt).toLocaleString('fr-FR'))} · {xaRender(snap.source)}
+            {xaRender("Dernière donnée de prix : ")}{xaRender(new Date(snap.updatedAt).toLocaleString('fr-FR'))} · {xaRender(snap.source)}
           </p>
         ))}
       </header>
 
+      <div role="note" className="rounded-xl border border-[color:var(--xa-border)] bg-[color:var(--xa-bg-elevated)] px-4 py-3 text-sm leading-6 text-[color:var(--xa-text-secondary)]">
+        Les indicateurs ne sont affichés que si leurs fournisseurs répondent avec des données horodatées.
+        Aucune valeur de démonstration ne remplace une panne API. Ce tableau reste consultatif,
+        sans ordre ni licence de redistribution de données acquise pour un produit payant.
+        <a className="ml-1 underline underline-offset-2" href="https://www.coingecko.com/en/api"
+          target="_blank" rel="noopener noreferrer">Data provided by CoinGecko</a>.
+      </div>
       {xaRender(loading && (
         <div className="rounded-2xl border border-white/10 bg-zinc-950/60 h-40 flex items-center justify-center text-sm text-zinc-500">
           {xaRender("Chargement… ")}</div>
