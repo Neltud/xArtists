@@ -1,0 +1,53 @@
+name: Stripe Billing account ledger — offline disposable PostgreSQL
+
+on:
+  pull_request:
+    paths:
+      - 'services/access-api/migrations/20261113_xa_stripe_billing_reconcile_sandbox.sql'
+      - 'services/access-api/src/stripeBillingReconcile.mjs'
+      - 'services/access-api/src/stripeBillingCandidate.mjs'
+      - 'services/access-api/src/stripeCheckout.mjs'
+      - 'services/access-api/tests/stripeBillingReconcilePostgres.test.mjs'
+      - 'docs/ops/STRIPE_BILLING_LEDGER_PREFLIGHT_2026-11-13.md'
+      - '.github/workflows/stripe-billing-sandbox-ledger-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  billing-ledger-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: xartists_billing_probe
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d xartists_billing_probe"
+          --health-interval 4s
+          --health-timeout 5s
+          --health-retries 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install locked access API dependencies
+        run: npm ci --prefix services/access-api --ignore-scripts --no-audit --no-fund
+      - name: Check billing service syntax and fail-closed offline unit tests
+        run: |
+          node --check services/access-api/src/stripeBillingReconcile.mjs
+          node --test services/access-api/tests/stripeBillingCandidate.test.mjs
+      - name: Test real PostgreSQL replay and account ledger without any Stripe network
+        env:
+          TEST_XA_BILLING_DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/xartists_billing_probe
+          ALLOW_EPHEMERAL_XA_BILLING_PG_TEST: '1'
+        run: node --test services/access-api/tests/stripeBillingReconcilePostgres.test.mjs
