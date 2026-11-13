@@ -7,7 +7,7 @@
 - Workflow borné : 4 lecteurs maximum, 10 s par appel, pas de boucle autonome, aucune mutation ni signature.
 - Sources : adaptateurs MultiversX, Polygon, Solana envisagés, à développer et tester ; Artprice et réseaux sociaux requièrent des licences écrites séparées.
 - Code : `lia.xorus.analysis_report.run_analysis_agent` produit la synthèse hors ligne `xorus_analysis/v1`. Le cycle serveur `lia.xorus.analysis_cycle` ajoute la projection `xorus_analysis/v2`, avec état de collecte et dates des bougies clôturées. Aucun board interne, prix brut, payload fournisseur ou prompt ne figure dans le rapport client.
-- La synthèse est déterministe et offline : aucun appel LLM ni collecteur live n'est ajouté. `source_ts=null`, confiance non chiffrable et zéro signal indépendamment vérifié. La date de génération ne devient jamais une date de source.
+- La synthèse reste déterministe, sans appel LLM. L'aperçu v1 hors ligne conserve `source_ts=null` ; le cycle v2 renseigne l'heure de clôture des observations lorsqu'une collecte conforme aboutit. La confiance reste non chiffrable et les signaux indépendamment vérifiés restent à zéro. La date de génération ne devient jamais une date de source.
 - Les anciennes fonctions `data_feed.build_data_pack` et `preprod_gate` restent des outils internes historiques ; leur modèle de redistribution ne régit pas les nouveaux abonnements d'analyse. Ne pas les exposer comme produit client ni réutiliser une validation de Data Pack pour autoriser une analyse commerciale.
 - Contrats outils futurs : `xorus_get_analysis` (rapport dérivé autorisé), `xorus_check_access` (entitlement serveur ; deny par défaut), `xorus_explain_analysis` (méthode et limites d'un rapport immuable). Aucun de ces outils MCP n'est connecté.
 - Erreurs : abstention si API 401/403/429, horodatage futur/périmé, NaN, licence expirée, attestation absente, timeout. Pas de fallback de données simulées présentées comme live.
@@ -40,7 +40,7 @@ le verdict demeure `ABSTAIN` et aucune vente n'est activée par cette route.
 Les collectes brutes restent internes. Voir les
 [limites et règles du cycle serveur](XORUS_DECISION_AGENT.md#cycle-serveur-de-collecte-et-danalyse).
 
-Retour arrière : retirer le panneau `XorusAnalysisReport` et son aperçu public, puis revenir au commit précédent. Aucun schéma de base, secret, paiement ou contrat n'est modifié.
+Désactivation du collecteur : `XORUS_ANALYSIS_ENABLED=0` côté API (route 503). Retour arrière complet : revenir au commit précédent. Aucun schéma de base, secret, paiement ou contrat n'est modifié.
 
 ## Récompense artiste — 1 TRO par NFT physique créé
 L’ancienne règle first_sale du code legacy reste **à migrer/désactiver avant distribution**. Le déclencheur demandé est le mint d’un véritable NFT physique xArtists, avec reçu MultiversX finalisé, droits artiste, identifiant physique, minter autorisé, anti-doublon, cap et réserve contrôlée. lia.xorus.physical_rewards.evaluate_physical_mint émet seulement un **candidat d’une unité TRO** ; payout_status=not_paid et transfer_authorized=false. Le ledger transactionnel et le transfert exigent une implémentation distincte, une revue et une signature humaine.
