@@ -62,7 +62,7 @@ export function parseCommercialCatalog(raw:unknown):CommercialCatalog|null{
       t.report_delivery_status!=='not_commercially_available'||
       t.source_commercial_rights_verified!==false)return null
   }
-  return raw as CommercialCatalog
+  return raw as unknown as CommercialCatalog
 }
 export type CommercialCatalogStatus='loading'|'verified'|'unavailable'
 
