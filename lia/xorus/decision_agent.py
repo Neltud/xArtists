@@ -9,9 +9,11 @@ from __future__ import annotations
 
 import math
 from collections.abc import Mapping
+from pathlib import Path
 from typing import Any
 
 from lia.chorus.swarm import CHATGPT_CAP
+from lia.xorus.data_feed import count_proof_bound_signals, count_verified_signals
 from lia.xorus.swarm import run_xorus
 
 _ALLOWED_MARKET = frozenset({
@@ -67,6 +69,8 @@ def _chair_vote(proposal: Any) -> tuple[dict[str, Any] | None, str]:
 
 def run_decision_agent(
     *, market: Mapping[str, Any] | None = None, chair_brief: Any = None,
+    verified_pack: Mapping[str, Any] | None = None,
+    evidence_root: Path | None = None,
 ) -> dict[str, Any]:
     """Build a paper-only decision board with Sentinel veto and no side effects.
 
@@ -94,11 +98,12 @@ def run_decision_agent(
                           and math.isfinite(row["score"])
                           and row["score"] <= _SAFETY_THRESHOLD)
     veto = bool(veto_signals or operator_halt)
-    # This adapter accepts only unverified offline fields. A scored paper
-    # signal is NEVER equivalent to independently attested provenance.
-    # A later connector must not silently promote these counts to verified.
-    verified_core = 0
-    verified_families = 0
+    # Independent verification requires pinned external attestation. A plain
+    # build_data_pack dict, proof hash or self-described provider grant cannot
+    # unlock verified counts. Evidence-file integrity is tracked separately.
+    verified_core, verified_families = count_verified_signals(verified_pack)
+    evidence_core, evidence_families = count_proof_bound_signals(
+        verified_pack, evidence_root=evidence_root)
     contribution = cut.get("external_capped", 0.0)
     bounded = (isinstance(contribution, (int, float)) and not isinstance(contribution, bool)
                and math.isfinite(contribution) and abs(contribution) <= CHATGPT_CAP + 1e-12)
@@ -124,6 +129,8 @@ def run_decision_agent(
     cut["executable"], cut["live_trading"] = False, False
     cut["verified_core_signals"] = verified_core
     cut["verified_independent_families"] = verified_families
+    if verified_pack is not None:
+        cut["proof_integrity_checked_signals"] = evidence_core
     board["live_trading"], board["live_locked"] = False, True
     board["handoff_for_chatgpt"] = (
         f"xOrus paper board: {stance} ({reason}); "
@@ -132,20 +139,24 @@ def run_decision_agent(
         "Chair advisory only (<=15%), Sentinel veto. "
         "No trade, mint, signature, price invention or request for secrets."
     )
+    decision_counts = {
+        "stance": stance,
+        "reason": reason,
+        "core_signals_scored": core_scored,
+        "independent_families_scored": family_count,
+        "verified_core_signals": verified_core,
+        "verified_independent_families": verified_families,
+    }
+    if verified_pack is not None:
+        decision_counts["proof_integrity_checked_signals"] = evidence_core
+        decision_counts["proof_integrity_checked_families"] = evidence_families
     return {
         "engine": "xorus",
         "module": "decision_agent",
-        "version": "0.1.0",
+        "version": "0.1.1",
         "mode": "paper_only",
         "market_provenance": "unverified_offline_inputs",
-        "decision": {
-            "stance": stance,
-            "reason": reason,
-            "core_signals_scored": core_scored,
-            "independent_families_scored": family_count,
-            "verified_core_signals": verified_core,
-            "verified_independent_families": verified_families,
-        },
+        "decision": decision_counts,
         "chair": {
             "status": chair_status,
             "weight_cap": CHATGPT_CAP,

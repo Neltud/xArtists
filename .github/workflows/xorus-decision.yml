@@ -6,6 +6,9 @@ on:
       - 'lia/xorus/decision_agent.py'
       - 'lia/xorus/analysis_report.py'
       - 'lia/xorus/analysis_cycle.py'
+      - 'lia/xorus/data_feed.py'
+      - 'lia/xorus/test_verified_tape.py'
+      - 'docs/ops/XORUS_PROVIDER_COMMERCIAL_RIGHTS_2026-11-13.md'
       - 'tests/test_xorus_analysis_cycle.py'
       - 'tests/fixtures/xorus_analysis_collected.json'
       - 'packages/core/src/xorusAnalysisContract.mjs'
@@ -45,6 +48,7 @@ jobs:
         run: |
           python -m unittest discover -s tests -p 'test_xorus_decision_agent.py' -v
           python -m unittest discover -s tests -p 'test_xorus_analysis_report.py' -v
+          python -m unittest lia.xorus.test_verified_tape -v
           python -m unittest discover -s tests -p 'test_xorus_analysis_cycle.py' -v
           python -m unittest discover -s tests -p 'test_chorus_paper_safety.py' -v
           python -m unittest discover -s tests -p 'test_xorus_alias.py' -v

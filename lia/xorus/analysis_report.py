@@ -10,6 +10,7 @@ import hashlib
 import json
 from collections.abc import Mapping
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any
 
 from lia.chorus.swarm import ROLES
@@ -44,6 +45,8 @@ def _family_assessment(rows: list[dict[str, Any]], family: str) -> dict[str, Any
 def run_analysis_agent(
     *, market: Mapping[str, Any] | None = None, chair_brief: Any = None,
     now: datetime | None = None,
+    verified_pack: Mapping[str, Any] | None = None,
+    evidence_root: Path | None = None,
 ) -> dict[str, Any]:
     """Produce a bounded, raw-data-free report from unverified offline inputs.
 
@@ -54,7 +57,10 @@ def run_analysis_agent(
     moment = now if now is not None else datetime.now(timezone.utc)
     if not isinstance(moment, datetime) or moment.utcoffset() is None:
         raise ValueError("now must be a timezone-aware datetime")
-    internal = run_decision_agent(market=market, chair_brief=chair_brief)
+    internal = run_decision_agent(
+        market=market, chair_brief=chair_brief,
+        verified_pack=verified_pack, evidence_root=evidence_root,
+    )
     rows = internal["board"]["signals"]
     agents = []
     for role in ROLES:
@@ -90,7 +96,7 @@ def run_analysis_agent(
             "signals_defined": 120,
             "signals_analyzed": decision["core_signals_scored"],
             "families_analyzed": decision["independent_families_scored"],
-            "independently_verified_signals": 0,
+            "independently_verified_signals": decision["verified_core_signals"],
         },
         "confidence": None,
         "agents": agents,
@@ -112,6 +118,11 @@ def run_analysis_agent(
             "requires_human_review": True,
         },
     }
+    # Only a separately labelled integrity count is added on explicit input.
+    # No proof-integrity result can inflate independently_verified_signals.
+    if verified_pack is not None:
+        report["coverage"]["proof_integrity_checked_signals"] = (
+            decision.get("proof_integrity_checked_signals", 0))
     # Digest binds the derived report, not raw provider data or a proof of truth.
     return seal_report(report)
 

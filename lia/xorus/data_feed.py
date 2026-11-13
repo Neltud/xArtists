@@ -7,9 +7,13 @@ its analyses. Customer reports use analysis_report, without raw observations.
 """
 from __future__ import annotations
 
+import hashlib
+import json
 import math
 import re
+from pathlib import Path
 from datetime import datetime, timezone
+from types import MappingProxyType
 from typing import Any, Iterable, Mapping
 
 from lia.xorus.catalog import catalog
@@ -19,6 +23,148 @@ HASH = re.compile(r"^[0-9a-f]{64}$")
 NETWORKS = frozenset({"multiversx", "polygon", "solana"})
 MODES = frozenset({"onchain", "market", "paper"})
 SIGNAL_IDS = frozenset(item["id"] for item in catalog())
+
+
+# Static *code-reviewed* commercial allowlist. None are approved on 2026-11-13.
+# Never populate this from the frontend, a model, a JSON report or a customer.
+# A signed commercial licence, exact scope and provenance-verifier review must
+# precede any future commercial_ok=True change in a separate, audited PR.
+# Registry entries are immutable at runtime, including nested properties.
+COMMERCIAL_SOURCE_POLICY = MappingProxyType({
+    name: MappingProxyType({
+        "commercial_ok": False, "approved_license_ref": None,
+        "review_status": status, "source_class": source_class,
+    })
+    for name, status, source_class in (
+        ("binance_spot_public", "separate_written_license_required", "market_api"),
+        ("binance_vision_dataset", "noncommercial_dataset_terms", "market_dataset"),
+        ("coingecko_api", "paid_plan_and_attribution_not_attested", "market_api"),
+        ("artprice_b2b", "written_b2b_contract_not_attested", "art_data"),
+        ("multiversx_public_api", "api_commercial_scope_not_attested", "onchain_indexer"),
+        ("multiversx_native_chain", "data_origin_not_independent_attestation", "onchain"),
+        ("opensea_api", "contract_scope_not_attested", "nft_indexer"),
+        ("social_platform", "provider_specific_license_not_attested", "social"),
+    )
+})
+
+
+def commercial_analysis_source_allowed(
+    provider: Any, policy: Mapping[str, Any] | None = None,
+) -> bool:
+    """Require BOTH a code-approved source and matching verified contract scope.
+
+    A paid CoinGecko plan may permit original derived reports without raw-feed
+    redistribution. Do not require redistribution_allowed for this use case;
+    require commercial_derivatives_allowed plus a future externally vetted
+    approval. No such approval is currently installed.
+    """
+    if not isinstance(provider, str) or not isinstance(policy, Mapping):
+        return False
+    entry = COMMERCIAL_SOURCE_POLICY.get(provider)
+    return bool(
+        entry is not None and entry["commercial_ok"] is True
+        and isinstance(entry["approved_license_ref"], str)
+        and bool(entry["approved_license_ref"])
+        and policy.get("license_ref") == entry["approved_license_ref"]
+        and policy.get("commercial_derivatives_allowed") is True
+        and policy.get("verified_source") is True
+    )
+
+
+# Proof-of-bytes is not proof of independent market corroboration or of a licence.
+# A private, operator-chosen evidence root is mandatory for these checks.
+MAX_PROOF_BYTES = 65_536
+PROOF_FIELDS = frozenset({"signal_id", "provider", "source_ts", "network", "data_mode", "value"})
+
+
+def _unique_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    result: dict[str, Any] = {}
+    for name, value in pairs:
+        if name in result:
+            raise ValueError("duplicate proof field")
+        result[name] = value
+    return result
+
+
+def _reject_nonfinite(_: str) -> None:
+    raise ValueError("nonfinite JSON proof")
+
+
+def _proof_matches(row: Mapping[str, Any], root: Path | None) -> bool:
+    """Verify stored proof bytes AND bind every scalar to the observation.
+
+    The bytes are a canonical *observation envelope*, NOT independent price
+    corroboration. A caller-controlled public path or a hash-shaped string
+    cannot assert anything about provider authenticity or commercial rights.
+    """
+    filename, digest = row.get("proof_evidence_path"), row.get("proof_sha256")
+    if (not isinstance(root, Path) or not isinstance(filename, str)
+        or not 1 <= len(filename) <= 180 or not isinstance(digest, str)
+        or not HASH.fullmatch(digest)):
+        return False
+    try:
+        relative = Path(filename)
+        if relative.is_absolute() or any(piece in (".", "..") for piece in relative.parts):
+            return False
+        base = root.resolve(strict=True)
+        target = (base / relative).resolve(strict=True)
+        if not target.is_relative_to(base) or not target.is_file():
+            return False
+        with target.open("rb") as handle:
+            data = handle.read(MAX_PROOF_BYTES + 1)
+        if not data or len(data) > MAX_PROOF_BYTES:
+            return False
+        if hashlib.sha256(data).hexdigest() != digest:
+            return False
+        proof = json.loads(
+            data.decode("utf-8"), object_pairs_hook=_unique_object,
+            parse_constant=_reject_nonfinite,
+        )
+        return (isinstance(proof, dict) and set(proof) == PROOF_FIELDS
+                and all(type(proof[key]) is type(row.get(key))
+                        and proof[key] == row[key] for key in PROOF_FIELDS))
+    except (OSError, UnicodeError, ValueError, TypeError, KeyError):
+        return False
+
+
+def _finite(value: Any) -> bool:
+    if isinstance(value, bool) or not isinstance(value, (float, int)):
+        return False
+    try:
+        return math.isfinite(value)
+    except (OverflowError, ValueError, TypeError):
+        return False
+
+
+def count_proof_bound_signals(
+    pack: Mapping[str, Any] | None, *, evidence_root: Path | None = None,
+) -> tuple[int, int]:
+    """Evidence-integrity coverage only; MUST NOT be called 'independent'."""
+    if (not isinstance(pack, Mapping) or pack.get("engine") != "xorus"
+        or pack.get("executable") is not False or pack.get("live_trading") is not False
+        or not isinstance(pack.get("observations"), list)):
+        return 0, 0
+    ids: set[str] = set()
+    for row in pack["observations"]:
+        if (isinstance(row, Mapping) and row.get("status") == "observed"
+            and row.get("proof_integrity_checked") is True
+            and isinstance(row.get("signal_id"), str)
+            and row["signal_id"] in SIGNAL_IDS
+            and not row["signal_id"].startswith("external.")
+            and _proof_matches(row, evidence_root)):
+            ids.add(row["signal_id"])
+    return len(ids), len({sid.split(".", 1)[0] for sid in ids})
+
+
+def count_verified_signals(_pack: Mapping[str, Any] | None) -> tuple[int, int]:
+    """Fail closed until a separate, pinned independent verifier exists.
+
+    Observation status, a SHA digest, an operator-provided trust-policy flag
+    and even matching evidence bytes are NOT independent market verification.
+    No in-memory dictionary may grant this count. A subsequent, separately
+    reviewed cryptographic attestation protocol is required before >0.
+    """
+    return 0, 0
 
 
 def _utc(text: Any) -> datetime | None:
@@ -36,13 +182,23 @@ def build_data_pack(
     trusted_providers: Mapping[str, Mapping[str, Any]] | None = None,
     now: datetime | None = None,
     ttl_seconds: int = 900,
+    evidence_root: Path | None = None,
+    intended_use: str = "internal_research",
 ) -> dict[str, Any]:
-    """Summarize only licensed, fresh, finite, provenance-bound observations."""
+    """Filter internal observations, never grant paid-report rights.
+
+    `internal_research` preserves the historical admission rules, but does
+    NOT make internal use legal or independently verified. `commercial_analysis`
+    requires a separate code-pinned commercial approval (currently empty),
+    source proof files and derived-analysis scope, NOT raw redistribution.
+    """
     moment = now or datetime.now(timezone.utc)
     if moment.tzinfo is None:
         raise ValueError("now must be timezone-aware")
     if isinstance(ttl_seconds, bool) or not isinstance(ttl_seconds, int) or not 1 <= ttl_seconds <= 86400:
         raise ValueError("invalid TTL")
+    if intended_use not in ("internal_research", "commercial_analysis"):
+        raise ValueError("invalid intended use")
     providers = trusted_providers or {}
     accepted: dict[str, dict[str, Any]] = {}
     rejected = 0
@@ -58,18 +214,28 @@ def build_data_pack(
         value = obs.get("value")
         if (not isinstance(sid, str) or sid not in SIGNAL_IDS
             or not isinstance(policy, Mapping)
-            or policy.get("redistribution_allowed") is not True
+            or (intended_use == "internal_research"
+                and policy.get("redistribution_allowed") is not True)
+            or (intended_use == "commercial_analysis"
+                and not commercial_analysis_source_allowed(provider, policy))
             or policy.get("verified_source") is not True
             or not isinstance(policy.get("license_ref"), str) or not policy["license_ref"].strip()
             or policy_expiry is None or policy_expiry <= moment
             or source_ts is None or (moment - source_ts).total_seconds() > ttl_seconds
             or (source_ts - moment).total_seconds() > 120
-            or isinstance(value, bool) or not isinstance(value, (int, float))
-            or not math.isfinite(value)
-            or obs.get("network") not in NETWORKS
-            or obs.get("data_mode") not in MODES
+            or not _finite(value)
+            or not isinstance(obs.get("network"), str) or obs["network"] not in NETWORKS
+            or not isinstance(obs.get("data_mode"), str) or obs["data_mode"] not in MODES
             or not isinstance(obs.get("proof_sha256"), str)
             or not HASH.fullmatch(obs["proof_sha256"])):
+            rejected += 1
+            continue
+        # Supplying a trusted local root switches proof handling to fail-closed.
+        # Without it, legacy observations may be retained but NEVER verified.
+        proof_ok = _proof_matches(obs, evidence_root) if evidence_root is not None else False
+        if (intended_use == "commercial_analysis" and not proof_ok) or (
+            evidence_root is not None and not proof_ok
+        ):
             rejected += 1
             continue
         candidate = {
@@ -78,6 +244,8 @@ def build_data_pack(
             "provider": provider, "source_ts": obs["source_ts"],
             "license_ref": policy["license_ref"],
             "proof_sha256": obs["proof_sha256"], "ttl_seconds": ttl_seconds,
+            "proof_integrity_checked": proof_ok,
+            "proof_evidence_path": obs.get("proof_evidence_path") if proof_ok else None,
             "is_stale": False,
         }
         if sid not in accepted or candidate["source_ts"] > accepted[sid]["source_ts"]:
@@ -88,6 +256,12 @@ def build_data_pack(
         "engine": "xorus", "brand": "xOrus",
         "signals_defined": 120, "signals_fed": len(accepted),
         "families_fed": len({sid.split(".")[0] for sid in accepted}),
+        "proof_integrity_checked_signals": sum(
+            row["proof_integrity_checked"] is True for row in accepted.values()),
+        "independently_verified_signals": 0,
+        "intended_use": intended_use,
+        "commercial_analysis_source_count": 0,  # no certified licences today
+        "commercial_enabled": False,
         "rejected_observations": rejected, "observations": rows,
         "networks_supported_for_read": sorted(NETWORKS),
         "advisory_only": True, "executable": False, "live_trading": False,
