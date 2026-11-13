@@ -159,6 +159,9 @@ export default function CommercialLaunchPage() {
           ))}
         </div>
         <p className="mt-4 text-xs leading-6 text-zinc-600 dark:text-zinc-400">{c.pricingNote}</p>
+        <Link to="/workspace/account" className="mt-5 inline-flex min-h-[44px] items-center rounded-xl border border-zinc-300 px-4 py-3 text-sm font-semibold dark:border-zinc-600">
+          {lang === 'fr' ? 'Mon compte e-mail · disponibilité réelle' : 'My email account · actual availability'}
+        </Link>
       </section>
 
       <section id="commercial-tracks" aria-labelledby="commercial-tracks-title" className="xa-offers-section scroll-mt-24">

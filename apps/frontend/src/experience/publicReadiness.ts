@@ -42,6 +42,7 @@ const publicStages: Record<string, PublicStage> = {
  wallet: 'browse',
  portfolio: 'preview',
  packs: 'preview',
+ account: 'preview',
  identity: 'preview',
  payments: 'preview',
  history: 'preview',

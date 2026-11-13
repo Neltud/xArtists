@@ -11,6 +11,9 @@ import { createXorusPrivateRepository } from './xorusPrivateStore.mjs'
 import { createXorusPrivateDelivery } from './xorusPrivateDelivery.mjs'
 import { publicCommercialCatalog } from './publicCommercialCatalog.mjs'
 import { createWalletlessSessionService } from './walletlessSession.mjs'
+import { createWalletlessAccountProfileService } from './walletlessProfile.mjs'
+import { createWalletlessSchemaProbe } from './walletlessSchemaProbe.mjs'
+import { readAccountProjection } from './accountRepository.mjs'
 import { createWorldRightsHandler } from './worldRightsHttp.mjs'
 import { handleStripe } from './stripeHttp.mjs'
 import { stripeSandboxConfig } from './stripeCheckout.mjs'
@@ -88,6 +91,8 @@ const WANT_EMAIL_SESSIONS = process.env.WALLETLESS_ACCOUNT_SESSION_ENABLED==='1'
 let emailSessionsLive = false
 let emailPool = null, emailVerifier = null
 let EMAIL_SESSIONS = createWalletlessSessionService()
+let EMAIL_PROFILE = createWalletlessAccountProfileService()
+let ACCOUNT_SCHEMA = createWalletlessSchemaProbe()
 if (WANT_EMAIL_SESSIONS) {
   try {
     const verify = createNeonAuthIdentityVerifier({baseUrl:process.env.NEON_AUTH_BASE_URL})
@@ -98,6 +103,14 @@ if (WANT_EMAIL_SESSIONS) {
       resolveVerifiedAccount:token=>findOrCreateAccountFromNeonToken(pool,token,verify),
     })
     emailPool=pool;emailVerifier=verify
+    ACCOUNT_SCHEMA=createWalletlessSchemaProbe({enabled:true,pool})
+    EMAIL_PROFILE=createWalletlessAccountProfileService({
+      enabled:true,originAllowed:origin=>liaSimpleOriginAllowed(origin),
+      lookupVerifiedProfile:async token=>{
+        const id=await findExistingAccountFromNeonToken(pool,token,verify)
+        return id?readAccountProjection(pool,id):null
+      },
+    })
     emailSessionsLive = true
   } catch {
     // An invalid operator configuration must never fall back to unverified login.
@@ -209,15 +222,31 @@ async function handleRequest(req, res) {
   if (pth === '/v1/commercial/catalog') {
     if(req.method!=='GET'){json(res,405,{ok:false,error:'method_not_allowed'});return}
     if(u.search){json(res,400,{ok:false,error:'query_not_supported'});return}
+    const accountSchemaReady=emailSessionsLive&&await ACCOUNT_SCHEMA.check()
     json(res,200,publicCommercialCatalog({
-      walletlessAccountEnabled:emailSessionsLive,
-      privateAnalysisEnabled:privateAnalysisLive,
+      walletlessAccountEnabled:accountSchemaReady,
+      privateAnalysisEnabled:privateAnalysisLive&&accountSchemaReady,
     }))
+    return
+  }
+  if (pth === '/v1/account/me') {
+    if(req.method!=='GET'){json(res,405,{ok:false,error:'method_not_allowed'});return}
+    if(u.search){json(res,400,{ok:false,error:'query_not_supported'});return}
+    if(emailSessionsLive&&!await ACCOUNT_SCHEMA.check()){
+      json(res,503,{ok:false,error:'account_profile_store_unavailable'});return
+    }
+    const out=await EMAIL_PROFILE.read({
+      authorization:req.headers.authorization,origin:req.headers.origin,
+    })
+    json(res,out.status,out.body)
     return
   }
   if (pth === '/v1/account/session') {
     if (req.method!=='POST') { json(res,405,{ok:false,error:'method_not_allowed'});return }
     if (u.search) { json(res,400,{ok:false,error:'query_not_supported'});return }
+    if(emailSessionsLive&&!await ACCOUNT_SCHEMA.check()){
+      json(res,503,{ok:false,error:'account_store_unavailable'});return
+    }
     const out=await EMAIL_SESSIONS.exchange({
       authorization:req.headers.authorization,origin:req.headers.origin,
       contentLength:req.headers['content-length'],transferEncoding:req.headers['transfer-encoding'],

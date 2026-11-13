@@ -52,6 +52,7 @@ export const modules:Module[] = [
   module('wallet','/workspace/wallet',['/wallet'],'wallet','workspace','wallet',()=>import('../pages/WalletPage'),['xPortal','WalletConnect']),
   module('portfolio','/workspace/portfolio',['/portfolio'],'portfolio','workspace','layers',()=>import('../pages/PortfolioPage'),['NFT','EGLD','TRO']),
   module('packs','/workspace/agents',['/my-packs','/salles'],'packs','workspace','agents',()=>import('../pages/MyPacksPage'),['Pulse','Yield','Sentinel']),
+  module('account','/workspace/account',['/account','/compte'],'Mon compte · Email','workspace','user',()=>import('../pages/AccountPage'),['Email','OTP','Compte sans wallet']),
   module('identity','/workspace/identity',['/identity'],'identity','workspace','user',()=>import('../pages/IdentityPage'),['Profile','Identity']),
   module('payments','/workspace/payments',['/payments'],'payments','workspace','clock',()=>import('../pages/PaymentHistory'),['EGLD','History']),
   module('history','/workspace/history',['/history'],'history','workspace','clock',()=>import('../pages/HistoryPage'),['History','xOrus']),

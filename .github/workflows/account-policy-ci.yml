@@ -7,6 +7,8 @@ on:
       - 'services/access-api/src/accountRepository.mjs'
       - 'services/access-api/src/neonAuthIdentity.mjs'
       - 'services/access-api/src/walletlessSession.mjs'
+      - 'services/access-api/src/walletlessProfile.mjs'
+      - 'services/access-api/src/walletlessSchemaProbe.mjs'
       - 'services/access-api/src/server.mjs'
       - 'services/access-api/src/subscriptionAccess.mjs'
       - 'services/access-api/src/walletLinkChallenge.mjs'
@@ -15,6 +17,8 @@ on:
       - 'services/access-api/tests/accountRepository.test.mjs'
       - 'services/access-api/tests/neonAuthIdentity.test.mjs'
       - 'services/access-api/tests/walletlessSession.test.mjs'
+      - 'services/access-api/tests/walletlessProfile.test.mjs'
+      - 'services/access-api/tests/walletlessSchemaProbe.test.mjs'
       - 'services/access-api/tests/subscriptionAccess.test.mjs'
       - 'services/access-api/tests/walletLinkChallenge.test.mjs'
       - 'services/access-api/tests/walletLinkFlow.test.mjs'
@@ -26,6 +30,8 @@ on:
       - 'services/access-api/src/accountRepository.mjs'
       - 'services/access-api/src/neonAuthIdentity.mjs'
       - 'services/access-api/src/walletlessSession.mjs'
+      - 'services/access-api/src/walletlessProfile.mjs'
+      - 'services/access-api/src/walletlessSchemaProbe.mjs'
       - 'services/access-api/src/server.mjs'
       - 'services/access-api/src/subscriptionAccess.mjs'
       - 'services/access-api/src/walletLinkChallenge.mjs'
@@ -34,6 +40,8 @@ on:
       - 'services/access-api/tests/accountRepository.test.mjs'
       - 'services/access-api/tests/neonAuthIdentity.test.mjs'
       - 'services/access-api/tests/walletlessSession.test.mjs'
+      - 'services/access-api/tests/walletlessProfile.test.mjs'
+      - 'services/access-api/tests/walletlessSchemaProbe.test.mjs'
       - 'services/access-api/tests/subscriptionAccess.test.mjs'
       - 'services/access-api/tests/walletLinkChallenge.test.mjs'
       - 'services/access-api/tests/walletLinkFlow.test.mjs'
@@ -62,6 +70,8 @@ jobs:
             services/access-api/tests/accountRepository.test.mjs \
             services/access-api/tests/neonAuthIdentity.test.mjs \
             services/access-api/tests/walletlessSession.test.mjs \
+            services/access-api/tests/walletlessProfile.test.mjs \
+            services/access-api/tests/walletlessSchemaProbe.test.mjs \
             services/access-api/tests/subscriptionAccess.test.mjs \
             services/access-api/tests/walletLinkChallenge.test.mjs \
             services/access-api/tests/walletLinkFlow.test.mjs

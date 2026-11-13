@@ -1,0 +1,72 @@
+name: Walletless account portal — OTP, profile and fail-closed readiness
+
+on:
+  pull_request:
+    paths:
+      - 'services/access-api/src/walletlessProfile.mjs'
+      - 'services/access-api/src/walletlessSchemaProbe.mjs'
+      - 'services/access-api/src/server.mjs'
+      - 'services/access-api/tests/walletlessProfile.test.mjs'
+      - 'services/access-api/tests/walletlessSchemaProbe.test.mjs'
+      - 'apps/frontend/src/lib/walletlessOtp.mjs'
+      - 'apps/frontend/src/lib/walletlessOtp.d.mts'
+      - 'apps/frontend/src/pages/AccountPage.tsx'
+      - 'apps/frontend/src/experience/modules.ts'
+      - 'apps/frontend/src/components/LoginModal.tsx'
+      - 'apps/frontend/src/pages/CommercialLaunchPage.tsx'
+      - 'apps/frontend/tests/walletless-otp-account.test.mjs'
+      - '.github/workflows/walletless-account-portal-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'services/access-api/src/walletlessProfile.mjs'
+      - 'services/access-api/src/walletlessSchemaProbe.mjs'
+      - 'services/access-api/src/server.mjs'
+      - 'apps/frontend/src/lib/walletlessOtp.mjs'
+      - 'apps/frontend/src/pages/AccountPage.tsx'
+      - 'apps/frontend/src/experience/modules.ts'
+      - '.github/workflows/walletless-account-portal-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  walletless-profile-api:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install backend without lifecycle scripts
+        working-directory: services/access-api
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Check account read endpoint and fail-closed PostgreSQL preflight
+        working-directory: services/access-api
+        run: |
+          node --check src/walletlessProfile.mjs
+          node --check src/walletlessSchemaProbe.mjs
+          node --test tests/walletlessSession.test.mjs tests/walletlessProfile.test.mjs tests/walletlessSchemaProbe.test.mjs
+
+  walletless-otp-frontend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: apps/frontend/package-lock.json
+      - name: Install frontend without lifecycle scripts
+        working-directory: apps/frontend
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Verify OTP security, account route, TypeScript, full build and route audit
+        working-directory: apps/frontend
+        run: |
+          node --test tests/walletless-otp-account.test.mjs tests/xorus-commercial-catalog-truth.test.mjs
+          npm run typecheck
+          npm run build
+          npm run check:routes

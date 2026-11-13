@@ -230,6 +230,9 @@ export default function LoginModal({ open: controlledOpen, onClose, onConnected 
               <Link to="/studio" className="btn-secondary flex-1 text-center text-sm" onClick={close}>
                 {xaRender("Préparer une œuvre")}
               </Link>
+              <Link to="/workspace/account" className="btn-secondary flex-1 text-center text-sm" onClick={close}>
+                {xaRender("Mon compte e-mail")}
+              </Link>
             </div>
             <p className="text-[12px] text-[color:var(--xa-text-secondary)]">
               {xaRender("Pour créer, vendre ou transférer un NFT, une signature d'un wallet que tu contrôles sera nécessaire.")}
