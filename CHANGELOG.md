@@ -1,5 +1,47 @@
 # Changelog — xArtists
 
+## [0.138.0](https://github.com/Neltud/xArtists/compare/v0.137.0...v0.138.0) (2026-11-13)
+
+
+### Features
+
+* **account:** gated Neon email OTP portal, verified self-profile and DB readiness ([#563](https://github.com/Neltud/xArtists/issues/563)) ([fa110bf](https://github.com/Neltud/xArtists/commit/fa110bf4cfaab6e36a408000670c4187f2be2104))
+* **auth:** add gated verified Neon walletless account session ([#559](https://github.com/Neltud/xArtists/issues/559)) ([f726c7e](https://github.com/Neltud/xArtists/commit/f726c7ef739d45c1b7728843bbc91e6f3ddae34c))
+* **commercial:** xOrus live-status catalog and clearer fiat/analysis tracks ([#562](https://github.com/Neltud/xArtists/issues/562)) ([c74689c](https://github.com/Neltud/xArtists/commit/c74689cc8754cfe06bd61322257c126ff65e48d0))
+* **marketplace:** search owned NFTs and prepare listings without bypassing chain proof ([aa47d82](https://github.com/Neltud/xArtists/commit/aa47d82031c71561ed770d804ed4258f1c916b0a))
+* **p0:** offline Stripe Billing account reconciliation with sandbox-only DB gate ([#567](https://github.com/Neltud/xArtists/issues/567)) ([8bd0a24](https://github.com/Neltud/xArtists/commit/8bd0a249e22d43ba6deec6f6ef0f1f9372829d2e))
+* **ux:** make derived xOrus analysis the default Lab experience ([72c391b](https://github.com/Neltud/xArtists/commit/72c391b36bbdb60e2b8f232bfdb596b082a387aa))
+* **ux:** rebuild the xOrus, Agents and Lab public intelligence experience ([#540](https://github.com/Neltud/xArtists/issues/540)) ([4eb847f](https://github.com/Neltud/xArtists/commit/4eb847fb08c5ccbff3189bdeab6b82795a971aa9))
+* **xArtists:** 3D artist/gallery/seller exhibition drafts with safe museum preview ([#572](https://github.com/Neltud/xArtists/issues/572)) ([93e4ac3](https://github.com/Neltud/xArtists/commit/93e4ac3408d912a77a59f76533915b0882770ade))
+* **xorus:** decision and evidence-based market analysis rebuilt ([#542](https://github.com/Neltud/xArtists/issues/542)) ([bc7ed75](https://github.com/Neltud/xArtists/commit/bc7ed75cd7e081538b954dbe21070a9b4593c753))
+* **xorus:** fail-closed private analysis access policy ([#556](https://github.com/Neltud/xArtists/issues/556)) ([5eff5bf](https://github.com/Neltud/xArtists/commit/5eff5bf3315984c8b3f20651f5c7cd9dde7cc427))
+* **xOrus:** free licensed source scope and conservative read-only crosscheck ([#571](https://github.com/Neltud/xArtists/issues/571)) ([3e5e86c](https://github.com/Neltud/xArtists/commit/3e5e86c3882283b100a4d2319afd7b1ccb25296f))
+* **xorus:** gated SHA256-verified private report delivery ([#561](https://github.com/Neltud/xArtists/issues/561)) ([24b3c1a](https://github.com/Neltud/xArtists/commit/24b3c1a05cbbd96995915ffd8994c76d97337300))
+* **xorus:** private reports and PostgreSQL atomic entitlement quotas ([#558](https://github.com/Neltud/xArtists/issues/558)) ([8790741](https://github.com/Neltud/xArtists/commit/8790741c40241e256fd5d7c50e1319b9dd9131c1))
+* **xorus:** produire nos analyses sans revendre les données sources ([#545](https://github.com/Neltud/xArtists/issues/545)) ([7674794](https://github.com/Neltud/xArtists/commit/76747940c5402ce17fc6275cfd07a260b06509b2))
+* **xorus:** publish bounded server-side derived analysis (paper only) ([a6388f6](https://github.com/Neltud/xArtists/commit/a6388f6582df4d17ea195eb5e07d7326bba14a4e))
+* **xOrus:** truthful real agent evidence and bounded API timeout ([#568](https://github.com/Neltud/xArtists/issues/568)) ([8020fc9](https://github.com/Neltud/xArtists/commit/8020fc90d405cfc6b74fa1a1ba90988d925e5b5c))
+
+
+### Bug Fixes
+
+* **dapp:** annuler les listings obsolètes et identifier le backend publié ([#553](https://github.com/Neltud/xArtists/issues/553)) ([10a66c2](https://github.com/Neltud/xArtists/commit/10a66c2cd290468ee08a5929d99e20d85731b705))
+* **p0 billing:** sandbox Stripe refund and dispute revocation with immutable PI binding ([#569](https://github.com/Neltud/xArtists/issues/569)) ([18d81e1](https://github.com/Neltud/xArtists/commit/18d81e1c569e948249e22e476011983b79f47076))
+* **p0 xOrus:** fail-closed evidence proof and commercial provider allowlist ([#566](https://github.com/Neltud/xArtists/issues/566)) ([f2fe830](https://github.com/Neltud/xArtists/commit/f2fe830463b4a701c3425dc7553acdcf0b06d15c))
+* **p0,analytics:** replace synthetic LIA matrix with evidence-based xOrus desk ([#544](https://github.com/Neltud/xArtists/issues/544)) ([5e7caad](https://github.com/Neltud/xArtists/commit/5e7caad95b49b0602da5a32edd949a30153d2e03))
+* **p0,market:** require real, timestamped prices and indicators, never mock fallback ([#543](https://github.com/Neltud/xArtists/issues/543)) ([5e6ef4d](https://github.com/Neltud/xArtists/commit/5e6ef4d0ddaa5eb65f3c22a800d1a6712f7dcb31))
+* **p0:** enforce MoonPay origin and network rate limits ([#555](https://github.com/Neltud/xArtists/issues/555)) ([4a1a26e](https://github.com/Neltud/xArtists/commit/4a1a26e43c300778cd5db25d1bd37eb5855555d7))
+* **p0:** rétablir l’accès API depuis xartists.art et les sondes publiques ([#554](https://github.com/Neltud/xArtists/issues/554)) ([5bf0838](https://github.com/Neltud/xArtists/commit/5bf0838f5011c774ee904def06559676e2d8317d))
+* **xorus:** bind private access to real account UUID ([#557](https://github.com/Neltud/xArtists/issues/557)) ([1807e73](https://github.com/Neltud/xArtists/commit/1807e7317a9c753a4b9d2275b1367f489e7bb3ef))
+* **xorus:** bounded retry after transient API errors without offline fallback ([be3fa8a](https://github.com/Neltud/xArtists/commit/be3fa8aa98b6ac4d44ce7ffabd09293ad87133e7))
+* **xorus:** revalidate cached analysis freshness and CI worker contract ([01c1cc0](https://github.com/Neltud/xArtists/commit/01c1cc0d3e6147d8763c5c7c16bfba98ccb192c9))
+
+
+### Documentation
+
+* **grok:** verify xOrus audit roadmap and bounded independent reviewer prompt ([#565](https://github.com/Neltud/xArtists/issues/565)) ([dde881d](https://github.com/Neltud/xArtists/commit/dde881d0eb850566cfa58db45f94b22531f3603c))
+* **ops:** active context evidence from Nov 13, no financial activation ([82461a6](https://github.com/Neltud/xArtists/commit/82461a662fe277560bfd4be052b7578f6b475b68))
+
 ## [0.137.0](https://github.com/Neltud/xArtists/compare/v0.136.0...v0.137.0) (2026-11-12)
 
 
