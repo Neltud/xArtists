@@ -91,7 +91,7 @@ test('mobile dock links navigate to the five public destinations', async ({ page
   const canonical: Record<string, string> = {
     '/': '/', '/museum': '/explore/museum', '/marketplace': '/explore/market',
     '/auction': '/explore/auction', '/studio': '/create/studio',
-    '/finance/governance': '/finance/governance',
+    '/intelligence/xorus': '/intelligence/xorus',
   }
   for (const href of hrefs) {
     const path = new URL(href, page.url()).pathname.slice(BASE.length).replace(/\/$/, '') || '/'
@@ -125,6 +125,9 @@ test('directory search narrows modules and recovers from an empty result', async
   await expect(input).toHaveValue('')
   await expect(page.locator('.xa-directory-page .xa-module-card').first()).toBeVisible()
   await page.goto(BASE + '/directory/?lang=es')
+  await input.fill('catalogo')
+  await expect(page.locator('.xa-directory-page .xa-module-card')).toHaveCount(0)
+  await page.goto(BASE + '/directory/?lang=es&lab=1')
   await input.fill('catalogo')
   await expect(page.locator('.xa-directory-page .xa-module-card')).toHaveCount(1)
   await expect(page.locator('.xa-directory-page .xa-module-card').first()).toContainText('Catálogo RWA')
