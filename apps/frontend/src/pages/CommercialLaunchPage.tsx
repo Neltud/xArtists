@@ -147,8 +147,7 @@ export default function CommercialLaunchPage() {
             <article key={tier.sku} data-sku={tier.sku} className="xa-offers-card flex min-w-0 flex-col rounded-3xl border border-zinc-200 bg-white p-5 dark:border-zinc-700 dark:bg-zinc-900 sm:p-6">
               <p className="text-xs font-semibold uppercase tracking-widest text-zinc-600 dark:text-zinc-400">{c.level} {tier.level}</p>
               <h3 className="mt-3 text-3xl font-semibold tabular-nums sm:text-4xl">{catalog
-                ? (catalog.monthly_services.find(item => item.sku === tier.sku)?.target_cents ?? tier.cents) / 100
-                  && new Intl.NumberFormat(lang === 'fr' ? 'fr-FR' : 'en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                ? new Intl.NumberFormat(lang === 'fr' ? 'fr-FR' : 'en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
                     .format((catalog.monthly_services.find(item => item.sku === tier.sku)?.target_cents ?? tier.cents) / 100)
                 : tier.price} €</h3>
               <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">{c.perMonth}</p>
