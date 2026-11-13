@@ -1,6 +1,7 @@
 import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { setEmpireWallet } from '../store/empireStore'
+import {readonlyWalletObservation,restoreWalletObservation,walletSignEligibility} from '../lib/walletObservation.mjs'
 import {
   clearXPortalSession,
   ensureXPortalSession,
@@ -41,7 +42,7 @@ function addressFromUrl(): { address: string; method: WalletState['method'] } | 
   const candidates = [q.get('address'), q.get('addr'), q.get('loginAddress'), q.get('loginToken')]
   for (const c of candidates) {
     if (c && isValidErd(c)) {
-      return { address: c.trim(), method: 'web_wallet' }
+      return { address: c.trim(), method: 'paste_readonly' }
     }
   }
   const hash = window.location.hash || ''
@@ -49,10 +50,10 @@ function addressFromUrl(): { address: string; method: WalletState['method'] } | 
   if (hq) {
     const hqParams = new URLSearchParams(hq)
     const a = hqParams.get('address') || hqParams.get('addr')
-    if (a && isValidErd(a)) return { address: a.trim(), method: 'web_wallet' }
+    if (a && isValidErd(a)) return { address: a.trim(), method: 'paste_readonly' }
   }
   const m = hash.match(/erd1[a-z0-9]{58}/i)
-  if (m) return { address: m[0], method: 'web_wallet' }
+  if (m) return { address: m[0], method: 'paste_readonly' }
   return null
 }
 
@@ -80,27 +81,13 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<WalletState>(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY)
-      if (raw) {
-        const parsed = JSON.parse(raw) as WalletState
-        if (parsed.address?.toLowerCase() === LIA_WALLET.toLowerCase()) {
-          clearStorage()
-          return { connected: false, address: '', method: null, sessionLive: false }
-        }
-        // Never show xportal as connected until WC verify
-        if (parsed.method === 'xportal') {
-          return { connected: false, address: '', method: null, sessionLive: false }
-        }
-        if (parsed.address && parsed.method && parsed.method !== 'pem') {
-          return {
-            connected: true,
-            address: parsed.address,
-            method: parsed.method,
-            sessionLive: parsed.method !== 'paste_readonly',
-          }
-        }
-      }
+      // localStorage is controlled by the browser user, not the signer.
+      // Restore visible holdings in read-only mode, never a signing session.
+      const observed = restoreWalletObservation(raw, LIA_WALLET)
+      if (observed) return observed
+      if (raw) clearStorage()
     } catch {
-      /* */
+      /* blocked storage: anonymous by default */
     }
     return { connected: false, address: '', method: null, sessionLive: false }
   })
@@ -108,15 +95,13 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const fromUrl = addressFromUrl()
     if (!fromUrl) return
-    if (fromUrl.address.toLowerCase() === LIA_WALLET.toLowerCase()) return
-    setState({
-      connected: true,
-      address: fromUrl.address,
-      method: fromUrl.method,
-      sessionLive: true,
-    })
-    setEmpireWallet({ connected: true, address: fromUrl.address, method: fromUrl.method })
+    // An URL callback address is an unauthenticated public hint. A signed
+    // native-auth / live provider handshake is required for signing.
+    const observed = readonlyWalletObservation(fromUrl.address, LIA_WALLET)
     cleanUrlParams()
+    if (!observed) return
+    setState(observed)
+    setEmpireWallet({ connected: true, address: observed.address, method: 'paste_readonly' })
   }, [])
 
   const applyLiveSession = (address: string) => {
@@ -225,18 +210,21 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     if (addr.toLowerCase() === LIA_WALLET.toLowerCase()) {
       return { ok: false, error: 'Wallet protocole LIA interdit comme wallet utilisateur.' }
     }
-    if (method === 'xportal' && !getXPortalSession()) {
+    const pairing = method === 'xportal' ? getXPortalSession() : null
+    if (method === 'xportal' &&
+        (!pairing || pairing.address.toLowerCase() !== addr.toLowerCase())) {
       return {
         ok: false,
-        error: 'Session xPortal absente — scanne le QR / ouvre l’app puis réessaie.',
+        error: 'Session xPortal absente ou adresse différente — reconnecte le wallet.',
       }
     }
-    const sessionLive =
-      method === 'xportal'
-        ? getXPortalSession() != null
-        : method !== 'paste_readonly' && method !== null
-    setState({ connected: true, address: addr, method, sessionLive })
-    setEmpireWallet({ connected: true, address: addr, method })
+    // Unauthenticated direct Web Wallet callbacks, pasted addresses, PEM and
+    // legacy wallet_connect calls remain read-only until independently proven.
+    const safeMethod:WalletState['method'] =
+      method === 'xportal' || method === 'defi_wallet' ? method : 'paste_readonly'
+    const sessionLive = safeMethod === 'xportal' || safeMethod === 'defi_wallet'
+    setState({ connected: true, address: addr, method: safeMethod, sessionLive })
+    setEmpireWallet({ connected: true, address: addr, method: safeMethod })
     return { ok: true }
   }
 
@@ -262,12 +250,11 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     : ''
 
   const isLiaAddress = state.address.toLowerCase() === LIA_WALLET.toLowerCase()
-  const canAttemptSign =
-    state.connected &&
-    !isLiaAddress &&
-    state.method !== 'paste_readonly' &&
-    state.method !== null &&
-    (state.method !== 'xportal' || state.sessionLive === true)
+  const canAttemptSign = !isLiaAddress && walletSignEligibility({
+    connected:state.connected,address:state.address,method:state.method,
+    sessionLive:state.sessionLive,
+    pairedAddress:state.method==='xportal' ? getXPortalSession()?.address : null,
+  })
 
   return (
     <WalletContext.Provider
