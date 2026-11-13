@@ -1,8 +1,85 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-12T21:43:56.223Z",
+  "updatedAt": "2026-11-13T05:15:00.332Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1794546899804",
+      "timestamp": "05:14",
+      "source": "EGLD",
+      "title": "Cotation publique · $2.86 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1794536967000",
+      "timestamp": "02:29",
+      "source": "CoinTelegraph",
+      "title": "Trump nominates Hester Peirce successor among SEC, CFTC picks",
+      "link": "https://cointelegraph.com/news/trump-nominates-hester-peirce-successor-among-sec-cftc-picks?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1794533187000",
+      "timestamp": "01:26",
+      "source": "CoinTelegraph",
+      "title": "Former Nvidia CEO Huang had third alleged affair: Reuters",
+      "link": "https://cointelegraph.com/news/former-nvidia-ceo-huang-had-third-alleged-affair-reuters?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1794531162000",
+      "timestamp": "00:52",
+      "source": "CoinTelegraph",
+      "title": "Gemini’s quarterly retail trading volume sinks to 3-year low",
+      "link": "https://cointelegraph.com/markets/geminis-quarterly-retail-trading-volume-sinks-to-3-year-low?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1794525175000",
+      "timestamp": "23:12",
+      "source": "CoinTelegraph",
+      "title": "Maple Finance’s strategy rift sends co-founder, COO to the exits",
+      "link": "https://cointelegraph.com/news/maple-finance-strategy-rift-co-founder-coo-exit?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1794522598000",
+      "timestamp": "22:29",
+      "source": "CoinTelegraph",
+      "title": "NK hackers join memecoin trenches, xStocks adds Hong Kong equities: Asia Express",
+      "link": "https://cointelegraph.com/magazine/nk-hackers-join-memecoin-trenches-xstocks-adds-hong-kong-equities-asia-express?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1794521501000",
+      "timestamp": "22:11",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1794524152000",
+      "timestamp": "22:55",
+      "source": "CoinDesk",
+      "title": "North Korea's Binance hack faces U.S. crackdown as DOJ targets $1.2 billion in stolen crypto",
+      "link": "https://www.coindesk.com/policy/2026/11/12/north-korea-s-binance-hack-faces-u-s-crackdown-as-doj-targets-usd1-2-billion-in-stolen-crypto"
+    },
+    {
+      "id": "rss-CoinDesk-1-1794523661000",
+      "timestamp": "22:47",
+      "source": "CoinDesk",
+      "title": "U.S. President Trump names CFTC, SEC nominees for first time in a year",
+      "link": "https://www.coindesk.com/policy/2026/11/12/u-s-president-names-cftc-sec-nominees-for-first-time-in-a-year"
+    },
+    {
+      "id": "rss-CoinDesk-2-1794517669000",
+      "timestamp": "21:07",
+      "source": "CoinDesk",
+      "title": "Kalshi ends Donald Trump Jr.’s advisory contract over 1789 Capital’s Polymarket investment",
+      "link": "https://www.coindesk.com/policy/2026/11/12/kalshi-ends-donald-trump-jr-s-advisory-contract-over-1789-capital-s-polymarket-investment"
+    },
+    {
+      "id": "rss-CoinDesk-3-1794501952000",
+      "timestamp": "16:45",
+      "source": "CoinDesk",
+      "title": "Illinois crypto tax is impossible to enforce as written, crypto industry tells court",
+      "link": "https://www.coindesk.com/policy/2026/11/12/illinois-crypto-tax-is-impossible-to-enforce-as-written-crypto-industry-tells-court"
+    },
     {
       "id": "egld-1794519835631",
       "timestamp": "21:43",
@@ -51,13 +128,6 @@
       "source": "CoinTelegraph",
       "title": "Thailand proposes $148K daily cap on stablecoin deposits and withdrawals",
       "link": "https://cointelegraph.com/news/thailand-tighter-stablecoin-rules-crypto-exchange?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1794501952000",
-      "timestamp": "16:45",
-      "source": "CoinDesk",
-      "title": "Illinois crypto tax is impossible to enforce as written, crypto industry tells court",
-      "link": "https://www.coindesk.com/policy/2026/11/12/illinois-crypto-tax-is-impossible-to-enforce-as-written-crypto-industry-tells-court"
     },
     {
       "id": "rss-CoinDesk-1-1794498348000",
@@ -128,76 +198,6 @@
       "source": "CoinDesk",
       "title": "MSCI is dropping Strategy from its index, and the exclusion could hit its bitcoin-buying machine",
       "link": "https://www.coindesk.com/markets/2026/11/12/msci-is-dropping-strategy-from-its-index-and-the-exclusion-could-hit-its-bitcoin-buying-machine"
-    },
-    {
-      "id": "rss-CoinDesk-2-1794462584000",
-      "timestamp": "05:49",
-      "source": "CoinDesk",
-      "title": "Zcash holders to vote on pulling 50,000 ZEC, worth $50 million, from grants treasury",
-      "link": "https://www.coindesk.com/tech/2026/11/12/zcash-holders-to-vote-on-pulling-50-000-zec-from-grants-treasury"
-    },
-    {
-      "id": "rss-CoinDesk-3-1794460951000",
-      "timestamp": "05:22",
-      "source": "CoinDesk",
-      "title": "Bitcoin Core reveals bug that made thousands of nodes trust any stranger on Tor",
-      "link": "https://www.coindesk.com/tech/2026/11/12/bitcoin-core-reveals-bug-that-made-thousands-of-nodes-trust-any-stranger-on-tor"
-    },
-    {
-      "id": "egld-1794462774292",
-      "timestamp": "05:52",
-      "source": "EGLD",
-      "title": "Cotation publique · $2.87 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1794460031000",
-      "timestamp": "05:07",
-      "source": "CoinTelegraph",
-      "title": "Binance CSO unwittingly foreshadowed $6.3B hack tactic months before attack",
-      "link": "https://cointelegraph.com/news/binance-cso-foreshadowed-6b-hack-tactic-months-before-attack?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1794442153000",
-      "timestamp": "00:09",
-      "source": "CoinTelegraph",
-      "title": "MSCI confirms Strategy’s removal from indexes at end of November",
-      "link": "https://cointelegraph.com/news/msci-confirms-strategys-removal-from-indexes-end-november?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1794439124000",
-      "timestamp": "23:18",
-      "source": "CoinTelegraph",
-      "title": "Suiet wallet to shut down in latest exit from Sui ecosystem",
-      "link": "https://cointelegraph.com/news/suiet-wallet-shut-down-latest-exit-sui-ecosystem?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1794437087000",
-      "timestamp": "22:44",
-      "source": "CoinTelegraph",
-      "title": "Nvidia preparing to oust CEO Jensen Huang after affairs: WSJ",
-      "link": "https://cointelegraph.com/news/nvidia-preparing-to-oust-ceo-jensen-huang-reports?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1794434717000",
-      "timestamp": "22:05",
-      "source": "CoinTelegraph",
-      "title": "Uncalled US House races could send more crypto allies to Congress",
-      "link": "https://cointelegraph.com/news/uncalled-midterm-races-add-more-crypto-supporters-congress?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1794432961000",
-      "timestamp": "21:36",
-      "source": "CoinTelegraph",
-      "title": "Nomura explores sale of crypto unit Laser Digital: Bloomberg",
-      "link": "https://cointelegraph.com/news/nomura-sale-crypto-unit-laser-digital?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1794412845000",
-      "timestamp": "16:00",
-      "source": "CoinDesk",
-      "title": "Crypto Long & Short: The GENIUS Act’s guarantees don’t cover DeFi lending",
-      "link": "https://www.coindesk.com/coindesk-indices/2026/11/11/crypto-long-and-short-the-genius-act-s-guarantees-don-t-cover-defi-lending"
     }
   ]
 }
