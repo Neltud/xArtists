@@ -1,0 +1,27 @@
+name: xArtists VPS mail forwarding readiness
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/ops/check-xartists-vps-mail.sh'
+      - 'scripts/ops/check-xartists-vps-mail.test.mjs'
+      - 'docs/ops/XARTISTS_OVH_MAIL_FORWARDING_2026-11-13.md'
+      - '.github/workflows/mail-forwarding-readiness-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  offline-mail-safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check shell syntax, no remote access
+        run: bash -n scripts/ops/check-xartists-vps-mail.sh
+      - name: Validate no-op inventory and hidden forwarding destination
+        run: node --test scripts/ops/check-xartists-vps-mail.test.mjs
