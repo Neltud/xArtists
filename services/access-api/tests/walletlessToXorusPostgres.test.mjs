@@ -80,7 +80,7 @@ test('verified email account → test entitlement → private report → refund 
       "INSERT INTO xa_xorus_private_reports(report_id,offer,scope,status,commercial_usage_approved,source_ts,generated_at,expires_at) VALUES($1,'pulse',$2,'ready',true,$3,$4,$5)",
       [reportId,scope,when(now-30000),when(now-15000),expires])
     await pool.query(
-      "INSERT INTO xa_xorus_grants(grant_id,subject_kind,subject,account_id,offer,scope,status,issued_at,expires_at,ledger_checked_at,evidence_kind,evidence_verified,evidence_checked_at,issuer_reference,billing_status,settlement,quota_limit,quota_reset_at) VALUES($1,'email',$2,$2,'pulse',$3,'active',$4,$5,$6,'verified_psp_subscription',true,$6,$7,'active','verified',1,$5)",
+      "INSERT INTO xa_xorus_grants(grant_id,subject_kind,subject,account_id,offer,scope,status,issued_at,expires_at,ledger_checked_at,evidence_kind,evidence_verified,evidence_checked_at,issuer_reference,billing_status,settlement,quota_limit,quota_reset_at) VALUES($1,'email',$2::text,$2::uuid,'pulse',$3,'active',$4,$5,$6,'verified_psp_subscription',true,$6,$7,'active','verified',1,$5)",
       [grantId,accountId,scope,when(now-60000),expires,when(now),'evt_syntheticprivate1234'])
     const repo=createXorusPrivateRepository(pool)
     const actor={kind:'email',subject:accountId,verified:true,proof:'verified_email_session'}
