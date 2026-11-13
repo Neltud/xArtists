@@ -2,7 +2,7 @@
 LIA — Jupiter (Solana) swap executor
 ====================================
 Quote + swap via Jupiter Aggregator API.
-Paper/dry-run by default. Live requires LIA_SOL_LIVE=1 + keypair.
+Paper/dry-run by default. Live signing is DISABLED pending independent transaction-intent verification.
 
 Env:
   LIA_SOL_LIVE=0|1
@@ -152,37 +152,17 @@ def _load_keypair_pubkey() -> tuple[Any, str]:
 
 
 def _send_versioned_tx(swap_tx_b64: str, keypair: Any) -> str:
-    """Decode Jupiter swapTransaction, sign, send via RPC."""
-    import base64
+    """Never sign untrusted third-party transaction bytes.
 
-    try:
-        from solders.transaction import VersionedTransaction  # type: ignore
-        from solders.keypair import Keypair  # type: ignore
-        from solders.commitment_config import CommitmentLevel  # type: ignore
-        from solders.rpc.requests import SendVersionedTransaction  # type: ignore
-        from solders.rpc.config import RpcSendTransactionConfig  # type: ignore
-    except ImportError as e:
-        raise RuntimeError("solders required for live Jupiter send") from e
-
-    raw = base64.b64decode(swap_tx_b64)
-    tx = VersionedTransaction.from_bytes(raw)
-    # Re-sign with user keypair
-    signed = VersionedTransaction(tx.message, [keypair])
-    # Prefer JSON-RPC sendTransaction
-    payload = {
-        "jsonrpc": "2.0",
-        "id": 1,
-        "method": "sendTransaction",
-        "params": [
-            base64.b64encode(bytes(signed)).decode(),
-            {"encoding": "base64", "skipPreflight": False, "maxRetries": 3},
-        ],
-    }
-    resp = _http_post(RPC, payload)
-    if "error" in resp:
-        raise RuntimeError(str(resp["error"]))
-    return str(resp.get("result") or "")
-
+    The previous implementation signed Jupiter-provided instructions without
+    independently proving signer, fee payer, program allowlist, exact input
+    mint/amount, output owner/mint and simulation effects. Enabling an env flag
+    or calling this helper directly MUST NOT bypass this gate.
+    """
+    raise RuntimeError(
+        "SOLANA_JUPITER_SIGNING_BLOCKED: transaction-intent and instruction "
+        "verification not independently implemented/audited"
+    )
 
 class JupiterExecutor:
     """High-level quote → (optional) swap for LIA."""
@@ -253,6 +233,12 @@ class JupiterExecutor:
         if not self.allow():
             return JupiterResult(False, "blocked", detail="circuit breaker open")
 
+        # A quote and provider-supplied swapTransaction do not establish a safe
+        # executable transaction. Never load a keypair or request a swap in
+        # live mode until the signed-message policy has been audited.
+        if LIVE and not force_paper:
+            return JupiterResult(False, "blocked", detail="SOLANA_JUPITER_SIGNING_BLOCKED")
+
         qres = self.quote_swap(
             input_mint=input_mint,
             output_mint=output_mint,
@@ -306,7 +292,9 @@ class JupiterExecutor:
     def health(self) -> dict[str, Any]:
         return {
             "venue": "jupiter",
-            "live": LIVE,
+            "live": False,
+            "live_requested": LIVE,
+            "signing_enabled": False,
             "keypair_configured": bool(KEYPAIR_PATH and Path(KEYPAIR_PATH).is_file()),
             "rpc": RPC,
             "quote_api": QUOTE_API,
