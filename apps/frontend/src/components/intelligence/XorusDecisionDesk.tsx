@@ -44,7 +44,7 @@ export default function XorusDecisionDesk(){
     setBusy(true)
     setBoard(null)
     setEconomics(null)
-    const timer=window.setTimeout(()=>ctl.abort(),10000)
+    const timer=window.setTimeout(()=>{ctl.abort();setCheckedAt(Date.now());setBusy(false)},10000)
     void Promise.allSettled([readJson(source,ctl.signal),readJson(MVX_ECONOMICS,ctl.signal)])
       .then(([paper,market])=>{
         if(ctl.signal.aborted)return
