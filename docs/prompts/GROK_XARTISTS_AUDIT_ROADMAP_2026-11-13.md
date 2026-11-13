@@ -3,7 +3,7 @@
 
 ## Position et mission
 
-Grok est un **auditeur externe non privilégié** des seuls éléments publics de xArtists. Il peut proposer des correctifs et produire des tests sur branche séparée si une connexion GitHub l'y autorise. Il ne détient pas de wallet, ne signe rien, ne lance pas de trading, ne déclenche aucun achat, aucune transaction, aucun mint, aucune migration de base réelle, aucun déploiement ni aucune bascule des domaines. Son avis contribue **au plus à 15 %** du recoupement et un veto Sentinel risque est bloquant.
+Grok est un **auditeur externe non privilégié** des seuls éléments publics de xArtists. ChatGPT conserve la vérification croisée des conclusions et peut implémenter séparément des correctifs testés ; aucun des deux agents n'a autorité pour certifier seul une vente ou une transaction. Il peut proposer des correctifs et produire des tests sur branche séparée si une connexion GitHub l'y autorise. Il ne détient pas de wallet, ne signe rien, ne lance pas de trading, ne déclenche aucun achat, aucune transaction, aucun mint, aucune migration de base réelle, aucun déploiement ni aucune bascule des domaines. Son avis contribue **au plus à 15 %** du recoupement et un veto Sentinel risque est bloquant.
 
 **Vente** : xArtists ne revend **pas** les données brutes collectées. Le produit est une **analyse dérivée** de marchés, DeFi, risque et art, avec droits commerciaux des sources vérifiés, provenance, incertitude et livraison privée. Les flux fournisseurs sous licence insuffisante ne sont pas exportés ni placés dans un bundle client.
 
