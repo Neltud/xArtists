@@ -10,6 +10,10 @@ on:
       - '.github/workflows/render-dual-role-ci.yml'
       - 'services/access-api/package.json'
       - 'services/access-api/package-lock.json'
+      - 'services/access-api/src/xorusAnalysis.mjs'
+      - 'lia/xorus/**'
+      - 'lia/chorus/**'
+      - 'packages/core/src/xorusAnalysisContract.mjs'
   workflow_dispatch:
 
 permissions:
@@ -24,6 +28,13 @@ jobs:
 
       - name: Build exactly the repository-root Docker image used by BOTH Render services
         run: docker build --progress=plain -t xartists-shared-render:ci -f Dockerfile .
+
+      - name: Verify bundled analysis and API contract without a network or secrets
+        run: |
+          docker run --rm --network none --read-only -w /opt --entrypoint python3 xartists-shared-render:ci \
+            -S -B -c 'from lia.xorus.analysis_cycle import run_analysis_cycle; r=run_analysis_cycle(fetch_bytes=lambda: b"[]"); assert r["schema"]=="xorus_analysis/v2"; assert r["coverage"]["signals_analyzed"]==0; print("offline analysis image PASS")'
+          docker run --rm --network none --read-only --entrypoint node xartists-shared-render:ci \
+            --input-type=module -e 'import {createXorusAnalysisService} from "/opt/xartists/access-api/src/xorusAnalysis.mjs"; const out=await createXorusAnalysisService({enabled:false}).read(); if(out.error!=="analysis_disabled") process.exit(1); console.log("shared API contract PASS")'
 
       - name: Prove frontend and API roles independently without production secrets
         shell: bash

@@ -19,6 +19,15 @@ SCHEMA = "xorus_analysis/v1"
 METHOD = "deterministic_paper_synthesis/v1"
 
 
+def seal_report(report: dict[str, Any]) -> dict[str, Any]:
+    """Bind the derived output, never claim authenticity or source truth."""
+    report.pop("report_sha256", None)
+    canonical = json.dumps(report, ensure_ascii=False, sort_keys=True,
+                           separators=(",", ":"), allow_nan=False)
+    report["report_sha256"] = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+    return report
+
+
 def _family_assessment(rows: list[dict[str, Any]], family: str) -> dict[str, Any]:
     selected = [row for row in rows if row["family"] == family]
     scored = [row for row in selected if row["status"] == "scored"]
@@ -104,9 +113,7 @@ def run_analysis_agent(
         },
     }
     # Digest binds the derived report, not raw provider data or a proof of truth.
-    canonical = json.dumps(report, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
-    report["report_sha256"] = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
-    return report
+    return seal_report(report)
 
 
 def main() -> None:

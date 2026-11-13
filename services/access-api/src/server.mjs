@@ -29,6 +29,7 @@ import { troBridgeStatus } from './troBridgeStatus.mjs'
 import { createOpenSeaPreviewService } from './openseaPreview.mjs'
 import { artpriceReadiness } from './artpriceLicensed.mjs'
 import { probeStudioStore } from './studioStoreProbe.mjs'
+import { createXorusAnalysisService } from './xorusAnalysis.mjs'
 import { tryHandleAuction, auctionPublicConfig } from './auctionHttp.mjs'
 import {studioMediaConfig,mediaJwt,mediaActor,readCreatorMedia,
   uploadStudioMedia,pinStudioMetadata} from './creatorMedia.mjs'
@@ -70,6 +71,7 @@ const PACK_CATALOG = {
 // Single P0 paper path: the backend owns the fiat catalogue, Rule1 quote and JWT wallet identity.
 // Existing PSP checkout remains independently gated; this never calls createOrder or mint.
 const OPENSEA_PREVIEW = createOpenSeaPreviewService()
+const XORUS_ANALYSIS = createXorusAnalysisService({enabled:process.env.XORUS_ANALYSIS_ENABLED!=='0'})
 
 const LIA_SIMPLE = createSimpleIntentService({
   quoteProvider: async ({ packTier, nowMs }) => {
@@ -144,6 +146,14 @@ async function handleRequest(req, res) {
   if (req.method === 'OPTIONS') { json(res, 204, {}); return }
   const u = new URL(req.url || '/', `http://127.0.0.1:${PORT}`)
   const pth = u.pathname.replace(/\/$/, '') || '/'
+  if (pth === '/v1/xorus/analysis') {
+    if (req.method !== 'GET') { json(res,405,{ok:false,error:'method_not_allowed'}); return }
+    // A browser cannot select the provider URL, symbol, clock, prompt or inputs.
+    if (u.search) { json(res,400,{ok:false,error:'query_not_supported'}); return }
+    const out = await XORUS_ANALYSIS.read()
+    json(res,out.ok?200:503,out)
+    return
+  }
   if (await WORLD_RIGHTS(req, res, u)) return
 
   if (await handleStripe(req, res, { path: pth, json, readRawAndBody,

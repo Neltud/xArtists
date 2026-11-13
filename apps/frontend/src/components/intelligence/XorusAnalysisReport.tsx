@@ -31,8 +31,16 @@ export default function XorusAnalysisReport({report}:{report:XorusAnalysisReadou
     {report&&<>
       <p className="xa-intelligence-note">{fr?'Rapport généré':'Report generated'} · {new Date(report.generatedAt).toLocaleString(fr?'fr-FR':'en-GB')}
         {report.stale?' · '+(fr?'HISTORIQUE':'HISTORICAL'):''}
-        {' · '}{fr?'Date des observations indisponible. La génération ne prouve pas la fraîcheur des sources.':'Observation time unavailable. Generation does not prove source freshness.'}
+        {' · '}{report.sourceTs
+          ? (fr?`Observations clôturées le ${new Date(report.sourceTs).toLocaleString('fr-FR')}.`:`Observations closed at ${new Date(report.sourceTs).toLocaleString('en-GB')}.`)
+          : (fr?'Date des observations indisponible. La génération ne prouve pas la fraîcheur des sources.':'Observation time unavailable. Generation does not prove source freshness.')}
       </p>
+      {report.collection&&<p className="xa-intelligence-note" data-testid="xorus-collection-status">{report.collection.state==='observed'
+        ? (fr?`Source consultée : Binance Spot · EGLD/USDT · ${report.collection.candlesUsed} bougies horaires clôturées. Une seule place de marché ; USDT n’est pas assimilé au dollar. Les données brutes restent internes.`
+          : `Source consulted: Binance Spot · EGLD/USDT · ${report.collection.candlesUsed} closed hourly candles. One venue; USDT is not assumed to equal USD. Raw data stay internal.`)
+        : report.collection.state==='rate_limited'
+          ? (fr?'Source temporairement limitée. Nouvelle collecte différée, sans valeur de remplacement.':'Source temporarily rate limited. Collection is deferred, without substitute values.')
+          : (fr?'Source indisponible, périmée ou non conforme. Aucun indicateur conservé.':'Source unavailable, stale or invalid. No indicators retained.')}</p>}
       <details className="xa-intelligence-advanced">
         <summary>{fr?'Voir les analyses par agent (8)':'View analysis by agent (8)'}</summary>
         <div className="mt-3 grid gap-3 sm:grid-cols-2">

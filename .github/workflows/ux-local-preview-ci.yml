@@ -6,12 +6,16 @@ on:
       - 'e2e/public-ux-preview.config.ts'
       - 'e2e/public-ux-responsive.spec.ts'
       - 'e2e/public-route-inventory.spec.ts'
+      - 'e2e/xorus-server-preview.config.ts'
+      - 'e2e/xorus-server-analysis.spec.ts'
       - '.github/workflows/ux-local-preview-ci.yml'
       - '.github/workflows/e2e.yml'
       - 'playwright.config.ts'
       - 'package.json'
       - 'package-lock.json'
       - 'apps/frontend/**'
+      - 'packages/core/src/xorusAnalysisContract.mjs'
+      - 'tests/fixtures/xorus_analysis_collected.json'
   workflow_dispatch:
 permissions:
   contents: read
@@ -46,6 +50,12 @@ jobs:
         run: npm run typecheck --prefix apps/frontend
       - name: Responsive no-wallet assertions on local Vite preview
         run: npx playwright test --config=e2e/public-ux-preview.config.ts
+      - name: Build with a configured analysis API and verify server analysis UX
+        env:
+          VITE_ACCESS_API_BASE: https://analysis-api.invalid
+        run: |
+          npm run build --prefix apps/frontend
+          npx playwright test --config=e2e/xorus-server-preview.config.ts
       - uses: actions/upload-artifact@v4
         if: always()
         with:

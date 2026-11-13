@@ -6,7 +6,7 @@
 - Objectif : produire nos synthèses, interprétations, scénarios conditionnels et explications des risques à partir d'entrées traçables. Les 120 IDs décrivent un catalogue interne, pas 120 flux en production.
 - Workflow borné : 4 lecteurs maximum, 10 s par appel, pas de boucle autonome, aucune mutation ni signature.
 - Sources : adaptateurs MultiversX, Polygon, Solana envisagés, à développer et tester ; Artprice et réseaux sociaux requièrent des licences écrites séparées.
-- Code livré : `lia.xorus.analysis_report.run_analysis_agent` synthétise les scores de `run_decision_agent` et exporte uniquement `xorus_analysis/v1`. Aucun board interne, prix brut, payload fournisseur ou prompt ne figure dans le rapport client.
+- Code : `lia.xorus.analysis_report.run_analysis_agent` produit la synthèse hors ligne `xorus_analysis/v1`. Le cycle serveur `lia.xorus.analysis_cycle` ajoute la projection `xorus_analysis/v2`, avec état de collecte et dates des bougies clôturées. Aucun board interne, prix brut, payload fournisseur ou prompt ne figure dans le rapport client.
 - La synthèse est déterministe et offline : aucun appel LLM ni collecteur live n'est ajouté. `source_ts=null`, confiance non chiffrable et zéro signal indépendamment vérifié. La date de génération ne devient jamais une date de source.
 - Les anciennes fonctions `data_feed.build_data_pack` et `preprod_gate` restent des outils internes historiques ; leur modèle de redistribution ne régit pas les nouveaux abonnements d'analyse. Ne pas les exposer comme produit client ni réutiliser une validation de Data Pack pour autoriser une analyse commerciale.
 - Contrats outils futurs : `xorus_get_analysis` (rapport dérivé autorisé), `xorus_check_access` (entitlement serveur ; deny par défaut), `xorus_explain_analysis` (méthode et limites d'un rapport immuable). Aucun de ces outils MCP n'est connecté.
@@ -30,6 +30,15 @@ Le rapport porte un digest SHA-256 du **contenu dérivé**, un verdict, huit rô
 `apps/frontend/public/data/xorus_analysis_preview.json` est généré avec **zéro entrée**. Un test Python vérifie sa parité exacte avec le générateur et le frontend valide son contrat avant affichage. Les rapports payants ne devront jamais être écrits dans le répertoire public : leur service nécessite encore authentification, entitlements et stockage privé.
 
 Pour vérifier : `python -m unittest discover -s tests -p 'test_xorus_analysis_report.py' -v` et `node --test apps/frontend/tests/xorus-analysis-readout.test.mjs`.
+
+Le point d'accès public `GET /v1/xorus/analysis` utilise un premier collecteur
+Binance Spot EGLD/USDT. Il calcule au plus six indicateurs à partir des bougies
+horaires clôturées, avec contrôle de continuité et fraîcheur. Une panne produit
+une analyse sans entrées ou une réponse indisponible, sans réutiliser d'anciennes
+conclusions. Une source observée reste distincte d'une attestation indépendante :
+le verdict demeure `ABSTAIN` et aucune vente n'est activée par cette route.
+Les collectes brutes restent internes. Voir les
+[limites et règles du cycle serveur](XORUS_DECISION_AGENT.md#cycle-serveur-de-collecte-et-danalyse).
 
 Retour arrière : retirer le panneau `XorusAnalysisReport` et son aperçu public, puis revenir au commit précédent. Aucun schéma de base, secret, paiement ou contrat n'est modifié.
 

@@ -5,6 +5,10 @@ on:
     paths:
       - 'deploy/ovh/**'
       - 'services/access-api/Dockerfile'
+      - 'services/access-api/src/xorusAnalysis.mjs'
+      - 'lia/xorus/**'
+      - 'lia/chorus/**'
+      - 'packages/core/src/xorusAnalysisContract.mjs'
       - 'services/access-api/tests/ovhDeployment.test.mjs'
       - '.github/workflows/ovh-api-parallel-ci.yml'
   push:
@@ -34,4 +38,10 @@ jobs:
           docker compose -f deploy/ovh/compose.yaml config --quiet
           rm deploy/ovh/.env.api
       - name: Build locked standalone API image
-        run: docker build --pull -f services/access-api/Dockerfile services/access-api
+        run: docker build --pull -t xa-ovh-api:ci -f services/access-api/Dockerfile .
+      - name: Verify Python analysis and shared contract in the actual image, offline
+        run: |
+          docker run --rm --network none --read-only -w /app --entrypoint python3 xa-ovh-api:ci \
+            -S -B -c 'from lia.xorus.analysis_cycle import run_analysis_cycle; r=run_analysis_cycle(fetch_bytes=lambda: b"[]"); assert r["schema"]=="xorus_analysis/v2"; assert r["coverage"]["signals_analyzed"]==0; print("offline analysis image PASS")'
+          docker run --rm --network none --read-only --entrypoint node xa-ovh-api:ci \
+            --input-type=module -e 'import {createXorusAnalysisService} from "/app/services/access-api/src/xorusAnalysis.mjs"; const out=await createXorusAnalysisService({enabled:false}).read(); if(out.error!=="analysis_disabled") process.exit(1); console.log("shared API contract PASS")'
