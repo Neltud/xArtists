@@ -322,6 +322,10 @@ export default function MuseumPage() {
             {xaRender(travelBanner)}
           </p>
         ))}
+        <Link to="/create/gallery"
+          className="inline-flex min-h-[44px] items-center rounded-xl border border-[color:var(--xa-accent)] px-4 text-sm font-semibold">
+          Créer mon exposition 3D · artiste / galerie / vendeur
+        </Link>
         <a
           href="#museum-visit"
           className="inline-flex items-center min-h-[44px] rounded-xl border border-[color:var(--xa-border)] bg-[color:var(--xa-panel)] px-4 text-[13px] font-semibold text-[color:var(--xa-text)] hover:bg-[color:var(--xa-panel2)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--xa-accent)]"
