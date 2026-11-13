@@ -79,6 +79,7 @@ test('disagreement, mixed units, no fresh independent provider and injected cont
  assert.equal(check([met(),smith()],{maxDifferenceRatio:1}).reason,'invalid_crosscheck_policy')
  assert.equal(check([met(),smith()],{ttlMs:-1}).reason,'invalid_crosscheck_policy')
  assert.equal(check([met(),smith()],{now:Infinity}).reason,'invalid_crosscheck_policy')
+ assert.equal(check([met(),smith()],{now:1e120}).reason,'invalid_crosscheck_policy')
  assert.equal(check(Array.from({length:33},()=>met())).reason,'invalid_input')
 })
 test('server exposes read-only route only, preserves absence of trade endpoints',()=>{
