@@ -2,6 +2,7 @@ import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phra
 /** Packs Agents — Genesis limited · œuvres série Tuduri. */
 import { useEffect, useRef, useState } from 'react'
 import IntelligencePath from '../components/intelligence/IntelligencePath'
+import XorusAgentEvidence from '../components/intelligence/XorusAgentEvidence'
 import { useI18n } from '../i18n/I18nContext'
 import { Link, useSearchParams } from 'react-router-dom'
 import Pack3DCockpit from '../components/packs/Pack3DCockpit'
@@ -52,6 +53,7 @@ export default function Agents() {
           ? 'Mode lecture et simulation. Aucun trading automatique, aucun rendement, aucun achat requis.'
           : 'Read-only and simulation mode. No automated trades, promised returns or purchase required.'}</p>
       </header>
+      <XorusAgentEvidence />
       <section className="space-y-4" aria-label={fr ? 'Les trois rôles' : 'Three agent roles'}>
         <h2 className="text-xl font-semibold">{fr ? 'Que pouvez-vous découvrir ?' : 'What can you explore?'}</h2>
         <div className="xa-intelligence-cards">
