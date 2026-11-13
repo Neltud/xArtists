@@ -16,7 +16,8 @@ function safeCatalog(v:unknown):SignalDef[] | null {
     const s=raw as Record<string,unknown>
     if(typeof s.family!=='string'||!FAMILIES.includes(s.family as typeof FAMILIES[number])
       ||typeof s.axis!=='string'||!/^[-_a-z0-9]{2,48}$/.test(s.axis)
-      ||s.id!==s.family+'.'+s.axis||!Number.isInteger(s.n)
+      ||typeof s.id!=='string'||s.id!==s.family+'.'+s.axis
+      ||typeof s.n!=='number'||!Number.isInteger(s.n)
       ||(s.n as number)<1||(s.n as number)>10
       ||s.status!=='defined_not_verified'||seen.has(s.id))return null
     seen.add(s.id)
