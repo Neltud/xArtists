@@ -1,0 +1,42 @@
+name: Solana Jupiter signing gate and native SOL receipts (offline)
+
+on:
+  pull_request:
+    paths:
+      - 'lia/executor/jupiter_solana.py'
+      - 'lia/xorus/solana_receipts.py'
+      - 'tests/regression/test_jupiter_presign_gate.py'
+      - 'tests/regression/test_solana_receipts.py'
+      - '.github/workflows/solana-readonly-ops-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'lia/executor/jupiter_solana.py'
+      - 'lia/xorus/solana_receipts.py'
+      - 'tests/regression/test_jupiter_presign_gate.py'
+      - 'tests/regression/test_solana_receipts.py'
+      - '.github/workflows/solana-readonly-ops-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-solana-offline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      LIA_LIVE_TRADING: '0'
+      LIA_SOL_LIVE: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Prove Jupiter live flag cannot sign or read wallet
+        run: PYTHONPATH=. python -m unittest discover -s tests/regression -p test_jupiter_presign_gate.py -v
+      - name: Prove SOL transfer parsing rejects mismatches
+        run: PYTHONPATH=. python -m unittest discover -s tests/regression -p test_solana_receipts.py -v
+      - name: Confirm no live transaction
+        run: |
+          echo 'OFFLINE ONLY. No PayBox OAuth, network connection, key, transfer, swap, mint or contract deploy.' >> "$GITHUB_STEP_SUMMARY"
