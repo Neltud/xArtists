@@ -1,0 +1,67 @@
+name: xArtists Mail — disposable PostgreSQL mailbox proof
+
+on:
+  pull_request:
+    paths:
+      - 'services/access-api/migrations/20261113_xa_mailboxes_v1.sql'
+      - 'services/access-api/migrations/20261109_xa_accounts_v1.sql'
+      - 'services/access-api/src/mailboxRepository.mjs'
+      - 'services/access-api/src/mailboxProvisioning.mjs'
+      - 'services/access-api/tests/mailboxMigrationsPostgres.test.mjs'
+      - 'services/access-api/tests/mailboxProvisioning.test.mjs'
+      - '.github/workflows/mailbox-postgres-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'services/access-api/migrations/20261113_xa_mailboxes_v1.sql'
+      - 'services/access-api/src/mailboxRepository.mjs'
+      - 'services/access-api/tests/mailboxMigrationsPostgres.test.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mailbox-postgres-disposable-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: xartists_mailbox_probe
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d xartists_mailbox_probe"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 20
+    env:
+      TEST_XA_MAILBOX_DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/xartists_mailbox_probe
+      ALLOW_EPHEMERAL_XA_MAILBOX_PG_TEST: '1'
+      WALLETLESS_ACCOUNT_SESSION_ENABLED: '0'
+      MAILBOX_PROVISIONING_ENABLED: '0'
+      MINT_LIVE_ENABLED: '0'
+      PAYBOX_CHECKOUT_ENABLED: '0'
+      STRIPE_LIVE_CHECKOUT_ENABLED: '0'
+      LIA_LIVE_TRADING: '0'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: services/access-api/package-lock.json
+      - name: Install backend dependencies without scripts
+        working-directory: services/access-api
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Test isolated account mailboxes, name constraints, reconciliation
+        working-directory: services/access-api
+        run: |
+          node --test tests/mailboxProvisioning.test.mjs
+          node --test tests/mailboxMigrationsPostgres.test.mjs
+      - name: Distinguish PostgreSQL proof from real SMTP
+        run: echo 'Disposable local PG only. No mail server, account signup, SMTP receipt or outbound verification in this run.' >> "$GITHUB_STEP_SUMMARY"
