@@ -10,6 +10,8 @@ import {generateKeyPairSync,sign,createHash} from 'node:crypto'
 import {readFileSync} from 'node:fs'
 import {createNeonAuthIdentityVerifier,findOrCreateAccountFromNeonToken,findExistingAccountFromNeonToken} from '../src/neonAuthIdentity.mjs'
 import {createWalletlessSessionService} from '../src/walletlessSession.mjs'
+import {createWalletlessAccountProfileService} from '../src/walletlessProfile.mjs'
+import {readAccountProjection} from '../src/accountRepository.mjs'
 import {createXorusPrivateRepository} from '../src/xorusPrivateStore.mjs'
 import {createXorusPrivateDelivery} from '../src/xorusPrivateDelivery.mjs'
 
@@ -69,6 +71,24 @@ test('verified email account → test entitlement → private report → refund 
     assert.equal(logged.body.checkoutAuthorized,false)
     assert.equal(logged.body.nftEntitlement,false)
     assert.equal((await request(signed)).body.account.id,accountId)
+    // An authenticated profile read must never create or mutate an account.
+    const profile=createWalletlessAccountProfileService({
+      enabled:true,originAllowed:o=>o==='https://xartists.art',
+      lookupVerifiedProfile:async token=>{
+        const uid=await findExistingAccountFromNeonToken(pool,token,verify)
+        return uid?readAccountProjection(pool,uid):null
+      },
+    })
+    const view=await profile.read({origin:'https://xartists.art',authorization:'Bearer '+signed})
+    assert.equal(view.status,200)
+    assert.deepEqual(view.body.account,{id:accountId,type:'walletless',linkedWalletCount:0})
+    assert.equal(view.body.checkoutAuthorized,false)
+    assert.equal(view.body.subscriptionAccess,'not_checked')
+    assert.equal(view.body.xorusPrivateAccess,'not_checked')
+    const rows=await pool.query('SELECT count(*)::int AS n FROM xa_user_accounts')
+    assert.equal(rows.rows[0].n,1,'Profile lookups must not create accounts')
+    assert.equal((await profile.read({origin:'https://xartists.art',
+      authorization:'Bearer '+makeToken(now,{emailVerified:false})})).status,401)
     assert.equal((await request(makeToken(now,{emailVerified:false}))).status,401)
     assert.equal((await request(makeToken(now,{banned:true}))).status,401)
     const identities=await pool.query('SELECT count(*)::int n FROM xa_account_identities WHERE user_id=$1',[accountId])
@@ -125,6 +145,11 @@ test('verified email account → test entitlement → private report → refund 
       id:'fb2c64c1-92f0-4f37-8f42-8c9ce23a78ce'}))).status,401)
     await pool.query("UPDATE xa_xorus_grants SET quota_used=0,status='refunded',refunded_at=NOW() WHERE grant_id=$1",[grantId])
     assert.equal((await read()).status,403,'Refund always revokes access')
+    // An account remains accessible after refund, but it never claims paid rights.
+    const afterRefund=await profile.read({origin:'https://xartists.art',authorization:'Bearer '+signed})
+    assert.equal(afterRefund.status,200)
+    assert.equal(afterRefund.body.subscriptionAccess,'not_checked')
+    assert.equal(afterRefund.body.xorusPrivateAccess,'not_checked')
     const reservations=await pool.query('SELECT count(*)::int n FROM xa_xorus_read_reservations WHERE grant_id=$1',[grantId])
     assert.equal(reservations.rows[0].n,1)
   }finally{await pool.end()}
