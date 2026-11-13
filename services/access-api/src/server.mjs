@@ -12,6 +12,7 @@ import { resolveAccessLevel, issueAccessToken, verifyJwt } from './verifyAccess.
 import { createChallenge, verifySignedChallenge, requireSiwx, erdToPubkey } from './siwx.mjs'
 import { createSimpleIntentService } from './liaSimple.mjs'
 import { moonpayConfig, signMoonpayUrl } from './moonpay.mjs'
+import { createMoonpayRateLimiter } from './moonpayRateLimit.mjs'
 import {
   payboxConfig, payboxCheckoutEnabled, payboxCheckoutStoreReady, createPayboxSession, verifyPayboxIpn, extractRawSignedData, resolveIpnAuthenticatedSource, IPN_POLICY,
 } from './paybox.mjs'
@@ -60,9 +61,7 @@ function responseCorsOrigin(origin) {
 const MOONPAY = moonpayConfig()
 const PAYBOX = payboxConfig()
 const MINT_CFG = mintDispatchConfig()
-const moonpayHits = new Map()
-const MOONPAY_WINDOW_MS = 60_000
-const MOONPAY_MAX = 30
+const moonpayLimiter = createMoonpayRateLimiter()
 
 const PACK_CATALOG = {
   pulse: { id: 'pulse', name: 'Pulse Pack (Gold)', price_eur: 110, price_cents: 11000 },
@@ -541,16 +540,12 @@ async function handleRequest(req, res) {
       json(res, 403, { ok: false, error: 'origin_not_allowed' })
       return
     }
-    const now = Date.now()
-    const client = req.socket.remoteAddress || 'unknown'
-    for (const [key, value] of moonpayHits) if (value.expiresAt <= now) moonpayHits.delete(key)
-    const previous = moonpayHits.get(client)
-    const count = previous ? previous.count + 1 : 1
-    if (count > MOONPAY_MAX || (!previous && moonpayHits.size >= 10000)) {
+    // The socket peer is trusted; X-Forwarded-For may be supplied by an attacker.
+    if (!moonpayLimiter.allow({ network: req.socket.remoteAddress, origin })) {
+      res.setHeader('Retry-After', '60')
       json(res, 429, { ok: false, error: 'rate_limit' })
       return
     }
-    moonpayHits.set(client, { expiresAt: previous?.expiresAt || now + MOONPAY_WINDOW_MS, count })
     const { body } = await readRawAndBody(req)
     try { json(res, 200, { ok: true, url: signMoonpayUrl(body.url, MOONPAY) }) }
     catch (error) {
