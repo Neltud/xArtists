@@ -13,7 +13,7 @@ RUN npm ci --omit=dev --ignore-scripts --no-audit --no-fund
 COPY --chown=node:node services/access-api/src ./src
 COPY --chown=node:node packages/core/src/xorusAnalysisContract.mjs /app/packages/core/src/xorusAnalysisContract.mjs
 COPY --chown=node:node lia/chorus/__init__.py lia/chorus/catalog.py lia/chorus/swarm.py /app/lia/chorus/
-COPY --chown=node:node lia/xorus/__init__.py lia/xorus/swarm.py lia/xorus/decision_agent.py lia/xorus/analysis_report.py lia/xorus/analysis_cycle.py /app/lia/xorus/
+COPY --chown=node:node lia/xorus/__init__.py lia/xorus/catalog.py lia/xorus/data_feed.py lia/xorus/swarm.py lia/xorus/decision_agent.py lia/xorus/analysis_report.py lia/xorus/analysis_cycle.py /app/lia/xorus/
 # Manual runbooks only; nothing performs a migration at startup.
 COPY --chown=node:node services/access-api/migrations ./migrations
 COPY --chown=node:node services/access-api/scripts ./scripts
