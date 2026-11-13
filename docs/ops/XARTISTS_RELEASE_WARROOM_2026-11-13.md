@@ -42,7 +42,7 @@ mint NFT, deploy smart contracts or open commercial checkout.
 | [#465](https://github.com/Neltud/xArtists/issues/465) | Identity | Verified email login, stable server identity, optional domain-bound SIWX link, EU subscription billing |
 | [#506](https://github.com/Neltud/xArtists/issues/506) | xPortal | Reown allowlist `xartists.art` / `www.xartists.art`, real browser QR/pairing on mobile, no stuck state |
 | [#487](https://github.com/Neltud/xArtists/issues/487) | Artprice | Written B2B rights, approved fields/datasets/derivatives, no scraping or fake license |
-| [#341](https://github.com/Neltud/xArtists/issues/341) | Domain / contact | Remove registrar hold, DNS A/NS/MX, SPF/DMARC, real inbound/outbound external mailbox tests |
+| [#341](https://github.com/Neltud/xArtists/issues/341) | Domain / contact | Public DNS/RDAP now resolves (13 Nov); verify real `hello@` mailbox with two independent inbound and one outbound reply, SPF/DKIM/DMARC and privacy |
 | [#347](https://github.com/Neltud/xArtists/issues/347) | xOrus telemetry | Fresh authenticated producer, real timestamps + independent provenance; ABSTAIN if stale |
 | [#393](https://github.com/Neltud/xArtists/issues/393) | Dapp 360 UX | Mobile/desktop keyboard and user journey tests for all visible modules; clear demo/live status |
 | [#403](https://github.com/Neltud/xArtists/issues/403) | Genesis Pulse #005 | Rights-cleared media, actual IPFS, exact bytes, signed mint, finality and owner readback |
@@ -60,7 +60,9 @@ implementation and a publicly observed final receipt are distinct evidence.
 | [#573](https://github.com/Neltud/xArtists/pull/573) | MERGED to main | Fail-close Jupiter signing until independent presign audit; not a live trade |
 | [#574](https://github.com/Neltud/xArtists/pull/574) | MERGED to main | Read-only finalized SOL native receipt; no PayBox.sh connection or funds credited |
 | [#454](https://github.com/Neltud/xArtists/pull/454) | CLOSED (not merged) | Legacy LIA NLP/HMAC mandate out of #367 scoped P0 and duplicates xOrus architecture |
-| [#476](https://github.com/Neltud/xArtists/pull/476) | HOLD / rebase | Domain RDAP DNS gate; avoid false mailbox GO, verify conflicts |
+| [#476](https://github.com/Neltud/xArtists/pull/476) | CLOSED / superseded | Old RDAP endpoint redirected despite fail-closed redirect policy; replaced by #579 |
+| [#578](https://github.com/Neltud/xArtists/pull/578) | MERGED / CI 18 of 18 | Exactly 15 visitor core modules, all 44 module routes retained; not yet proof of published SHA |
+| [#579](https://github.com/Neltud/xArtists/pull/579) | MERGED / CI 9 of 9 | Read-only public RDAP/DNS mail guard, authoritative RDAP pinned; mailbox proof still missing |
 | [#477](https://github.com/Neltud/xArtists/pull/477) | DRAFT / consolidate | Owner go-live decisions are prep, not payment proof |
 | [#478](https://github.com/Neltud/xArtists/pull/478) | DRAFT / consolidate | Commercial GO-by-rail document; no financial activation |
 | [#457](https://github.com/Neltud/xArtists/pull/457) | HOLD | Three.js/esbuild coordinated version upgrade; full 3D smoke mandatory |
