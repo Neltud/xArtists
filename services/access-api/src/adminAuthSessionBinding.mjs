@@ -1,0 +1,135 @@
+/**
+ * Admin session binding — paper only.
+ * Ensures challenge issuance is tied to an authenticated server session,
+ * not a browser-pasted erd1 address.
+ * Does NOT issue JWT cookies, open routes, or grant SC powers.
+ */
+
+import { randomBytes } from 'node:crypto'
+
+const SESSION_TTL_MS = 30 * 60 * 1000
+
+/**
+ * @param {object} [opts]
+ * @param {() => number} [opts.nowMs]
+ * @param {() => string} [opts.randomId]
+ * @param {Set<string> | string[]} [opts.adminAllowlist] bech32 admins permitted
+ * @param {(challenge:{serverSessionId:string,adminBech32:string,method:string})=>Promise<object>} [opts.verifyWalletSession]
+ *   Trusted server-only SIWX session resolver. Never a callback from a browser.
+ */
+export function createAdminSessionBinder(opts = {}) {
+  const nowMs = opts.nowMs || (() => Date.now())
+  const verifyWalletSession = opts.verifyWalletSession
+  const randomId =
+    opts.randomId ||
+    (() => randomBytes(32).toString('base64url'))
+  const allowlist = new Set(
+    [...(opts.adminAllowlist || [])].map((a) => String(a).trim().toLowerCase()),
+  )
+
+  /** @type {Map<string, { admin: string, method: string, issuedAtMs: number, expiresAtMs: number }> } */
+  const sessions = new Map()
+
+  return {
+    mode: 'paper_session_binding',
+
+    /**
+     * Default DENY unless a trusted backend SIWX resolver independently validates
+     * the actual server-side session. A bare erd1 address + method is not proof.
+     * No privilege/cookie/HTTP route is issued even when a binding is successful.
+     */
+    async bindSession({ adminBech32, method, ttlMs, serverSessionId } = {}) {
+      const admin = String(adminBech32 || '').trim().toLowerCase()
+      if (!/^erd1[a-z0-9]{58}$/.test(admin)) return { ok: false, error: 'bad_admin' }
+      // A missing operator allowlist is a DENY, never an open-access default.
+      if (!allowlist.size || !allowlist.has(admin)) return { ok: false, error: 'admin_not_allowlisted' }
+      if (!method || method === 'paste_readonly' || method === 'paste') {
+        return { ok: false, error: 'paste_identity_forbidden' }
+      }
+      if (!['extension', 'web_wallet', 'walletconnect', 'hardware', 'siwx'].includes(method)) {
+        return { ok: false, error: 'unsupported_auth_method' }
+      }
+      if(typeof verifyWalletSession!=='function')return {ok:false,error:'wallet_session_verifier_required'}
+      if(typeof serverSessionId!=='string'||!/^[A-Za-z0-9_-]{16,256}$/.test(serverSessionId))
+        return {ok:false,error:'server_session_required'}
+      let verified
+      try {
+        verified=await verifyWalletSession({serverSessionId,adminBech32:admin,method})
+      } catch {return {ok:false,error:'wallet_session_not_verified'}}
+      if(!verified||verified.ok!==true||verified.admin!==admin||
+         verified.method!==method||verified.sessionId!==serverSessionId)
+        return {ok:false,error:'wallet_session_not_verified'}
+      const ttl = ttlMs == null ? SESSION_TTL_MS : Number(ttlMs)
+      if (!Number.isSafeInteger(ttl) || ttl < 60_000 || ttl > SESSION_TTL_MS) {
+        return { ok: false, error: 'bad_ttl' }
+      }
+      const at = nowMs()
+      const sessionId = randomId()
+      sessions.set(sessionId, {
+        admin,
+        method,
+        issuedAtMs: at,
+        expiresAtMs: at + ttl,
+      })
+      return {
+        ok: true,
+        sessionId,
+        admin,
+        method,
+        expiresAtMs: at + ttl,
+        mode: 'paper_session_bound',
+      }
+    },
+
+    /**
+     * Resolve session and enforce admin match before challenge issue.
+     */
+    requireSession({ sessionId, expectedAdminBech32, atMs } = {}) {
+      const at = atMs == null ? nowMs() : atMs
+      const id = String(sessionId || '').trim()
+      if (!id) return { ok: false, error: 'missing_session' }
+      const row = sessions.get(id)
+      if (!row) return { ok: false, error: 'unknown_session' }
+      if (row.expiresAtMs <= at) {
+        sessions.delete(id)
+        return { ok: false, error: 'session_expired' }
+      }
+      if (expectedAdminBech32) {
+        const expected = String(expectedAdminBech32).trim().toLowerCase()
+        if (expected !== row.admin) return { ok: false, error: 'session_admin_mismatch' }
+      }
+      return {
+        ok: true,
+        sessionId: id,
+        admin: row.admin,
+        method: row.method,
+        expiresAtMs: row.expiresAtMs,
+      }
+    },
+
+    revoke(sessionId) {
+      return sessions.delete(String(sessionId || ''))
+    },
+
+    size: () => sessions.size,
+  }
+}
+
+/**
+ * Gate for challenge issuance: session required, paste forbidden.
+ */
+export function assertChallengeIssuanceAllowed({ binder, sessionId, adminBech32, atMs } = {}) {
+  if (!binder || typeof binder.requireSession !== 'function') {
+    return { ok: false, error: 'binder_required' }
+  }
+  const session = binder.requireSession({
+    sessionId,
+    expectedAdminBech32: adminBech32,
+    atMs,
+  })
+  if (!session.ok) return session
+  if (session.method === 'paste_readonly' || session.method === 'paste') {
+    return { ok: false, error: 'paste_identity_forbidden' }
+  }
+  return { ok: true, session }
+}

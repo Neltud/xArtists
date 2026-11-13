@@ -2,7 +2,7 @@
 
 //! RWA Escrow Bridge — lock EGLD for physical / phygital purchase.
 //! States: Open → Released | Refunded | Cancelled | Disputed
-//! Release: payer confirmReceipt OR attestor submitVerificationProof (NFC/AR hash).
+//! Release: independent receipt, authenticity, quality and ownership gates; attestor executes.
 //! Dispute: 7-day cooling enforced on resolveDispute. CEI, pause, 2-step ownership.
 //! P1 (2026-10-16): seller ≠ payer; Kevin-vector hardening (param validation).
 
@@ -24,6 +24,19 @@ pub struct Escrow<M: ManagedTypeApi> {
     pub status: u8,
     pub dispute_opened_at: u64,
     pub proof_hash: ManagedBuffer<M>,
+    pub receipt_confirmed: bool,
+    pub verification_confirmed: bool,
+    pub quality_confirmed: bool,
+    pub quality_proof_hash: ManagedBuffer<M>,
+    pub ownership_confirmed: bool,
+    pub ownership_proof_hash: ManagedBuffer<M>,
+}
+
+// MultiversX 0.50 event macros accept at most one unindexed data argument.
+#[derive(TypeAbi, TopEncode, TopDecode, NestedEncode, NestedDecode, Clone)]
+pub struct EscrowOpenedData<M: ManagedTypeApi> {
+    pub amount: BigUint<M>,
+    pub deadline: u64,
 }
 
 #[multiversx_sc::contract]
@@ -39,7 +52,7 @@ pub trait RwaEscrowBridge {
         self.attestor().set(&attestor);
     }
 
-    #[endpoint(upgrade)]
+    #[upgrade]
     fn upgrade(&self) {
         self.require_owner();
     }
@@ -122,10 +135,16 @@ pub trait RwaEscrowBridge {
             status: 0u8,
             dispute_opened_at: 0u64,
             proof_hash: ManagedBuffer::new(),
+            receipt_confirmed: false,
+            verification_confirmed: false,
+            quality_confirmed: false,
+            quality_proof_hash: ManagedBuffer::new(),
+            ownership_confirmed: false,
+            ownership_proof_hash: ManagedBuffer::new(),
         };
         self.escrows(id).set(&esc);
         self.trade_escrow_id(&trade_id).set(id);
-        self.open_event(id, &trade_id, &payer, &seller, &payment, deadline);
+        self.open_event(id, &trade_id, &payer, &seller, &EscrowOpenedData { amount: payment, deadline });
     }
 
     #[endpoint(confirmReceipt)]
@@ -135,7 +154,8 @@ pub trait RwaEscrowBridge {
         let mut esc = self.escrows(id).get();
         require!(esc.status == 0u8, "not open");
         require!(self.blockchain().get_caller() == esc.payer, "only payer");
-        self.release_to_seller(id, &mut esc);
+        esc.receipt_confirmed = true;
+        self.escrows(id).set(&esc);
     }
 
     #[endpoint(submitVerificationProof)]
@@ -153,12 +173,60 @@ pub trait RwaEscrowBridge {
             "invalid proof"
         );
         esc.proof_hash = proof_hash;
+        esc.verification_confirmed = true;
+        self.escrows(id).set(&esc);
+    }
+
+    // A separate quality inspection proof is required; authenticity proof alone
+    // cannot satisfy the physical-condition gate.
+    #[endpoint(attestQualityInspection)]
+    fn attest_quality_inspection(&self, id: u64, quality_hash: ManagedBuffer) {
+        require!(!self.paused().get(), "paused");
+        require!(!self.escrows(id).is_empty(), "not found");
+        require!(self.blockchain().get_caller() == self.attestor().get(), "only attestor");
+        require!(quality_hash.len() > 0 && quality_hash.len() <= MAX_HASH_LEN, "invalid proof");
+        let mut esc = self.escrows(id).get();
+        require!(esc.status == 0u8, "not open");
+        esc.quality_proof_hash = quality_hash;
+        esc.quality_confirmed = true;
+        self.escrows(id).set(&esc);
+    }
+
+    // The attestor must independently verify the legal transfer and vault/NFT
+    // beneficiary reassignment. A hash alone is not independently validated
+    // by this contract: the attestor is a trusted external boundary.
+    #[endpoint(attestOwnershipReassignment)]
+    fn attest_ownership_reassignment(&self, id: u64, proof_hash: ManagedBuffer) {
+        require!(!self.paused().get(), "paused");
+        require!(!self.escrows(id).is_empty(), "not found");
+        require!(self.blockchain().get_caller() == self.attestor().get(), "only attestor");
+        require!(proof_hash.len() > 0 && proof_hash.len() <= MAX_HASH_LEN, "invalid proof");
+        let mut esc = self.escrows(id).get();
+        require!(esc.status == 0u8, "not open");
+        esc.ownership_proof_hash = proof_hash;
+        esc.ownership_confirmed = true;
+        self.escrows(id).set(&esc);
+    }
+
+    #[endpoint(release)]
+    fn release(&self, id: u64) {
+        require!(!self.paused().get(), "paused");
+        require!(!self.escrows(id).is_empty(), "not found");
+        let mut esc = self.escrows(id).get();
+        require!(esc.status == 0u8, "not open or disputed");
+        require!(esc.receipt_confirmed, "receipt not confirmed");
+        require!(esc.verification_confirmed, "authenticity not verified");
+        require!(esc.quality_confirmed, "quality not verified");
+        require!(esc.ownership_confirmed, "ownership not reassigned");
+        require!(self.blockchain().get_caller() == self.attestor().get(), "only attestor");
         self.release_to_seller(id, &mut esc);
     }
 
     fn release_to_seller(&self, id: u64, esc: &mut Escrow<Self::Api>) {
         esc.status = 1u8;
-        self.escrows(id).set(esc);
+        // Reborrow immutably: moving &mut Escrow into set() makes the later
+        // payment/beneficiary reads illegal under Rust ownership rules.
+        self.escrows(id).set(&*esc);
         let amount = esc.amount.clone();
         let seller = esc.seller.clone();
         self.send().direct_egld(&seller, &amount);
@@ -197,6 +265,10 @@ pub trait RwaEscrowBridge {
 
         let amount = esc.amount.clone();
         if favor_seller {
+            require!(esc.receipt_confirmed, "receipt not confirmed");
+            require!(esc.verification_confirmed, "authenticity not verified");
+            require!(esc.quality_confirmed, "quality not verified");
+            require!(esc.ownership_confirmed, "ownership not reassigned");
             esc.status = 1u8;
             self.escrows(id).set(&esc);
             let seller = esc.seller.clone();
@@ -288,8 +360,7 @@ pub trait RwaEscrowBridge {
         #[indexed] trade_id: &ManagedBuffer,
         #[indexed] payer: &ManagedAddress,
         #[indexed] seller: &ManagedAddress,
-        amount: &BigUint,
-        deadline: u64,
+        data: &EscrowOpenedData<Self::Api>,
     );
 
     #[event("release")]
