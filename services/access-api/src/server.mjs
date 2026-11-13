@@ -15,6 +15,7 @@ import { createWalletlessAccountProfileService } from './walletlessProfile.mjs'
 import { createWalletlessSchemaProbe } from './walletlessSchemaProbe.mjs'
 import { readAccountProjection } from './accountRepository.mjs'
 import { createWorldRightsHandler } from './worldRightsHttp.mjs'
+import {publicFreeSourcePolicy} from './xorusFreeSourcePolicy.mjs'
 import { handleStripe } from './stripeHttp.mjs'
 import { stripeSandboxConfig } from './stripeCheckout.mjs'
 import { resolveAccessLevel, issueAccessToken, verifyJwt } from './verifyAccess.mjs'
@@ -262,6 +263,12 @@ async function handleRequest(req, res) {
     const out=await XORUS_PRIVATE.read({offer:match[1],reportId:match[2],
       authorization:req.headers.authorization,origin:req.headers.origin})
     json(res,out.status,out.body)
+    return
+  }
+  if (pth === '/v1/xorus/free-sources') {
+    if(req.method!=='GET'){json(res,405,{ok:false,error:'method_not_allowed'});return}
+    if(u.search){json(res,400,{ok:false,error:'query_not_supported'});return}
+    json(res,200,publicFreeSourcePolicy())
     return
   }
   if (pth === '/v1/xorus/analysis') {
