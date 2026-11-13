@@ -89,6 +89,7 @@ jobs:
           python3 - <<'PY'
           import json
           import os
+          import re
           from urllib.request import urlopen
           with urlopen('http://127.0.0.1:18080/xArtists/build-info.json', timeout=5) as r:
               assert r.status == 200
@@ -102,6 +103,16 @@ jobs:
           assert stamp['lia_live_trading'] is False
           assert 'built_at' not in stamp
           print('Render stamp PASS: JSON identity matches checkout, not fake HTML')
+          with urlopen('http://127.0.0.1:18080/xArtists/', timeout=5) as r:
+              html = r.read(262144).decode()
+          assets = re.findall(r'<script[^>]+src="([^"]+)"', html)
+          local = [asset for asset in assets if asset.startswith('/xArtists/assets/')]
+          assert local, 'Render HTML must use the actual /xArtists/ asset prefix'
+          with urlopen('http://127.0.0.1:18080' + local[0], timeout=5) as r:
+              assert r.status == 200
+              assert 'javascript' in r.headers.get_content_type()
+              assert b'<html' not in r.read(128).lower()
+          print('Render asset prefix PASS: actual bundled JavaScript, not a SPA fallback')
           PY
 
           # Without RENDER_GIT_COMMIT, the same image must FAIL CLOSED (404),

@@ -4,6 +4,7 @@
 # Other services safely default to the original frontend behavior.
 FROM node:20-alpine AS build
 WORKDIR /app
+ARG VITE_ACCESS_API_BASE=https://xartists-access-api.onrender.com
 
 # Keep existing frontend build behavior unchanged.
 COPY package.json package-lock.json* pnpm-workspace.yaml* ./
@@ -14,7 +15,8 @@ COPY apps/frontend ./apps/frontend
 COPY data ./data
 COPY packages/core/src/xorusAnalysisContract.mjs ./packages/core/src/xorusAnalysisContract.mjs
 WORKDIR /app/apps/frontend
-RUN npm install --legacy-peer-deps && npm run build
+# Render still serves the SPA below /xArtists/. Pages uses the origin root.
+RUN npm install --legacy-peer-deps && VITE_ACCESS_API_BASE="$VITE_ACCESS_API_BASE" npm run build -- --base=/xArtists/
 
 # Production API dependencies in a separate stage. No tokens, PATs or
 # production database credentials enter the image at build time.
