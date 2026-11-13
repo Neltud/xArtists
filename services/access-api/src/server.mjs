@@ -9,6 +9,7 @@ import pg from 'pg'
 import { createNeonAuthIdentityVerifier, findOrCreateAccountFromNeonToken,findExistingAccountFromNeonToken } from './neonAuthIdentity.mjs'
 import { createXorusPrivateRepository } from './xorusPrivateStore.mjs'
 import { createXorusPrivateDelivery } from './xorusPrivateDelivery.mjs'
+import { publicCommercialCatalog } from './publicCommercialCatalog.mjs'
 import { createWalletlessSessionService } from './walletlessSession.mjs'
 import { createWorldRightsHandler } from './worldRightsHttp.mjs'
 import { handleStripe } from './stripeHttp.mjs'
@@ -203,6 +204,15 @@ async function handleRequest(req, res) {
     if(u.search){json(res,400,{ok:false,error:'query_not_supported'});return}
     const known=RUNTIME_BUILD.source_sha!==null
     json(res,known?200:503,{ok:known,...RUNTIME_BUILD})
+    return
+  }
+  if (pth === '/v1/commercial/catalog') {
+    if(req.method!=='GET'){json(res,405,{ok:false,error:'method_not_allowed'});return}
+    if(u.search){json(res,400,{ok:false,error:'query_not_supported'});return}
+    json(res,200,publicCommercialCatalog({
+      walletlessAccountEnabled:emailSessionsLive,
+      privateAnalysisEnabled:privateAnalysisLive,
+    }))
     return
   }
   if (pth === '/v1/account/session') {

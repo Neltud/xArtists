@@ -7,7 +7,8 @@
  */
 import { Link } from 'react-router-dom'
 import { useI18n } from '../i18n/I18nContext'
-import { GENESIS_PREVIEW, MAINSTREAM_PREVIEW } from '../config/commercialTargets'
+import { GENESIS_PREVIEW, MAINSTREAM_PREVIEW, XORUS_ANALYSIS_TRACKS_PREVIEW } from '../config/commercialTargets'
+import { useCommercialCatalog } from '../hooks/useCommercialCatalog'
 import { COMMUNITY_CONTACTS } from '../config/communityLinks'
 
 const COPY = {
@@ -18,13 +19,21 @@ const COPY = {
     signal: 'Catalogue de présentation · aucune commande ni paiement accepté sur cette page',
     warning: 'Ces montants sont des objectifs, pas des devis exécutables. Aucun abonnement ni achat NFT n’est ouvert. Politique Genesis : devis EUR/EGLD au moment de la signature, TTL prévu 180 secondes, base EUR non encore définie.',
     servicesTitle: 'Analyses xArtists — sans wallet',
-    servicesLead: 'Trois abonnements mensuels Stripe Nelsonprods en préparation, aux tarifs TTC confirmés. Les prestations détaillées, les noms et les conditions restent à approuver.',
+    servicesLead: 'Trois niveaux de prix mensuels en euros prévus via Stripe Nelsonprods, sans wallet et sans NFT. Les analyses existent comme trois domaines de recherche distincts : aucune correspondance niveau → rapport n’est encore certifiée.',
     level: 'Niveau',
     perMonth: 'TTC / mois',
     servicesTag: 'Abonnement EUR · services uniquement',
-    servicesWhat: 'Nos analyses : synthèses de marché, scénarios et risques. Les données collectées sont des entrées internes, sans revente. Le périmètre de chaque niveau reste à confirmer avant ouverture.',
+    servicesWhat: 'Prix cible d’un service futur. Accès, fréquence de publication, quotas et prestations de ce niveau seront précisés avant toute commande.',
     servicesNoNft: 'Sans NFT, sans pack Genesis, sans mint et sans portefeuille crypto obligatoire.',
     servicesOff: 'Souscription indisponible · aucun paiement actif',
+    checking: 'Vérification des offres auprès du serveur…',
+    apiVerified: 'Statut serveur vérifié · les abonnements restent fermés',
+    apiUnavailable: 'Statut serveur indisponible · tarifs indicatifs non vérifiés en direct, aucune commande possible',
+    pricingNote: 'Montants prévus uniquement · ne constituent ni un prix contractuel ni une autorisation de paiement.',
+    tracksTitle: 'Ce que xOrus prépare comme analyses',
+    tracksLead: 'Trois domaines de travail distincts des niveaux de prix. Nous vendrons nos propres synthèses et interprétations, jamais les données brutes collectées. Aucune prestation par niveau ni licence source n’est encore certifiée.',
+    trackStatus: 'Recherche / paper · rapport privé non commercialisé',
+    trackSee: 'Explorer les agents',
     genesisTitle: 'Genesis — œuvres NFT sur MultiversX',
     genesisLead: 'Trois éditions NFT en préparation : les plafonds cibles 33 / 22 / 11 EGLD ne sont pas des prix de contrat, ni des montants à signer. Aucun achat n’est disponible.',
     genesisTag: 'Plafond EGLD cible · non payable',
@@ -59,13 +68,21 @@ const COPY = {
     signal: 'Discovery catalogue · no orders or payments are accepted on this page',
     warning: 'These are price targets, not executable quotes. No subscriptions or NFTs are for sale. Genesis policy: fresh EUR/EGLD quote at signing, planned 180-second TTL; EUR base price not yet established.',
     servicesTitle: 'xArtists analysis — no wallet needed',
-    servicesLead: 'Three proposed Stripe Nelsonprods monthly tiers at VAT-inclusive target prices. Exact services, plan names and terms remain under review.',
+    servicesLead: 'Three planned EUR monthly price tiers, without a wallet or NFTs. Analysis covers three separate research tracks; tier-to-report benefits are not yet certified',
     level: 'Tier',
     perMonth: 'incl. VAT / month',
     servicesTag: 'EUR subscription · services only',
-    servicesWhat: 'Our analysis: market syntheses, scenarios and risk assessments. Collected data are internal inputs and are not resold. The scope of each tier remains to be confirmed before release.',
+    servicesWhat: 'Target pricing for a future service. Access, publication frequency, quotas and benefits must be specified before orders open.',
     servicesNoNft: 'No NFT, no Genesis pack, no mint and no crypto wallet required.',
     servicesOff: 'Subscriptions unavailable · no live payments',
+    checking: 'Checking the server catalogue…',
+    apiVerified: 'Server status verified · subscriptions remain closed',
+    apiUnavailable: 'Server status unavailable · target prices not verified live, orders disabled',
+    pricingNote: 'Planned amounts only · neither contract prices nor payment authorization.',
+    tracksTitle: 'Analysis xOrus is preparing',
+    tracksLead: 'Three research tracks distinct from the price tiers. We aim to sell our derived commentary and analysis, not collected raw data. Tier benefits and supplier commercial rights are not yet certified.',
+    trackStatus: 'Research / paper · private reports not for sale',
+    trackSee: 'Explore the agents',
     genesisTitle: 'Genesis — NFT artworks on MultiversX',
     genesisLead: 'Three planned NFT editions: target ceilings of 33 / 22 / 11 EGLD are neither contract prices nor amounts to sign. Purchases remain closed.',
     genesisTag: 'EGLD target ceiling · not payable',
@@ -102,6 +119,8 @@ const PUBLIC_SOCIAL_URL = 'https://x.com/tudurioriginal'
 export default function CommercialLaunchPage() {
   const { lang } = useI18n()
   const c = lang === 'fr' ? COPY.fr : COPY.en
+  const { catalog, status: catalogStatus } = useCommercialCatalog()
+  const statusMessage = catalogStatus === 'verified' ? c.apiVerified : catalogStatus === 'loading' ? c.checking : c.apiUnavailable
 
   return (
     <main className="xa-offers-page mx-auto w-full max-w-6xl space-y-12 px-4 pb-28 pt-8 text-zinc-900 dark:text-zinc-100 sm:px-7 sm:pt-14">
@@ -121,16 +140,43 @@ export default function CommercialLaunchPage() {
         <p className="text-xs font-semibold uppercase tracking-widest text-zinc-600 dark:text-zinc-400">Stripe · EUR</p>
         <h2 id="services-heading" className="mt-2 font-serif text-3xl">{c.servicesTitle}</h2>
         <p className="mt-3 max-w-3xl text-sm leading-6 text-zinc-600 dark:text-zinc-300">{c.servicesLead}</p>
+        <p role="status" aria-live="polite" data-testid="commercial-server-status"
+          className="mt-4 text-sm font-medium text-amber-900 dark:text-amber-200">{statusMessage}</p>
         <div className="mt-6 grid auto-rows-fr gap-4 md:grid-cols-3">
           {MAINSTREAM_PREVIEW.map(tier => (
             <article key={tier.sku} data-sku={tier.sku} className="xa-offers-card flex min-w-0 flex-col rounded-3xl border border-zinc-200 bg-white p-5 dark:border-zinc-700 dark:bg-zinc-900 sm:p-6">
               <p className="text-xs font-semibold uppercase tracking-widest text-zinc-600 dark:text-zinc-400">{c.level} {tier.level}</p>
-              <h3 className="mt-3 text-3xl font-semibold tabular-nums sm:text-4xl">{tier.price} €</h3>
+              <h3 className="mt-3 text-3xl font-semibold tabular-nums sm:text-4xl">{catalog
+                ? new Intl.NumberFormat(lang === 'fr' ? 'fr-FR' : 'en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                    .format((catalog.monthly_services.find(item => item.sku === tier.sku)?.target_cents ?? tier.cents) / 100)
+                : tier.price} €</h3>
               <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">{c.perMonth}</p>
               <p className="mt-4 text-sm font-semibold text-zinc-800 dark:text-zinc-100">{c.servicesTag}</p>
               <p className="mt-3 text-sm leading-6 text-zinc-600 dark:text-zinc-300">{c.servicesWhat}</p>
               <p className="mt-4 rounded-xl bg-zinc-100 px-3 py-3 text-sm leading-6 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-100">{c.servicesNoNft}</p>
               <p role="status" className="mt-auto pt-5 text-sm font-semibold leading-6 text-amber-900 dark:text-amber-200">{c.servicesOff}</p>
+            </article>
+          ))}
+        </div>
+        <p className="mt-4 text-xs leading-6 text-zinc-600 dark:text-zinc-400">{c.pricingNote}</p>
+      </section>
+
+      <section id="commercial-tracks" aria-labelledby="commercial-tracks-title" className="xa-offers-section scroll-mt-24">
+        <p className="text-xs font-semibold uppercase tracking-widest text-zinc-600 dark:text-zinc-400">xOrus · Intelligence</p>
+        <h2 id="commercial-tracks-title" className="mt-2 font-serif text-3xl">{c.tracksTitle}</h2>
+        <p className="mt-3 max-w-3xl text-sm leading-7 text-zinc-600 dark:text-zinc-300">{c.tracksLead}</p>
+        <div className="mt-6 grid gap-4 md:grid-cols-3">
+          {XORUS_ANALYSIS_TRACKS_PREVIEW.map(track => (
+            <article key={track.id} data-analysis-track={track.id}
+              className="xa-offers-card flex flex-col rounded-3xl border border-zinc-200 bg-white p-5 dark:border-zinc-700 dark:bg-zinc-900 sm:p-6">
+              <h3 className="font-serif text-xl">{lang === 'fr' ? track.frName : track.enName}</h3>
+              <p className="mt-3 text-sm leading-7 text-zinc-700 dark:text-zinc-300">
+                {lang === 'fr' ? track.frDescription : track.enDescription}
+              </p>
+              <p role="status" className="mt-4 text-xs font-semibold text-amber-900 dark:text-amber-200">{c.trackStatus}</p>
+              <Link to="/intelligence/agents" className="mt-auto pt-5 text-sm font-semibold underline underline-offset-4">
+                {c.trackSee}
+              </Link>
             </article>
           ))}
         </div>

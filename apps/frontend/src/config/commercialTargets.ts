@@ -18,6 +18,29 @@ export const MAINSTREAM_PREVIEW = [
   { sku: 'fiat_979', price: '9,79', cents: 979, level: 3, includesNft: false, requiresWallet: false },
 ] as const
 
+// Editorial description of analysis tracks; NOT mapped to a purchased EUR tier.
+// Product/contract benefit mapping remains unapproved and no premium report is live.
+export const XORUS_ANALYSIS_TRACKS_PREVIEW = [
+  {
+    id: 'pulse', scope: 'analysis:markets',
+    frName: 'Pulse · Marchés', enName: 'Pulse · Markets',
+    frDescription: 'Lecture des tendances, couverture des signaux et zones d’incertitude.',
+    enDescription: 'Market trends, signal coverage and areas of uncertainty.',
+  },
+  {
+    id: 'yield', scope: 'analysis:defi',
+    frName: 'Yield · DeFi', enName: 'Yield · DeFi',
+    frDescription: 'Étude des protocoles, de la liquidité et des risques DeFi, sans APY garanti.',
+    enDescription: 'Protocol, liquidity and DeFi risk research, with no guaranteed yield.',
+  },
+  {
+    id: 'sentinel', scope: 'analysis:risk',
+    frName: 'Sentinel · Risques', enName: 'Sentinel · Risk',
+    frDescription: 'Scénarios adverses, qualité des preuves et facteurs de veto.',
+    enDescription: 'Downside scenarios, evidence quality and veto factors.',
+  },
+] as const
+
 export const GENESIS_TARGETS_BY_ID = {
   pulse: GENESIS_PREVIEW[0],
   yield: GENESIS_PREVIEW[1],
