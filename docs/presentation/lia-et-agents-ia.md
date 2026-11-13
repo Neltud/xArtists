@@ -9,6 +9,8 @@ icon: brain
 
 xOrus est l'intelligence paper (ancien Chorus, compatibilité technique LIA) d’analyse du projet xArtists. Ses interfaces rassemblent des informations de suivi, des signaux, des simulations et des vues de contrôle. Elles accompagnent l’exploration de l’écosystème ; leur contenu doit être lu selon le mode indiqué et la date des données.
 
+**Notre produit est l'analyse.** Les données collectées alimentent le travail en interne ; elles ne sont pas revendues. Les futurs abonnements et packs d'accès portent sur nos synthèses, scénarios conditionnels et évaluations de risque. Le [contrat d'analyse xOrus](../XORUS_DATA_BROKER_RELEASE.md) décrit la sortie livrée dans le code et les connexions encore absentes.
+
 **Catalogue :** 120 signaux **définis**, pas 120 signaux garantis alimentés ou frais. Mode `ABSTAIN` lorsque les données sont insuffisantes, poids externe ChatGPT plafonné à 15 % et veto Sentinel. Le runtime reste en mode paper sans signature ni trading autonome.
 
 [Ouvrir xOrus](https://xartists.art/intelligence/xorus/) · [Guide vendeur et sculpture](creer-vendre-nft-ipfs-drive.md)

@@ -7,19 +7,11 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useI18n } from '../../i18n/I18nContext'
 import { interpretXorusSnapshot, parseMultiversxEconomics } from '../../lib/xorusDecisionReadout.mjs'
+import { interpretXorusAnalysisReport } from '../../lib/xorusAnalysisReadout.mjs'
+import XorusAnalysisReport from './XorusAnalysisReport'
 import XorusSignalCatalog from './XorusSignalCatalog'
 
 const MVX_ECONOMICS='https://api.multiversx.com/economics?fields=price,marketCap,volume24h'
-const AGENTS=[
-  {name:'Tape',fr:'Prix, volumes, volatilité, liquidité, funding',en:'Prices, volume, volatility, liquidity, funding'},
-  {name:'Scout',fr:'Chaîne MultiversX et écarts DEX',en:'MultiversX on-chain and DEX spreads'},
-  {name:'Crowd',fr:'Contexte social et informations',en:'Social and news context'},
-  {name:'Curator',fr:'Art, collections et NFT',en:'Art, collections and NFTs'},
-  {name:'Sentinel',fr:'Risques, veto et arrêt opérateur',en:'Risk, veto and operator halt'},
-  {name:'Macro',fr:'Contexte macroéconomique',en:'Macroeconomic context'},
-  {name:'Chair',fr:'Avis consultatif IA, pondération ≤ 15 %',en:'Advisory AI input, max weight 15%'},
-  {name:'Scribe',fr:'Journal des décisions, sans signature',en:'Decision record, no signature'},
-] as const
 
 async function readJson(url:string,signal:AbortSignal):Promise<unknown>{
   const res=await fetch(url,{signal,cache:'no-store'})
@@ -34,29 +26,35 @@ export default function XorusDecisionDesk(){
   const fr=lang==='fr'
   const [board,setBoard]=useState<unknown>(null)
   const [economics,setEconomics]=useState<unknown>(null)
+  const [analysis,setAnalysis]=useState<unknown>(null)
   const [checkedAt,setCheckedAt]=useState<number>(Date.now())
   const [busy,setBusy]=useState(true)
   const [revision,setRevision]=useState(0)
   const source=`${import.meta.env.BASE_URL || '/'}data/xorus_board.json`
+  const analysisSource=`${import.meta.env.BASE_URL || '/'}data/xorus_analysis_preview.json`
   const refresh=useCallback(()=>setRevision(v=>v+1),[])
   useEffect(()=>{
     const ctl=new AbortController()
     setBusy(true)
     setBoard(null)
     setEconomics(null)
+    setAnalysis(null)
     const timer=window.setTimeout(()=>{ctl.abort();setCheckedAt(Date.now());setBusy(false)},10000)
-    void Promise.allSettled([readJson(source,ctl.signal),readJson(MVX_ECONOMICS,ctl.signal)])
-      .then(([paper,market])=>{
-        if(ctl.signal.aborted)return
-        setBoard(paper.status==='fulfilled'?paper.value:null)
-        setEconomics(market.status==='fulfilled'?market.value:null)
-        setCheckedAt(Date.now())
-      }).finally(()=>{window.clearTimeout(timer);if(!ctl.signal.aborted)setBusy(false)})
+    // An optional quote provider must not hold back an available analysis.
+    void Promise.allSettled([
+      readJson(source,ctl.signal).then(value=>{if(!ctl.signal.aborted)setBoard(value)}),
+      readJson(MVX_ECONOMICS,ctl.signal).then(value=>{if(!ctl.signal.aborted)setEconomics(value)}),
+      readJson(analysisSource,ctl.signal).then(value=>{if(!ctl.signal.aborted)setAnalysis(value)}),
+    ]).finally(()=>{
+      window.clearTimeout(timer)
+      if(!ctl.signal.aborted){setCheckedAt(Date.now());setBusy(false)}
+    })
     return ()=>{window.clearTimeout(timer);ctl.abort()}
-  },[source,revision])
+  },[source,analysisSource,revision])
 
   const status=useMemo(()=>interpretXorusSnapshot(board,checkedAt),[board,checkedAt])
   const market=useMemo(()=>parseMultiversxEconomics(economics),[economics])
+  const report=useMemo(()=>interpretXorusAnalysisReport(analysis,checkedAt),[analysis,checkedAt])
   const fromSource=status.sourceTs
     ? new Date(status.sourceTs).toLocaleString(fr?'fr-FR':'en-GB',{dateStyle:'medium',timeStyle:'short'})
     : null
@@ -151,17 +149,7 @@ export default function XorusDecisionDesk(){
       </article>
     </div>
 
-    <details className="xa-intelligence-advanced">
-      <summary>{fr?'Huit rôles du moteur hérité de LIA':'Eight roles preserved from the LIA engine'}</summary>
-      <div className="mt-3 grid gap-3 sm:grid-cols-2">
-        {AGENTS.map(a=><div key={a.name} className="rounded-xl border border-[color:var(--xa-border)] p-3">
-          <strong>{a.name}</strong><p className="xa-intelligence-note">{fr?a.fr:a.en}</p>
-        </div>)}
-      </div>
-      <p className="xa-intelligence-note mt-3">{fr
-        ? 'Ces rôles décrivent le moteur. Leur présence ne prouve pas qu’un collecteur produit des données actuellement.'
-        : 'These roles describe the engine. Their listing does not prove a live data collector is active.'}</p>
-    </details>
+    <XorusAnalysisReport report={report} />
     <XorusSignalCatalog />
     <nav className="flex flex-wrap gap-3" aria-label={fr?'Poursuivre l’analyse':'More analysis'}>
       <Link to="/explore/analytics" className="xa-button secondary">{fr?'Analyse des marchés':'Market analysis'}</Link>

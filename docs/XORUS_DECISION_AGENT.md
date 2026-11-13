@@ -28,7 +28,17 @@ L'exemple renvoie `ABSTAIN / thin_tape` en l'absence de données. Il n'ouvre auc
 
 ## Contrat source et limites
 
-Ce moteur est **délibérément distinct** du `preprod_gate` de la PR #524. Il ne peut ni libérer les Data Packs, ni attester des licences. Son mode `paper_only` n'est pas une étape cachée vers un mode trading autonome.
+Ce moteur est **délibérément distinct** du `preprod_gate` historique. Il n'atteste ni une licence fournisseur ni un droit d'accès client. Son mode `paper_only` est conservé dans la nouvelle sortie d'analyse.
+
+## Sortie client : nos analyses
+
+Décision produit du 13 novembre : les données collectées sont des entrées internes. Les abonnements et packs d'accès portent sur nos analyses, sans revente de données brutes.
+
+`lia.xorus.analysis_report.run_analysis_agent(market=..., chair_brief=..., now=...)` appelle ce moteur, puis construit une projection `xorus_analysis/v1` : interprétations qualitatives par agent et famille, couverture, verdict, conditions de réévaluation et limites. Les contradictions sont conservées ; une absence d'entrée reste `no_input`. Les valeurs brutes et scores numériques, le board, les citations textuelles du Chair et les prompts ne sont jamais copiés dans cette projection.
+
+Ce travail de synthèse est déterministe, sans collecteur ni modèle connecté. `confidence=null`, `source_ts=null` et les signaux indépendamment vérifiés restent à zéro. Le SHA-256 identifie uniquement le contenu du rapport, sans preuve d'authenticité ou d'entitlement. L'aperçu public est volontairement généré sans données ; la livraison privée des analyses commerciales reste à construire.
+
+Voir [le produit et ses limites](XORUS_DATA_BROKER_RELEASE.md).
 
 Les 120 IDs ne signifient pas 120 fournisseurs, et les 12 familles ne signifient pas que 12 familles ont des observations. Le moteur historique n'implémente actuellement qu'une petite sélection de scoreurs. Tant que le seuil de signaux vérifiables n'est pas franchi, il abstient. Ajouter de vrais adaptateurs exige preuve de fraîcheur, provenance, licence et tests supplémentaires — aucun auto-fallback de simulé à live.
 

@@ -1,8 +1,9 @@
-"""Offline xOrus Data preproduction audit. No deploy, commerce or execution.
+"""Historical raw-data preflight. No deploy, commerce or execution.
 
 Every result is a commercial NO_GO, including successful technical preflights.
 A signed manifest is not proof of actual contractual redistribution rights.
 No user-controlled source may provide a trusted key or entitlement.
+This is not a release gate or a rights grant for the new analysis product.
 """
 from __future__ import annotations
 

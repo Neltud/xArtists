@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { mkdirSync } from 'node:fs'
+import { mkdirSync, readFileSync } from 'node:fs'
 
 const BASE = ''
 function contrastRatio(foreground: string, background: string): number {
@@ -22,6 +22,46 @@ async function visit(page: import('@playwright/test').Page, path: string) {
 }
 
 test.describe('xArtists public accessibility, local built frontend only', () => {
+
+  for(const [lang,width] of [['fr',390],['en',1440]] as const){
+    test(`xOrus analysis product at ${width}px: derived findings and source outage (${lang})`,async({page})=>{
+      await page.setViewportSize({width,height:900})
+      const report=JSON.parse(readFileSync(new URL('../apps/frontend/public/data/xorus_analysis_preview.json',import.meta.url),'utf8'))
+      // Deliberately unverified paper fixture, never a live provider assertion.
+      report.coverage.signals_analyzed=1
+      report.coverage.families_analyzed=1
+      report.agents[1].status='paper_unverified'
+      report.agents[1].families[0]={family:'price',signals_analyzed:1,reading:'negative'}
+      report.provider_payload='private-provider-response-do-not-render'
+      let unavailable=false
+      await page.route('**/data/xorus_analysis_preview.json',route=>unavailable
+        ?route.fulfill({status:503,body:'unavailable'})
+        :route.fulfill({json:report}))
+      await page.route('https://api.multiversx.com/economics*',route=>{
+        // A hung optional quote must not hold back the analysis report.
+        if(lang==='fr'&&!unavailable)return
+        return route.fulfill({status:503,body:'unavailable'})
+      })
+      await visit(page,`/intelligence/xorus/?lang=${lang}`)
+      const analysis=page.getByTestId('xorus-analysis-report')
+      await expect(analysis).toContainText(lang==='fr'?'Les données collectées servent d’entrées internes':'Collected data are internal inputs')
+      await expect(analysis).toContainText(lang==='fr'?'Hypothèses paper uniquement':'Paper hypotheses only')
+      await analysis.locator('summary').click()
+      await expect(analysis).toContainText(lang==='fr'?'lecture négative':'negative reading')
+      await expect(analysis).toContainText(lang==='fr'?'Analyse indisponible':'Analysis unavailable')
+      await expect(page.getByTestId('xorus-decision-desk')).toContainText(lang==='fr'?'S’ABSTENIR':'ABSTAIN')
+      await expect(analysis).not.toContainText('private-provider-response-do-not-render')
+      if(lang==='fr')await expect(page.getByRole('button',{name:'Actualiser les sources'})).toBeDisabled()
+      expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(12)
+      await page.screenshot({animations:'disabled',path:`artifacts/ux-mobile/xorus-analysis-${lang}-${width}.png`})
+      unavailable=true
+      await expect(page.getByRole('button',{name:lang==='fr'?'Actualiser les sources':'Check sources'})).toBeEnabled()
+      await page.getByRole('button',{name:lang==='fr'?'Actualiser les sources':'Check sources'}).click()
+      await expect(page.getByRole('button',{name:lang==='fr'?'Actualiser les sources':'Check sources'})).toBeEnabled()
+      await expect(analysis).toContainText(lang==='fr'?'Rapport indisponible ou non conforme':'Report unavailable or invalid')
+      await expect(analysis).not.toContainText(lang==='fr'?'lecture négative':'negative reading')
+    })
+  }
 
   for (const width of [360, 390, 430]) {
     test(`marketplace at ${width}px: artwork-first grid stays readable without wallet`, async ({ page }) => {

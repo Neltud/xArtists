@@ -43,8 +43,11 @@ export default function Agents() {
         <p className="xa-intelligence-eyebrow">{fr ? '02 · Qui fait quoi ?' : '02 · Who does what?'}</p>
         <h1>{fr ? 'Les agents xOrus, simplement' : 'xOrus agents, made clear'}</h1>
         <p>{fr
-          ? 'Trois domaines à comprendre : observer des signaux, explorer les données et surveiller les risques. Il s’agit de rôles présentés en mode paper, pas de robots qui achètent ou vendent pour vous.'
-          : 'Three areas to understand: observe signals, explore data, and assess risks. These are paper-mode roles, not bots buying or selling on your behalf.'}</p>
+          ? 'Pulse analyse les marchés, Yield étudie les scénarios DeFi et Sentinel évalue les risques. Leur travail produit nos analyses : synthèses argumentées, scénarios conditionnels et explications des limites.'
+          : 'Pulse analyses markets, Yield studies DeFi scenarios, and Sentinel assesses risk. Their work produces our analysis: reasoned syntheses, conditional scenarios and explanations of limitations.'}</p>
+        <p>{fr
+          ? 'Nous vendons nos analyses. Les données collectées restent des entrées internes, sans revente de flux fournisseurs.'
+          : 'We sell our analysis. Collected data remain internal inputs; provider feeds are not resold.'}</p>
         <p role="status" className="xa-intelligence-status">{fr
           ? 'Mode lecture et simulation. Aucun trading automatique, aucun rendement, aucun achat requis.'
           : 'Read-only and simulation mode. No automated trades, promised returns or purchase required.'}</p>
@@ -54,20 +57,20 @@ export default function Agents() {
         <div className="xa-intelligence-cards">
           <article className="xa-intelligence-card">
             <p className="xa-intelligence-eyebrow">Pulse · 01</p>
-            <h3>{fr ? 'Observer les signaux' : 'Observe signals'}</h3>
-            <p>{fr ? 'Comprendre ce qu’un signal de marché décrit, quand il a été publié et ce qui manque pour le vérifier.' : 'Learn what a signal describes, when it was published, and what is still unverified.'}</p>
-            <Link to="/xorus">{fr ? 'Voir les signaux xOrus' : 'View xOrus signals'}</Link>
+            <h3>{fr ? 'Analyser les marchés' : 'Analyse markets'}</h3>
+            <p>{fr ? 'Synthétiser les indicateurs, expliquer leurs contradictions et formuler une lecture datée avec ses limites.' : 'Synthesize indicators, explain disagreements and produce a dated assessment with its limitations.'}</p>
+            <Link to="/xorus">{fr ? 'Lire l’analyse xOrus' : 'Read xOrus analysis'}</Link>
           </article>
           <article className="xa-intelligence-card">
             <p className="xa-intelligence-eyebrow">Yield · 02</p>
-            <h3>{fr ? 'Explorer les données' : 'Explore the data'}</h3>
-            <p>{fr ? 'Lire des exemples et comprendre les limites des indicateurs, sans les confondre avec une performance réelle.' : 'Read examples and understand indicator limits without mistaking them for real performance.'}</p>
+            <h3>{fr ? 'Étudier les scénarios DeFi' : 'Study DeFi scenarios'}</h3>
+            <p>{fr ? 'Comparer les hypothèses de liquidité et les conditions d’un scénario. Les simulations restent identifiées comme telles.' : 'Compare liquidity assumptions and scenario conditions. Simulations remain explicitly labelled.'}</p>
             <Link to="/lab?view=simulation">{fr ? 'Essayer une simulation' : 'Try a simulation'}</Link>
           </article>
           <article className="xa-intelligence-card">
             <p className="xa-intelligence-eyebrow">Sentinel · 03</p>
             <h3>{fr ? 'Identifier les risques' : 'Understand risks'}</h3>
-            <p>{fr ? 'Distinguer des données fraîches, anciennes ou absentes et découvrir pourquoi une action non prouvée reste bloquée.' : 'Distinguish fresh, stale and missing data, and see why unverified actions remain blocked.'}</p>
+            <p>{fr ? 'Expliquer les risques et les informations manquantes. Un veto Sentinel impose l’abstention à la synthèse.' : 'Explain risks and missing evidence. A Sentinel veto requires the synthesis to abstain.'}</p>
             <Link to="/xorus">{fr ? 'Consulter l’état de xOrus' : 'Check xOrus status'}</Link>
           </article>
         </div>

@@ -1,0 +1,160 @@
+{
+  "schema": "xorus_analysis/v1",
+  "engine": "xorus",
+  "product": "proprietary_analysis",
+  "method": "deterministic_paper_synthesis/v1",
+  "mode": "paper_only",
+  "generated_at": "2026-11-13T05:49:11Z",
+  "source_ts": null,
+  "input_provenance": "unverified_offline_inputs",
+  "raw_data_included": false,
+  "commercial_enabled": false,
+  "access_granted": false,
+  "decision": {
+    "stance": "ABSTAIN",
+    "reason": "thin_tape"
+  },
+  "coverage": {
+    "signals_defined": 120,
+    "signals_analyzed": 0,
+    "families_analyzed": 0,
+    "independently_verified_signals": 0
+  },
+  "confidence": null,
+  "agents": [
+    {
+      "agent": "scout",
+      "status": "no_input",
+      "families": [
+        {
+          "family": "onchain",
+          "signals_analyzed": 0,
+          "reading": "no_input"
+        },
+        {
+          "family": "dex",
+          "signals_analyzed": 0,
+          "reading": "no_input"
+        }
+      ]
+    },
+    {
+      "agent": "tape",
+      "status": "no_input",
+      "families": [
+        {
+          "family": "price",
+          "signals_analyzed": 0,
+          "reading": "no_input"
+        },
+        {
+          "family": "volume",
+          "signals_analyzed": 0,
+          "reading": "no_input"
+        },
+        {
+          "family": "volatility",
+          "signals_analyzed": 0,
+          "reading": "no_input"
+        },
+        {
+          "family": "liquidity",
+          "signals_analyzed": 0,
+          "reading": "no_input"
+        },
+        {
+          "family": "funding",
+          "signals_analyzed": 0,
+          "reading": "no_input"
+        }
+      ]
+    },
+    {
+      "agent": "crowd",
+      "status": "no_input",
+      "families": [
+        {
+          "family": "social",
+          "signals_analyzed": 0,
+          "reading": "no_input"
+        }
+      ]
+    },
+    {
+      "agent": "curator",
+      "status": "no_input",
+      "families": [
+        {
+          "family": "art",
+          "signals_analyzed": 0,
+          "reading": "no_input"
+        }
+      ]
+    },
+    {
+      "agent": "sentinel",
+      "status": "no_input",
+      "families": [
+        {
+          "family": "risk",
+          "signals_analyzed": 0,
+          "reading": "no_input"
+        }
+      ]
+    },
+    {
+      "agent": "macro",
+      "status": "no_input",
+      "families": [
+        {
+          "family": "macro",
+          "signals_analyzed": 0,
+          "reading": "no_input"
+        }
+      ]
+    },
+    {
+      "agent": "chair",
+      "status": "no_input",
+      "families": [
+        {
+          "family": "external",
+          "signals_analyzed": 0,
+          "reading": "no_input"
+        }
+      ]
+    },
+    {
+      "agent": "scribe",
+      "status": "recorded",
+      "families": []
+    }
+  ],
+  "scenarios": [
+    {
+      "condition": "verified_quorum_and_source_review",
+      "outcome": "reassess_analysis"
+    },
+    {
+      "condition": "sentinel_veto_or_operator_halt",
+      "outcome": "maintain_abstention"
+    }
+  ],
+  "limitations": [
+    "offline_inputs_not_independently_verified",
+    "source_timestamp_unavailable",
+    "generation_time_is_not_source_time",
+    "commercial_analysis_rights_not_verified",
+    "no_autonomous_execution"
+  ],
+  "safety": {
+    "executable": false,
+    "live_trading": false,
+    "signing_authorized": false,
+    "trade_authorized": false,
+    "mint_authorized": false,
+    "transfer_authorized": false,
+    "requires_human_review": true
+  },
+  "report_sha256": "ad5505198c6f46507ac782de67bb46e9f0e83eae86a4db3b7ea2fc014c5a4848"
+}

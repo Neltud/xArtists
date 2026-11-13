@@ -55,8 +55,8 @@ export default function XorusSignalCatalog(){
   return <details className="xa-intelligence-advanced" onToggle={event=>setOpened(event.currentTarget.open)}>
     <summary>{fr?'Catalogue technique des 120 signaux':'Technical catalog of 120 signals'}</summary>
     <p className="xa-intelligence-note mt-2">{fr
-      ? 'Définitions du moteur historique LIA/Chorus. « Défini » ne veut pas dire disponible, validé, autorisé à la revente ni utilisé pour décider.'
-      : 'Definitions from the historical LIA/Chorus engine. Defined does not mean fed, verified, licensed for resale or used for decisions.'}</p>
+      ? 'Définitions des entrées internes du moteur historique LIA/Chorus. « Défini » ne veut pas dire disponible, validé ni utilisé pour décider. Le produit xOrus porte sur nos analyses.'
+      : 'Definitions of internal inputs to the historical LIA/Chorus engine. Defined does not mean fed, verified or used for decisions. The xOrus product is our analysis.'}</p>
     {error&&<p role="status">{fr?'Catalogue indisponible ou non conforme.':'Catalog unavailable or invalid.'}</p>}
     {!error&&!defs&&<p role="status">{fr?'Chargement des définitions…':'Loading definitions…'}</p>}
     {defs&&<>
