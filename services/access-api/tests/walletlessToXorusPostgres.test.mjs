@@ -74,6 +74,9 @@ test('verified email account → test entitlement → private report → refund 
     assert.equal(logged.body.checkoutAuthorized,false)
     assert.equal(logged.body.nftEntitlement,false)
     assert.equal((await request(signed)).body.account.id,accountId)
+    // This disposable PG is shared with another test step; compare before vs after,
+    // never assume a freshly empty DB.
+    const beforeProfile=await pool.query('SELECT count(*)::int AS n FROM xa_user_accounts')
     // An authenticated profile read must never create or mutate an account.
     const profile=createWalletlessAccountProfileService({
       enabled:true,originAllowed:o=>o==='https://xartists.art',
@@ -89,7 +92,7 @@ test('verified email account → test entitlement → private report → refund 
     assert.equal(view.body.subscriptionAccess,'not_checked')
     assert.equal(view.body.xorusPrivateAccess,'not_checked')
     const rows=await pool.query('SELECT count(*)::int AS n FROM xa_user_accounts')
-    assert.equal(rows.rows[0].n,1,'Profile lookups must not create accounts')
+    assert.equal(rows.rows[0].n,beforeProfile.rows[0].n,'Profile lookups must not create accounts')
     assert.equal((await profile.read({origin:'https://xartists.art',
       authorization:'Bearer '+makeToken(now,{emailVerified:false})})).status,401)
     assert.equal((await request(makeToken(now,{emailVerified:false}))).status,401)
