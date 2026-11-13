@@ -11,6 +11,9 @@ import {inspectStripeBillingSandboxEvent} from './stripeBillingCandidate.mjs'
 import {verifyStripeEvent} from './stripeCheckout.mjs'
 
 const SUB=/^sub_[A-Za-z0-9]{6,128}$/
+const PI=/^pi_[A-Za-z0-9]{6,128}$/
+const INVOICE=/^in_[A-Za-z0-9]{6,128}$/
+const INCIDENT_TYPES=new Set(['charge.refunded','charge.dispute.created'])
 const TYPES=new Set([
   'invoice.paid','invoice.payment_failed',
   'customer.subscription.updated','customer.subscription.deleted',
@@ -67,10 +70,16 @@ export function createStripeBillingSandboxReconciler({
       let event
       try{event=verifyStripeEvent(raw,signature,webhookSecret,now)}
       catch{return fail('signature_not_verified')}
-      if(!TYPES.has(event.type))return fail('event_not_supported')
-      const sub=subscriptionId(event)
+      const incident=INCIDENT_TYPES.has(event.type)
+      if(!TYPES.has(event.type)&&!incident)return fail('event_not_supported')
+      let sub=incident?null:subscriptionId(event)
+      const incidentObject=incident?event.data?.object:null
+      const paymentIntent=incidentObject?.payment_intent
+      if(incident&&(!PI.test(paymentIntent??'')||
+         typeof paymentIntent!=='string'||
+         incidentObject.livemode!==false))return fail('incident_payment_not_linked')
       const created=event.created
-      if(typeof sub!=='string'||!SUB.test(sub)||
+      if((!incident&&(typeof sub!=='string'||!SUB.test(sub)))||
          !Number.isSafeInteger(created)||created<=0||
          created>Math.floor(now/1000)+300||
          created<Math.floor(now/1000)-90*86400)return fail('event_not_bound')
@@ -87,6 +96,19 @@ export function createStripeBillingSandboxReconciler({
         if(identity.rows.length!==1||identity.rows[0].database_name!=='xartists_billing_probe'){
           await client.query('ROLLBACK');transaction=false
           return fail('disposable_database_required')
+        }
+        // Refunds/disputes have no subscription id. Lookup may use only a
+        // previously paid invoice's immutable PI mapping, never Stripe metadata
+        // or a user-supplied account id.
+        if(incident){
+          const link=await client.query(
+            'SELECT subscription_id FROM xa_stripe_billing_payments WHERE payment_intent_id=$1 FOR UPDATE',
+            [paymentIntent])
+          if(link.rows.length!==1){
+            await client.query('ROLLBACK');transaction=false
+            return fail('incident_payment_not_linked')
+          }
+          sub=link.rows[0].subscription_id
         }
         // Row locks serialize concurrent webhook deliveries for this subscription.
         const rows=await client.query(`SELECT b.*,s.status AS subscription_status,
@@ -109,22 +131,54 @@ export function createStripeBillingSandboxReconciler({
           amount_cents:binding.amount_cents,currency:binding.currency,
           interval:binding.interval_unit,
         }
-        const candidate=inspectStripeBillingSandboxEvent({
-          raw,signature,webhookSecret,binding:sourceBinding,now,
-        })
-        if(candidate.candidate_verified!==true||
-           candidate.stripe_subscription_id!==sub){
-          await client.query('ROLLBACK');transaction=false
-          return fail('signed_invoice_not_reconciled')
+        let candidate=null
+        if(incident){
+          // Exact test-mode amount/customer/PI required. A partial refund or
+          // dispute is held permanently (fail-closed); it does not prove that
+          // all funds were returned, only that premium access is unsafe.
+          const validAmount=Number.isSafeInteger(incidentObject.amount)&&
+            incidentObject.amount>0&&incidentObject.amount===binding.amount_cents
+          const validCharge=event.type==='charge.refunded'&&
+            incidentObject.object==='charge'&&
+            incidentObject.customer===binding.customer_id&&
+            incidentObject.currency==='eur'&&validAmount&&
+            Number.isSafeInteger(incidentObject.amount_refunded)&&
+            incidentObject.amount_refunded>0&&
+            incidentObject.amount_refunded<=incidentObject.amount
+          const validDispute=event.type==='charge.dispute.created'&&
+            incidentObject.object==='dispute'&&
+            incidentObject.currency==='eur'&&
+            Number.isSafeInteger(incidentObject.amount)&&
+            incidentObject.amount>0&&
+            incidentObject.amount<=binding.amount_cents
+          if(!validCharge&&!validDispute){
+            await client.query('ROLLBACK');transaction=false
+            return fail('incident_binding_mismatch')
+          }
+        }else{
+          candidate=inspectStripeBillingSandboxEvent({
+            raw,signature,webhookSecret,binding:sourceBinding,now,
+          })
+          if(candidate.candidate_verified!==true||
+             candidate.stripe_subscription_id!==sub){
+            await client.query('ROLLBACK');transaction=false
+            return fail('signed_invoice_not_reconciled')
+          }
         }
 
         const previous=await client.query(
           'SELECT subscription_id,body_sha256,outcome FROM xa_stripe_billing_receipts WHERE event_id=$1 FOR UPDATE',
           [event.id])
-        if(previous.rows.length){
+        const previousIncident=await client.query(
+          'SELECT subscription_id,body_sha256,outcome FROM xa_stripe_billing_incident_receipts WHERE event_id=$1 FOR UPDATE',
+          [event.id])
+        if(previous.rows.length||previousIncident.rows.length){
           await client.query('ROLLBACK');transaction=false
-          return previous.rows[0].subscription_id===sub&&previous.rows[0].body_sha256===rawDigest
-            ? done(previous.rows[0].outcome,true) : fail('conflicting_replayed_event')
+          const matched=incident?previousIncident.rows[0]:previous.rows[0]
+          if(!matched||previous.rows.length&&previousIncident.rows.length)
+            return fail('conflicting_replayed_event')
+          return matched.subscription_id===sub&&matched.body_sha256===rawDigest
+            ?done(matched.outcome,true):fail('conflicting_replayed_event')
         }
         // An event id claimed by any earlier Stripe integration is never reused.
         const legacy=await client.query(
@@ -141,7 +195,14 @@ export function createStripeBillingSandboxReconciler({
           (event.type==='customer.subscription.updated'&&
            ['canceled','incomplete_expired'].includes(event.data.object.status))
         let outcome='status_review',nextStatus=null,periodEnd=null
-        if(canceled){ // A signed cancellation wins even if delivered late.
+        let markRefund=false
+        if(incident&&terminal){
+          outcome='terminal_ignored'
+        }else if(incident){
+          markRefund=event.type==='charge.refunded'
+          outcome=markRefund?'refund_revoked':'dispute_held'
+          nextStatus=markRefund?'canceled':'unpaid'
+        }else if(canceled){ // A signed cancellation wins even if delivered late.
           outcome='canceled';nextStatus='canceled'
         }else if(terminal){
           outcome='terminal_ignored'
@@ -153,6 +214,18 @@ export function createStripeBillingSandboxReconciler({
             await client.query('ROLLBACK');transaction=false
             return fail('invoice_service_period_unverified')
           }
+          const inv=event.data.object
+          if(typeof inv.id!=='string'||!INVOICE.test(inv.id)||
+             typeof inv.payment_intent!=='string'||!PI.test(inv.payment_intent)){
+            await client.query('ROLLBACK');transaction=false
+            return fail('paid_invoice_payment_intent_unbound')
+          }
+          // Uniqueness binds a single real test payment to exactly one invoice
+          // and one trusted subscription; no refund can switch account.
+          await client.query(`INSERT INTO xa_stripe_billing_payments
+            (payment_intent_id,invoice_id,subscription_id,customer_id,amount_cents)
+            VALUES ($1,$2,$3,$4,$5)`,
+            [inv.payment_intent,inv.id,sub,binding.customer_id,binding.amount_cents])
           outcome='paid_test_ledger';nextStatus='active'
         }else if(candidate.kind==='failed_invoice_reconcile'){
           outcome='payment_failed';nextStatus='past_due'
@@ -163,10 +236,17 @@ export function createStripeBillingSandboxReconciler({
             ['unpaid','paused'].includes(state)?'unpaid':
             state==='incomplete'?'incomplete':null
         }
-        await client.query(`INSERT INTO xa_stripe_billing_receipts
-          (event_id,subscription_id,body_sha256,event_type,event_created,outcome)
-          VALUES ($1,$2,$3,$4,$5,$6)`,
-          [event.id,sub,rawDigest,event.type,created,outcome])
+        if(incident){
+          await client.query(`INSERT INTO xa_stripe_billing_incident_receipts
+            (event_id,subscription_id,payment_intent_id,body_sha256,event_type,event_created,outcome)
+            VALUES ($1,$2,$3,$4,$5,$6,$7)`,
+            [event.id,sub,paymentIntent,rawDigest,event.type,created,outcome])
+        }else{
+          await client.query(`INSERT INTO xa_stripe_billing_receipts
+            (event_id,subscription_id,body_sha256,event_type,event_created,outcome)
+            VALUES ($1,$2,$3,$4,$5,$6)`,
+            [event.id,sub,rawDigest,event.type,created,outcome])
+        }
         await client.query(`INSERT INTO xa_subscription_events
           (provider,provider_event_id,provider_subscription_id)
           VALUES('stripe',$1,$2)`,[event.id,sub])
@@ -175,14 +255,15 @@ export function createStripeBillingSandboxReconciler({
             status=$2,period_end=COALESCE($3,period_end),
             provider_verified_at=$4,
             canceled_at=CASE WHEN $2='canceled' THEN $4 ELSE canceled_at END,
+            refunded=CASE WHEN $6 THEN TRUE ELSE refunded END,
             updated_at=$4
             WHERE provider='stripe' AND provider_subscription_id=$1 AND user_id=$5`,
-            [sub,nextStatus,periodEnd,new Date(now),binding.account_id])
+            [sub,nextStatus,periodEnd,new Date(now),binding.account_id,markRefund])
         }
         await client.query(`UPDATE xa_stripe_billing_bindings SET
           last_event_created=GREATEST(last_event_created,$2),
           terminal=terminal OR $3
-          WHERE subscription_id=$1`,[sub,created,canceled])
+          WHERE subscription_id=$1`,[sub,created,canceled||incident])
         await client.query('COMMIT');transaction=false
         return done(outcome)
       }catch{
