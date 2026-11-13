@@ -164,7 +164,7 @@ export default function XorusDecisionDesk(){
     </details>
     <XorusSignalCatalog />
     <nav className="flex flex-wrap gap-3" aria-label={fr?'Poursuivre l’analyse':'More analysis'}>
-      <Link to="/market" className="xa-button secondary">{fr?'Analyse des marchés':'Market analysis'}</Link>
+      <Link to="/explore/analytics" className="xa-button secondary">{fr?'Analyse des marchés':'Market analysis'}</Link>
       <Link to="/intelligence/agents" className="xa-button secondary">{fr?'Comprendre les agents':'Understand agents'}</Link>
       <Link to="/intelligence/lab" className="xa-button secondary">{fr?'Étudier les scénarios':'Study scenarios'}</Link>
     </nav>
