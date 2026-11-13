@@ -1,7 +1,7 @@
 /**
  * xOrus public analysis desk: actual published paper decision + independent
  * read-only MultiversX network context. Not a simulated trading screen.
- * Never fetch legacy market_snapshot.json: it contains illustrative prices.
+ * No illustrative or cached fallback market prices are used in this desk.
  */
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
