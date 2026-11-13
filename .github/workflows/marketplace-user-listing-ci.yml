@@ -12,6 +12,7 @@ on:
       - 'apps/frontend/src/pages/MarketplacePage.tsx'
       - 'apps/frontend/src/lib/marketplaceUserListing.mjs'
       - 'apps/frontend/tests/marketplace-user-listing-gate.test.mjs'
+      - 'apps/frontend/tests/marketplace-listing-interaction.test.mjs'
       - '.github/workflows/marketplace-user-listing-ci.yml'
   workflow_dispatch:
 permissions:
@@ -27,6 +28,10 @@ jobs:
           node-version: 20
       - name: Read-only listing validator and source gates
         run: node --test apps/frontend/tests/marketplace-user-listing-gate.test.mjs apps/frontend/tests/marketplace-seller-only-unlock.test.mjs
+      - name: Install frontend interaction-test dependencies
+        run: npm ci --prefix apps/frontend --legacy-peer-deps --ignore-scripts
+      - name: Exercise 100-NFT selection, cancellation and real transaction hook with a fake signer
+        run: node --test apps/frontend/tests/marketplace-listing-interaction.test.mjs
 
   mainnet-readonly:
     runs-on: ubuntu-latest

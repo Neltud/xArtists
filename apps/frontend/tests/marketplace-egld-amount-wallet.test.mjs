@@ -25,7 +25,7 @@ test('marketplace send requires both fresh payable contract AND user signing cap
   assert.match(sc,/isLiaOpsWallet\(addr\?: string \| null\)/)
   assert.match(sc,/addr\.toLowerCase\(\) === LIA_OPS\.toLowerCase\(\)/)
   assert.match(hook,/const \{ address, canAttemptSign \} = useWallet\(\)/)
-  assert.match(hook,/if \(!address \|\| !canAttemptSign\)/)
+  assert.match(hook,/if \(!address \|\| !canAttemptSign \|\| !current\(\)\)/)
   assert.match(wallet,/const applyLiveSession = \(address: string\) => \{\s*\/\/[^]*?LIA_WALLET\.toLowerCase\(\)/)
   assert.doesNotMatch(hook,/BigInt\(Math\.round/)
 })

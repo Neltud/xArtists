@@ -6,6 +6,8 @@ on:
       - 'deploy/ovh/**'
       - 'services/access-api/Dockerfile'
       - 'services/access-api/src/xorusAnalysis.mjs'
+      - 'services/access-api/src/runtimeBuildInfo.mjs'
+      - 'services/access-api/src/server.mjs'
       - 'lia/xorus/**'
       - 'lia/chorus/**'
       - 'packages/core/src/xorusAnalysisContract.mjs'

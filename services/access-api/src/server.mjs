@@ -30,6 +30,7 @@ import { createOpenSeaPreviewService } from './openseaPreview.mjs'
 import { artpriceReadiness } from './artpriceLicensed.mjs'
 import { probeStudioStore } from './studioStoreProbe.mjs'
 import { createXorusAnalysisService } from './xorusAnalysis.mjs'
+import { createRuntimeBuildInfo } from './runtimeBuildInfo.mjs'
 import { tryHandleAuction, auctionPublicConfig } from './auctionHttp.mjs'
 import {studioMediaConfig,mediaJwt,mediaActor,readCreatorMedia,
   uploadStudioMedia,pinStudioMetadata} from './creatorMedia.mjs'
@@ -39,6 +40,7 @@ import {
 } from './physicalFulfillment.mjs'
 
 const WORLD_RIGHTS = createWorldRightsHandler()
+const RUNTIME_BUILD = createRuntimeBuildInfo()
 const PORT = Number(process.env.PORT || 8787)
 const JWT_SECRET = process.env.ACCESS_JWT_SECRET || process.env.JWT_SECRET || ''
 const STRIPE_KEY = process.env.STRIPE_SECRET_KEY || ''
@@ -146,6 +148,13 @@ async function handleRequest(req, res) {
   if (req.method === 'OPTIONS') { json(res, 204, {}); return }
   const u = new URL(req.url || '/', `http://127.0.0.1:${PORT}`)
   const pth = u.pathname.replace(/\/$/, '') || '/'
+  if(pth==='/v1/ops/build-info'){
+    if(req.method!=='GET'){json(res,405,{ok:false,error:'method_not_allowed'});return}
+    if(u.search){json(res,400,{ok:false,error:'query_not_supported'});return}
+    const known=RUNTIME_BUILD.source_sha!==null
+    json(res,known?200:503,{ok:known,...RUNTIME_BUILD})
+    return
+  }
   if (pth === '/v1/xorus/analysis') {
     if (req.method !== 'GET') { json(res,405,{ok:false,error:'method_not_allowed'}); return }
     // A browser cannot select the provider URL, symbol, clock, prompt or inputs.
@@ -184,6 +193,7 @@ async function handleRequest(req, res) {
       mint_micro_price: MINT_CFG.micro,
       signals_daily: true,
       service: 'access-api',
+      source_sha:RUNTIME_BUILD.source_sha,
       packs: Object.keys(PACK_CATALOG),
       orders_backend: process.env.DATABASE_URL ? 'postgres' : 'file',
       physical_works: physicalConfig().enabled ? 'configured' : 'off',

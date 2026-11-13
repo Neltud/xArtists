@@ -4,7 +4,7 @@
  * ESDTNFTTransfer: TX receiver = USER (holder).
  * Errors always stored as string (React #31).
  */
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useSendTransaction } from './useSendTransaction'
 import { useWallet } from '../context/WalletContext'
 import { egldTextToWei } from '../lib/egldExactAmount.mjs'
@@ -22,6 +22,7 @@ export interface ListNftParams {
   priceEgld: string
   royaltyBps?: number
   royaltyReceiver?: string
+  signal?: AbortSignal
 }
 
 export interface BuyNftParams {
@@ -101,6 +102,22 @@ export function useMarketplaceTx() {
   const { address, canAttemptSign } = useWallet()
   const walletNow = useRef(address)
   walletNow.current=address
+  const signerNow=useRef({address,canAttemptSign,generation:0,mounted:true})
+  const listingAttempt=useRef<symbol|null>(null)
+  if(signerNow.current.address!==address||signerNow.current.canAttemptSign!==canAttemptSign){
+    signerNow.current={address,canAttemptSign,generation:signerNow.current.generation+1,
+      mounted:signerNow.current.mounted}
+  }
+  useEffect(()=>{
+    signerNow.current.mounted=true
+    listingAttempt.current=null
+    setPending(false);setError(null);setLastTx(null)
+    return ()=>{
+      signerNow.current.mounted=false
+      signerNow.current.generation++
+      listingAttempt.current=null
+    }
+  },[address,canAttemptSign])
   const live = isMarketplaceLive()
   const sellerLive = isMarketplaceListingLive()
 
@@ -109,7 +126,11 @@ export function useMarketplaceTx() {
       tx: object,
       labels: { processing: string; success: string; fail: string },
       kind: 'market' | 'list' = 'market',
+      signal?: AbortSignal,
     ) => {
+      const generation=signerNow.current.generation
+      const current=()=>signerNow.current.mounted&&signerNow.current.generation===generation&&
+        signerNow.current.address===address&&signerNow.current.canAttemptSign&&!signal?.aborted
       if (kind === 'list') {
         if (!isMarketplaceListingLive()) {
           setError(BLOCKED)
@@ -122,7 +143,7 @@ export function useMarketplaceTx() {
         }
       }
       // A cached wallet address is not proof of an active signing session.
-      if (!address || !canAttemptSign) {
+      if (!address || !canAttemptSign || !current()) {
         const msg = 'Wallet signataire actif requis (xPortal, Web Wallet ou extension).'
         setError(msg)
         throw new Error(msg)
@@ -135,6 +156,7 @@ export function useMarketplaceTx() {
           successMessage: labels.success,
           errorMessage: labels.fail,
         })
+        if(!current())throw new Error('Signature wallet expirée ou opération annulée.')
         if (res.error) {
           const m = errStr(res.error)
           setError(m)
@@ -146,10 +168,10 @@ export function useMarketplaceTx() {
         return res
       } catch (e) {
         const msg = errStr(e)
-        setError(msg)
+        if(current())setError(msg)
         throw e instanceof Error ? e : new Error(msg)
       } finally {
-        setPending(false)
+        if(signerNow.current.mounted&&signerNow.current.generation===generation)setPending(false)
       }
     },
     [send, address, canAttemptSign],
@@ -157,59 +179,70 @@ export function useMarketplaceTx() {
 
   const listNft = useCallback(
     async (p: ListNftParams) => {
-      if (!address?.startsWith('erd1')) {
-        const msg = 'Connecte ton wallet pour lister'
-        setError(msg)
-        throw new Error(msg)
-      }
-      if (!/^[A-Za-z0-9]{3,20}-[a-z0-9]{6}$/.test(p.tokenId) || !Number.isSafeInteger(p.nonce) || p.nonce <= 0) throw new Error('Collection ou nonce NFT invalide')
-      const priceAtomic = egldToAtomic(p.priceEgld)
-      // Hook-level revalidation prevents legacy NFTDetailModal callers from
-      // bypassing ownership or on-chain creator royalties.
-      const proof = await verifyUserNftListPreflight({
-        address, identifier:nftIdentifier(p.tokenId,p.nonce),
-        collection:p.tokenId, nonce:p.nonce,
-      })
-      if(walletNow.current!==address || !canAttemptSign) throw new Error('Signature wallet expirée ou compte changé.')
-      if ((p.royaltyBps!==undefined && p.royaltyBps!==proof.royaltyBps) ||
-          (p.royaltyReceiver!==undefined && p.royaltyReceiver!==proof.royaltyReceiver))
-        throw new Error('Royalties différentes des métadonnées vérifiées : refus.')
-      const royaltyBps = proof.royaltyBps
-      const sc = marketplaceUserListingReceiverOrThrow()
-      if(sc!==proof.escrowReceiver) throw new Error('Adresse contrat changée depuis la vérification.')
-      const scHex = bech32ToHex(sc)
-      const recvHex = bech32ToHex(proof.royaltyReceiver)
-      if (!scHex || !recvHex) {
-        const msg = 'Adresse marketplace / royalty invalide'
-        setError(msg)
-        throw new Error(msg)
-      }
-      const dataParts = [
-        'ESDTNFTTransfer',
-        strToHex(p.tokenId),
-        numToHex(p.nonce),
-        numToHex(1),
-        scHex,
-        strToHex('listNft'),
-        numToHex(BigInt(priceAtomic)),
-        numToHex(royaltyBps),
-        recvHex,
-      ]
-      return run(
-        {
-          receiver: address,
-          value: '0',
-          gasLimit: 30_000_000,
-          data: dataParts.join('@'),
-          chainID: '1',
-        },
-        {
-          processing: 'Listing NFT…',
-          success: 'TX soumise — listing non encore confirmé',
-          fail: 'Échec list',
-        },
-        'list',
-      )
+      const generation=signerNow.current.generation
+      const current=()=>signerNow.current.mounted&&signerNow.current.generation===generation&&
+        signerNow.current.address===address&&signerNow.current.canAttemptSign&&!p.signal?.aborted
+      if(!current())throw new Error('Signature wallet expirée ou opération annulée.')
+      if(listingAttempt.current)throw new Error('Une mise en vente est déjà en cours.')
+      const attempt=Symbol('listing')
+      listingAttempt.current=attempt
+      try{
+        if (!address?.startsWith('erd1')) {
+          const msg = 'Connecte ton wallet pour lister'
+          setError(msg)
+          throw new Error(msg)
+        }
+        if (!/^[A-Za-z0-9]{3,20}-[a-z0-9]{6}$/.test(p.tokenId) || !Number.isSafeInteger(p.nonce) || p.nonce <= 0) throw new Error('Collection ou nonce NFT invalide')
+        const priceAtomic = egldToAtomic(p.priceEgld)
+        // Hook-level revalidation prevents legacy NFTDetailModal callers from
+        // bypassing ownership or on-chain creator royalties.
+        const proof = await verifyUserNftListPreflight({
+          address, identifier:nftIdentifier(p.tokenId,p.nonce),
+          collection:p.tokenId, nonce:p.nonce,
+          signal:p.signal,
+        })
+        if(walletNow.current!==address || !current()) throw new Error('Signature wallet expirée ou compte changé.')
+        if ((p.royaltyBps!==undefined && p.royaltyBps!==proof.royaltyBps) ||
+            (p.royaltyReceiver!==undefined && p.royaltyReceiver!==proof.royaltyReceiver))
+          throw new Error('Royalties différentes des métadonnées vérifiées : refus.')
+        const royaltyBps = proof.royaltyBps
+        const sc = marketplaceUserListingReceiverOrThrow()
+        if(sc!==proof.escrowReceiver) throw new Error('Adresse contrat changée depuis la vérification.')
+        const scHex = bech32ToHex(sc)
+        const recvHex = bech32ToHex(proof.royaltyReceiver)
+        if (!scHex || !recvHex) {
+          const msg = 'Adresse marketplace / royalty invalide'
+          setError(msg)
+          throw new Error(msg)
+        }
+        const dataParts = [
+          'ESDTNFTTransfer',
+          strToHex(p.tokenId),
+          numToHex(p.nonce),
+          numToHex(1),
+          scHex,
+          strToHex('listNft'),
+          numToHex(BigInt(priceAtomic)),
+          numToHex(royaltyBps),
+          recvHex,
+        ]
+        return await run(
+          {
+            receiver: address,
+            value: '0',
+            gasLimit: 30_000_000,
+            data: dataParts.join('@'),
+            chainID: '1',
+          },
+          {
+            processing: 'Listing NFT…',
+            success: 'TX soumise — listing non encore confirmé',
+            fail: 'Échec list',
+          },
+          'list',
+          p.signal,
+        )
+      }finally{if(listingAttempt.current===attempt)listingAttempt.current=null}
     },
     [address, run],
   )

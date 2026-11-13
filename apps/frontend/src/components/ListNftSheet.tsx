@@ -36,6 +36,23 @@ export default function ListNftSheet({ target, onClose }: Props) {
   const [quote, setQuote] = useState<(UserNftListProof & {price:string}) | null>(null)
   const ready = useMarketplaceReadiness('seller')
   const live = ready && marketplaceListLive
+  const activeCheck=useRef<AbortController|null>(null)
+  const intent=JSON.stringify([target?.identifier,target?.collection,target?.nonce,address,
+    connected,canAttemptSign,price,live])
+  const latestIntent=useRef(intent)
+  latestIntent.current=intent
+  const cancelCheck=()=>{
+    activeCheck.current?.abort()
+    activeCheck.current=null
+  }
+  const close=()=>{cancelCheck();onClose()}
+  useEffect(()=>{
+    cancelCheck()
+    setChecking(false)
+    setQuote(null)
+    setMsg(null)
+    return cancelCheck
+  },[target?.identifier,address,connected,canAttemptSign,live])
   // A different NFT must never inherit the previous NFT's price, confirmed
   // fee quote, error or pending explanation.
   useEffect(()=>{
@@ -49,6 +66,8 @@ export default function ListNftSheet({ target, onClose }: Props) {
     quote.owner===address && quote.price===price ? quote : null
 
   const onSubmit = async () => {
+    // A synchronous lock also blocks same-frame clicks before React rerenders.
+    if(activeCheck.current||pending)return
     setMsg(null)
     try { egldTextToWei(price) } catch {
       setMsg('Prix EGLD invalide (18 décimales maximum, supérieur à zéro).')
@@ -66,11 +85,16 @@ export default function ListNftSheet({ target, onClose }: Props) {
       setMsg('Marketplace non live (CODEHASH)')
       return
     }
+    const ctl=new AbortController()
+    activeCheck.current=ctl
+    const stillCurrent=()=>activeCheck.current===ctl&&!ctl.signal.aborted&&latestIntent.current===intent
     setChecking(true)
     try {
       const fresh=await verifyUserNftListPreflight({
         address, identifier: target.identifier, collection: target.collection, nonce: target.nonce,
+        signal:ctl.signal,
       })
+      if(!stillCurrent())return
       if (latestAddress.current !== address || !address) throw new Error('Le wallet a changé : recommence la vérification.')
       if (!currentQuote) {
         setQuote({...fresh, price})
@@ -85,19 +109,24 @@ export default function ListNftSheet({ target, onClose }: Props) {
       await listNft({
         tokenId: target.collection, nonce: target.nonce, priceEgld: price,
         royaltyBps:fresh.royaltyBps, royaltyReceiver:fresh.royaltyReceiver,
+        signal:ctl.signal,
       })
+      if(!stillCurrent())return
       setQuote(null)
       setMsg('Transaction soumise — vérifier la confirmation et la garde NFT sur Explorer')
       // Submission is not confirmed custody. Refresh only after independent Explorer proof.
     } catch (e) {
+      if(!stillCurrent())return
       setQuote(null)
       setMsg(e instanceof Error ? e.message : 'Échec list')
-    } finally { setChecking(false) }
+    } finally {
+      if(activeCheck.current===ctl){activeCheck.current=null;setChecking(false)}
+    }
   }
 
   return (
     <div className="fixed inset-0 z-[80] flex items-end sm:items-center justify-center p-3">
-      <button type="button" className="absolute inset-0 bg-black/70" onClick={onClose} aria-label={xaLocalize("Fermer")} />
+      <button type="button" className="absolute inset-0 bg-black/70" onClick={close} aria-label={xaLocalize("Fermer")} />
       <div role="dialog" aria-modal="true" aria-labelledby="xa-list-nft-title"
         className="relative z-10 w-full max-w-md rounded-2xl border border-violet-500/30 bg-[#12121a] p-5 space-y-4 shadow-2xl">
         <div className="flex gap-3">
@@ -121,7 +150,8 @@ export default function ListNftSheet({ target, onClose }: Props) {
             inputMode="decimal"
             value={price}
             placeholder="Saisir un prix en EGLD"
-            onChange={e => {setPrice(e.target.value);setQuote(null)}}
+            disabled={pending}
+            onChange={e => {cancelCheck();setChecking(false);setPrice(e.target.value);setQuote(null);setMsg(null)}}
             className="mt-1 w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2.5 text-white"
           />
         </label>
@@ -142,7 +172,7 @@ export default function ListNftSheet({ target, onClose }: Props) {
           <p>Escrow : {currentQuote.escrowReceiver}</p>
         </section>}
         <div className="flex gap-2">
-          <button type="button" className="btn-secondary flex-1 text-sm" onClick={onClose}>
+          <button type="button" className="btn-secondary flex-1 text-sm" onClick={close}>
             {xaRender("Annuler ")}</button>
           <button
             type="button"
