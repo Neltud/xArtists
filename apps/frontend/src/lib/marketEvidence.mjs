@@ -46,3 +46,14 @@ export function parseFundingRate(value){
   if(!Number.isFinite(n)||Math.abs(n)>0.1)return null
   return n*100
 }
+
+export function parseFreshFundingQuote(raw,expectedSymbol,now=Date.now()){
+  if(!raw||typeof raw!=='object'||Array.isArray(raw)
+    ||typeof expectedSymbol!=='string'||raw.symbol!==expectedSymbol
+    ||!Number.isSafeInteger(raw.time)||raw.time<=0
+    ||raw.time>now+SKEW_MS||now-raw.time>MAX_PRICE_AGE_MS)return null
+  const rate=parseFundingRate(raw.lastFundingRate)
+  if(rate===null)return null
+  return {symbol:expectedSymbol.replace(/USDT$/,''),rate,
+    source:'binance',sourceUpdatedAt:new Date(raw.time).toISOString()}
+}
