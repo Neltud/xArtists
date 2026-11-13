@@ -8,6 +8,7 @@ on:
       - 'lia/xorus/analysis_cycle.py'
       - 'lia/xorus/data_feed.py'
       - 'lia/xorus/test_verified_tape.py'
+      - 'docs/ops/XORUS_PROVIDER_COMMERCIAL_RIGHTS_2026-11-13.md'
       - 'tests/test_xorus_analysis_cycle.py'
       - 'tests/fixtures/xorus_analysis_collected.json'
       - 'packages/core/src/xorusAnalysisContract.mjs'
