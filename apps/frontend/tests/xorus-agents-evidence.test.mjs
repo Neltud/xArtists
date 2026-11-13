@@ -138,3 +138,34 @@ test('page mount keeps Genesis NFT catalogue separate from actual agent analysis
   assert.doesNotMatch(readFileSync(new URL('../src/components/intelligence/XorusAgentEvidence.tsx',import.meta.url),'utf8'),
     /buyPack\(|dispatchMint|signTransactions|sendTransaction|createCheckout|walletconnect/i)
 })
+
+
+test('a hung API request times out into unavailable instead of infinite loading',async()=>{
+  const originalFetch=globalThis.fetch
+  const originalTimer=window.setTimeout
+  const originalClear=window.clearTimeout
+  let expire=null
+  globalThis.fetch=()=>new Promise(()=>{})
+  window.setTimeout=(fn,ms,...args)=>{
+    if(ms===11000){expire=fn;return 73949}
+    return originalTimer.call(window,fn,ms,...args)
+  }
+  window.clearTimeout=id=>id===73949?undefined:originalClear.call(window,id)
+  const host=document.createElement('div');document.body.append(host)
+  const root=createRoot(host)
+  try{
+    await React.act(async()=>root.render(React.createElement(Server)))
+    assert.match(host.textContent,/Consultation de l’API xOrus/)
+    assert.equal(typeof expire,'function')
+    await React.act(async()=>expire())
+    assert.match(host.textContent,/Analyse serveur indisponible/)
+    assert.doesNotMatch(host.textContent,/Consultation de l’API xOrus/)
+    assert.equal(host.querySelectorAll('[data-testid^=xorus-role-]').length,0)
+  }finally{
+    await React.act(async()=>root.unmount())
+    host.remove()
+    globalThis.fetch=originalFetch
+    window.setTimeout=originalTimer
+    window.clearTimeout=originalClear
+  }
+})
