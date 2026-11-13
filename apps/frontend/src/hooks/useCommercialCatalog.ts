@@ -70,6 +70,7 @@ export function useCommercialCatalog(){
   const [catalog,setCatalog]=useState<CommercialCatalog|null>(null)
   const [status,setStatus]=useState<CommercialCatalogStatus>('loading')
   useEffect(()=>{
+    let disposed=false
     const abort=new AbortController()
     const timer=window.setTimeout(()=>abort.abort(),6500)
     // The browser may use the official Render API when Pages has no Vite API env.
@@ -84,12 +85,12 @@ export function useCommercialCatalog(){
         if(!response.ok)throw Error('catalog_unavailable')
         const body=parseCommercialCatalog(await response.json() as unknown)
         if(!body)throw Error('catalog_invalid')
-        if(!abort.signal.aborted){setCatalog(body);setStatus('verified')}
+        if(!disposed){setCatalog(body);setStatus('verified')}
       }catch{
-        if(!abort.signal.aborted){setCatalog(null);setStatus('unavailable')}
+        if(!disposed){setCatalog(null);setStatus('unavailable')}
       }finally{window.clearTimeout(timer)}
     })()
-    return()=>{abort.abort();window.clearTimeout(timer)}
+    return()=>{disposed=true;abort.abort();window.clearTimeout(timer)}
   },[])
   return {catalog,status}
 }
