@@ -96,7 +96,8 @@ test('unverified, stale and wrong-rail provider evidence never grants access', a
 
 test('wallet owner requires SIWX and fresh chain-verified NFT with correct binding', async () => {
   const authorized = await allow({ actor: wallet, offer: 'sentinel',
-    lookupGrant: async () => grant(wallet, 'sentinel') })
+    lookupGrant: async () => grant(wallet, 'sentinel'),
+    lookupReport: async () => report('sentinel') })
   assert.equal(authorized.allowed, true)
   assert.equal(authorized.scope, 'analysis:risk')
   const wrong = await allow({ actor: wallet, offer: 'sentinel',
