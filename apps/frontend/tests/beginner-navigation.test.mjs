@@ -9,9 +9,9 @@ const guide = read('../src/pages/DemoTourPage.tsx')
 const css = read('../src/experience/beginner-navigation.css')
 const moduleDefinitions = read('../src/experience/modules.ts')
 
-test('desktop navigation makes help a top-level choice, without removing the DAO', () => {
+test('desktop navigation promotes xOrus while keeping DAO in advanced navigation', () => {
   assert.match(shell, /\['guide','\/guide',c\('help'\)\]/)
-  assert.match(shell, /\['dao','\/finance\/governance',c\('dao'\)\]/)
+  assert.match(shell, /\['lia','\/intelligence\/xorus',c\('lia'\)\]/)
   assert.match(shell, /className="xa-icon-button xa-theme-toggle"/)
   assert.match(shell, /<MobileDock\/>/)
 })
@@ -24,15 +24,15 @@ test('mobile visitor menu has simple journeys before collapsed specialist links'
   for (const url of ['/', '/museum', '/studio', '/marketplace', '/guide']) {
     assert.ok(shell.includes('to="' + url + '" onClick={closeMobile}'), 'mobile quick action missing: ' + url)
   }
-  // Auction, Agents and My Packs are intentionally promoted into the primary block.
-  for (const url of ['/auction', '/agents', '/my-packs']) {
+  // xOrus, agents, My Packs, email account and exhibitions are visitor actions.
+  for (const url of ['/xorus', '/agents', '/my-packs', '/account', '/create/gallery']) {
     assert.ok(
       shell.slice(starter, advanced).includes('to="' + url + '"'),
       'promoted primary route missing from mobile start: ' + url
     )
   }
   // Remaining specialist routes stay reachable (advanced or elsewhere in the menu).
-  for (const url of ['/rwa', '/xorus', '/dao']) {
+  for (const url of ['/auction', '/rwa', '/dao']) {
     assert.ok(shell.includes('to="' + url + '"'), 'specialist route remains reachable: ' + url)
   }
   assert.match(shell, /xa-mobile-advanced"><summary>\{c\('welcomeAdvanced'\)\}/)
@@ -50,11 +50,12 @@ test('guide uses theme tokens, keyboard focus and understandable ordered journey
   assert.match(css, /max-width: 560px/)
 })
 
-test('home and directory prioritize visitor routes without hiding the full catalogue', () => {
+test('home and directory prioritize visitor routes with explicit advanced opt-in', () => {
   assert.match(pages, /to="\/guide">\{c\('help'\)\}/)
   assert.match(pages, /xa-directory-starters/)
   assert.match(pages, /xa-directory-starter-grid/)
   assert.match(pages, /className="xa-module-grid">\{list\.map/)
+  assert.match(pages, /to="\/directory\?lab=1"/)
   assert.match(moduleDefinitions, /module\('dao','\/finance\/governance'/)
   assert.match(moduleDefinitions, /module\('studio','\/create\/studio'/)
   assert.match(moduleDefinitions, /module\('guide','\/guide'/)
