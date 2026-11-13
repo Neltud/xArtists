@@ -28,6 +28,10 @@ test('availability comes from only a safe, bounded public GET API and stays no-p
   assert.match(hook,/credentials:'omit'/)
   assert.match(hook,/cache:'no-store'/)
   assert.match(hook,/AbortController/)
+  // Abort due to timeout must render the unavailable state; unmount must not set state.
+  assert.match(hook,/let disposed=false/)
+  assert.match(hook,/if\(!disposed\)\{setCatalog\(null\);setStatus\('unavailable'\)\}/)
+  assert.match(hook,/return\(\)=>\{disposed=true;abort.abort\(\)/)
   assert.match(hook,/setStatus\('unavailable'\)/)
   assert.match(hook,/raw\.sale_open!==false/)
   assert.match(hook,/raw\.billing_checkout_enabled!==false/)
