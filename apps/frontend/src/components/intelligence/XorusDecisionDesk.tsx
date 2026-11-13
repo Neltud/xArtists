@@ -19,6 +19,31 @@ async function readJson(url:string,signal:AbortSignal):Promise<unknown>{
   return await res.json() as unknown
 }
 
+/** One bounded retry for a temporarily waking API; never retry 4xx, including
+ * 429, and never substitute the static preview for a configured server.
+ * Refresh remains a human action; no uncontrolled polling or background loop.
+ */
+const TRANSIENT_HTTP=new Set([502,503,504])
+function shortRetryDelay(signal:AbortSignal):Promise<void>{
+  return new Promise((resolve,reject)=>{
+    if(signal.aborted){reject(new Error('aborted'));return}
+    const onAbort=()=>{window.clearTimeout(timer);reject(new Error('aborted'))}
+    const timer=window.setTimeout(()=>{signal.removeEventListener('abort',onAbort);resolve()},750)
+    signal.addEventListener('abort',onAbort,{once:true})
+  })
+}
+async function readServerAnalysis(url:string,signal:AbortSignal):Promise<unknown>{
+  let response:Response|undefined
+  try{response=await fetch(url,{signal,cache:'no-store'})}
+  catch(error){if(signal.aborted)throw error}
+  if(response?.ok)return await response.json() as unknown
+  if(response&&!TRANSIENT_HTTP.has(response.status))throw new Error('unavailable')
+  await shortRetryDelay(signal)
+  const retry=await fetch(url,{signal,cache:'no-store'})
+  if(!retry.ok)throw new Error('unavailable')
+  return await retry.json() as unknown
+}
+
 const fmtUsd=(v:number)=>new Intl.NumberFormat('fr-FR',{style:'currency',currency:'USD',maximumFractionDigits:3}).format(v)
 
 export default function XorusDecisionDesk(){
@@ -42,12 +67,12 @@ export default function XorusDecisionDesk(){
     setBoard(null)
     setEconomics(null)
     setAnalysis(null)
-    const timer=window.setTimeout(()=>{ctl.abort();setCheckedAt(Date.now());setBusy(false)},10000)
+    const timer=window.setTimeout(()=>{ctl.abort();setCheckedAt(Date.now());setBusy(false)},apiBase?20000:10000)
     // An optional quote provider must not hold back an available analysis.
     void Promise.allSettled([
       readJson(source,ctl.signal).then(value=>{if(!ctl.signal.aborted)setBoard(value)}),
       readJson(MVX_ECONOMICS,ctl.signal).then(value=>{if(!ctl.signal.aborted)setEconomics(value)}),
-      readJson(analysisSource,ctl.signal).then(value=>{
+      (apiBase?readServerAnalysis(analysisSource,ctl.signal):readJson(analysisSource,ctl.signal)).then(value=>{
         if(ctl.signal.aborted)return
         if(apiBase){
           const envelope=value as {ok?:unknown;report?:{schema?:unknown}}|null
