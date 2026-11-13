@@ -6,12 +6,12 @@
  */
 import {test} from 'node:test'
 import assert from 'node:assert/strict'
-import {generateKeyPairSync,sign} from 'node:crypto'
+import {generateKeyPairSync,sign,createHash} from 'node:crypto'
 import {readFileSync} from 'node:fs'
-import {createNeonAuthIdentityVerifier,findOrCreateAccountFromNeonToken} from '../src/neonAuthIdentity.mjs'
+import {createNeonAuthIdentityVerifier,findOrCreateAccountFromNeonToken,findExistingAccountFromNeonToken} from '../src/neonAuthIdentity.mjs'
 import {createWalletlessSessionService} from '../src/walletlessSession.mjs'
 import {createXorusPrivateRepository} from '../src/xorusPrivateStore.mjs'
-import {authorizeXorusReportRead} from '../src/xorusEntitlements.mjs'
+import {createXorusPrivateDelivery} from '../src/xorusPrivateDelivery.mjs'
 
 const url=process.env.TEST_XORUS_DATABASE_URL||''
 const permitted=(()=>{
@@ -46,7 +46,8 @@ test('verified email account → test entitlement → private report → refund 
   try{
     const accounts=readFileSync(new URL('../migrations/20261109_xa_accounts_v1.sql',import.meta.url),'utf8')
     const xorus=readFileSync(new URL('../migrations/20261113_xorus_private_access.sql',import.meta.url),'utf8')
-    await pool.query(accounts);await pool.query(xorus)
+    const contents=readFileSync(new URL('../migrations/20261113_xorus_private_contents.sql',import.meta.url),'utf8')
+    await pool.query(accounts);await pool.query(xorus);await pool.query(contents)
     const now=Date.now()
     const verify=createNeonAuthIdentityVerifier({
       baseUrl,clock:()=>now,fetchImpl:async fetched=>{
@@ -74,25 +75,56 @@ test('verified email account → test entitlement → private report → refund 
     assert.equal(identities.rows[0].n,1)
 
     // Synthetic signed-webhook candidate fixtures only: not an actual Stripe event.
-    const reportId='b'.repeat(64), grantId='xag_syntheticprivate1234', scope='analysis:markets'
+    const grantId='xag_syntheticprivate1234', scope='analysis:markets'
     const when=n=>new Date(n),expires=when(now+600000)
+    const content={
+      schema:'xorus_private_analysis/v1',offer:'pulse',scope,
+      title:'Analyse qualitative de marchés',
+      summary:'Contexte partiel, pas de confirmation indépendante.',
+      stance:'ABSTAIN',source_ts:when(now-30000).toISOString(),
+      generated_at:when(now-15000).toISOString(),
+      findings:[{family:'risk',reading:'insufficient_evidence',
+        interpretation:'Une deuxième source est nécessaire avant toute conclusion.'}],
+      risks:['Sources limitées'],
+      scenarios:[{condition:'Nouvelle observation licenciée',
+        interpretation:'Réexaminer les risques et la couverture.'}],
+      limitations:['Aucun trading', 'Aucun rendement promis'],
+      raw_data_included:false,executable:false,
+    }
+    const canonical=v=>Array.isArray(v)?v.map(canonical):v&&typeof v==='object'?
+      Object.fromEntries(Object.keys(v).sort().map(k=>[k,canonical(v[k])])):v
+    const reportId=createHash('sha256').update(JSON.stringify(canonical(content))).digest('hex')
     await pool.query(
       "INSERT INTO xa_xorus_private_reports(report_id,offer,scope,status,commercial_usage_approved,source_ts,generated_at,expires_at) VALUES($1,'pulse',$2,'ready',true,$3,$4,$5)",
       [reportId,scope,when(now-30000),when(now-15000),expires])
+    await pool.query('INSERT INTO xa_xorus_private_contents(report_id,payload) VALUES($1,$2)',
+      [reportId,JSON.stringify(content)])
     await pool.query(
       "INSERT INTO xa_xorus_grants(grant_id,subject_kind,subject,account_id,offer,scope,status,issued_at,expires_at,ledger_checked_at,evidence_kind,evidence_verified,evidence_checked_at,issuer_reference,billing_status,settlement,quota_limit,quota_reset_at) VALUES($1,'email',$2::text,$2::uuid,'pulse',$3,'active',$4,$5,$6,'verified_psp_subscription',true,$6,$7,'active','verified',1,$5)",
       [grantId,accountId,scope,when(now-60000),expires,when(now),'evt_syntheticprivate1234'])
     const repo=createXorusPrivateRepository(pool)
-    const actor={kind:'email',subject:accountId,verified:true,proof:'verified_email_session'}
-    const authorize=()=>authorizeXorusReportRead({
-      enabled:true,commercialUsageRightsVerified:true,actor,offer:'pulse',
-      reportId,lookupGrant:repo.lookupGrant,lookupReport:repo.lookupReport,
-      reserveQuota:repo.reserveQuota,now,
+    const reader=createXorusPrivateDelivery({
+      enabled:true,commercialUsageRightsVerified:true,repo,clock:()=>now,
+      originAllowed:value=>value==='https://xartists.art',
+      verifyAccount:async token=>{
+        const id=await findExistingAccountFromNeonToken(pool,token,verify)
+        return id?{kind:'email',subject:id,verified:true,proof:'verified_email_session'}:null
+      },
     })
-    assert.equal((await authorize()).allowed,true)
-    assert.equal((await authorize()).allowed,false,'Second request has no remaining quota')
+    const read=(token=signed)=>reader.read({offer:'pulse',reportId,
+      authorization:'Bearer '+token,origin:'https://xartists.art'})
+    const delivered=await read()
+    assert.equal(delivered.status,200)
+    assert.equal(delivered.body.report.summary,content.summary)
+    assert.equal(delivered.body.reportId,reportId)
+    assert.equal(delivered.body.remainingQuota,0)
+    assert.equal((await read()).status,429,'Second request has no remaining quota')
+    assert.equal((await read(makeToken(now,{emailVerified:false}))).status,401)
+    // A forged owner cannot use another account's entitlement.
+    assert.equal((await read(makeToken(now,{sub:'fb2c64c1-92f0-4f37-8f42-8c9ce23a78ce',
+      id:'fb2c64c1-92f0-4f37-8f42-8c9ce23a78ce'}))).status,401)
     await pool.query("UPDATE xa_xorus_grants SET quota_used=0,status='refunded',refunded_at=NOW() WHERE grant_id=$1",[grantId])
-    assert.equal((await authorize()).allowed,false,'Refund always revokes access')
+    assert.equal((await read()).status,403,'Refund always revokes access')
     const reservations=await pool.query('SELECT count(*)::int n FROM xa_xorus_read_reservations WHERE grant_id=$1',[grantId])
     assert.equal(reservations.rows[0].n,1)
   }finally{await pool.end()}

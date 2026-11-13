@@ -113,3 +113,13 @@ export async function readAccountProjection(pool, userId) {
     wallet_count: wallets.rows.length,
   }
 }
+
+/** Requires a verified OIDC identity. Read only: premium reads NEVER create accounts. */
+export async function findExistingAccountForVerifiedIdentity(pool, {provider,subject,verifiedAt}) {
+  assertIdentity({provider,subject,verifiedAt})
+  const result=await pool.query(
+    'SELECT a.id FROM xa_account_identities i JOIN xa_user_accounts a ON a.id=i.user_id WHERE i.provider=$1 AND i.provider_subject=$2 AND a.disabled_at IS NULL LIMIT 1',
+    [provider,subject],
+  )
+  return result.rows.length===1 ? result.rows[0].id : null
+}
