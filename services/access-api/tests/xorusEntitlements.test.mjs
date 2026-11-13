@@ -21,9 +21,16 @@ const grant = (actor = email, offer = 'pulse') => ({
         owner: actor.subject, chainId: '1', tokenIdentifier: 'ASFT-a6273a-01',
         contract: 'erd1' + 'p'.repeat(58) },
 })
+const report = (offer = 'pulse') => ({
+  reportId, offer, scope: XORUS_OFFER_SCOPES[offer], kind: 'derived_xartists_analysis',
+  visibility: 'private', status: 'ready', rawDataIncluded: false,
+  commercialUsageApproved: true, sourceTs: now - 10_000, generatedAt: now - 5000,
+  expiresAt: now + 60_000,
+})
 const allow = (overrides = {}) => authorizeXorusReportRead({
   enabled: true, commercialUsageRightsVerified: true, actor: email, offer: 'pulse',
   reportId, now, lookupGrant: async () => grant(email),
+  lookupReport: async () => report(),
   reserveQuota: async ({ grantId }) => ({ reserved: true, grantId, remaining: 2 }),
   ...overrides,
 })
@@ -107,4 +114,22 @@ test('quota exhaustion, invalid reservations and persistence errors fail closed'
   assert.equal(reusedCounter.status, 429)
   assert.equal((await allow({ lookupGrant: async () => { throw Error('hidden db error') } })).status, 503)
   assert.equal((await allow({ reserveQuota: async () => { throw Error('hidden transaction error') } })).status, 503)
+})
+
+test('every report is verified from a private derived authoritative record, not its ID alone', async () => {
+  for (const patch of [
+    { reportId: 'b'.repeat(64) }, { offer: 'yield' }, { scope: 'analysis:risk' },
+    { kind: 'raw_market_feed' }, { visibility: 'public' }, { status: 'draft' },
+    { rawDataIncluded: true }, { commercialUsageApproved: false },
+    { sourceTs: null }, { sourceTs: now + 1 }, { generatedAt: now + 1 },
+    { expiresAt: now - 1 },
+  ]) {
+    let quotaCalls = 0
+    const out = await allow({ lookupReport: async () => ({ ...report(), ...patch }),
+      reserveQuota: async () => { quotaCalls++; return { reserved: true } } })
+    assert.equal(out.status, 404, JSON.stringify(patch))
+    assert.equal(quotaCalls, 0)
+  }
+  assert.equal((await allow({ lookupReport: async () => { throw Error('private storage path') } })).status, 503)
+  assert.equal((await allow({ lookupReport: undefined })).status, 503)
 })
