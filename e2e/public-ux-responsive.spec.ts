@@ -23,6 +23,67 @@ async function visit(page: import('@playwright/test').Page, path: string) {
 
 test.describe('xArtists public accessibility, local built frontend only', () => {
 
+  for(const width of [390,1440]){
+    test(`owned NFT #75 at ${width}px: search, price reset and unsigned preparation`,async({page})=>{
+      const address='erd1'+'q'.repeat(58)
+      const rows=Array.from({length:100},(_,i)=>{
+        const nonce=i+1,hex=nonce.toString(16).padStart(2,'0')
+        return {identifier:'ART-abcdef-'+hex,collection:'ART-abcdef',nonce,
+          name:'Sculpture '+String(nonce).padStart(3,'0'),balance:'1',type:'NonFungibleESDT',
+          uris:['ipfs://Qm'+'a'.repeat(44)]}
+      })
+      let transactions=0,ownershipReads=0
+      page.on('request',request=>{
+        if(request.method()==='POST'&&/\/transactions(?:\?|$)/.test(request.url()))transactions++
+      })
+      await page.addInitScript(address=>localStorage.setItem('xartists_wallet',JSON.stringify({
+        connected:true,address,method:'paste_readonly',
+      })),address)
+      await page.route('https://api.multiversx.com/**',route=>{
+        const url=new URL(route.request().url()),base='/accounts/'+address
+        const headers={'access-control-allow-origin':'*'}
+        if(url.pathname===base+'/nfts')return route.fulfill({headers,json:rows})
+        if(url.pathname===base+'/tokens')return route.fulfill({headers,json:[]})
+        if(url.pathname===base)return route.fulfill({headers,json:{balance:'1000000000000000000',nonce:0}})
+        if(url.pathname.startsWith(base+'/nfts/'))ownershipReads++
+        return route.fulfill({status:503,headers,json:{error:'fixture_unavailable'}})
+      })
+      await page.setViewportSize({width,height:900})
+      await visit(page,'/marketplace/?lang=fr')
+      const seller=page.locator('#xa-market-sell')
+      const search=seller.locator('#xa-owned-nft-search')
+      await expect(seller.getByRole('button',{name:'Préparer la mise en vente',exact:true})).toHaveCount(48)
+      await search.fill('Sculpture 075')
+      await expect(seller.getByRole('button',{name:'Préparer la mise en vente',exact:true})).toHaveCount(1)
+      await seller.getByRole('button',{name:'Préparer la mise en vente',exact:true}).click()
+      let dialog=page.getByRole('dialog',{name:'Sculpture 075'})
+      await expect(dialog).toBeVisible()
+      const price=dialog.getByPlaceholder('Saisir un prix en EGLD')
+      await expect(price).toHaveValue('')
+      await price.fill('1.25')
+      await expect(dialog.getByRole('button',{name:'Vérifier frais et royalties'})).toBeDisabled()
+      await page.screenshot({animations:'disabled',path:`artifacts/ux-mobile/owned-nft-75-${width}.png`})
+      await dialog.getByRole('button',{name:'Annuler',exact:true}).click()
+      await search.fill('Sculpture 076')
+      await seller.getByRole('button',{name:'Préparer la mise en vente',exact:true}).click()
+      dialog=page.getByRole('dialog',{name:'Sculpture 076'})
+      await expect(dialog.getByPlaceholder('Saisir un prix en EGLD')).toHaveValue('')
+      await expect(dialog.getByRole('button',{name:'Vérifier frais et royalties'})).toBeDisabled()
+      expect(transactions).toBe(0)
+      expect(ownershipReads).toBe(0)
+
+      await visit(page,'/marketplace/?lang=fr&list=ART-abcdef-4b')
+      dialog=page.getByRole('dialog',{name:'Sculpture 075'})
+      await expect(dialog).toBeVisible()
+      await expect(dialog.getByPlaceholder('Saisir un prix en EGLD')).toHaveValue('')
+      await expect(dialog.getByRole('button',{name:'Vérifier frais et royalties'})).toBeDisabled()
+      await dialog.getByRole('button',{name:'Annuler',exact:true}).click()
+      await expect(page.getByRole('dialog',{name:'Sculpture 075'})).toHaveCount(0)
+      expect(transactions).toBe(0)
+      expect(ownershipReads).toBe(0)
+    })
+  }
+
   for(const [lang,width] of [['fr',390],['en',1440]] as const){
     test(`xOrus analysis product at ${width}px: derived findings and source outage (${lang})`,async({page})=>{
       await page.setViewportSize({width,height:900})

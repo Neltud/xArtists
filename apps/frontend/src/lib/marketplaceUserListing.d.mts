@@ -12,7 +12,7 @@ export interface UserNftListProof {
 }
 export function verifyUserNftListPreflight(options: {
  address: string | null | undefined; identifier: string; collection: string;
- nonce: number; request?: typeof fetch
+ nonce: number; request?: typeof fetch; signal?: AbortSignal
 }): Promise<UserNftListProof>
 
 export function nftIdentifier(collection: string, nonce: number): string

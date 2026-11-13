@@ -5,15 +5,22 @@ icon: palette
 
 # Vendre un NFT et créer une sculpture NFT
 
-**Guide d'utilisation, mis à jour le 11 novembre 2026.** [DApp xArtists](https://xartists.art/) · [Statut des fonctions](etat-du-produit.md).
+**Guide d'utilisation, mis à jour le 13 novembre 2026.** [DApp xArtists](https://xartists.art/) · [Statut des fonctions](etat-du-produit.md).
 
 ## Vendre un NFT que je possède
 
 1. Ouvrir [**Vendre mon NFT**](https://xartists.art/marketplace/#xa-market-sell). Connecter un wallet capable de signer sur **MultiversX mainnet**.
-2. Choisir une œuvre NFT détenue et éligible dans la grille **Mes NFT**. Un actif Genesis, une image privée non mintée ou un NFT sans preuve de propriété ne peut pas être listé à partir de cette action.
+2. Rechercher une œuvre par nom, collection ou identifiant dans **Mes NFT**. La recherche porte sur les 100 NFT chargés, même lorsque la grille n'en montre que 48. Un actif Genesis, une image privée non mintée ou un NFT sans preuve de propriété ne peut pas être listé à partir de cette action.
 3. Renseigner le prix exact en **EGLD**, lire les frais et **royalties du créateur récupérés on-chain**. Vérifier les adresses et le contrat affichés.
 4. Confirmer la préparation puis **signer soi-même** le transfert vers le contrat d'escrow. Le bouton et le retour xPortal ne valent pas preuve de listing.
 5. Vérifier la transaction `success` et le listing actif dans [Explorer MultiversX](https://explorer.multiversx.com/). En cas de réseau ou de vérification indisponible, l'action reste bloquée, pas simulée.
+
+Une adresse en lecture seule permet de consulter la préparation ; elle ne permet
+pas de signer. Changer d'œuvre remet le prix et les frais confirmés à zéro.
+Fermer la fiche, modifier le prix ou changer de wallet pendant une vérification
+annule cette tentative. Une réponse réseau tardive ne doit pas ouvrir le
+signataire. Une transaction déjà présentée au wallet ou diffusée ne peut pas
+être annulée en fermant cette fiche : vérifier son état dans le wallet et Explorer.
 
 **Important :** à la date du guide, la version frontend vendeurs est déployée, mais le premier nouveau listing utilisateur et son escrow n'ont pas encore été attestés. Le checkout acheteur et les enchères restent des autorisations indépendantes.
 

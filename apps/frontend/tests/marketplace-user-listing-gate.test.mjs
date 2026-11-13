@@ -126,3 +126,32 @@ test('owned-NFT search covers the entire loaded page, not only the first 48 visi
   assert.match(sheet,/if \(!live\) \{/,
     'the seller confirmation must stay fail-closed when the contract is unavailable')
 })
+
+test('cancelled listing preflight never starts any chain read',async()=>{
+  const ctl=new AbortController();ctl.abort()
+  let reads=0
+  await assert.rejects(verifyUserNftListPreflight({address:addr,identifier:nft.identifier,
+    collection:nft.collection,nonce:1,signal:ctl.signal,
+    request:async()=>{reads++;throw Error('must not read')},
+  }),/annulée/)
+  assert.equal(reads,0)
+})
+
+test('cancelling during chain reads aborts every request and rejects a late proof',async()=>{
+  const ctl=new AbortController(),signals=[]
+  let release
+  const held=new Promise(resolve=>{release=resolve})
+  const request=async(url,options)=>{
+    signals.push(options.signal)
+    await held
+    return requestFor()(url,options)
+  }
+  const pending=verifyUserNftListPreflight({address:addr,identifier:nft.identifier,
+    collection:nft.collection,nonce:1,signal:ctl.signal,request})
+  pending.catch(()=>{})
+  ctl.abort()
+  assert.equal(signals.length,5)
+  assert.equal(signals.every(signal=>signal.aborted),true)
+  release()
+  await assert.rejects(pending,/annulée/)
+})

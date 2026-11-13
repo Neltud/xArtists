@@ -55,10 +55,13 @@ export function isOwnedNftListCandidate(nft) {
   if (!/^[1-9][0-9]*$/.test(String(nft.balance ?? '')) || BigInt(nft.balance) < 1n) return false
   return hasNftMediaUri(nft.uris)
 }
-async function read(request,url,options={}) {
+async function read(request,url,options={},signal) {
+  if(signal?.aborted)fail('Vérification de mise en vente annulée.')
   let response
   try {
-    response=await request(url,{...options,cache:'no-store',redirect:'error',signal:AbortSignal.timeout(10000)})
+    const timeout=AbortSignal.timeout(10000)
+    response=await request(url,{...options,cache:'no-store',redirect:'error',
+      signal:signal?AbortSignal.any([signal,timeout]):timeout})
   } catch { fail('Lecture MultiversX impossible. Aucune transaction préparée.') }
   if (!response?.ok) fail('API MultiversX indisponible. Réessaie ultérieurement.')
   try { return await response.json() } catch { fail('Réponse MultiversX invalide.') }
@@ -71,16 +74,16 @@ function integerFromView(value) {
   for (const byte of bytes) n=n*256+byte.charCodeAt(0)
   return n
 }
-async function view(request,fn) {
+async function view(request,fn,signal) {
   const result=await read(request,API+'/query',{method:'POST',headers:{'content-type':'application/json'},
-    body:JSON.stringify({scAddress:MARKETPLACE_MAINNET,funcName:fn,args:[]})})
+    body:JSON.stringify({scAddress:MARKETPLACE_MAINNET,funcName:fn,args:[]})},signal)
   if (result?.returnCode!=='ok' || !Array.isArray(result.returnData) ||
       result.returnData.length!==1) fail('Contrat marketplace non vérifiable.')
   return integerFromView(result.returnData[0])
 }
 /** An advisory eligibility check, not a token transfer or a settled listing. */
 export async function verifyUserNftListPreflight({
-  address,identifier,collection,nonce,request=fetch,
+  address,identifier,collection,nonce,request=fetch,signal,
 }={}) {
   if (typeof address!=='string'||!ACCOUNT.test(address)||
       typeof identifier!=='string'||!NFT_ID.test(identifier)||
@@ -88,12 +91,13 @@ export async function verifyUserNftListPreflight({
       identifier!==nftIdentifier(collection,nonce))
     fail('Paramètres NFT / wallet invalides.')
   const [nft,authoritativeNft,market,paused,fee]=await Promise.all([
-    read(request,API+'/accounts/'+encodeURIComponent(address)+'/nfts/'+encodeURIComponent(identifier)),
+    read(request,API+'/accounts/'+encodeURIComponent(address)+'/nfts/'+encodeURIComponent(identifier),{},signal),
     // Independent public metadata, not wallet-supplied royalty fields.
-    read(request,API+'/nfts/'+encodeURIComponent(identifier)),
-    read(request,API+'/accounts/'+MARKETPLACE_MAINNET),
-    view(request,'isPaused'),view(request,'getFeeBps'),
+    read(request,API+'/nfts/'+encodeURIComponent(identifier),{},signal),
+    read(request,API+'/accounts/'+MARKETPLACE_MAINNET,{},signal),
+    view(request,'isPaused',signal),view(request,'getFeeBps',signal),
   ])
+  if(signal?.aborted)fail('Vérification de mise en vente annulée.')
   if (!nft||nft.identifier!==identifier||nft.collection!==collection||
       Number(nft.nonce)!==nonce||!isOwnedNftListCandidate(nft))
     fail('NFT non détenu, média absent ou collection de packs exclue. Listing refusé.')

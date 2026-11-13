@@ -50,6 +50,14 @@ PostgreSQL `orders_backend` label alone does not certify the database identity,
 order reconciliation or NFT delivery. The Studio endpoint reports only schema
 readiness, not upload approval.
 
+`GET /v1/ops/build-info` exposes the exact code SHA reported by the host, separately
+from GitHub Pages. On this operator-managed deployment, set `XARTISTS_SOURCE_SHA`
+to the actual checkout SHA before building and starting the image. Render uses
+its own `RENDER_GIT_COMMIT`. Missing, malformed or conflicting metadata returns
+503 and `source_sha:null`. The `started_at` value is process startup, not build
+time; this identity never certifies database readiness, financial authorization
+or source truth. `/health.source_sha` uses the same immutable process identity.
+
 ## Validation and production cutover
 
 - Match the configured API database to independent operator evidence;
