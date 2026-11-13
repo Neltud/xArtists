@@ -75,12 +75,13 @@ export function publicFreeSourcePolicy(){
  * candidate to verified. No raw values escape this projection.
  */
 export function crosscheckOpenSourceCandidates(rows,{now=Date.now(),ttlMs=900000,maxDifferenceRatio=0.02}={}){
+  const clockOk=Number.isFinite(now)&&Math.abs(now)<=8640000000000000
   const base={ok:false,status:'ABSTAIN',reason:'insufficient_free_sources',
     candidate_only:true,independently_verified_signals:0,
     commercial_enabled:false,executable:false,trade_authorized:false,
-    source_count:0,independent_origins:0,checked_at:Number.isFinite(now)
+    source_count:0,independent_origins:0,checked_at:clockOk
       ?new Date(now).toISOString():null}
-  if(!Number.isFinite(now)||!Number.isInteger(ttlMs)||ttlMs<1||
+  if(!clockOk||!Number.isInteger(ttlMs)||ttlMs<1||
     typeof maxDifferenceRatio!=='number'||maxDifferenceRatio<=0||
     maxDifferenceRatio>0.05)return {...base,reason:'invalid_crosscheck_policy'}
   if(!Array.isArray(rows)||rows.length>32)return {...base,reason:'invalid_input'}
