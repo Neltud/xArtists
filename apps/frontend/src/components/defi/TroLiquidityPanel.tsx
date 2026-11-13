@@ -69,6 +69,9 @@ export default function TroLiquidityPanel() {
 
   return (
     <div className="space-y-3">
+      <p role="note" className="rounded-lg border border-[color:var(--xa-border)] bg-[color:var(--xa-bg-elevated)] px-3 py-2 text-sm text-[color:var(--xa-text-secondary)]">
+        Les horaires indiquent une consultation de l’API, pas la fraîcheur garantie des pools. TVL et APR sont indicatifs et peuvent être approximatifs. Aucun rendement ni action DeFi garantis.
+      </p>
       <div className="flex flex-wrap items-center gap-2 justify-between">
         <p className="text-[10px] font-tech uppercase tracking-wider text-violet-300/90">
           {xaRender("Farming & Liquidité $TRO ")}</p>
@@ -82,11 +85,11 @@ export default function TroLiquidityPanel() {
             (isStale ? (
               <span className="inline-flex items-center gap-1 rounded-full border border-amber-400/40 bg-amber-500/15 text-amber-200 text-[9px] py-0.5 px-1.5 font-tech uppercase">
                 <span className="h-1.5 w-1.5 rounded-full bg-amber-400" aria-hidden />
-                {xaRender("STALE ")}</span>
+                {xaRender("CONSULTATION ANCIENNE ")}</span>
             ) : (
               <span className="inline-flex items-center gap-1 rounded-full border border-emerald-400/40 bg-emerald-500/15 text-emerald-200 text-[9px] py-0.5 px-1.5 font-tech uppercase">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" aria-hidden />
-                {xaRender("LIVE ")}</span>
+                {xaRender("CONSULTÉ · source non certifiée ")}</span>
             )))}
         </div>
       </div>
