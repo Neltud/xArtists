@@ -6,7 +6,9 @@
  */
 import http from 'node:http'
 import pg from 'pg'
-import { createNeonAuthIdentityVerifier, findOrCreateAccountFromNeonToken } from './neonAuthIdentity.mjs'
+import { createNeonAuthIdentityVerifier, findOrCreateAccountFromNeonToken,findExistingAccountFromNeonToken } from './neonAuthIdentity.mjs'
+import { createXorusPrivateRepository } from './xorusPrivateStore.mjs'
+import { createXorusPrivateDelivery } from './xorusPrivateDelivery.mjs'
 import { createWalletlessSessionService } from './walletlessSession.mjs'
 import { createWorldRightsHandler } from './worldRightsHttp.mjs'
 import { handleStripe } from './stripeHttp.mjs'
@@ -83,6 +85,7 @@ const WANT_EMAIL_SESSIONS = process.env.WALLETLESS_ACCOUNT_SESSION_ENABLED==='1'
   process.env.WALLETLESS_DATABASE_TARGET_CONFIRMED==='1' &&
   Boolean(process.env.NEON_AUTH_BASE_URL && process.env.DATABASE_URL)
 let emailSessionsLive = false
+let emailPool = null, emailVerifier = null
 let EMAIL_SESSIONS = createWalletlessSessionService()
 if (WANT_EMAIL_SESSIONS) {
   try {
@@ -93,10 +96,33 @@ if (WANT_EMAIL_SESSIONS) {
       enabled:true,originAllowed:origin=>liaSimpleOriginAllowed(origin),
       resolveVerifiedAccount:token=>findOrCreateAccountFromNeonToken(pool,token,verify),
     })
+    emailPool=pool;emailVerifier=verify
     emailSessionsLive = true
   } catch {
     // An invalid operator configuration must never fall back to unverified login.
   }
+}
+
+// This is a strictly separate private-report reader. A licence flag alone,
+// a JWT without account mapping, or a missing PostgreSQL schema never grants access.
+const WANT_PRIVATE_ANALYSIS = emailSessionsLive &&
+  process.env.XORUS_PRIVATE_READ_ENABLED==='1' &&
+  process.env.XORUS_PRIVATE_COMMERCIAL_RIGHTS_VERIFIED==='1' &&
+  process.env.XORUS_PRIVATE_DELIVERY_CERTIFIED==='1'
+let privateAnalysisLive = false
+let XORUS_PRIVATE = createXorusPrivateDelivery()
+if(WANT_PRIVATE_ANALYSIS){
+  const repo=createXorusPrivateRepository(emailPool)
+  XORUS_PRIVATE=createXorusPrivateDelivery({
+    enabled:true,commercialUsageRightsVerified:true,
+    originAllowed:origin=>liaSimpleOriginAllowed(origin),
+    repo,
+    verifyAccount:async token=>{
+      const id=await findExistingAccountFromNeonToken(emailPool,token,emailVerifier)
+      return id?{kind:'email',subject:id,verified:true,proof:'verified_email_session'}:null
+    },
+  })
+  privateAnalysisLive=true
 }
 
 const LIA_SIMPLE = createSimpleIntentService({
@@ -189,6 +215,16 @@ async function handleRequest(req, res) {
     json(res,out.status,out.body)
     return
   }
+  if (pth.startsWith('/v1/xorus/private')) {
+    if(req.method!=='GET'){json(res,405,{ok:false,error:'method_not_allowed'});return}
+    if(u.search){json(res,400,{ok:false,error:'query_not_supported'});return}
+    const match=/^\/v1\/xorus\/private\/(pulse|yield|sentinel)\/([a-f0-9]{64})$/.exec(pth)
+    if(!match){json(res,404,{ok:false,error:'report_not_found'});return}
+    const out=await XORUS_PRIVATE.read({offer:match[1],reportId:match[2],
+      authorization:req.headers.authorization,origin:req.headers.origin})
+    json(res,out.status,out.body)
+    return
+  }
   if (pth === '/v1/xorus/analysis') {
     if (req.method !== 'GET') { json(res,405,{ok:false,error:'method_not_allowed'}); return }
     // A browser cannot select the provider URL, symbol, clock, prompt or inputs.
@@ -208,6 +244,7 @@ async function handleRequest(req, res) {
       jwt: JWT_SECRET.length >= 16,
       require_siwx: requireSiwx(),
       walletless_account_session_enabled: emailSessionsLive,
+      xorus_private_analysis_enabled: privateAnalysisLive,
       moonpay_configured: Boolean(MOONPAY.ready),
       moonpay_mode: MOONPAY.ready ? MOONPAY.mode : 'off',
       stripe_configured: Boolean(STRIPE_KEY), // legacy key presence only, not checkout readiness
