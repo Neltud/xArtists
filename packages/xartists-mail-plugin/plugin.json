@@ -1,0 +1,6 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "xartists-mail",
+  "version": "0.1.0",
+  "description": "xArtists Mail: secure operator workflows for real account-linked @xartists.art mailboxes, mailbox provisioning readiness and inbound/outbound verification. Provisioning is unavailable until the verified mail host, account identity and MCP/API adapter are connected."
+}
