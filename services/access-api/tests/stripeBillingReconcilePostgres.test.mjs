@@ -68,7 +68,7 @@ test('Signed sandbox recurring invoices reconcile atomically; late events and ca
     await pool.query('INSERT INTO xa_user_accounts(id) VALUES($1),($2)',[A,B])
     await pool.query(`INSERT INTO xa_fiat_subscriptions
       (id,user_id,provider,provider_subscription_id,status,period_end,provider_verified_at)
-    await pool.query(`INSERT INTO xa_fiat_subscriptions (id,user_id,provider,provider_subscription_id,status,period_end,provider_verified_at) VALUES(gen_random_uuid(),$1,'stripe',$2,'incomplete',NOW()+INTERVAL '1 month',NOW())`,[B,subscription_id])
+      VALUES(gen_random_uuid(),$1,'stripe',$2,'incomplete',NOW()+INTERVAL '1 month',NOW())`,[A,sub])
     await pool.query(`INSERT INTO xa_stripe_billing_bindings
       (subscription_id,account_id,customer_id,price_id,plan,amount_cents)
       VALUES($1,$2,$3,$4,'fiat_379',379)`,[sub,A,customer,price])
@@ -161,7 +161,7 @@ test('signed partial refund and dispute permanently revoke test-ledger status wi
   const refundSub='sub_refundtest01',disputeSub='sub_disputetest01'
   const refundPI='pi_refundtest01',disputePI='pi_disputetest01'
   const setup=async(subscription_id,plan,amount_cents,price_id)=>{
-    await pool.query('INSERT INTO xa_fiat_subscriptions (id,user_id,provider,provider_subscription_id,status,period_end,provider_verified_at) VALUES(gen_random_uuid(),$1,\\'stripe\\',$2,\\'incomplete\\',NOW()+INTERVAL \\'1 month\\',NOW())',[B,subscription_id])
+    await pool.query(`INSERT INTO xa_fiat_subscriptions (id,user_id,provider,provider_subscription_id,status,period_end,provider_verified_at) VALUES(gen_random_uuid(),$1,'stripe',$2,'incomplete',NOW()+INTERVAL '1 month',NOW())`,[B,subscription_id])
     await pool.query('INSERT INTO xa_stripe_billing_bindings (subscription_id,account_id,customer_id,price_id,plan,amount_cents) VALUES ($1,$2,$3,$4,$5,$6)',[subscription_id,B,customer,price_id,plan,amount_cents])
   }
   const paidInvoice=(subscription_id,pi,amount_cents,price_id,id)=>({...invoice,
