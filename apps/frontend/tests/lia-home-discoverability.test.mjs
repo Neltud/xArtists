@@ -14,12 +14,12 @@ test('homepage retains a direct xOrus route as a disclosed advanced link without
   assert.equal((hero.match(/className="xa-button primary"/g) || []).length, 1)
 })
 
-test('mobile menu shows xOrus without replacing five-item fixed dock', () => {
+test('mobile menu promotes xOrus as the fifth fixed dock entry', () => {
   const shell = read('Shell.tsx')
   assert.match(shell, /to="\/xorus" onClick=\{closeMobile\}/)
   assert.match(shell, /to="\/museum" onClick=\{closeMobile\}/)
   const dock = shell.slice(shell.indexOf('const MOBILE_DESTINATIONS ='), shell.indexOf('function MobileDock()'))
-  for (const to of ["/museum","/studio","/marketplace","/finance/governance"]) {
+  for (const to of ["/museum","/studio","/marketplace","/intelligence/xorus"]) {
     assert.ok(dock.includes("to:'" + to + "'"), 'missing dock path ' + to)
   }
 })
