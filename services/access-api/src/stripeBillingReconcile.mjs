@@ -80,6 +80,14 @@ export function createStripeBillingSandboxReconciler({
       try{
         client=await pool.connect()
         await client.query('BEGIN');transaction=true
+        // Hard safety boundary: this candidate is only for an explicitly
+        // disposable database. No production or remote branch may be written,
+        // even if a caller accidentally passes enabled:true and valid secrets.
+        const identity=await client.query('SELECT current_database() AS database_name')
+        if(identity.rows.length!==1||identity.rows[0].database_name!=='xartists_billing_probe'){
+          await client.query('ROLLBACK');transaction=false
+          return fail('disposable_database_required')
+        }
         // Row locks serialize concurrent webhook deliveries for this subscription.
         const rows=await client.query(`SELECT b.*,s.status AS subscription_status,
           s.refunded,s.canceled_at,s.user_id AS subscription_user_id,a.disabled_at
