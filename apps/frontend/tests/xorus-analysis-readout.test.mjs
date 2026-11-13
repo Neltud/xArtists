@@ -62,9 +62,10 @@ test('missing, duplicated or inconsistent agent findings are rejected',()=>{
   const forged=copy();forged.agents[1].families[0].reading='positive'
   const extra=copy();extra.agents.push(extra.agents[0])
   const unknown=copy();unknown.agents[0].agent='__proto__'
+  const nonString=copy();nonString.agents[0].agent={toString:null}
   const scenario=copy();scenario.scenarios[0].outcome='buy_now'
   const coverage=copy();coverage.coverage.signals_analyzed=1
-  for(const raw of [duplicate,forged,extra,unknown,scenario,coverage]){
+  for(const raw of [duplicate,forged,extra,unknown,nonString,scenario,coverage]){
     assert.equal(interpretXorusAnalysisReport(raw,now),null)
   }
 })

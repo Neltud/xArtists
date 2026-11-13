@@ -36,7 +36,7 @@ export function interpretXorusAnalysisReport(raw,nowMs=Date.now()){
   const seen=new Set(),agents=[]
   let total=0,familyCount=0
   for(const row of raw.agents){
-    if(!object(row)||!Object.hasOwn(ROLES,row.agent)||seen.has(row.agent))return null
+    if(!object(row)||typeof row.agent!=='string'||!Object.hasOwn(ROLES,row.agent)||seen.has(row.agent))return null
     seen.add(row.agent)
     const owns=ROLES[row.agent]
     if(!Array.isArray(row.families)||row.families.length!==owns.length)return null
