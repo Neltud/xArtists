@@ -11,6 +11,8 @@ import { createXorusPrivateRepository } from './xorusPrivateStore.mjs'
 import { createXorusPrivateDelivery } from './xorusPrivateDelivery.mjs'
 import { publicCommercialCatalog } from './publicCommercialCatalog.mjs'
 import { createWalletlessSessionService } from './walletlessSession.mjs'
+import { createWalletlessAccountProfileService } from './walletlessProfile.mjs'
+import { readAccountProjection } from './accountRepository.mjs'
 import { createWorldRightsHandler } from './worldRightsHttp.mjs'
 import { handleStripe } from './stripeHttp.mjs'
 import { stripeSandboxConfig } from './stripeCheckout.mjs'
@@ -88,6 +90,7 @@ const WANT_EMAIL_SESSIONS = process.env.WALLETLESS_ACCOUNT_SESSION_ENABLED==='1'
 let emailSessionsLive = false
 let emailPool = null, emailVerifier = null
 let EMAIL_SESSIONS = createWalletlessSessionService()
+let EMAIL_PROFILE = createWalletlessAccountProfileService()
 if (WANT_EMAIL_SESSIONS) {
   try {
     const verify = createNeonAuthIdentityVerifier({baseUrl:process.env.NEON_AUTH_BASE_URL})
@@ -98,6 +101,13 @@ if (WANT_EMAIL_SESSIONS) {
       resolveVerifiedAccount:token=>findOrCreateAccountFromNeonToken(pool,token,verify),
     })
     emailPool=pool;emailVerifier=verify
+    EMAIL_PROFILE=createWalletlessAccountProfileService({
+      enabled:true,originAllowed:origin=>liaSimpleOriginAllowed(origin),
+      lookupVerifiedProfile:async token=>{
+        const id=await findExistingAccountFromNeonToken(pool,token,verify)
+        return id?readAccountProjection(pool,id):null
+      },
+    })
     emailSessionsLive = true
   } catch {
     // An invalid operator configuration must never fall back to unverified login.
@@ -213,6 +223,15 @@ async function handleRequest(req, res) {
       walletlessAccountEnabled:emailSessionsLive,
       privateAnalysisEnabled:privateAnalysisLive,
     }))
+    return
+  }
+  if (pth === '/v1/account/me') {
+    if(req.method!=='GET'){json(res,405,{ok:false,error:'method_not_allowed'});return}
+    if(u.search){json(res,400,{ok:false,error:'query_not_supported'});return}
+    const out=await EMAIL_PROFILE.read({
+      authorization:req.headers.authorization,origin:req.headers.origin,
+    })
+    json(res,out.status,out.body)
     return
   }
   if (pth === '/v1/account/session') {
