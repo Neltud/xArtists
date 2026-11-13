@@ -1,7 +1,7 @@
 import {test} from 'node:test'
 import assert from 'node:assert/strict'
 import {readFileSync} from 'node:fs'
-import {parseFreshMarketAssets,parseFreshFearGreed,parseFundingRate} from '../src/lib/marketEvidence.mjs'
+import {parseFreshMarketAssets,parseFreshFearGreed,parseFundingRate,parseFreshFundingQuote} from '../src/lib/marketEvidence.mjs'
 
 const read=p=>readFileSync(new URL(p,import.meta.url),'utf8')
 const loader=read('../src/lib/marketData.ts')
@@ -48,6 +48,27 @@ test('perpetual funding only accepts explicit bounded provider values',()=>{
   for(const invalid of [null,undefined,0,NaN,'NaN','Infinity','1e4','1','-1','']){
     assert.equal(parseFundingRate(invalid),null)
   }
+})
+
+test('current Binance funding requires matching symbol, producer timestamp and bounded rate',()=>{
+  const time=Date.parse('2026-11-13T03:59:00Z')
+  const valid={symbol:'BTCUSDT',lastFundingRate:'0.0001',time}
+  assert.deepEqual(parseFreshFundingQuote(valid,'BTCUSDT',now),{
+    symbol:'BTC',rate:0.01,source:'binance',sourceUpdatedAt:'2026-11-13T03:59:00.000Z'
+  })
+  for(const invalid of [
+    {...valid,symbol:'ETHUSDT'},
+    {...valid,time:Date.parse('2026-11-13T03:20:00Z')},
+    {...valid,time:Date.parse('2026-11-13T04:15:00Z')},
+    {...valid,time:String(time)},
+    {...valid,lastFundingRate:0.0001},
+    {...valid,lastFundingRate:'Infinity'},
+    {...valid,lastFundingRate:'1'},
+    {...valid,lastFundingRate:null},
+    {},
+  ])assert.equal(parseFreshFundingQuote(invalid,'BTCUSDT',now),null)
+  assert.match(loader,/\/fapi\/v1\/premiumIndex\?symbol=/)
+  assert.doesNotMatch(loader,/\/fapi\/v1\/fundingRate\?symbol=/)
 })
 
 test('public market cannot silently use demo prices, guessed correlation or synthetic funding',()=>{
