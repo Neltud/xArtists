@@ -1,0 +1,48 @@
+name: Public release evidence — fail-closed operator dashboard
+
+on:
+  pull_request:
+    paths:
+      - 'apps/frontend/src/lib/releaseEvidence.mjs'
+      - 'apps/frontend/src/lib/releaseEvidence.d.mts'
+      - 'apps/frontend/src/components/PublicReleaseEvidence.tsx'
+      - 'apps/frontend/src/pages/GoLivePage.tsx'
+      - 'apps/frontend/tests/release-evidence-readout.test.mjs'
+      - '.github/workflows/public-release-evidence-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'apps/frontend/src/lib/releaseEvidence.mjs'
+      - 'apps/frontend/src/components/PublicReleaseEvidence.tsx'
+      - 'apps/frontend/src/pages/GoLivePage.tsx'
+      - 'apps/frontend/tests/release-evidence-readout.test.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  release-evidence-readonly:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: apps/frontend/package-lock.json
+      - name: Offline source/readout and fail-closed tests
+        run: node --test apps/frontend/tests/release-evidence-readout.test.mjs
+      - name: Install frontend without lifecycle scripts
+        working-directory: apps/frontend
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Typecheck and build actual module
+        working-directory: apps/frontend
+        run: |
+          npm run typecheck
+          npm run build
+          npm run check:routes
+      - name: Observation is not commercialization
+        run: |
+          echo 'Read-only public probes; no real mailbox, settlement, mint, wallet pairing or autonomous trading approved.' >> "$GITHUB_STEP_SUMMARY"
