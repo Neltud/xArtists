@@ -1,28 +1,91 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-13T13:58:16.672Z",
+  "updatedAt": "2026-11-13T21:11:49.920Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1794578296196",
-      "timestamp": "13:58",
+      "id": "egld-1794604309368",
+      "timestamp": "21:11",
       "source": "EGLD",
-      "title": "Cotation publique · $3.00 (API MultiversX economics)",
+      "title": "Cotation publique · $2.92 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
-      "id": "rss-CoinTelegraph-0-1794577286000",
+      "id": "rss-CoinTelegraph-0-1794603200000",
+      "timestamp": "20:53",
+      "source": "CoinTelegraph",
+      "title": "US regulators move ahead on crypto trust charters as Senate scrutiny grows",
+      "link": "https://cointelegraph.com/news/us-regulators-crypto-trust-charters-senate-scrutiny-grows?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1794594509000",
+      "timestamp": "18:28",
+      "source": "CoinTelegraph",
+      "title": "Metaplanet swings to $170M loss as Bitcoin sale hits earnings",
+      "link": "https://cointelegraph.com/news/metaplanet-swings-170m-loss-bitcoin-sale-earnings?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1794587951000",
+      "timestamp": "16:39",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin holds below $70K as stocks slip despite a cooler US PPI print",
+      "link": "https://cointelegraph.com/markets/bitcoin-below-70k-stocks-slip-cooler-us-ppi-print?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1794577784000",
+      "timestamp": "13:49",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1794577286000",
       "timestamp": "13:41",
       "source": "CoinTelegraph",
       "title": "Arthur Hayes ‘flattered’ as Coinbase backs US stock perps",
       "link": "https://cointelegraph.com/news/arthur-hayes-coinbase-us-stock-perps-cftc?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-1-1794575059000",
+      "id": "rss-CoinTelegraph-5-1794575059000",
       "timestamp": "13:04",
       "source": "CoinTelegraph",
       "title": "Nakamoto shares fall 6% premarket after Q3 revenue turns negative",
-      "link": "https://cointelegraph.com/news/nakamoto-shares-fall-after-negative-q3-revenue?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+      "link": "https://cointelegraph.com/markets/nakamoto-shares-fall-after-negative-q3-revenue?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1794595198000",
+      "timestamp": "18:39",
+      "source": "CoinDesk",
+      "title": "Bitcoin plunges to $68,000 as Anthropic IPO frenzy adds to market jitters",
+      "link": "https://www.coindesk.com/markets/2026/11/13/bitcoin-slides-to-usd68k-as-nvidia-turmoil-anthropic-ipo-fuel-broader-market-sell-off"
+    },
+    {
+      "id": "rss-CoinDesk-1-1794589543000",
+      "timestamp": "17:05",
+      "source": "CoinDesk",
+      "title": "U.S. Senate Banking Committee races toward hearing on new SEC nominations",
+      "link": "https://www.coindesk.com/policy/2026/11/13/u-s-senate-banking-committee-races-toward-hearing-on-new-sec-nominations"
+    },
+    {
+      "id": "rss-CoinDesk-2-1794585687000",
+      "timestamp": "16:01",
+      "source": "CoinDesk",
+      "title": "Bitcoin heads for sixth weekly loss as Anthropic’s blockbuster IPO looms",
+      "link": "https://www.coindesk.com/markets/2026/11/13/bitcoin-heads-for-sixth-weekly-loss-as-anthropic-s-blockbuster-ipo-looms"
+    },
+    {
+      "id": "rss-CoinDesk-3-1794578520000",
+      "timestamp": "14:02",
+      "source": "CoinDesk",
+      "title": "Kraken parent Payward says expansion outside crypto trading helps cushion revenue decline",
+      "link": "https://www.coindesk.com/business/2026/11/13/kraken-parent-payward-says-expansion-outside-crypto-trading-helps-cushion-revenue-decline"
+    },
+    {
+      "id": "egld-1794578296196",
+      "timestamp": "13:58",
+      "source": "EGLD",
+      "title": "Cotation publique · $3.00 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
     },
     {
       "id": "rss-CoinTelegraph-2-1794572341000",
@@ -123,13 +186,6 @@
       "link": "https://cointelegraph.com/magazine/nk-hackers-join-memecoin-trenches-xstocks-adds-hong-kong-equities-asia-express?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-5-1794521501000",
-      "timestamp": "22:11",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
       "id": "rss-CoinDesk-0-1794524152000",
       "timestamp": "22:55",
       "source": "CoinDesk",
@@ -142,62 +198,6 @@
       "source": "CoinDesk",
       "title": "U.S. President Trump names CFTC, SEC nominees for first time in a year",
       "link": "https://www.coindesk.com/policy/2026/11/12/u-s-president-names-cftc-sec-nominees-for-first-time-in-a-year"
-    },
-    {
-      "id": "rss-CoinDesk-2-1794517669000",
-      "timestamp": "21:07",
-      "source": "CoinDesk",
-      "title": "Kalshi ends Donald Trump Jr.’s advisory contract over 1789 Capital’s Polymarket investment",
-      "link": "https://www.coindesk.com/policy/2026/11/12/kalshi-ends-donald-trump-jr-s-advisory-contract-over-1789-capital-s-polymarket-investment"
-    },
-    {
-      "id": "rss-CoinDesk-3-1794501952000",
-      "timestamp": "16:45",
-      "source": "CoinDesk",
-      "title": "Illinois crypto tax is impossible to enforce as written, crypto industry tells court",
-      "link": "https://www.coindesk.com/policy/2026/11/12/illinois-crypto-tax-is-impossible-to-enforce-as-written-crypto-industry-tells-court"
-    },
-    {
-      "id": "egld-1794519835631",
-      "timestamp": "21:43",
-      "source": "EGLD",
-      "title": "Cotation publique · $2.92 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1794517086000",
-      "timestamp": "20:58",
-      "source": "CoinTelegraph",
-      "title": "US Justice Department, business groups and DeFi firms challenge Illinois crypto tax",
-      "link": "https://cointelegraph.com/news/us-justice-department-business-groups-defi-illinois-crypto-tax?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1794514061000",
-      "timestamp": "20:07",
-      "source": "CoinTelegraph",
-      "title": "DTCC Plans Solana Expansion as Wallet Rules Limit Access",
-      "link": "https://cointelegraph.com/news/dtcc-plans-solana-expansion-wallet-rules-limit-access?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1794498366000",
-      "timestamp": "15:46",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin slides toward $71K as Nvidia stock tumbles after Huang steps down",
-      "link": "https://cointelegraph.com/markets/bitcoin-price-drops-71k-stocks-nvidia-huang-resignation?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1794491942000",
-      "timestamp": "13:59",
-      "source": "CoinTelegraph",
-      "title": "Jensen Huang resigns as Nvidia CEO, exits board; shares plunge",
-      "link": "https://cointelegraph.com/news/jensen-huang-resigns-nvidia-ceo-board-member?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1794491559000",
-      "timestamp": "13:52",
-      "source": "CoinTelegraph",
-      "title": "Bit Digital stock falls 5% in pre-market after Q3 revenue miss",
-      "link": "https://cointelegraph.com/news/bit-digital-stock-falls-q3-revenue-miss?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
