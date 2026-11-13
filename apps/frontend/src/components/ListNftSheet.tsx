@@ -2,7 +2,7 @@ import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as
 /**
  * Overlay listing — prix → listNft → TxShell overlay.
  */
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useMarketplaceTx } from '../hooks/useMarketplaceTx'
 import {useMarketplaceReadiness} from '../hooks/useMarketplaceReadiness'
 import {verifyUserNftListPreflight, type UserNftListProof} from '../lib/marketplaceUserListing.mjs'
@@ -31,11 +31,18 @@ export default function ListNftSheet({ target, onClose }: Props) {
   latestAddress.current = address
   const [checking, setChecking] = useState(false)
   const { listNft, pending, error, lastTx, marketplaceListLive } = useMarketplaceTx()
-  const [price, setPrice] = useState('1')
+  const [price, setPrice] = useState('')
   const [msg, setMsg] = useState<string | null>(null)
   const [quote, setQuote] = useState<(UserNftListProof & {price:string}) | null>(null)
   const ready = useMarketplaceReadiness('seller')
   const live = ready && marketplaceListLive
+  // A different NFT must never inherit the previous NFT's price, confirmed
+  // fee quote, error or pending explanation.
+  useEffect(()=>{
+    setPrice('')
+    setQuote(null)
+    setMsg(null)
+  },[target?.identifier])
 
   if (!target) return null
   const currentQuote=quote && quote.identifier===target.identifier &&
@@ -91,7 +98,8 @@ export default function ListNftSheet({ target, onClose }: Props) {
   return (
     <div className="fixed inset-0 z-[80] flex items-end sm:items-center justify-center p-3">
       <button type="button" className="absolute inset-0 bg-black/70" onClick={onClose} aria-label={xaLocalize("Fermer")} />
-      <div className="relative z-10 w-full max-w-md rounded-2xl border border-violet-500/30 bg-[#12121a] p-5 space-y-4 shadow-2xl">
+      <div role="dialog" aria-modal="true" aria-labelledby="xa-list-nft-title"
+        className="relative z-10 w-full max-w-md rounded-2xl border border-violet-500/30 bg-[#12121a] p-5 space-y-4 shadow-2xl">
         <div className="flex gap-3">
           <div className="h-16 w-16 rounded-xl bg-black/40 overflow-hidden shrink-0">
             {xaRender(target.imageUrl ? (
@@ -102,7 +110,7 @@ export default function ListNftSheet({ target, onClose }: Props) {
           </div>
           <div className="min-w-0">
             <p className="text-[10px] uppercase tracking-wider text-violet-300/80">{xaRender("Mettre en vente")}</p>
-            <h3 className="font-bold text-white truncate">{xaRender(target.name)}</h3>
+            <h3 id="xa-list-nft-title" className="font-bold text-white truncate">{xaRender(target.name)}</h3>
             <p className="text-[10px] mono text-zinc-500 truncate">{xaRender(target.identifier)}</p>
           </div>
         </div>
@@ -112,13 +120,16 @@ export default function ListNftSheet({ target, onClose }: Props) {
             type="text"
             inputMode="decimal"
             value={price}
+            placeholder="Saisir un prix en EGLD"
             onChange={e => {setPrice(e.target.value);setQuote(null)}}
             className="mt-1 w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2.5 text-white"
           />
         </label>
 
         {xaRender(!live && (
-          <p className="text-xs text-amber-200">{xaRender("Marketplace fermée : contrôle du contrat et de sa sécurité requis. Aucun listing ne sera soumis.")}</p>
+          <p role="status" className="text-xs text-amber-200">
+            {xaRender("Préparation seulement : le contrat ou la connexion n’est pas certifié. Aucune transaction ne peut être signée ni envoyée.")}
+          </p>
         ))}
 
         <p className="text-[11px] text-zinc-400">Prix en EGLD. Les frais marketplace et les royalties du créateur sont lus sur la chaîne. Un NFT mis en vente est déposé en garde dans le contrat, pas vendu immédiatement.</p>
