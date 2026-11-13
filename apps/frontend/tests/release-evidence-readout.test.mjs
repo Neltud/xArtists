@@ -92,7 +92,7 @@ test('503 or malformed xOrus never relabels as real analysis',async()=>{
   })
   assert.equal(row(result,'xorus').state,'unknown')
   assert.equal(row(result,'studio').state,'blocked')
-  assert.equal(row(result,'wallet').state,undefined)
+  assert.equal(row(result,'xportal').state,'blocked')
 })
 test('status page embeds evidence without public financial switch',()=>{
   const code=readFileSync(new URL('../src/pages/GoLivePage.tsx',import.meta.url),'utf8')
