@@ -21,10 +21,11 @@ const secret='whsec_billingfixture000001'
 const A='f1111111-1111-4111-8111-111111111111'
 const B='f2222222-2222-4222-8222-222222222222'
 const customer='cus_testcustomer01',sub='sub_testmonthly01',price='price_testmonthly01'
+const intent='pi_testmonthly01'
 const monthStart=Math.floor(clock/1000)-3600
 const monthEnd=monthStart+30*86400
 const invoice={object:'invoice',livemode:false,id:'in_testmonthly01',
-  customer,subscription:sub,currency:'eur',status:'paid',paid:true,
+  customer,subscription:sub,payment_intent:intent,currency:'eur',status:'paid',paid:true,
   amount_paid:379,billing_reason:'subscription_cycle',
   lines:{has_more:false,data:[{price:{id:price},period:{start:monthStart,end:monthEnd}}]},
 }
@@ -62,7 +63,8 @@ test('Signed sandbox recurring invoices reconcile atomically; late events and ca
   try{
     await exec('../migrations/20261109_xa_accounts_v1.sql')
     await exec('../migrations/20261113_xa_stripe_billing_reconcile_sandbox.sql')
-    await exec('../migrations/20261113_xa_stripe_billing_reconcile_sandbox.sql')
+    await exec('../migrations/20261113_xa_stripe_billing_incident_hold_sandbox.sql')
+    await exec('../migrations/20261113_xa_stripe_billing_incident_hold_sandbox.sql')
     await pool.query('INSERT INTO xa_user_accounts(id) VALUES($1),($2)',[A,B])
     await pool.query(`INSERT INTO xa_fiat_subscriptions
       (id,user_id,provider,provider_subscription_id,status,period_end,provider_verified_at)
@@ -147,6 +149,104 @@ test('Signed sandbox recurring invoices reconcile atomically; late events and ca
     const expected=(await read(pool))
     assert.equal(expected.events,5)
     assert.equal(expected.receipts,5)
+  }finally{await pool.end()}
+})
+
+test('signed partial refund and dispute permanently revoke test-ledger status with immutable receipts', {
+  skip:!permitted&&'Requires disposable localhost PostgreSQL xartists_billing_probe with opt-in',
+},async()=>{
+  const pg=(await import('pg')).default
+  const pool=new pg.Pool({connectionString:db,ssl:false,max:4})
+  const billing=createStripeBillingSandboxReconciler({pool,clock:()=>clock,enabled:true})
+  const refundSub='sub_refundtest01',disputeSub='sub_disputetest01'
+  const refundPI='pi_refundtest01',disputePI='pi_disputetest01'
+  const setup=async(subscription_id,plan,amount_cents,price_id)=>{
+    await pool.query('INSERT INTO xa_fiat_subscriptions (id,user_id,provider,provider_subscription_id,status,period_end,provider_verified_at) VALUES(gen_random_uuid(),$1,\\'stripe\\',$2,\\'incomplete\\',NOW()+INTERVAL \\'1 month\\',NOW())',[B,subscription_id])
+    await pool.query('INSERT INTO xa_stripe_billing_bindings (subscription_id,account_id,customer_id,price_id,plan,amount_cents) VALUES ($1,$2,$3,$4,$5,$6)',[subscription_id,B,customer,price_id,plan,amount_cents])
+  }
+  const paidInvoice=(subscription_id,pi,amount_cents,price_id,id)=>({...invoice,
+    id,subscription:subscription_id,payment_intent:pi,amount_paid:amount_cents,
+    lines:{has_more:false,data:[{price:{id:price_id},period:{start:monthStart,end:monthEnd}}]},
+  })
+  const status=async id=>(await pool.query(
+    'SELECT status,refunded,canceled_at FROM xa_fiat_subscriptions WHERE provider_subscription_id=$1',[id]
+  )).rows[0]
+  const terminal=async id=>(await pool.query(
+    'SELECT terminal FROM xa_stripe_billing_bindings WHERE subscription_id=$1',[id]
+  )).rows[0].terminal
+  const paymentCounts=async()=>({
+    linked:Number((await pool.query('SELECT count(*)::int n FROM xa_stripe_billing_payments WHERE subscription_id IN ($1,$2)',[refundSub,disputeSub])).rows[0].n),
+    incidents:Number((await pool.query('SELECT count(*)::int n FROM xa_stripe_billing_incident_receipts WHERE subscription_id IN ($1,$2)',[refundSub,disputeSub])).rows[0].n),
+  })
+  try{
+    await setup(refundSub,'fiat_579',579,'price_refundtest01')
+    await setup(disputeSub,'fiat_979',979,'price_disputetest01')
+    const refundCharge={object:'charge',livemode:false,customer,currency:'eur',
+      payment_intent:refundPI,amount:579,amount_refunded:10,refunded:false}
+    let event=signed('evt_refundbeforepaid01','charge.refunded',refundCharge)
+    let result=await billing.reconcile(event)
+    safety(result)
+    assert.equal(result.ok,false)
+    assert.equal(result.reason,'incident_payment_not_linked','no prior paid invoice cannot authorize a refund')
+    assert.equal((await paymentCounts()).incidents,0)
+
+    result=await billing.reconcile(signed('evt_paidrefund01','invoice.paid',
+      paidInvoice(refundSub,refundPI,579,'price_refundtest01','in_refundtest01')))
+    safety(result)
+    assert.equal(result.outcome,'paid_test_ledger')
+    assert.equal((await status(refundSub)).status,'active')
+
+    const evil={...refundCharge,payment_intent:'pi_otheraccount01'}
+    result=await billing.reconcile(signed('evt_wrongaccount01','charge.refunded',evil))
+    safety(result);assert.equal(result.ok,false)
+    const wrongCustomer={...refundCharge,customer:'cus_otheraccount01'}
+    result=await billing.reconcile(signed('evt_wrongcustomer01','charge.refunded',wrongCustomer))
+    safety(result);assert.equal(result.ok,false)
+    assert.equal(result.reason,'incident_binding_mismatch')
+    result=await billing.reconcile(signed('evt_wrongamount01','charge.refunded',
+      {...refundCharge,amount:999}))
+    safety(result);assert.equal(result.ok,false)
+    assert.equal((await status(refundSub)).status,'active')
+
+    event=signed('evt_partialrefund01','charge.refunded',refundCharge,
+      Math.floor(clock/1000)-2)
+    result=await billing.reconcile(event)
+    safety(result)
+    assert.equal(result.outcome,'refund_revoked')
+    assert.equal((await status(refundSub)).status,'canceled')
+    assert.equal((await status(refundSub)).refunded,true)
+    assert.equal(await terminal(refundSub),true)
+    result=await billing.reconcile(event)
+    safety(result)
+    assert.equal(result.duplicate,true)
+    assert.equal(result.outcome,'refund_revoked')
+    result=await billing.reconcile(signed('evt_refundconflict01','invoice.paid',
+      paidInvoice(refundSub,'pi_refundlater01',579,'price_refundtest01','in_refundlater01'),
+      Math.floor(clock/1000)+4))
+    safety(result);assert.equal(result.outcome,'terminal_ignored')
+    assert.equal((await status(refundSub)).status,'canceled')
+    assert.equal((await paymentCounts()).incidents,1)
+
+    result=await billing.reconcile(signed('evt_paiddispute01','invoice.paid',
+      paidInvoice(disputeSub,disputePI,979,'price_disputetest01','in_disputetest01')))
+    safety(result);assert.equal(result.outcome,'paid_test_ledger')
+    const dispute={object:'dispute',livemode:false,currency:'eur',
+      payment_intent:disputePI,amount:400,status:'needs_response'}
+    result=await billing.reconcile(signed('evt_disputecreated01','charge.dispute.created',
+      dispute,Math.floor(clock/1000)-5))
+    safety(result)
+    assert.equal(result.outcome,'dispute_held')
+    assert.equal((await status(disputeSub)).status,'unpaid')
+    assert.equal((await status(disputeSub)).refunded,false)
+    assert.equal(await terminal(disputeSub),true)
+    result=await billing.reconcile(signed('evt_disputeupdate01','customer.subscription.updated',
+      {object:'subscription',id:disputeSub,customer,livemode:false,status:'active'},
+      Math.floor(clock/1000)+7))
+    safety(result)
+    assert.equal(result.outcome,'terminal_ignored')
+    assert.equal((await status(disputeSub)).status,'unpaid')
+    assert.deepEqual(await paymentCounts(),{linked:2,incidents:2})
+    assert.equal((await pool.query('SELECT count(*)::int n FROM xa_xorus_grants')).rows[0].n,0)
   }finally{await pool.end()}
 })
 
