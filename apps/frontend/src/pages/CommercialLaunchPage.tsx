@@ -19,7 +19,7 @@ const COPY = {
     signal: 'Catalogue de présentation · aucune commande ni paiement accepté sur cette page',
     warning: 'Ces montants sont des objectifs, pas des devis exécutables. Aucun abonnement ni achat NFT n’est ouvert. Politique Genesis : devis EUR/EGLD au moment de la signature, TTL prévu 180 secondes, base EUR non encore définie.',
     servicesTitle: 'Analyses xArtists — sans wallet',
-    servicesLead: 'Trois niveaux de prix mensuels en euros, sans wallet et sans NFT. Les analyses existent comme trois domaines de recherche distincts : aucune correspondance niveau → rapport n’est encore certifiée.',
+    servicesLead: 'Trois niveaux de prix mensuels en euros prévus via Stripe Nelsonprods, sans wallet et sans NFT. Les analyses existent comme trois domaines de recherche distincts : aucune correspondance niveau → rapport n’est encore certifiée.',
     level: 'Niveau',
     perMonth: 'TTC / mois',
     servicesTag: 'Abonnement EUR · services uniquement',
