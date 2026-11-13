@@ -160,7 +160,7 @@ export function Directory(){
   <nav className="xa-directory-starters" aria-label={c('welcomeAsk')}><h2>{c('welcomeAsk')}</h2><div className="xa-directory-starter-grid">
    {[{to:"/museum",icon:"museum",title:c("welcomeExplore"),lead:c("welcomeExploreDesc")},{to:"/studio",icon:"create",title:c("welcomeCreate"),lead:c("welcomeCreateDesc")},{to:"/marketplace",icon:"market",title:c("welcomeMarket"),lead:c("welcomeMarketDesc")},{to:"/guide",icon:"book",title:c("help"),lead:c("guideIntro")}].map(item=><Link to={item.to} key={item.to} className="xa-directory-starter"><Icon name={item.icon} size={22}/><strong>{item.title}</strong><small>{item.lead}</small></Link>)}
   </div></nav>
-  {!lab&&<p className="xa-soft-launch-advanced"><Link to="/directory?lab=1" className="xa-text-link">{c('welcomeAdvanced')} · {c('directory')} <Icon name="arrow" size={16}/></Link></p>}
+  {!lab&&<p className="xa-soft-launch-advanced"><Link to="/directory?lab=1" className="xa-text-link">{c('advancedModules')} <Icon name="arrow" size={16}/></Link></p>}
   <div className="xa-directory-controls">
    <div className="xa-filter-tabs" role="group" aria-label={c('filter')}>{['all',...groups].map(g=><button type="button" key={g} className={group===g?'active':''} onClick={()=>set('group',g)} aria-pressed={group===g}>{c(g)}</button>)}</div>
    <label className="xa-filter-search"><Icon name="search" size={17}/><input type="search" value={q} onChange={e=>set('q',e.target.value)} placeholder={c('search')} aria-label={c('search')}/></label>
