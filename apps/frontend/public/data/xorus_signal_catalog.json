@@ -1,0 +1,848 @@
+{
+  "schema": "xorus_signal_catalog/v1",
+  "source": "lia/chorus/catalog.py",
+  "kind": "signal_definitions_not_observations",
+  "total_defined": 120,
+  "signals": [
+    {
+      "id": "price.ret_1h",
+      "family": "price",
+      "axis": "ret_1h",
+      "n": 1,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "price.ret_4h",
+      "family": "price",
+      "axis": "ret_4h",
+      "n": 2,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "price.ret_24h",
+      "family": "price",
+      "axis": "ret_24h",
+      "n": 3,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "price.ret_7d",
+      "family": "price",
+      "axis": "ret_7d",
+      "n": 4,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "price.vwap_dev",
+      "family": "price",
+      "axis": "vwap_dev",
+      "n": 5,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "price.rsi_zone",
+      "family": "price",
+      "axis": "rsi_zone",
+      "n": 6,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "price.ma_cross",
+      "family": "price",
+      "axis": "ma_cross",
+      "n": 7,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "price.range_pos",
+      "family": "price",
+      "axis": "range_pos",
+      "n": 8,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "price.gap",
+      "family": "price",
+      "axis": "gap",
+      "n": 9,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "price.close_vs_high",
+      "family": "price",
+      "axis": "close_vs_high",
+      "n": 10,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "volume.spike_1h",
+      "family": "volume",
+      "axis": "spike_1h",
+      "n": 1,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "volume.spike_24h",
+      "family": "volume",
+      "axis": "spike_24h",
+      "n": 2,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "volume.trend_3d",
+      "family": "volume",
+      "axis": "trend_3d",
+      "n": 3,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "volume.quiet_tape",
+      "family": "volume",
+      "axis": "quiet_tape",
+      "n": 4,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "volume.buy_ratio",
+      "family": "volume",
+      "axis": "buy_ratio",
+      "n": 5,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "volume.large_print",
+      "family": "volume",
+      "axis": "large_print",
+      "n": 6,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "volume.dex_share",
+      "family": "volume",
+      "axis": "dex_share",
+      "n": 7,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "volume.stable_share",
+      "family": "volume",
+      "axis": "stable_share",
+      "n": 8,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "volume.nft_share",
+      "family": "volume",
+      "axis": "nft_share",
+      "n": 9,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "volume.decay",
+      "family": "volume",
+      "axis": "decay",
+      "n": 10,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "volatility.atr_1h",
+      "family": "volatility",
+      "axis": "atr_1h",
+      "n": 1,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "volatility.atr_24h",
+      "family": "volatility",
+      "axis": "atr_24h",
+      "n": 2,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "volatility.bb_width",
+      "family": "volatility",
+      "axis": "bb_width",
+      "n": 3,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "volatility.realized_7d",
+      "family": "volatility",
+      "axis": "realized_7d",
+      "n": 4,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "volatility.jump",
+      "family": "volatility",
+      "axis": "jump",
+      "n": 5,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "volatility.compression",
+      "family": "volatility",
+      "axis": "compression",
+      "n": 6,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "volatility.skew",
+      "family": "volatility",
+      "axis": "skew",
+      "n": 7,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "volatility.wick_ratio",
+      "family": "volatility",
+      "axis": "wick_ratio",
+      "n": 8,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "volatility.overnight",
+      "family": "volatility",
+      "axis": "overnight",
+      "n": 9,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "volatility.regime",
+      "family": "volatility",
+      "axis": "regime",
+      "n": 10,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "liquidity.pool_usd",
+      "family": "liquidity",
+      "axis": "pool_usd",
+      "n": 1,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "liquidity.depth_1pct",
+      "family": "liquidity",
+      "axis": "depth_1pct",
+      "n": 2,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "liquidity.spread_bps",
+      "family": "liquidity",
+      "axis": "spread_bps",
+      "n": 3,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "liquidity.impact_10k",
+      "family": "liquidity",
+      "axis": "impact_10k",
+      "n": 4,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "liquidity.lp_change",
+      "family": "liquidity",
+      "axis": "lp_change",
+      "n": 5,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "liquidity.withdrawals",
+      "family": "liquidity",
+      "axis": "withdrawals",
+      "n": 6,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "liquidity.stable_depth",
+      "family": "liquidity",
+      "axis": "stable_depth",
+      "n": 7,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "liquidity.egld_depth",
+      "family": "liquidity",
+      "axis": "egld_depth",
+      "n": 8,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "liquidity.fragmentation",
+      "family": "liquidity",
+      "axis": "fragmentation",
+      "n": 9,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "liquidity.stale_quote",
+      "family": "liquidity",
+      "axis": "stale_quote",
+      "n": 10,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "onchain.tx_count",
+      "family": "onchain",
+      "axis": "tx_count",
+      "n": 1,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "onchain.active_addr",
+      "family": "onchain",
+      "axis": "active_addr",
+      "n": 2,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "onchain.contract_calls",
+      "family": "onchain",
+      "axis": "contract_calls",
+      "n": 3,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "onchain.nft_mints",
+      "family": "onchain",
+      "axis": "nft_mints",
+      "n": 4,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "onchain.stake_delta",
+      "family": "onchain",
+      "axis": "stake_delta",
+      "n": 5,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "onchain.fee_burn",
+      "family": "onchain",
+      "axis": "fee_burn",
+      "n": 6,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "onchain.failed_tx",
+      "family": "onchain",
+      "axis": "failed_tx",
+      "n": 7,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "onchain.new_contracts",
+      "family": "onchain",
+      "axis": "new_contracts",
+      "n": 8,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "onchain.bridge_in",
+      "family": "onchain",
+      "axis": "bridge_in",
+      "n": 9,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "onchain.bridge_out",
+      "family": "onchain",
+      "axis": "bridge_out",
+      "n": 10,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "dex.xex_vs_onedex",
+      "family": "dex",
+      "axis": "xex_vs_onedex",
+      "n": 1,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "dex.xex_vs_jex",
+      "family": "dex",
+      "axis": "xex_vs_jex",
+      "n": 2,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "dex.onedex_vs_jex",
+      "family": "dex",
+      "axis": "onedex_vs_jex",
+      "n": 3,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "dex.route_cost",
+      "family": "dex",
+      "axis": "route_cost",
+      "n": 4,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "dex.arb_window",
+      "family": "dex",
+      "axis": "arb_window",
+      "n": 5,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "dex.quote_age",
+      "family": "dex",
+      "axis": "quote_age",
+      "n": 6,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "dex.slippage_sim",
+      "family": "dex",
+      "axis": "slippage_sim",
+      "n": 7,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "dex.pool_imbalance",
+      "family": "dex",
+      "axis": "pool_imbalance",
+      "n": 8,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "dex.fee_tier",
+      "family": "dex",
+      "axis": "fee_tier",
+      "n": 9,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "dex.mev_proxy",
+      "family": "dex",
+      "axis": "mev_proxy",
+      "n": 10,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "funding.perp_funding",
+      "family": "funding",
+      "axis": "perp_funding",
+      "n": 1,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "funding.basis",
+      "family": "funding",
+      "axis": "basis",
+      "n": 2,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "funding.open_interest",
+      "family": "funding",
+      "axis": "open_interest",
+      "n": 3,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "funding.liq_long",
+      "family": "funding",
+      "axis": "liq_long",
+      "n": 4,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "funding.liq_short",
+      "family": "funding",
+      "axis": "liq_short",
+      "n": 5,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "funding.borrow_egld",
+      "family": "funding",
+      "axis": "borrow_egld",
+      "n": 6,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "funding.borrow_usdc",
+      "family": "funding",
+      "axis": "borrow_usdc",
+      "n": 7,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "funding.utilization",
+      "family": "funding",
+      "axis": "utilization",
+      "n": 8,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "funding.hatom_supply",
+      "family": "funding",
+      "axis": "hatom_supply",
+      "n": 9,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "funding.hatom_borrow",
+      "family": "funding",
+      "axis": "hatom_borrow",
+      "n": 10,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "social.mentions_1h",
+      "family": "social",
+      "axis": "mentions_1h",
+      "n": 1,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "social.mentions_24h",
+      "family": "social",
+      "axis": "mentions_24h",
+      "n": 2,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "social.sentiment",
+      "family": "social",
+      "axis": "sentiment",
+      "n": 3,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "social.unique_authors",
+      "family": "social",
+      "axis": "unique_authors",
+      "n": 4,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "social.bot_share",
+      "family": "social",
+      "axis": "bot_share",
+      "n": 5,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "social.news_shock",
+      "family": "social",
+      "axis": "news_shock",
+      "n": 6,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "social.discord_msgs",
+      "family": "social",
+      "axis": "discord_msgs",
+      "n": 7,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "social.x_engagement",
+      "family": "social",
+      "axis": "x_engagement",
+      "n": 8,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "social.narrative_shift",
+      "family": "social",
+      "axis": "narrative_shift",
+      "n": 9,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "social.silence",
+      "family": "social",
+      "axis": "silence",
+      "n": 10,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "art.floor_24h",
+      "family": "art",
+      "axis": "floor_24h",
+      "n": 1,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "art.floor_7d",
+      "family": "art",
+      "axis": "floor_7d",
+      "n": 2,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "art.listings",
+      "family": "art",
+      "axis": "listings",
+      "n": 3,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "art.sales_count",
+      "family": "art",
+      "axis": "sales_count",
+      "n": 4,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "art.royalty_volume",
+      "family": "art",
+      "axis": "royalty_volume",
+      "n": 5,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "art.wash_proxy",
+      "family": "art",
+      "axis": "wash_proxy",
+      "n": 6,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "art.holder_conc",
+      "family": "art",
+      "axis": "holder_conc",
+      "n": 7,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "art.new_collectors",
+      "family": "art",
+      "axis": "new_collectors",
+      "n": 8,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "art.museum_attention",
+      "family": "art",
+      "axis": "museum_attention",
+      "n": 9,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "art.primary_vs_secondary",
+      "family": "art",
+      "axis": "primary_vs_secondary",
+      "n": 10,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "risk.drawdown",
+      "family": "risk",
+      "axis": "drawdown",
+      "n": 1,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "risk.concentration",
+      "family": "risk",
+      "axis": "concentration",
+      "n": 2,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "risk.stable_depeg",
+      "family": "risk",
+      "axis": "stable_depeg",
+      "n": 3,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "risk.oracle_dev",
+      "family": "risk",
+      "axis": "oracle_dev",
+      "n": 4,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "risk.upgrade_flag",
+      "family": "risk",
+      "axis": "upgrade_flag",
+      "n": 5,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "risk.payable_flag",
+      "family": "risk",
+      "axis": "payable_flag",
+      "n": 6,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "risk.house_low",
+      "family": "risk",
+      "axis": "house_low",
+      "n": 7,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "risk.consecutive_loss",
+      "family": "risk",
+      "axis": "consecutive_loss",
+      "n": 8,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "risk.correlation_break",
+      "family": "risk",
+      "axis": "correlation_break",
+      "n": 9,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "risk.operator_halt",
+      "family": "risk",
+      "axis": "operator_halt",
+      "n": 10,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "macro.egld_usd",
+      "family": "macro",
+      "axis": "egld_usd",
+      "n": 1,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "macro.btc_usd",
+      "family": "macro",
+      "axis": "btc_usd",
+      "n": 2,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "macro.eth_usd",
+      "family": "macro",
+      "axis": "eth_usd",
+      "n": 3,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "macro.dxy_proxy",
+      "family": "macro",
+      "axis": "dxy_proxy",
+      "n": 4,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "macro.rates_proxy",
+      "family": "macro",
+      "axis": "rates_proxy",
+      "n": 5,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "macro.risk_on_basket",
+      "family": "macro",
+      "axis": "risk_on_basket",
+      "n": 6,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "macro.weekend",
+      "family": "macro",
+      "axis": "weekend",
+      "n": 7,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "macro.event_window",
+      "family": "macro",
+      "axis": "event_window",
+      "n": 8,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "macro.exchange_notice",
+      "family": "macro",
+      "axis": "exchange_notice",
+      "n": 9,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "macro.liquidity_regime",
+      "family": "macro",
+      "axis": "liquidity_regime",
+      "n": 10,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "external.chatgpt_brief",
+      "family": "external",
+      "axis": "chatgpt_brief",
+      "n": 1,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "external.grok_note",
+      "family": "external",
+      "axis": "grok_note",
+      "n": 2,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "external.gemini_note",
+      "family": "external",
+      "axis": "gemini_note",
+      "n": 3,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "external.human_desk",
+      "family": "external",
+      "axis": "human_desk",
+      "n": 4,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "external.discord_mod",
+      "family": "external",
+      "axis": "discord_mod",
+      "n": 5,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "external.news_digest",
+      "family": "external",
+      "axis": "news_digest",
+      "n": 6,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "external.partner_gsn",
+      "family": "external",
+      "axis": "partner_gsn",
+      "n": 7,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "external.curator_note",
+      "family": "external",
+      "axis": "curator_note",
+      "n": 8,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "external.legal_flag",
+      "family": "external",
+      "axis": "legal_flag",
+      "n": 9,
+      "status": "defined_not_verified"
+    },
+    {
+      "id": "external.ops_freeze",
+      "family": "external",
+      "axis": "ops_freeze",
+      "n": 10,
+      "status": "defined_not_verified"
+    }
+  ]
+}

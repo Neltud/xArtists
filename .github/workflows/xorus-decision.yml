@@ -8,6 +8,10 @@ on:
       - 'lia/chorus/swarm.py'
       - 'lia/chorus/catalog.py'
       - 'tests/test_xorus_decision_agent.py'
+      - 'tests/test_xorus_public_catalog_sync.py'
+      - 'apps/frontend/public/data/xorus_signal_catalog.json'
+      - 'apps/frontend/src/lib/xorusDecisionReadout.mjs'
+      - 'apps/frontend/src/components/intelligence/**'
       - '.github/workflows/xorus-decision.yml'
   workflow_dispatch:
 
@@ -31,3 +35,4 @@ jobs:
           python -m unittest discover -s tests -p 'test_xorus_decision_agent.py' -v
           python -m unittest discover -s tests -p 'test_chorus_paper_safety.py' -v
           python -m unittest discover -s tests -p 'test_xorus_alias.py' -v
+          python -m unittest discover -s tests -p 'test_xorus_public_catalog_sync.py' -v
