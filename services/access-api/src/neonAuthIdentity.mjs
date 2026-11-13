@@ -10,7 +10,7 @@
  * headers (jku, x5u, etc.) or request bodies.
  */
 import { createPublicKey, verify as verifySignature } from 'node:crypto'
-import { findOrCreateAccountForVerifiedIdentity } from './accountRepository.mjs'
+import { findOrCreateAccountForVerifiedIdentity,findExistingAccountForVerifiedIdentity } from './accountRepository.mjs'
 
 const INVALID = 'neon_auth_identity_unverified'
 const SEGMENT = /^[A-Za-z0-9_-]+$/
@@ -157,4 +157,13 @@ export async function findOrCreateAccountFromNeonToken(pool, token, verifier) {
       typeof identity.subject !== 'string' || !identity.subject ||
       typeof identity.verifiedAt !== 'string') deny()
   return findOrCreateAccountForVerifiedIdentity(pool, identity)
+}
+
+/** Verified Neon JWT → existing active account UUID; no account creation. */
+export async function findExistingAccountFromNeonToken(pool, token, verifier) {
+  if(typeof verifier!=='function')throw new TypeError('server_neon_auth_verifier_required')
+  const identity=await verifier(token)
+  if(!identity||identity.provider!=='email_oidc'||typeof identity.subject!=='string'||
+     !identity.subject||typeof identity.verifiedAt!=='string')deny()
+  return findExistingAccountForVerifiedIdentity(pool,identity)
 }
