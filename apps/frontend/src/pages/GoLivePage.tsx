@@ -4,6 +4,7 @@ import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phra
  */
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import PublicReleaseEvidence from '../components/PublicReleaseEvidence'
 import RceStrip from '../components/RceStrip'
 import { AGENT_8008 } from '../config/agent8008'
 import { PACK_PRICE_EGLD } from '../config/multichain'
@@ -124,6 +125,7 @@ export default function GoLivePage() {
           <Link className="btn-secondary inline-flex min-h-[44px] items-center px-4 text-sm" to="/xorus">xOrus · Paper</Link>
         </nav>
       </header>
+      <PublicReleaseEvidence />
       <button type="button" onClick={() => setShowDiagnostics(v => !v)} aria-expanded={showDiagnostics}
         aria-controls="xa-operator-diagnostics"
         className="btn-secondary inline-flex min-h-[44px] items-center px-4 text-sm">
