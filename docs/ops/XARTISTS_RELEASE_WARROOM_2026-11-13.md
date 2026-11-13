@@ -92,6 +92,29 @@ readiness badges and accessible mobile menu at 360/390/430 px. Test the actual
 published SHA and root + nested routes. Revert the navigation commit if
 searchable core routes disappear or financial false-LIVE labels reappear.
 
+### Domain and commercial mailbox — public recheck 13 Nov (issue #341)
+
+**PUBLIC OBSERVED / DNS, not mailbox GO:** Authoritative `.art` RDAP
+(`https://rdap.centralnic.com/art/domain/xartists.art`) lists
+`client transfer prohibited`, `client delete prohibited`, `auto renew period`,
+with **no active clientHold/serverHold** in the 13 Nov 2026 observation.
+Google DNS-over-HTTPS NS resolves to OVH `dns107.ovh.net`/`ns107.ovh.net`;
+MX resolves to `1 mail.xartists.art.`; SPF is present; DMARC publishes `p=reject`.
+The apex A set matches GitHub Pages, and the `www` CNAME targets
+`neltud.github.io`. These are DNS observations only, not live HTTP/email proofs.
+
+PR #476 was prepared against an old base and its historic CI included failures.
+The follow-up code is deliberately **read-only**, pins an authoritative RDAP URL
+to avoid redirect failure, redacts private RDAP records and always reports
+`domain_release_ready:false` / `email_send_receive_verified:false`.
+Run `cd services/access-api && npm run ops:domain:check` manually for the
+latest public snapshot; its synthetic CI never performs operator changes.
+
+**Outstanding:** verify an actual existing `hello@xartists.art` mailbox,
+receive two independent real test messages and complete an outbound reply with
+redacted SPF/DKIM/DMARC headers. Until all pass, **NO-GO commercial email**;
+do not infer deliverability from published DNS alone.
+
 ### Lane 0 — Public discovery and honest catalogue (first safe launch)
 1. Confirm registrar/domain, DNS, Pages output SHA and deep-link routing.
 2. Run release, route and mobile-browser smoke on **deployed** commit. Check
