@@ -212,6 +212,105 @@ pub trait AgentsMarketplace {
         self.pack_purchased_event(&buyer, pack_type, nonce, &token_id);
     }
 
+    /// One-off administrator fulfillment for a fully-pinned Genesis Pulse #005.
+    /// This intentionally DOES NOT call buyPack or take EGLD.
+    /// The original NFTCreate role stays on this SC: no role migration is required.
+    ///
+    /// REQUIREMENTS BEFORE OWNER CALL:
+    /// - independent bytes/SHA-256 readback of 3 public IPFS media and metadata JSON
+    /// - exact 32-byte SHA-256 of canonical metadata.json
+    /// - authorized mainnet upgrade reviewed separately; do not deploy merely because CI passes
+    /// - source rights, recipient and gas explicitly verified by contract owner
+    #[endpoint(mintGenesisPulse005)]
+    fn mint_genesis_pulse_005(
+        &self,
+        recipient: ManagedAddress,
+        metadata_uri: ManagedBuffer,
+        recto_uri: ManagedBuffer,
+        verso_uri: ManagedBuffer,
+        animation_uri: ManagedBuffer,
+        metadata_sha256: ManagedBuffer,
+    ) {
+        self.require_owner();
+        require!(!recipient.is_zero(), "missing recipient");
+        require!(!self.genesis_pulse_005_minted().get(), "Pulse 005 already minted");
+        require!(!self.pack_collection(PackType::Pulse as u8).is_empty(), "Pulse collection missing");
+        let token_id = self.pack_collection(PackType::Pulse as u8).get();
+        require!(
+            token_id == TokenIdentifier::from(&b"XAIPLS-2cf72b"[..]),
+            "unexpected Pulse collection"
+        );
+        require!(metadata_sha256.len() == 32, "expected raw 32-byte metadata sha256");
+        self.require_cidv1_media_uri(&metadata_uri, b"/metadata.json");
+        self.require_cidv1_media_uri(&recto_uri, b"/recto.png");
+        self.require_cidv1_media_uri(&verso_uri, b"/verso.png");
+        self.require_cidv1_media_uri(&animation_uri, b"/animation.mp4");
+
+        // MultiversX metadata convention: metadata:CID/metadata.json;tags:...
+        let mut attributes = ManagedBuffer::from(&b"metadata:"[..]);
+        let relative = metadata_uri
+            .copy_slice(7, metadata_uri.len() - 7)
+            .unwrap_or_else(|| sc_panic!("invalid metadata IPFS URI"));
+        attributes.append(&relative);
+        attributes.append_bytes(b";tags:xartists,pulse,genesis,005");
+
+        // First URI MUST be the PNG artwork for explorer thumbnails.
+        let mut uris = ManagedVec::<Self::Api, ManagedBuffer>::new();
+        uris.push(recto_uri);
+        uris.push(verso_uri);
+        uris.push(animation_uri);
+
+        let nonce = self.send().esdt_nft_create(
+            &token_id,
+            &BigUint::from(NFT_AMOUNT),
+            &ManagedBuffer::from(&b"Genesis Pulse #005"[..]),
+            &BigUint::from(ROYALTIES_BPS),
+            &metadata_sha256,
+            &attributes,
+            &uris,
+        );
+        // Atomic abort if someone else minted #005 in the meantime:
+        // the create + transfer are reverted, never mint with false "005" artwork.
+        require!(nonce == 5, "Pulse nonce 005 no longer available");
+        self.send().direct_esdt(
+            &recipient, &token_id, nonce, &BigUint::from(NFT_AMOUNT),
+        );
+        self.genesis_pulse_005_minted().set(true);
+        self.genesis_pulse_005_event(&recipient, nonce, &metadata_sha256);
+    }
+
+    /// On-chain syntax gate ONLY: a well-formed CID is not proof of a live pin.
+    /// Off-chain exact-byte SHA-256 and independent gateway readback are mandatory
+    /// and must be approved before the owner ever submits this transaction.
+    fn require_cidv1_media_uri(&self, uri: &ManagedBuffer, expected_filename: &[u8]) {
+        require!(
+            uri.len() > 7 + 25 + expected_filename.len() && uri.len() <= 180,
+            "invalid IPFS media URI length"
+        );
+        let mut scheme = [0u8; 7];
+        uri.load_slice(0, &mut scheme);
+        require!(scheme == *b"ipfs://", "requires IPFS URI");
+        let tail = uri
+            .copy_slice(uri.len() - expected_filename.len(), expected_filename.len())
+            .unwrap_or_else(|| sc_panic!("invalid IPFS filename"));
+        require!(tail == ManagedBuffer::from(expected_filename), "wrong IPFS media filename");
+        // This isolated owner mint explicitly supports canonical CIDv1 base32
+        // directory URIs (bafy...), avoiding arbitrary hosts or fake "CID" paths.
+        let cid_len = uri.len() - 7 - expected_filename.len();
+        require!(cid_len >= 40 && cid_len <= 90, "invalid IPFS CID length");
+        let mut prefix = [0u8; 4];
+        uri.load_slice(7, &mut prefix);
+        require!(prefix == *b"bafy", "requires CIDv1 bafy");
+        for i in 7..(7 + cid_len) {
+            let mut c = [0u8; 1];
+            uri.load_slice(i, &mut c);
+            require!(
+                (c[0] >= b'a' && c[0] <= b'z') || (c[0] >= b'2' && c[0] <= b'7'),
+                "invalid IPFS CID character"
+            );
+        }
+    }
+
     #[endpoint(listAgentAction)]
     fn list_agent_action(&self, agent_id: ManagedBuffer, price: BigUint) {
         self.require_not_paused();
@@ -343,6 +442,12 @@ pub trait AgentsMarketplace {
         }
     }
 
+    #[event("genesisPulse005Minted")]
+    fn genesis_pulse_005_event(
+        &self, #[indexed] recipient: &ManagedAddress,
+        #[indexed] nonce: u64, metadata_sha256: &ManagedBuffer,
+    );
+
     #[event("list")]
     fn list_event(&self, #[indexed] id: u64, #[indexed] seller: &ManagedAddress);
 
@@ -389,6 +494,9 @@ pub trait AgentsMarketplace {
 
     #[storage_mapper("packCollection")]
     fn pack_collection(&self, pack_type: u8) -> SingleValueMapper<TokenIdentifier>;
+
+    #[storage_mapper("genesisPulse005Minted")]
+    fn genesis_pulse_005_minted(&self) -> SingleValueMapper<bool>;
 
     #[storage_mapper("packPrice")]
     fn pack_price(&self, pack_type: u8) -> SingleValueMapper<BigUint>;
