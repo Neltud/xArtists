@@ -42,6 +42,21 @@ pas une date de build. Le SHA est déclaré par l'hébergeur : il n'est ni une
 signature d'image ni une autorisation d'action. Aucune variable privée n'est
 retournée ; aucun paramètre HTTP ne peut modifier cette identité.
 
+## Domaine canonique et contrôles publics
+
+Les origines publiques exactes sont partagées par les réponses API et le retour
+OAuth xRights : `https://xartists.art`, l'origine Render et l'ancienne origine
+GitHub Pages. La migration du domaine ne dépend plus d'une variable CORS encore
+réglée sur l'ancien hébergement. Les domaines ressemblants, variantes HTTP et
+ports non autorisés restent refusés. Cela n'active aucun fournisseur de paiement
+ni consentement OAuth : leurs autres conditions restent obligatoires.
+
+La sonde publique utilise la racine de `xartists.art` et conserve `/xArtists/`
+uniquement pour le frontend Render. Sur une PR, elle teste ses contrats hors
+ligne ; les requêtes vers la production s'exécutent après publication ou lors
+de la surveillance existante. Après une modification du code API, elle attend
+de façon bornée que le runtime expose le SHA poussé avant de vérifier le CORS.
+
 ## Validation et suivi
 
 Vérifier les suites frontend/API, TypeScript et les 133 routes ; attendre la

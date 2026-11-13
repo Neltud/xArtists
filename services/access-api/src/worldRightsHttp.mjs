@@ -1,12 +1,13 @@
 /** XA World Rights: isolated YouTube read-only OAuth. Financial operations do not exist here. */
 import {randomBytes,createHash} from 'node:crypto'
+import {PUBLIC_FRONTEND_ORIGINS} from './publicOrigins.mjs'
 const SCOPE='https://www.googleapis.com/auth/youtube.readonly'
 const COOKIE='__Host-xa_world_rights'
 const hash=v=>createHash('sha256').update(v).digest('hex')
 const random=()=>randomBytes(32).toString('base64url')
 const channelId=/^UC[A-Za-z0-9_-]{22}$/
 export function worldRightsConfig(env=process.env){
-  const origins=['https://neltud.github.io','https://xartists-services-and-products.onrender.com']
+  const origins=PUBLIC_FRONTEND_ORIGINS
   let callback=null
   try{const u=new URL(env.WORLD_RIGHTS_GOOGLE_REDIRECT_URI||'');if(u.protocol==='https:'&&!u.username&&!u.password&&!u.search&&!u.hash&&u.pathname==='/world-rights/youtube/callback')callback=u.href}catch{}
   const enabled=env.WORLD_RIGHTS_YOUTUBE_ENABLED==='1'&&Boolean(callback)&&/^[A-Za-z0-9_-]+\.apps\.googleusercontent\.com$/.test(env.WORLD_RIGHTS_GOOGLE_CLIENT_ID||'')&&Boolean(env.WORLD_RIGHTS_GOOGLE_CLIENT_SECRET)

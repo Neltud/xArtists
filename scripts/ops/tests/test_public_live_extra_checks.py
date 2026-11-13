@@ -22,6 +22,19 @@ class FakeResponse:
 
 
 class PublicLiveChecksTests(unittest.TestCase):
+    def test_canonical_pages_and_render_use_their_actual_distinct_bases(self):
+        calls = []
+        def read(url, *args, **kwargs):
+            calls.append(url)
+            return 200, {"content-type": "text/html"}, b"<html>xArtists</html>"
+        with patch.object(smoke, "fetch_public", side_effect=read):
+            smoke.check_frontend(smoke.PAGES)
+            smoke.check_frontend(smoke.RENDER, base_path="/xArtists")
+        self.assertEqual(calls, [
+            "https://xartists.art/", "https://xartists.art/tro/sale/",
+            smoke.RENDER + "/xArtists/", smoke.RENDER + "/xArtists/tro/sale/",
+        ])
+
     def test_both_exact_origins_are_allowed(self):
         for origin in (smoke.PAGES, smoke.RENDER):
             headers = {

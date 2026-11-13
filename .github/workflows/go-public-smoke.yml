@@ -34,9 +34,43 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 2
       - name: Prove read-only probe is fail-closed without network
         run: python3 -m unittest discover -s scripts/ops/tests -p 'test_public_live_extra_checks.py' -v
+      # A PR cannot repair the already-deployed CORS policy. Candidate API
+      # behavior is tested separately; strict public probes run after publication.
+      - name: Wait for changed API code to reach the public runtime
+        if: github.event_name == 'push'
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet HEAD^ HEAD -- services/access-api/src; then exit 0; fi
+          python3 - <<'PY'
+          import json, os, time
+          from urllib.error import HTTPError, URLError
+          from urllib.request import urlopen
+          expected = os.environ['GITHUB_SHA']
+          for attempt in range(20):
+              try:
+                  with urlopen('https://xartists-access-api.onrender.com/v1/ops/build-info', timeout=10) as response:
+                      identity = json.loads(response.read(8192))
+                  if (identity.get('ok') is True and identity.get('service') == 'access-api'
+                      and identity.get('source_sha') == expected
+                      and identity.get('execution_authorized') is False):
+                      print('Public API runtime matches pushed SHA:', expected)
+                      break
+              except HTTPError as error:
+                  if error.code in (401, 403):
+                      raise SystemExit('Public API identity requires unexpected authorization') from None
+              except (URLError, TimeoutError, OSError, ValueError):
+                  pass
+              if attempt == 19:
+                  raise SystemExit('Public API did not publish the pushed SHA within the bounded wait')
+              time.sleep(15)
+          PY
       - name: Probe Pages and access-api
+        if: github.event_name != 'pull_request'
         shell: bash
         run: |
           set -euo pipefail
@@ -51,7 +85,7 @@ jobs:
             echo "$code  $url"
             if [ "$code" != "200" ]; then fail=1; fi
           }
-          BASE=https://neltud.github.io/xArtists
+          BASE=https://xartists.art
           API=https://xartists-access-api.onrender.com
 
           check "$BASE/"
@@ -120,4 +154,5 @@ jobs:
           PY
 
       - name: Verify Pages and Render origins, safe CORS, TRO bridge and DB
+        if: github.event_name != 'pull_request'
         run: python3 scripts/ops/public_live_extra_checks.py
