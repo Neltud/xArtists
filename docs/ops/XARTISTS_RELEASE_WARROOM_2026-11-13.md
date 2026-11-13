@@ -35,20 +35,20 @@ mint NFT, deploy smart contracts or open commercial checkout.
 
 | Issue | Rail | Exit criterion (must all be evidenced) |
 | --- | --- | --- |
-| [#281](../../issues/281) | Mint delivery / Neon | Identified prod DSN, isolated test DB, S1 PSP, S2 chain, transaction-atomic `delivered_at`, retries and refunds |
-| [#428](../../issues/428) | Marketplace EGLD | Contract codeHash/ABI, two-wallet test, listing/bid/buy/royalties and actual buyer receipt |
-| [#548](../../issues/548) | xOrus commercial | Private derived reports, commercial source rights, account entitlements/quotas, recurring PSP, revocation |
-| [#570](../../issues/570) | Jupiter Solana | Decode and independently validate unsigned message, mints, owners, programs, simulation and explicit signing policy |
-| [#465](../../issues/465) | Identity | Verified email login, stable server identity, optional domain-bound SIWX link, EU subscription billing |
-| [#506](../../issues/506) | xPortal | Reown allowlist `xartists.art` / `www.xartists.art`, real browser QR/pairing on mobile, no stuck state |
-| [#487](../../issues/487) | Artprice | Written B2B rights, approved fields/datasets/derivatives, no scraping or fake license |
-| [#341](../../issues/341) | Domain / contact | Remove registrar hold, DNS A/NS/MX, SPF/DMARC, real inbound/outbound external mailbox tests |
-| [#347](../../issues/347) | xOrus telemetry | Fresh authenticated producer, real timestamps + independent provenance; ABSTAIN if stale |
-| [#393](../../issues/393) | Dapp 360 UX | Mobile/desktop keyboard and user journey tests for all visible modules; clear demo/live status |
-| [#403](../../issues/403) | Genesis Pulse #005 | Rights-cleared media, actual IPFS, exact bytes, signed mint, finality and owner readback |
-| [#416](../../issues/416) | XA World Rights | Correct software licensing, legal ownership, public ZIP/distribution policy, entitlement guard |
-| [#367](../../issues/367) | BUY_PACK paper | Structured intent only, immutable quote, replay guard, server journal, public E2E without trade |
-| [#391](../../issues/391) | Solana/Polygon NFT | Rights-cleared discovery first, no unsupported OpenSea transaction; testnet before mainnet |
+| [#281](https://github.com/Neltud/xArtists/issues/281) | Mint delivery / Neon | Identified prod DSN, isolated test DB, S1 PSP, S2 chain, transaction-atomic `delivered_at`, retries and refunds |
+| [#428](https://github.com/Neltud/xArtists/issues/428) | Marketplace EGLD | Contract codeHash/ABI, two-wallet test, listing/bid/buy/royalties and actual buyer receipt |
+| [#548](https://github.com/Neltud/xArtists/issues/548) | xOrus commercial | Private derived reports, commercial source rights, account entitlements/quotas, recurring PSP, revocation |
+| [#570](https://github.com/Neltud/xArtists/issues/570) | Jupiter Solana | Decode and independently validate unsigned message, mints, owners, programs, simulation and explicit signing policy |
+| [#465](https://github.com/Neltud/xArtists/issues/465) | Identity | Verified email login, stable server identity, optional domain-bound SIWX link, EU subscription billing |
+| [#506](https://github.com/Neltud/xArtists/issues/506) | xPortal | Reown allowlist `xartists.art` / `www.xartists.art`, real browser QR/pairing on mobile, no stuck state |
+| [#487](https://github.com/Neltud/xArtists/issues/487) | Artprice | Written B2B rights, approved fields/datasets/derivatives, no scraping or fake license |
+| [#341](https://github.com/Neltud/xArtists/issues/341) | Domain / contact | Remove registrar hold, DNS A/NS/MX, SPF/DMARC, real inbound/outbound external mailbox tests |
+| [#347](https://github.com/Neltud/xArtists/issues/347) | xOrus telemetry | Fresh authenticated producer, real timestamps + independent provenance; ABSTAIN if stale |
+| [#393](https://github.com/Neltud/xArtists/issues/393) | Dapp 360 UX | Mobile/desktop keyboard and user journey tests for all visible modules; clear demo/live status |
+| [#403](https://github.com/Neltud/xArtists/issues/403) | Genesis Pulse #005 | Rights-cleared media, actual IPFS, exact bytes, signed mint, finality and owner readback |
+| [#416](https://github.com/Neltud/xArtists/issues/416) | XA World Rights | Correct software licensing, legal ownership, public ZIP/distribution policy, entitlement guard |
+| [#367](https://github.com/Neltud/xArtists/issues/367) | BUY_PACK paper | Structured intent only, immutable quote, replay guard, server journal, public E2E without trade |
+| [#391](https://github.com/Neltud/xArtists/issues/391) | Solana/Polygon NFT | Rights-cleared discovery first, no unsupported OpenSea transaction; testnet before mainnet |
 
 **No issue above should be closed only because a mock test passed.** A PR
 implementation and a publicly observed final receipt are distinct evidence.
@@ -57,17 +57,17 @@ implementation and a publicly observed final receipt are distinct evidence.
 
 | PR | Decision | Reason |
 | --- | --- | --- |
-| [#573](../../pull/573) | MERGED to main | Fail-close Jupiter signing until independent presign audit; not a live trade |
-| [#574](../../pull/574) | REVIEW + CI | Read-only Solana native SOL receipt; does not connect PayBox.sh or credit funds |
-| [#454](../../pull/454) | CLOSED (not merged) | Legacy LIA NLP/HMAC mandate out of #367 scoped P0 and duplicates xOrus architecture |
-| [#476](../../pull/476) | HOLD / rebase | Domain RDAP DNS gate; avoid false mailbox GO, verify conflicts |
-| [#477](../../pull/477) | DRAFT / consolidate | Owner go-live decisions are prep, not payment proof |
-| [#478](../../pull/478) | DRAFT / consolidate | Commercial GO-by-rail document; no financial activation |
-| [#457](../../pull/457) | HOLD | Three.js/esbuild coordinated version upgrade; full 3D smoke mandatory |
-| [#459](../../pull/459) | HOLD | WalletConnect major upgrade during unresolved #506; reproduce browser failures first |
-| [#458](../../pull/458) | HOLD | TypeScript major migration; do not bypass build/tests |
-| [#430](../../pull/430) | DRAFT / NO-UPGRADE | RWA escrow storage incompatible with existing serialized records |
-| [#407](../../pull/407) | DRAFT / NO-MINT | Pulse #005 rights/IPFS/contract deployment and wallet proof absent |
+| [#573](https://github.com/Neltud/xArtists/pull/573) | MERGED to main | Fail-close Jupiter signing until independent presign audit; not a live trade |
+| [#574](https://github.com/Neltud/xArtists/pull/574) | REVIEW + CI | Read-only Solana native SOL receipt; does not connect PayBox.sh or credit funds |
+| [#454](https://github.com/Neltud/xArtists/pull/454) | CLOSED (not merged) | Legacy LIA NLP/HMAC mandate out of #367 scoped P0 and duplicates xOrus architecture |
+| [#476](https://github.com/Neltud/xArtists/pull/476) | HOLD / rebase | Domain RDAP DNS gate; avoid false mailbox GO, verify conflicts |
+| [#477](https://github.com/Neltud/xArtists/pull/477) | DRAFT / consolidate | Owner go-live decisions are prep, not payment proof |
+| [#478](https://github.com/Neltud/xArtists/pull/478) | DRAFT / consolidate | Commercial GO-by-rail document; no financial activation |
+| [#457](https://github.com/Neltud/xArtists/pull/457) | HOLD | Three.js/esbuild coordinated version upgrade; full 3D smoke mandatory |
+| [#459](https://github.com/Neltud/xArtists/pull/459) | HOLD | WalletConnect major upgrade during unresolved #506; reproduce browser failures first |
+| [#458](https://github.com/Neltud/xArtists/pull/458) | HOLD | TypeScript major migration; do not bypass build/tests |
+| [#430](https://github.com/Neltud/xArtists/pull/430) | DRAFT / NO-UPGRADE | RWA escrow storage incompatible with existing serialized records |
+| [#407](https://github.com/Neltud/xArtists/pull/407) | DRAFT / NO-MINT | Pulse #005 rights/IPFS/contract deployment and wallet proof absent |
 
 ## Release lanes and ordering
 
