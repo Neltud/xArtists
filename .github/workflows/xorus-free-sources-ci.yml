@@ -1,0 +1,31 @@
+name: xOrus free source scope and safe corroboration
+
+on:
+  pull_request:
+    paths:
+      - 'services/access-api/src/xorusFreeSourcePolicy.mjs'
+      - 'services/access-api/src/server.mjs'
+      - 'services/access-api/tests/xorusFreeSourcePolicy.test.mjs'
+      - 'docs/ops/XORUS_FREE_DATA_SOURCE_POLICY_2026-11-13.md'
+      - '.github/workflows/xorus-free-sources-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  free-rights:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Source-reuse scope and independent-origin tests (offline)
+        run: |
+          node --check services/access-api/src/xorusFreeSourcePolicy.mjs
+          node --check services/access-api/src/server.mjs
+          node --test services/access-api/tests/xorusFreeSourcePolicy.test.mjs
