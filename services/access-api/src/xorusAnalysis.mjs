@@ -7,6 +7,14 @@ import {interpretXorusAnalysisReport,projectXorusAnalysisReport} from '../../../
 const ROOT=fileURLToPath(new URL('../../../',import.meta.url))
 const MAX_OUTPUT=32768
 const unavailable=()=>({ok:false,error:'analysis_unavailable'})
+// Backoff may outlive the report's 15-minute freshness window. A cached
+// provider failure must NEVER remain an HTTP 200 "fresh" report merely
+// because the provider asked us not to retry yet.
+function safeResultAt(value,nowMs){
+  if(value?.ok!==true)return structuredClone(value)
+  const report=interpretXorusAnalysisReport(value.report,nowMs)
+  return report&&!report.stale?structuredClone(value):unavailable()
+}
 const canonical=value=>Array.isArray(value)?value.map(canonical):
   value&&typeof value==='object'?Object.fromEntries(Object.keys(value).sort().map(k=>[k,canonical(value[k])])):value
 
@@ -52,8 +60,8 @@ export function createXorusAnalysisService({runCycle=runPythonAnalysis,clock=Dat
       if(!enabled)return {ok:false,error:'analysis_disabled'}
       const now=clock()
       if(!Number.isFinite(now))return unavailable()
-      if(cached&&now<expires)return structuredClone(cached)
-      if(pending)return structuredClone(await pending)
+      if(cached&&now<expires)return safeResultAt(cached,now)
+      if(pending)return safeResultAt(await pending,clock())
       pending=(async()=>{
         let result=unavailable(),ttl=60000
         try{
@@ -76,7 +84,7 @@ export function createXorusAnalysisService({runCycle=runPythonAnalysis,clock=Dat
         cached=result;expires=clock()+Math.max(0,ttl)
         return result
       })()
-      try{return structuredClone(await pending)}finally{pending=null}
+      try{return safeResultAt(await pending,clock())}finally{pending=null}
     },
   })
 }
