@@ -86,7 +86,13 @@ export default function XorusAgentEvidence(){
   },[apiBase])
   useEffect(()=>{
     const controller=new AbortController()
-    const timeout=window.setTimeout(()=>controller.abort(),API_TIMEOUT_MS)
+    const timeout=window.setTimeout(()=>{
+      // An unreachable API must never leave a permanently spinning report.
+      // Timeout is authoritative even when fetch never settles after abort.
+      setReport(null)
+      setState('unavailable')
+      controller.abort()
+    },API_TIMEOUT_MS)
     void load(controller.signal).finally(()=>window.clearTimeout(timeout))
     return ()=>{window.clearTimeout(timeout);controller.abort()}
   },[load,requested])
