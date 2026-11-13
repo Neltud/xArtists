@@ -54,3 +54,26 @@ for(const [lang,width] of [['fr',390],['en',1440]] as const){
     await expect(analysis).not.toContainText(lang==='fr'?'indicateurs équilibrés':'balanced indicators')
   })
 }
+
+test('xOrus browser retries one transient 503 after Render wake-up, with no offline substitution',async({page})=>{
+  await page.setViewportSize({width:390,height:844})
+  let attempts=0,legacyRequests=0
+  await page.route('**/data/xorus_analysis_preview.json',route=>{
+    legacyRequests++
+    return route.abort()
+  })
+  await page.route('https://analysis-api.invalid/v1/xorus/analysis',route=>{
+    attempts++
+    return attempts===1
+      ? route.fulfill({status:503,headers,json:{ok:false,error:'analysis_unavailable'}})
+      : route.fulfill({headers,json:{ok:true,report:current(collected)}})
+  })
+  await page.route('https://api.multiversx.com/economics*',route=>route.fulfill({status:503}))
+  await page.goto('/intelligence/lab/?lang=fr',{waitUntil:'domcontentloaded'})
+  const desk=page.getByTestId('xorus-decision-desk')
+  await expect(desk).toContainText('Analyse calculée sur 6 indicateurs',{timeout:10000})
+  await expect(desk).toContainText('Binance Spot · EGLD/USDT')
+  expect(attempts).toBe(2)
+  expect(legacyRequests).toBe(0)
+  await expect(desk).toContainText('S’ABSTENIR')
+})
