@@ -301,13 +301,14 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
       await expect(page.locator('.xa-first-hero')).toBeVisible()
       await expect(page.locator('.xa-first-tile')).toHaveCount(4)
       await expect(page.locator('.xa-first-hero canvas')).toHaveCount(0)
-      for (const path of ['/museum', '/studio', '/marketplace', '/finance/governance']) {
+      for (const path of ['/museum', '/studio', '/marketplace', '/intelligence/xorus']) {
         await expect(page.locator(`.xa-mobile-dock a[href*="${path}"]`)).toHaveCount(1)
       }
       const menu = page.locator('.xa-mobile-trigger')
       await menu.click()
       await page.locator('.xa-mobile-advanced summary').click()
       await expect(page.locator('.xa-mobile-menu a[href*="/auction"]')).toBeVisible()
+      await expect(page.locator('.xa-mobile-menu a[href*="/dao"]')).toBeVisible()
       await expect(page.locator('.xa-mobile-menu a[href*="/create/world-rights"]')).toBeVisible()
       await page.keyboard.press('Escape')
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)
@@ -784,7 +785,11 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
     await page.emulateMedia({reducedMotion:'reduce'})
     await visit(page,'/intelligence/xorus/?lang=fr')
     const journey=page.getByRole('navigation',{name:'Parcours Intelligence xOrus'})
-    await expect(journey.getByRole('link')).toHaveCount(3)
+    await expect(journey.getByRole('link')).toHaveCount(2)
+    // The full xOrus → Agents → Lab path is an explicit advanced opt-in.
+    await visit(page,'/intelligence/xorus/?lang=fr&lab=1')
+    await expect(page.getByRole('navigation',{name:'Parcours Intelligence xOrus'}).getByRole('link')).toHaveCount(3)
+    await visit(page,'/intelligence/xorus/?lang=fr')
     await expect(page.getByRole('heading',{name:'xOrus, l’intelligence expliquée simplement'})).toBeVisible()
     await expect(page.getByRole('button',{name:'Afficher les outils avancés'})).toHaveAttribute('aria-expanded','false')
     await expect(page.locator('#xorus-paybox-wallet')).toHaveCount(0)

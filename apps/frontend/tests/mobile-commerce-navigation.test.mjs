@@ -18,7 +18,7 @@ test('mobile dock has five visitor-first destinations; auctions remain in the me
   const match = shell.match(/const MOBILE_DESTINATIONS = \[([\s\S]*?)\] as const/)
   assert.ok(match, 'must have explicit, testable dock destination registry')
   const destinations = [...match[1].matchAll(/to:'([^']+)'/g)].map(m=>m[1])
-  assert.deepEqual(destinations, ['/', '/museum', '/studio', '/marketplace', '/finance/governance'])
+  assert.deepEqual(destinations, ['/', '/museum', '/studio', '/marketplace', '/intelligence/xorus'])
   assert.match(shell, /<Link to="\/museum" onClick=\{closeMobile\}>/)
   assert.match(shell, /<Link to="\/dao" onClick=\{closeMobile\}>/)
   assert.match(shell, /aria-current=\{active\?'page':undefined\}/)

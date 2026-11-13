@@ -20,10 +20,10 @@ test('a single understandable journey connects xOrus, Agents and Lab',()=>{
   assert.match(css,/\.xa-intelligence-path/)
   assert.match(css,/@media\(max-width:760px\)/)
   assert.match(routes,/import '\.\.\/pages\/lab-page\.css'/)
-  assert.match(directory,/const coreIntelligence=new Set\(\['lia','agents','lab'\]\)/)
+  assert.match(directory,/isSoftLaunchVisible\(m,lab\)/)
   assert.match(directory,/showIntelligenceAdvanced/)
   assert.match(directory,/group==='intelligence'/)
-  assert.match(directory,/<IntelligencePath\/>/)
+  assert.match(directory,/<IntelligencePath advanced=\{showIntelligenceAdvanced\|\|lab\}\/>/)
 
 })
 

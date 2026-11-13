@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom'
 import { useI18n } from '../../i18n/I18nContext'
+import {showLabModules} from '../../experience/softLaunch'
 
 /** A single human-readable itinerary for the three public intelligence pages.
  * Deliberately read-only. No connection, subscription or trade is required.
@@ -13,13 +14,14 @@ const steps = [
     frSub:'Tester sans risque', enSub:'Try without risk' },
 ] as const
 
-export default function IntelligencePath() {
+export default function IntelligencePath({advanced=false}:{advanced?:boolean}) {
   const { lang } = useI18n()
   const { pathname } = useLocation()
   const fr=lang==='fr'
+  const lab=advanced||showLabModules()
   return (
     <nav className="xa-intelligence-path" aria-label={fr?'Parcours Intelligence xOrus':'xOrus intelligence journey'}>
-      {steps.map(step=>{
+      {steps.filter(step=>lab||step.path!=='/intelligence/lab').map(step=>{
         const selected=pathname===step.path || pathname===step.path+'/' ||
           (step.path.endsWith('/xorus')&&['/xorus','/lia'].includes(pathname)) ||
           (step.path.endsWith('/agents')&&['/agents','/packs'].includes(pathname)) ||

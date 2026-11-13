@@ -71,6 +71,27 @@ implementation and a publicly observed final receipt are distinct evidence.
 
 ## Release lanes and ordering
 
+### Soft-launch navigation policy — operator decision 13 Nov
+
+The default module navigator, group hubs, search and related sidebar use one
+**editorial** allowlist: `museum`, `market`, `maison`, `lia` (xOrus),
+`agents`, `packs`, `studio`, `gallery-builder`, `wallet`, `account`,
+`tro-crosschain` (information only), `status`, `legal`, `guide`, `app`.
+The DAO remains reachable from the homepage and the advanced menu, but is
+not a default dock/desktop entry. Auctions and RWA remain direct-linkable and
+available in the expanded mobile menu; neither is a verified sale.
+
+**Advanced access** remains available with `/directory?lab=1` (or owner
+localStorage override) and direct URLs/aliases. It is NOT an authorization
+for premium products or financial execution. Do not remove valid routes,
+customer-owned resources or bookmarked URLs.
+
+**Release acceptance:** verify all 44 module definitions / deep-link aliases,
+five mobile dock destinations, desktop nav, eight translations,
+readiness badges and accessible mobile menu at 360/390/430 px. Test the actual
+published SHA and root + nested routes. Revert the navigation commit if
+searchable core routes disappear or financial false-LIVE labels reappear.
+
 ### Lane 0 — Public discovery and honest catalogue (first safe launch)
 1. Confirm registrar/domain, DNS, Pages output SHA and deep-link routing.
 2. Run release, route and mobile-browser smoke on **deployed** commit. Check

@@ -20,14 +20,15 @@ test('DAO voting weight is exclusively staked TRO, never NFT/SFT or local balanc
   for (const sentence of variants) assert.ok(sentence.includes('$TRO'))
 })
 
-test('all registered module groups and sidebar destinations are discoverable by default', () => {
+test('all registered routes are preserved while group/sidebar listings honor the core or lab opt-in', () => {
   const pages = read('../src/experience/Pages.tsx')
   const modules = read('../src/experience/modules.ts')
   const count = [...modules.matchAll(/\bmodule\('/g)].length
   assert.ok(count >= 35, `unexpected module count: ${count}`)
   assert.match(pages, /const list=modules\.filter\(m=>m\.group===group&&/)
-  assert.match(pages, /modules\.filter\(x=>x\.group===m\.group\)/)
-  assert.doesNotMatch(pages, /showLabModules\(\)/)
+  assert.match(pages, /modules\.filter\(x=>x\.group===m\.group&&\(x\.id===m\.id\|\|isSoftLaunchVisible\(x\)\)\)/)
+  assert.match(pages, /showLabModules\(\)/)
+  assert.match(pages, /to="\/directory\?lab=1"/)
   assert.match(pages, /<StageBadge stage=\{stage\}\/>/)
   assert.match(pages, /publicStage\(m\.id\)/)
   assert.match(pages, /PUBLIC_STAGE_ORDER\.map/)

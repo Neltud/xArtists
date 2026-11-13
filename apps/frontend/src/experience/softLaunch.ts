@@ -1,32 +1,27 @@
 /**
- * Soft-launch IA: only core surfaces in group/directory by default.
- * Lab modules remain routed (aliases work) but hidden from browse UI
- * unless ?lab=1 or localStorage xa_show_lab=1.
+ * Soft-launch editorial navigation policy. Routes and aliases are deliberately
+ * NOT gated here. Deep links remain accessible; ?lab=1 reveals the full
+ * catalogue without granting payments, minting, signing or trading rights.
  */
 import type { Module } from './modules'
 
-/** Soft-launch perimeter: Genesis packs + museum + market + LIA paper + essentials */
+/** User-facing starting surfaces (browse, informational or explicitly preview). */
 export const CORE_MODULE_IDS = new Set([
-  'world-rights',
   'museum',
-  'maison',
-  'dao',
-  'auction',
-  'rwa',
   'market',
-  'agents',
+  'maison',
   'lia',
-  'studio',
-  'tro-crosschain',
-  'wallet',
+  'agents',
   'packs',
-  'app',
-  'legal',
-  'staking',
-  'portfolio',
-  'guide',
-  'payments',
+  'studio',
+  'gallery-builder',
+  'wallet',
+  'account',
+  'tro-crosschain',
   'status',
+  'legal',
+  'guide',
+  'app',
 ])
 
 export function isCoreModule(m: Module | { id: string }): boolean {
@@ -39,7 +34,12 @@ export function showLabModules(): boolean {
     if (new URLSearchParams(window.location.search).get('lab') === '1') return true
     if (window.localStorage.getItem('xa_show_lab') === '1') return true
   } catch {
-    /* ignore */
+    /* private mode or unavailable storage: stay core-only */
   }
   return false
+}
+
+/** Presentation-only visibility. NEVER use this as a capability or auth gate. */
+export function isSoftLaunchVisible(m: Module | {id:string}, lab = showLabModules()): boolean {
+  return lab || isCoreModule(m)
 }

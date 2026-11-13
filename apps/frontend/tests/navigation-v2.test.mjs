@@ -21,7 +21,9 @@ test('primary menu highlights the correct section across canonical paths and ali
     assert.equal(currentPrimarySection(p),'dao',p)
   for(const p of ['/guide','/roadmap','/feuille-de-route'])
     assert.equal(currentPrimarySection(p),'guide',p)
-  for(const p of ['/','/intelligence/lia','/workspace/wallet','/finance/trading'])
+  for(const p of ['/xorus','/lia','/agents','/intelligence/lia','/intelligence/xorus'])
+    assert.equal(currentPrimarySection(p),'lia',p)
+  for(const p of ['/','/workspace/wallet','/finance/trading'])
     assert.equal(currentPrimarySection(p),null,p)
 })
 
@@ -39,7 +41,7 @@ test('mobile dock is discovery-first while auction and DAO remain discoverable',
   const match=shell.match(/const MOBILE_DESTINATIONS = \[([\s\S]*?)\] as const/)
   assert.ok(match)
   const to=[...match[1].matchAll(/to:'([^']+)'/g)].map(x=>x[1])
-  assert.deepEqual(to,['/','/museum','/studio','/marketplace','/finance/governance'])
+  assert.deepEqual(to,['/','/museum','/studio','/marketplace','/intelligence/xorus'])
   assert.match(shell,/matchesDockRoute\(location\.pathname,item\.paths\)/)
   for(const p of ['/auction','/rwa','/dao','/nft-factory','/create/world-rights','/wallet','/portfolio','/directory']){
     assert.ok(shell.includes('to="'+p+'" onClick={closeMobile}'),p)
@@ -49,7 +51,7 @@ test('mobile dock is discovery-first while auction and DAO remain discoverable',
 
 test('search starts with six curated paths and caps results, with escape to full directory',()=>{
   assert.match(shell,/\.slice\(0,q\.trim\(\)\?12:6\)/)
-  assert.match(shell,/\['museum','studio','market','dao','agents','guide'\]/)
+  assert.match(shell,/\['museum','studio','market','lia','agents','account','guide'\]/)
   assert.match(shell,/className="xa-search-all"/)
   assert.match(shell,/role="combobox"/)
   assert.match(shell,/role="listbox"/)

@@ -28,18 +28,18 @@ test('Novice home presents four understandable journeys and no mandatory wallet'
   assert.doesNotMatch(home, /NetworkStrip|HomeHeroSculpture|LIA_CHAIN_PRIORITY/)
 })
 
-test('DAO is a primary nav destination on mobile, desktop, and module directory', () => {
+test('DAO stays reachable from home and advanced navigation without occupying primary nav', () => {
   assert.match(modules, /module\('dao','\/finance\/governance',\['\/dao'\]/)
-  assert.match(core, /'dao'/)
-  assert.match(shell, /\['dao','\/finance\/governance',c\('dao'\)\]/)
+  assert.doesNotMatch(core, /^\s+'dao',/m)
+  assert.match(shell, /\['lia','\/intelligence\/xorus',c\('lia'\)\]/)
   assert.match(shell, /to="\/dao" onClick=\{closeMobile\}/)
   assert.match(shell, /to="\/dao">\{c\('dao'\)\}/)
-  assert.match(shell, /to:'\/finance\/governance',label:'dao'/)
+  assert.match(shell, /to:'\/intelligence\/xorus',label:'lia'/)
   assert.match(shell, /to:'\/museum',label:'explore'/)
   assert.match(pages, /const list=modules\.filter\(m=>/)
   assert.match(pages, /group==='all'\|\|m\.group===group/)
   assert.match(pages, /matchesModuleSearch\(q,/)
-  assert.match(shell, /const results=useMemo\(\(\)=>modules\.filter\(m=>matchesModuleSearch\(q,/)
+  assert.match(shell, /const results=useMemo\(\(\)=>modules\.filter\(m=>isSoftLaunchVisible\(m,lab\)&&matchesModuleSearch\(q,/)
   assert.doesNotMatch(shell.slice(shell.indexOf('export function Search'), shell.indexOf('function Header')), /isCoreModule\(m\)/)
 })
 

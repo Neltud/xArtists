@@ -3,7 +3,7 @@
  * link equality. Old URLs and 126+ deployed routes remain addressable.
  * This is editorial navigation only and never grants commercial capability.
  */
-export type PrimarySection='explore'|'create'|'market'|'dao'|'guide'
+export type PrimarySection='explore'|'create'|'market'|'dao'|'guide'|'lia'
 
 function pathOnly(pathname:string): string {
   const path=pathname.split(/[?#]/,1)[0].replace(/\/+$/,'')
@@ -11,6 +11,9 @@ function pathOnly(pathname:string): string {
 }
 export function currentPrimarySection(pathname:string):PrimarySection|null {
   const path=pathOnly(pathname)
+  if(path==='/xorus'||path==='/lia'||path==='/agents'||path==='/packs'||
+      path==='/intelligence'||path.startsWith('/intelligence/'))
+    return 'lia'
   if(path==='/guide'||path==='/demo'||path==='/roadmap'||path==='/feuille-de-route')
     return 'guide'
   if(path==='/dao'||path==='/finance/governance'||path.startsWith('/finance/governance/'))

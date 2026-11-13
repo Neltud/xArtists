@@ -2,6 +2,8 @@ import type { Lang } from '../i18n/types'
 export const order: Lang[] = ['fr','en','es','de','ru','uk','zh','ar']
 // Each row is checked at build time; languages never inherit another locale.
 export const copy: Record<string, string[]> = {
+  advancedModules: ["Afficher les modules avancés","Show advanced modules","Mostrar módulos avanzados","Erweiterte Module anzeigen","Показать расширенные модули","Показати розширені модулі","显示高级模块","إظهار الوحدات المتقدمة"],
+  account: ["Mon compte · Email","My account · Email","Mi cuenta · Correo","Mein Konto · E-Mail","Мой аккаунт · Email","Мій обліковий запис · Email","我的账户 · 邮箱","حسابي · البريد الإلكتروني"],
   musicLabel: ["Musique d’ambiance","Background music","Música ambiental","Hintergrundmusik","Фоновая музыка","Фонова музика","背景音乐","موسيقى الخلفية"],
   marketGridTitle: ["Œuvres à découvrir","Explore artworks","Explorar obras","Kunstwerke entdecken","Открыть работы","Відкрити роботи","探索艺术作品","استكشف الأعمال"],
   marketGridDescription: ["Une vraie grille de découverte : œuvres de l’atelier et NFT réels, avec leur statut vérifiable.","Browse a real artwork grid: studio originals and on-chain NFTs, with clear verification status.","Una cuadrícula real: obras del estudio y NFT en cadena, con estados claros.","Echte Kunstwerke im Raster: Studioarbeiten und NFTs mit klarem Prüfstatus.","Настоящая галерея: работы студии и NFT в блокчейне с понятным статусом.","Справжня галерея: роботи студії та NFT у блокчейні зі зрозумілим статусом.","真实作品网格：工作室艺术品与链上 NFT，并明确标记验证状态。","شبكة أعمال حقيقية من الاستوديو ورموز NFT على السلسلة، مع حالة تحقق واضحة."],

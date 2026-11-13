@@ -8,7 +8,7 @@ export type ProductModule = {
   label: string
   emoji: string
   tier: ProductTier
-  /** live = on-chain utilisable · soon = UI prête SC en cours · ui = interface */
+  /** Editorial labels only: 'live' needs independent runtime/settlement evidence. */
   status: 'live' | 'soon' | 'ui'
   blurb: string
   sc?: string
@@ -17,10 +17,10 @@ export type ProductModule = {
 export const CORE_MODULES: ProductModule[] = [
   { id: 'home', path: '/', label: 'Accueil', emoji: '\u25c8', tier: 'core', status: 'ui', blurb: 'Entrée' },
   { id: 'museum', path: '/museum', label: 'Musée', emoji: '\ud83d\uddbc', tier: 'core', status: 'ui', blurb: 'Galerie 3D' },
-  { id: 'marketplace', path: '/market', label: 'Marché', emoji: '\u25a3', tier: 'core', status: 'live', blurb: 'NFT · list / buy', sc: 'nft_marketplace' },
-  { id: 'agents', path: '/agents', label: 'Packs IA', emoji: '\u25ce', tier: 'core', status: 'live', blurb: 'Pulse · Yield · Sentinel', sc: 'agents_marketplace' },
+  { id: 'marketplace', path: '/market', label: 'Marché', emoji: '\u25a3', tier: 'core', status: 'ui', blurb: 'NFT · list / buy', sc: 'nft_marketplace' },
+  { id: 'agents', path: '/agents', label: 'Packs IA', emoji: '\u25ce', tier: 'core', status: 'ui', blurb: 'Pulse · Yield · Sentinel', sc: 'agents_marketplace' },
   { id: 'lia', path: '/xorus', label: 'xOrus', emoji: '\u25c9', tier: 'core', status: 'ui', blurb: 'Paper only · décisions' },
-  { id: 'studio', path: '/studio', label: 'Studio', emoji: '\ud83c\udfa8', tier: 'core', status: 'live', blurb: 'Créer · lister' },
+  { id: 'studio', path: '/studio', label: 'Studio', emoji: '\ud83c\udfa8', tier: 'core', status: 'ui', blurb: 'Créer · lister' },
   { id: 'wallet', path: '/wallet', label: 'Wallet', emoji: '\u25c7', tier: 'core', status: 'ui', blurb: 'Session · on-ramp' },
 ]
 
@@ -40,7 +40,7 @@ export const SECONDARY_MODULES: ProductModule[] = [
     label: 'Staking',
     emoji: '\u25c8',
     tier: 'secondary',
-    status: 'live',
+    status: 'ui',
     blurb: 'Stake / unstake $TRO',
     sc: 'tro_staking',
   },
@@ -59,7 +59,7 @@ export const SECONDARY_MODULES: ProductModule[] = [
     label: 'Venues',
     emoji: '\u25ce',
     tier: 'secondary',
-    status: 'live',
+    status: 'ui',
     blurb: 'Louer un mur',
     sc: 'venue_split',
   },
