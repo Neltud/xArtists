@@ -11,7 +11,7 @@
 
 ## Limites explicites du périmètre
 
-**Cette PR ne possède aucune route HTTP de paiement ni de webhook et ne traite aucune transaction réelle.** Le service est désactivé par défaut : l'appelant doit passer explicitement `enabled: true` dans son propre **processus de test**, avec pool vers base jetable. Aucune configuration d'environnement de Render n'est ajoutée.
+**Cette PR ne possède aucune route HTTP de paiement ni de webhook et ne traite aucune transaction réelle.** Même avec `enabled:true`, le réconciliateur demande à PostgreSQL son `current_database()` et refuse toute écriture si le nom n'est pas exactement `xartists_billing_probe` ; une connexion à Neon/Render `xartists_access` ne suffit jamais. Le service est désactivé par défaut : l'appelant doit passer explicitement `enabled: true` dans son propre **processus de test**, avec pool vers base jetable. Aucune configuration d'environnement de Render n'est ajoutée.
 
 **Aucune création de client, aucun compte email OTP réel, aucun tarif Stripe récurrent, aucun Checkout ou prélèvement, aucune émission de droits, aucun rapport privé vendu, aucun NFT ou wallet et aucun trade.** Le service ne touche pas aux tables `xa_xorus_grants`, `xa_xorus_private_reports`, `mint_jobs` ni `paybox_orders`. Un statut `active` dans ce **registre de test** n'est pas un droit d'accès.
 
