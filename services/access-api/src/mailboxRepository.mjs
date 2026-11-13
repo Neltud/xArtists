@@ -1,8 +1,22 @@
 /** DB-backed mailbox reservation; SQL migration is not auto-run. */
 import {randomUUID} from 'node:crypto'
+const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 export function createMailboxRepository(pool) {
   if(typeof pool?.connect!=='function') throw new TypeError('pool_required')
   return Object.freeze({
+    async readOwn({userId}) {
+      if(typeof userId!=='string'||!UUID.test(userId))throw new TypeError('invalid_account_id')
+      const result=await pool.query(
+        `SELECT m.address,m.status FROM xa_mailboxes m
+         JOIN xa_user_accounts a ON a.id=m.user_id
+         WHERE m.user_id=$1 AND a.disabled_at IS NULL LIMIT 1`,[userId],
+      )
+      const row=result.rows[0]
+      if(!row)return null
+      // A database record is not proof the mailbox accepts or sends SMTP.
+      return Object.freeze({address:row.address,status:row.status,
+        receiptVerified:false,outboundVerified:false,inboxAccessVerified:false})
+    },
     async reserve({userId,address}) {
       const c=await pool.connect()
       try {
