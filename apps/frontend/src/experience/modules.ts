@@ -28,6 +28,7 @@ export const modules:Module[] = [
   module('editions','/explore/editions',['/editions'],'editions','explore','layers',()=>import('../pages/Editions'),['SFT','Art']),
   module('venues','/explore/venues',['/venues'],'venues','explore','museum',()=>import('../pages/VenuePage'),['Art','RWA']),
   module('studio','/create/studio',['/studio'],'studio','create','create',()=>import('../pages/StudioPage'),['NFT','RWA','Mint']),
+  module('gallery-builder','/create/gallery',['/gallery/create','/exposition','/exhibitions/create'],'Galerie 3D · Expositions','create','museum',()=>import('../pages/CreatorGalleryPage'),['Artistes','Galeries','Vendeurs','3D','Exposition']),
   module('nft-factory','/create/nft-factory',['/nft-factory','/distributeurs','/create/distributors'],'NFT Factory · Distributeurs','create','create',()=>import('../pages/NftDistributorPage'),['Art Generator','Calques','NFT','Distributeurs','PAPER']),
   module('twin','/create/digital-twin',['/digital-twin'],'twin','create','cube',()=>import('../pages/DigitalTwinPage'),['RWA','3D']),
   module('academy','/create/academy',['/tca','/classroom'],'academy','create','book',()=>import('../pages/TcaGatePage'),['TCA','Sfumato']),
