@@ -1,0 +1,36 @@
+name: xOrus real agent evidence — public UX, no trades
+
+on:
+  pull_request:
+    paths:
+      - 'apps/frontend/src/components/intelligence/XorusAgentEvidence.tsx'
+      - 'apps/frontend/src/pages/Agents.tsx'
+      - 'apps/frontend/tests/xorus-agents-evidence.test.mjs'
+      - '.github/workflows/xorus-agent-evidence-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  real-agent-readout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: apps/frontend/package-lock.json
+      - name: Install frontend dependencies with scripts disabled
+        run: npm ci --prefix apps/frontend --ignore-scripts --no-audit --no-fund
+      - name: Prove truthful server-backed readout and no client action
+        run: |
+          cd apps/frontend
+          node --test tests/xorus-agents-evidence.test.mjs tests/intelligence-journey-reset.test.mjs tests/xorus-analysis-desk.test.mjs
+          npm run typecheck
+          npm run build
+          npm run check:routes
