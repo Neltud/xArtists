@@ -9,6 +9,9 @@ on:
       - 'tests/test_xorus_analysis_cycle.py'
       - 'tests/fixtures/xorus_analysis_collected.json'
       - 'packages/core/src/xorusAnalysisContract.mjs'
+      - 'services/access-api/src/xorusAnalysis.mjs'
+      - 'services/access-api/tests/xorusAnalysis.test.mjs'
+      - 'services/access-api/src/server.mjs'
       - 'lia/xorus/swarm.py'
       - 'lia/chorus/swarm.py'
       - 'lia/chorus/catalog.py'
@@ -46,3 +49,21 @@ jobs:
           python -m unittest discover -s tests -p 'test_chorus_paper_safety.py' -v
           python -m unittest discover -s tests -p 'test_xorus_alias.py' -v
           python -m unittest discover -s tests -p 'test_xorus_public_catalog_sync.py' -v
+
+  xorus-server-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install locked API dependencies
+        run: npm ci --prefix services/access-api --ignore-scripts --no-audit --no-fund
+      - name: Verify xOrus API, cache expiration, provider cooldown and worker isolation
+        run: node --test services/access-api/tests/xorusAnalysis.test.mjs
