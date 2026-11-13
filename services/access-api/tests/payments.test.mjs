@@ -105,7 +105,10 @@ test('HTTP integration: configured signer returns an encoded signature, rejects 
     for (let i = 0; i < 29; i++) {
       assert.equal((await post(server.base + '/moonpay/sign', { url: base }, { 'X-Forwarded-For': `192.0.2.${i}` })).status, 200)
     }
-    assert.equal((await post(server.base + '/moonpay/sign', { url: base }, { 'X-Forwarded-For': '192.0.2.99' })).status, 429)
+    const limited = await post(server.base + '/moonpay/sign', { url: base }, { 'X-Forwarded-For': '192.0.2.99' })
+    assert.equal(limited.status, 429)
+    assert.equal(limited.headers.get('retry-after'), '60')
+    assert.equal((await post(server.base + '/moonpay/sign', { url: base }, { Origin: 'https://xartists.art', 'X-Forwarded-For': '198.51.100.200' })).status, 429)
   } finally { await server.close() }
 })
 
