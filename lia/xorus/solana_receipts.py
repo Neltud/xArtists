@@ -29,7 +29,7 @@ def _valid_base58(value: str, byte_length: int) -> bool:
     for char in value:
         number = number * 58 + _ALPHABET.index(char)
     zeros = len(value) - len(value.lstrip("1"))
-    return len(b"\\x00" * zeros + (number.to_bytes((number.bit_length() + 7) // 8, "big") if number else b"")) == byte_length
+    return len(bytes(zeros) + (number.to_bytes((number.bit_length() + 7) // 8, "big") if number else b"")) == byte_length
 
 
 def inspect_native_sol_receipt(
