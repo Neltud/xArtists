@@ -7,6 +7,7 @@ on:
       - 'services/access-api/src/xorusPrivateStore.mjs'
       - 'services/access-api/src/xorusEntitlements.mjs'
       - 'services/access-api/tests/xorusPrivateStorePostgres.test.mjs'
+      - 'services/access-api/tests/walletlessToXorusPostgres.test.mjs'
       - 'services/access-api/tests/xorusEntitlements.test.mjs'
       - '.github/workflows/xorus-private-pg-ci.yml'
   push:
@@ -16,6 +17,7 @@ on:
       - 'services/access-api/src/xorusPrivateStore.mjs'
       - 'services/access-api/src/xorusEntitlements.mjs'
       - 'services/access-api/tests/xorusPrivateStorePostgres.test.mjs'
+      - 'services/access-api/tests/walletlessToXorusPostgres.test.mjs'
       - 'services/access-api/tests/xorusEntitlements.test.mjs'
   workflow_dispatch:
 
@@ -64,5 +66,8 @@ jobs:
       - name: Verify private grants, report constraints, isolation and quota under real PG concurrency
         working-directory: services/access-api
         run: node --test tests/xorusPrivateStorePostgres.test.mjs
+      - name: Prove synthetic verified email → UUID → private right → revoke, offline
+        working-directory: services/access-api
+        run: node --test tests/walletlessToXorusPostgres.test.mjs
       - name: Report isolation
         run: echo 'Disposable localhost DB only. No Neon/Render migration, email, wallet, PSP, mint or trade.' >> "$GITHUB_STEP_SUMMARY"
