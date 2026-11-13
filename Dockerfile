@@ -12,6 +12,7 @@ RUN npm install --legacy-peer-deps || true
 
 COPY apps/frontend ./apps/frontend
 COPY data ./data
+COPY packages/core/src/xorusAnalysisContract.mjs ./packages/core/src/xorusAnalysisContract.mjs
 WORKDIR /app/apps/frontend
 RUN npm install --legacy-peer-deps && npm run build
 
