@@ -1,11 +1,12 @@
 import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
- * xOrus — Control Room 3D + Cockpit LIVE intents xPortal (v0.110).
+ * xOrus — public decision and provenance first; archived consoles on request.
  */
 import { useCallback, useEffect, useState } from 'react'
 import LiaHubControlRoomLazy from '../components/lia/LiaHubControlRoomLazy'
 import { Link } from 'react-router-dom'
 import IntelligencePath from '../components/intelligence/IntelligencePath'
+import XorusDecisionDesk from '../components/intelligence/XorusDecisionDesk'
 import { useI18n } from '../i18n/I18nContext'
 import { usePulse } from '../hooks/usePulse'
 import { useLIAInterpreter } from '../hooks/useLIAInterpreter'
@@ -117,12 +118,13 @@ export default function XorusPage() {
         <p className="xa-intelligence-status" role="status">
           {LIA_LIVE_TRADING
             ? 'Trading flag reported: enabled. This page does not independently verify execution readiness.'
-            : 'PAPER / SHADOW · Automated live trading is disabled. Simulated P&L is not realized profit.'}
+            : (fr ? 'PAPER / SHADOW · Trading automatique désactivé. Les performances simulées ne sont pas des gains réels.' : 'PAPER / SHADOW · Automated live trading is disabled. Simulated P&L is not realized profit.')}
         </p>
         <p className="mt-3 text-xs">{fr
           ? 'Une observation n’est pas un conseil d’investissement. La date de publication d’une source diffère de la date de consultation.'
           : 'Observations are not investment advice. The source publication date is different from the date you open this page.'}</p>
       </header>
+      <XorusDecisionDesk />
       <section className="xa-intelligence-cards" aria-label={fr ? 'Trois actions simples' : 'Three simple actions'}>
         <article className="xa-intelligence-card">
           <p className="xa-intelligence-eyebrow">01 · {fr ? 'Identifier' : 'Identify'}</p>
