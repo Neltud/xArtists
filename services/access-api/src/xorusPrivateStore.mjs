@@ -94,55 +94,7 @@ export function createXorusPrivateRepository(pool, {newRequestId=randomUUID}={})
           [reportId,scope,new Date(now)])
         if(approved.rows.length!==1){await client.query('ROLLBACK');inTransaction=false;return {reserved:false}}
         const updated=await client.query(
-          "UPDATE xa_xorus_grants SET quota_used=quota_used+1 WHERE grant_id=$1 AND subject=$2 AND scope=$3 AND offer=$4 AND status='active' AND revoked_at IS NULL AND refunded_at IS NULL AND evidence_verified=true AND ledger_checked_at=$5 AND ledger_checked_at>=($6::timestamptz - interval '60 seconds') AND ledger_checked_at<=($6::timestamptz + interval '1 second') AND evidence_checked_at>=($6::timestamptz - interval '60 seconds') AND evidence_checked_at<=($6::timestamptz + interval '1 second') AND ((subject_kind='email' AND account_id::text=subject AND evidence_kind='verified_psp_subscription' AND billing_status='active' AND settlement='verified' AND issuer_reference ~ '^[A-Za-z0-9:_-]{8,160} AND expires_at>$6 AND quota_reset_at>$6 AND quota_used<quota_limit RETURNING grant_id, (quota_limit-quota_used) AS remaining",
-          [grantId,subject,scope,approved.rows[0].offer,new Date(expectedLedgerCheckedAt),new Date(now)])
-        if(updated.rows.length!==1){await client.query('ROLLBACK');inTransaction=false;return {reserved:false}}
-        await client.query(
-          "INSERT INTO xa_xorus_read_reservations(request_id,grant_id,report_id,subject,reserved_at) VALUES($1,$2,$3,$4,$5)",
-          [requestId,grantId,reportId,subject,new Date(now)])
-        await client.query('COMMIT');inTransaction=false
-        return {reserved:true,grantId,remaining:updated.rows[0].remaining}
-      }catch(error){
-        if(inTransaction) await client.query('ROLLBACK')
-        // Never expose SQL messages to a client; caller maps errors to generic 503.
-        throw Error('private_quota_store_unavailable')
-      }finally{client.release()}
-    },
-  })
-}
-) OR (subject_kind='wallet' AND evidence_kind='verified_mvx_nft_ownership' AND chain_id='1' AND nft_owner=subject AND nft_contract ~ '^erd1[a-z0-9]{58} AND expires_at>$6 AND quota_reset_at>$6 AND quota_used<quota_limit RETURNING grant_id, (quota_limit-quota_used) AS remaining",
-          [grantId,subject,scope,approved.rows[0].offer,new Date(expectedLedgerCheckedAt),new Date(now)])
-        if(updated.rows.length!==1){await client.query('ROLLBACK');inTransaction=false;return {reserved:false}}
-        await client.query(
-          "INSERT INTO xa_xorus_read_reservations(request_id,grant_id,report_id,subject,reserved_at) VALUES($1,$2,$3,$4,$5)",
-          [requestId,grantId,reportId,subject,new Date(now)])
-        await client.query('COMMIT');inTransaction=false
-        return {reserved:true,grantId,remaining:updated.rows[0].remaining}
-      }catch(error){
-        if(inTransaction) await client.query('ROLLBACK')
-        // Never expose SQL messages to a client; caller maps errors to generic 503.
-        throw Error('private_quota_store_unavailable')
-      }finally{client.release()}
-    },
-  })
-}
- AND token_identifier ~ '^[A-Za-z0-9:_-]{8,128} AND expires_at>$6 AND quota_reset_at>$6 AND quota_used<quota_limit RETURNING grant_id, (quota_limit-quota_used) AS remaining",
-          [grantId,subject,scope,approved.rows[0].offer,new Date(expectedLedgerCheckedAt),new Date(now)])
-        if(updated.rows.length!==1){await client.query('ROLLBACK');inTransaction=false;return {reserved:false}}
-        await client.query(
-          "INSERT INTO xa_xorus_read_reservations(request_id,grant_id,report_id,subject,reserved_at) VALUES($1,$2,$3,$4,$5)",
-          [requestId,grantId,reportId,subject,new Date(now)])
-        await client.query('COMMIT');inTransaction=false
-        return {reserved:true,grantId,remaining:updated.rows[0].remaining}
-      }catch(error){
-        if(inTransaction) await client.query('ROLLBACK')
-        // Never expose SQL messages to a client; caller maps errors to generic 503.
-        throw Error('private_quota_store_unavailable')
-      }finally{client.release()}
-    },
-  })
-}
-)) AND issued_at<=$6 AND expires_at>$6 AND quota_reset_at>$6 AND quota_used<quota_limit RETURNING grant_id, (quota_limit-quota_used) AS remaining",
+          "UPDATE xa_xorus_grants SET quota_used=quota_used+1 WHERE grant_id=$1 AND subject=$2 AND scope=$3 AND offer=$4 AND status='active' AND revoked_at IS NULL AND refunded_at IS NULL AND evidence_verified=true AND ledger_checked_at=$5 AND ledger_checked_at>=($6::timestamptz - interval '60 seconds') AND ledger_checked_at<=($6::timestamptz + interval '1 second') AND evidence_checked_at>=($6::timestamptz - interval '60 seconds') AND evidence_checked_at<=($6::timestamptz + interval '1 second') AND ((subject_kind='email' AND account_id::text=subject AND evidence_kind='verified_psp_subscription' AND billing_status='active' AND settlement='verified' AND issuer_reference ~ '^[A-Za-z0-9:_-]{8,160}$') OR (subject_kind='wallet' AND evidence_kind='verified_mvx_nft_ownership' AND chain_id='1' AND nft_owner=subject AND nft_contract ~ '^erd1[a-z0-9]{58}$' AND token_identifier ~ '^[A-Za-z0-9:_-]{8,128}$')) AND issued_at<=$6 AND expires_at>$6 AND quota_reset_at>$6 AND quota_used<quota_limit RETURNING grant_id, (quota_limit-quota_used) AS remaining",
           [grantId,subject,scope,approved.rows[0].offer,new Date(expectedLedgerCheckedAt),new Date(now)])
         if(updated.rows.length!==1){await client.query('ROLLBACK');inTransaction=false;return {reserved:false}}
         await client.query(
