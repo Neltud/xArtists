@@ -11,7 +11,7 @@
 
 ## Limites explicites du périmètre
 
-**Cette PR ne possède aucune route HTTP de paiement ni de webhook et ne traite aucune transaction réelle.** Même avec `enabled:true`, le réconciliateur demande à PostgreSQL son `current_database()` et refuse toute écriture si le nom n'est pas exactement `xartists_billing_probe` ; une connexion à Neon/Render `xartists_access` ne suffit jamais. Le service est désactivé par défaut : l'appelant doit passer explicitement `enabled: true` dans son propre **processus de test**, avec pool vers base jetable. Aucune configuration d'environnement de Render n'est ajoutée.
+**Cette PR ne possède aucune route HTTP de paiement ni de webhook et ne traite aucune transaction réelle.** Même avec `enabled:true`, le réconciliateur vérifie que le DSN pointe explicitement vers un hôte **local** (`127.0.0.1` / `localhost`), puis demande à PostgreSQL son `current_database()` et refuse toute écriture si le nom n'est pas exactement `xartists_billing_probe` ; une connexion à Neon/Render, même avec une base portant ce nom, est refusée. Le service est désactivé par défaut : l'appelant doit passer explicitement `enabled: true` dans son propre **processus de test**, avec pool vers base jetable. Aucune configuration d'environnement de Render n'est ajoutée.
 
 **Aucune création de client, aucun compte email OTP réel, aucun tarif Stripe récurrent, aucun Checkout ou prélèvement, aucune émission de droits, aucun rapport privé vendu, aucun NFT ou wallet et aucun trade.** Le service ne touche pas aux tables `xa_xorus_grants`, `xa_xorus_private_reports`, `mint_jobs` ni `paybox_orders`. Un statut `active` dans ce **registre de test** n'est pas un droit d'accès.
 
@@ -19,7 +19,7 @@ La table `xa_stripe_billing_bindings` doit être provisionnée plus tard par un 
 
 **Annulations et mauvais paiement :** un événement signé `customer.subscription.deleted` rend le statut `canceled` terminal même si l'événement est arrivé en retard. Une facture signée `invoice.payment_failed` fait passer au statut `past_due`. Un événement `customer.subscription.updated` affichant seulement `active` ne crée aucun accès ni statut payé.
 
-**Blocage important :** le rapprochement des remboursements Stripe par `charge.refunded` et des litiges n'est pas encore développé dans cette PR. Un système réellement payant doit traiter ces événements et supprimer automatiquement les droits éventuels. En attendant, aucun usage commercial de ce module n'est autorisé.
+**Mise à jour du 13/11/2026 — #569 :** le rapprochement local **test-only** de `charge.refunded` et `charge.dispute.created` est maintenant ajouté par un module de liaison immuable PaymentIntent ↔ facture ↔ abonnement et par des reçus d'incidents. Un remboursement partiel et un litige entraînent un blocage terminal du registre test ; un événement tardif ne réactive pas l'abonnement. Voir [`XORUS_STRIPE_REFUND_DISPUTE_FAILCLOSED_2026-11-13.md`](./XORUS_STRIPE_REFUND_DISPUTE_FAILCLOSED_2026-11-13.md). **Le webhook HTTP réel, les contrôles Stripe API, les accès xOrus et leur révocation restent non développés et non certifiés : aucun usage commercial de ce module n'est autorisé.**
 
 ## Ordre de mise en service des abonnements réels
 
