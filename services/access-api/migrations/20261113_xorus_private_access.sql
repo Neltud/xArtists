@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS xa_xorus_grants (
   grant_id text PRIMARY KEY CHECK (grant_id ~ '^xag_[A-Za-z0-9_-]{12,80}$'),
   subject_kind text NOT NULL CHECK (subject_kind IN ('email','wallet')),
   subject text NOT NULL,
+  account_id uuid REFERENCES xa_user_accounts(id) ON DELETE RESTRICT,
   offer text NOT NULL CHECK (offer IN ('pulse','yield','sentinel')),
   scope text NOT NULL,
   status text NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','active','revoked','refunded','expired')),
@@ -55,8 +56,40 @@ CREATE TABLE IF NOT EXISTS xa_xorus_grants (
   quota_reset_at timestamptz NOT NULL,
   created_at timestamptz NOT NULL DEFAULT now(),
   CONSTRAINT xa_xorus_grant_subject CHECK (
-    (subject_kind='email' AND subject ~* '^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$')
-    OR (subject_kind='wallet' AND subject ~ '^erd1[a-z0-9]{58}$')
+    (subject_kind='email' AND account_id IS NOT NULL AND subject = account_id::text)
+    OR (subject_kind='wallet' AND account_id IS NULL AND subject ~ '^erd1[a-z0-9]{58}
+  CONSTRAINT xa_xorus_grant_scope CHECK (
+    (offer='pulse' AND scope='analysis:markets') OR
+    (offer='yield' AND scope='analysis:defi') OR
+    (offer='sentinel' AND scope='analysis:risk')
+  ),
+  CONSTRAINT xa_xorus_grant_window CHECK (
+    issued_at < expires_at AND expires_at <= issued_at + interval '366 days' AND
+    quota_reset_at > issued_at
+  ),
+  CONSTRAINT xa_xorus_evidence_kind CHECK (
+    (subject_kind='email' AND evidence_kind='verified_psp_subscription') OR
+    (subject_kind='wallet' AND evidence_kind='verified_mvx_nft_ownership')
+  )
+);
+CREATE INDEX IF NOT EXISTS xa_xorus_grants_subject_idx
+  ON xa_xorus_grants(subject_kind,subject,offer,expires_at DESC);
+CREATE UNIQUE INDEX IF NOT EXISTS xa_xorus_grants_issuer_idx
+  ON xa_xorus_grants(evidence_kind,issuer_reference)
+  WHERE issuer_reference IS NOT NULL;
+
+CREATE TABLE IF NOT EXISTS xa_xorus_read_reservations (
+  request_id uuid PRIMARY KEY,
+  grant_id text NOT NULL REFERENCES xa_xorus_grants(grant_id) ON DELETE RESTRICT,
+  report_id text NOT NULL REFERENCES xa_xorus_private_reports(report_id) ON DELETE RESTRICT,
+  subject text NOT NULL,
+  reserved_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS xa_xorus_reservations_grant_idx
+  ON xa_xorus_read_reservations(grant_id,reserved_at DESC);
+
+COMMIT;
+)
   ),
   CONSTRAINT xa_xorus_grant_scope CHECK (
     (offer='pulse' AND scope='analysis:markets') OR
