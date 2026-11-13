@@ -7,6 +7,7 @@ Related to [issue #548](https://github.com/Neltud/xArtists/issues/548). This **d
 - The only products are **derived xArtists analyses**, with fixed scopes: Pulse (markets), Yield (DeFi), Sentinel (risk). No sale of raw OHLCV, provider payloads or third-party content is implied.
 - Access is denied by default: `enabled=false` and `commercialUsageRightsVerified=false`. A valid principal must be sourced from a verified email session or SIWX, not a claimed account/wallet.
 - An authoritative entitlement record must match subject, offer, scope, expiry, revocation, refund state and **fresh** ledger/ownership evidence. A paid invoice alone is never enough; current billing state and reconciliation must be checked.
+- An authoritative **private report record** must match report digest, offer, scope, source timestamp, derived-only nature, licence status and expiry. An arbitrary digest or a public/raw report is rejected before quota reservation.
 - A **durable, atomic** quota reservation is mandatory before allowing a read; no in-memory quota counter is accepted as production authority. Errors, stale evidence, account mismatch and repeated reservations all deny.
 - A success response includes only offer, scope, report ID digest, quota remainder and expiry. It carries no reports, raw provider data, secrets, billing event or wallet identifiers.
 
