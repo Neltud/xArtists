@@ -11,6 +11,7 @@ import {readFileSync} from 'node:fs'
 import {createNeonAuthIdentityVerifier,findOrCreateAccountFromNeonToken,findExistingAccountFromNeonToken} from '../src/neonAuthIdentity.mjs'
 import {createWalletlessSessionService} from '../src/walletlessSession.mjs'
 import {createWalletlessAccountProfileService} from '../src/walletlessProfile.mjs'
+import {createWalletlessSchemaProbe} from '../src/walletlessSchemaProbe.mjs'
 import {readAccountProjection} from '../src/accountRepository.mjs'
 import {createXorusPrivateRepository} from '../src/xorusPrivateStore.mjs'
 import {createXorusPrivateDelivery} from '../src/xorusPrivateDelivery.mjs'
@@ -50,6 +51,8 @@ test('verified email account → test entitlement → private report → refund 
     const xorus=readFileSync(new URL('../migrations/20261113_xorus_private_access.sql',import.meta.url),'utf8')
     const contents=readFileSync(new URL('../migrations/20261113_xorus_private_contents.sql',import.meta.url),'utf8')
     await pool.query(accounts);await pool.query(xorus);await pool.query(contents)
+    const schema=createWalletlessSchemaProbe({enabled:true,pool})
+    assert.equal(await schema.check(),true,'Disposable PostgreSQL schema must be ready')
     const now=Date.now()
     const verify=createNeonAuthIdentityVerifier({
       baseUrl,clock:()=>now,fetchImpl:async fetched=>{
