@@ -1,0 +1,41 @@
+name: xArtists 3D exhibition creator — honest local draft
+
+on:
+  pull_request:
+    paths:
+      - 'apps/frontend/src/lib/creatorGalleryDraft.mjs'
+      - 'apps/frontend/src/lib/creatorGalleryDraft.d.mts'
+      - 'apps/frontend/src/pages/CreatorGalleryPage.tsx'
+      - 'apps/frontend/src/pages/MuseumPage.tsx'
+      - 'apps/frontend/src/experience/modules.ts'
+      - 'apps/frontend/src/experience/publicReadiness.ts'
+      - 'apps/frontend/tests/creator-gallery-draft.test.mjs'
+      - 'apps/frontend/tests/public-readiness-roadmap.test.mjs'
+      - '.github/workflows/creator-gallery-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  creator-gallery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: apps/frontend/package-lock.json
+      - name: Install locked frontend deps
+        run: npm ci --prefix apps/frontend --ignore-scripts --no-audit --no-fund
+      - name: Validate draft ownership and marketplace non-operation
+        run: |
+          cd apps/frontend
+          node --test tests/creator-gallery-draft.test.mjs tests/public-readiness-roadmap.test.mjs
+          npm run typecheck
+          npm run build
+          npm run check:routes

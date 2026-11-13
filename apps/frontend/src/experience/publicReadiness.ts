@@ -18,6 +18,7 @@ const publicStages: Record<string, PublicStage> = {
  editions: 'preview',
  venues: 'preview',
  studio: 'preview',
+ 'gallery-builder': 'preview',
  'nft-factory': 'preview',
  twin: 'preview',
  academy: 'preview',
