@@ -6,3 +6,4 @@ export type VerifiedFearGreed={value:number;classification:string;timestamp:stri
 export function parseFreshMarketAssets(rows:unknown,now?:number):VerifiedMarketAsset[]
 export function parseFreshFearGreed(data:unknown,now?:number):VerifiedFearGreed|null
 export function parseFundingRate(value:unknown):number|null
+export function parseFreshFundingQuote(raw:unknown,expectedSymbol:string,now?:number):{symbol:string;rate:number;source:'binance';sourceUpdatedAt:string}|null
