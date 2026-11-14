@@ -134,12 +134,17 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
       const title = page.locator('.xa-market-grid__heading h1')
       await expect(title).toHaveText('Œuvres à découvrir')
       const firstCard = page.locator('.xa-market-grid__card').first()
-      await expect(firstCard).toBeVisible()
-      const colors = await firstCard.evaluate(el => ({
-        background: getComputedStyle(el).backgroundColor,
-        title: getComputedStyle(el.querySelector('h3')!).color,
-      }))
-      expect(contrastRatio(colors.title, colors.background), 'market card title contrast').toBeGreaterThanOrEqual(4.5)
+      // A marketplace with no verified inventory must render an honest empty state.
+      // Never force unminted Drive originals into the grid just to satisfy this test.
+      if (await firstCard.isVisible()) {
+        const colors = await firstCard.evaluate(el => ({
+          background: getComputedStyle(el).backgroundColor,
+          title: getComputedStyle(el.querySelector('h3')!).color,
+        }))
+        expect(contrastRatio(colors.title, colors.background), 'market card title contrast').toBeGreaterThanOrEqual(4.5)
+      } else {
+        await expect(page.locator('.xa-market-grid__empty')).toBeVisible()
+      }
       await expect(page.locator('.xa-market-grid').getByRole('searchbox')).toBeVisible()
       const categories = page.locator('.xa-marketplace-category')
       await expect(categories).toHaveCount(4)
@@ -170,7 +175,7 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
     await visit(page, '/marketplace/?lang=fr')
     const gallery = page.locator('.xa-market-grid')
     await expect(gallery.getByRole('heading', { name: 'Œuvres à découvrir' })).toBeVisible()
-    await expect(gallery.getByRole('link', { name: /Préparer le mint dans Studio/ })).toBeVisible()
+    await expect(gallery.locator('.xa-market-grid__drive-mint a[href*="/studio"]')).toBeVisible()
     await expect(gallery.locator('img[src*="/art/drive/"]')).toHaveCount(0)
     await expect(gallery.getByRole('button', { name: 'Atelier xArtists' })).toHaveCount(0)
     await expect(gallery.getByRole('button', { name: 'NFT MultiversX' })).toBeVisible()
