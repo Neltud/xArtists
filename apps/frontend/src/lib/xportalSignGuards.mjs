@@ -27,7 +27,9 @@ export function validateXPortalSignBatch(txs,address,startingNonce){
   if(!ADDRESS.test(address||'')||
     !Array.isArray(txs)||txs.length===0||txs.length>MAX_BATCH||
     !Number.isSafeInteger(startingNonce)||startingNonce<0||
-    !Number.isSafeInteger(startingNonce+txs.length-1))
+    // Check before arithmetic: MAX_SAFE_INTEGER + 2 - 1 may round back
+    // to a seemingly safe value in IEEE-754.
+    startingNonce>Number.MAX_SAFE_INTEGER-(txs.length-1))
     throw new TypeError('xportal_invalid_sign_batch')
   return txs.map((tx,index)=>{
     if(!tx||typeof tx!=='object'||Array.isArray(tx)||
