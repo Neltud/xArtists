@@ -6,6 +6,39 @@ export const GALLERY_KEY='xartists_gallery_draft_v1'
 export const MAX_ART=16
 const ROLES=new Set(['artist','gallery','seller'])
 const KINDS=new Set(['painting','sculpture','nft','mixed'])
+const SOURCE_SHA=/^[a-f0-9]{64}$/
+const MAX_IMAGE_BYTES=16*1024*1024
+const safeFileName=value=>typeof value==='string'
+  ?value.replace(/[\\/\u0000-\u001f\u007f]/g,'_').trim().slice(0,120):''
+
+/**
+ * Check local bytes before allowing a disposable preview. A hash binds the
+ * selected bytes, but never attests copyright, author, physical ownership or
+ * chain state. No upload, IPFS pin, data URL or wallet operation.
+ */
+export async function inspectLocalGalleryImage(file){
+  if(!file||typeof file.arrayBuffer!=='function'||
+    !Number.isSafeInteger(file.size)||file.size<12||file.size>MAX_IMAGE_BYTES)
+    throw new TypeError('invalid_local_image_size')
+  const mime=file.type
+  if(!['image/jpeg','image/png','image/webp'].includes(mime))
+    throw new TypeError('unsupported_local_image_type')
+  const name=safeFileName(file.name)
+  if(!name)throw new TypeError('invalid_local_image_name')
+  const bytes=new Uint8Array(await file.arrayBuffer())
+  if(bytes.byteLength!==file.size)throw new TypeError('local_image_bytes_mismatch')
+  const signature=mime==='image/png'
+    ?[137,80,78,71,13,10,26,10].every((n,i)=>bytes[i]===n)
+    :mime==='image/jpeg'
+      ?bytes[0]===255&&bytes[1]===216&&bytes[2]===255
+      :String.fromCharCode(...bytes.subarray(0,4))==='RIFF'&&
+        String.fromCharCode(...bytes.subarray(8,12))==='WEBP'
+  if(!signature)throw new TypeError('invalid_local_image_signature')
+  if(!globalThis.crypto?.subtle)throw new TypeError('secure_sha256_unavailable')
+  const digest=await globalThis.crypto.subtle.digest('SHA-256',bytes)
+  const sourceSha256=Array.from(new Uint8Array(digest),n=>n.toString(16).padStart(2,'0')).join('')
+  return Object.freeze({sourceSha256,localFileName:name,mime,sizeBytes:file.size})
+}
 const text=(value,max=180)=>typeof value==='string'?value.trim().slice(0,max):''
 const secureImage=value=>{
   if(typeof value!=='string'||value.length>1500)return ''
@@ -25,6 +58,9 @@ const normalizedArtwork=(input,i)=>{
     title,artist:text(input.artist,100),image:secureImage(input.image),
     description:text(input.description,500),
     kind:KINDS.has(input.kind)?input.kind:'painting',
+    // A persisted digest is a self-supplied claim, NOT an authenticity verdict.
+    sourceSha256:SOURCE_SHA.test(input.sourceSha256)?input.sourceSha256:null,
+    localFileName:safeFileName(input.localFileName)||null,
     priceEgld:Number.isFinite(price)&&price>0&&price<=1_000_000
       ?Math.round(price*10000)/10000:null,
     // seller ownership, public listing and availability are NEVER inferred.
