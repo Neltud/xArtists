@@ -93,11 +93,11 @@ export default function MarketplaceDiscoveryGrid({
       .slice(0,24)
     const indexed:GalleryCard[]=sourceReady?listings.filter(l=>{
       const id=String(l.identifier||l.token||'')
-      return isMarketplaceArtwork(l)&&(!id||!seen.has(id))
+      return isMarketplaceArtwork(l)&&NFT.test(id)&&!seen.has(id)
     }).slice(0,24).map((l,i)=>{
       const identifier=String(l.identifier||l.token||'')
       const media=typeof l.media==='string'?l.media:Array.isArray(l.media)?l.media[0]?.url:undefined
-      return {key:'index:'+String(l.listing_id??identifier??i)+':'+i,
+      return {key:'index:'+String(l.listing_id??identifier)+':'+i,
         title:String(l.name||identifier||'NFT').slice(0,120),
         sub:String(l.creator||l.collection||identifier||'').slice(0,80),
         image:imageUrl(l.thumbnail||media),
