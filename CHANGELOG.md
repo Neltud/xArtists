@@ -1,5 +1,34 @@
 # Changelog — xArtists
 
+## [0.139.0](https://github.com/Neltud/xArtists/compare/v0.138.0...v0.139.0) (2026-11-14)
+
+
+### Features
+
+* **gallery:** device image previews and sculpture exhibition support ([#587](https://github.com/Neltud/xArtists/issues/587)) ([ebbe2c4](https://github.com/Neltud/xArtists/commit/ebbe2c4eac3322837a047ef674d34af87a0288b7))
+* **mail:** guarded user mailbox module and private xArtists Mail plugin ([33c5dfa](https://github.com/Neltud/xArtists/commit/33c5dfa165c47f377dc0527a0497fa2e48f0144a))
+* **ops:** read-only finalized SOL receipt verifier ([#574](https://github.com/Neltud/xArtists/issues/574)) ([8bc8948](https://github.com/Neltud/xArtists/commit/8bc89480ca3ec7e0cf3b9d568c1f15c379033e32))
+* **status:** live read-only release evidence across xArtists modules ([ccf25e5](https://github.com/Neltud/xArtists/commit/ccf25e514370ca571797416277cd6532a0e10ad4))
+
+
+### Bug Fixes
+
+* **p0 wallet:** refuse forged sign eligibility from URL or saved browser state ([6635840](https://github.com/Neltud/xArtists/commit/66358405f46241b27ee3d3024f45ab6fcb38a456))
+* **p0:** prevent xPortal nonce guessing and partial multi-TX signing ([#588](https://github.com/Neltud/xArtists/issues/588)) ([dc52f73](https://github.com/Neltud/xArtists/commit/dc52f73819863c3ebab41d5b0320eb6937375dd5))
+* **p0:** read-only domain and mail readiness audit on current main ([#579](https://github.com/Neltud/xArtists/issues/579)) ([9d75eb7](https://github.com/Neltud/xArtists/commit/9d75eb7e0b9145b6aa27b6d72829d6609920f8b8))
+* **p0:** simplify soft-launch navigation and preserve advanced routes ([#578](https://github.com/Neltud/xArtists/issues/578)) ([4b9715c](https://github.com/Neltud/xArtists/commit/4b9715c888f11579504db544de5d925e842ca864))
+* **p0:** strengthen public module release evidence ([#586](https://github.com/Neltud/xArtists/issues/586)) ([fa29f37](https://github.com/Neltud/xArtists/commit/fa29f371ccb10e4426f63e66d3544f5f2cb40527))
+* **security:** block unaudited Jupiter signing ([#573](https://github.com/Neltud/xArtists/issues/573)) ([8138ea9](https://github.com/Neltud/xArtists/commit/8138ea91a5eb7adec94f6a5227539414e5300439))
+
+
+### Documentation
+
+* **ops:** ACTIVE_CONTEXT probe 14 nov 2026 — 0.138.0 live, commerce fail-closed, suite logique ordonnée ([5ac0160](https://github.com/Neltud/xArtists/commit/5ac0160d59defa1b22664e7dba3b2db15bc0bd4c))
+* **ops:** align release war-room with merged [#578](https://github.com/Neltud/xArtists/issues/578) and [#579](https://github.com/Neltud/xArtists/issues/579) ([#580](https://github.com/Neltud/xArtists/issues/580)) ([52948bb](https://github.com/Neltud/xArtists/commit/52948bb97afa3369c070fdcdb4835ded7250276a))
+* **ops:** release war room and issue/PR matrix ([#576](https://github.com/Neltud/xArtists/issues/576)) ([304b52c](https://github.com/Neltud/xArtists/commit/304b52ce5829246d5ef4f2c719abd7a81a9ee407))
+* **ops:** STATUS probe 2026-11-14 — release 0.138.0, fail-closed commerce ([f324e48](https://github.com/Neltud/xArtists/commit/f324e48652dade5d8cf1e0a096be87bc1e7146ac))
+* **ops:** suite logique 14 nov 2026 — probe live, gates fail-closed, ordre d'exécution ([7c06bc6](https://github.com/Neltud/xArtists/commit/7c06bc6e47420a24fbec49de2a0c056dbc0e3365))
+
 ## [0.138.0](https://github.com/Neltud/xArtists/compare/v0.137.0...v0.138.0) (2026-11-13)
 
 
