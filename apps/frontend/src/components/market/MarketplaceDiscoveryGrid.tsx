@@ -1,11 +1,10 @@
 /**
- * Real marketplace browsing surface: actual curated public art assets and
- * read-only NFT inventory from MultiversX. Never infer a sale from ownership,
+ * Marketplace browsing: real on-chain NFT inventory and an explicitly
+ * unverified backend index. Drive originals are NOT minted NFTs.
  * escrow custody, an API index record or a displayed price.
  */
 import {useEffect,useMemo,useState} from 'react'
 import {Link} from 'react-router-dom'
-import {DRIVE_EXHIBITION} from '../../experience/DriveArtShowcase'
 import {useCopy} from '../../experience/state'
 import {LIA_OPS,MAINNET_ADDRESSES} from '../../config/contracts'
 import {isMarketplaceArtwork} from '../../lib/marketplaceArtwork.mjs'
@@ -17,9 +16,9 @@ type IndexListing={
   price?:string|number;price_egld?:string|number;creator?:string;collection?:string;
   media?:Array<{url?:string}>|string;url?:string;thumbnail?:string
 }
-type Source='studio'|'owned'|'escrow'|'index'
+type Source='owned'|'escrow'|'index'
 type GalleryCard={key:string;title:string;sub:string;image:string|null;source:Source;href:string|null;price:number|null}
-type Filter='all'|'studio'|'chain'|'index'
+type Filter='all'|'chain'|'index'
 type Sort='recent'|'price_asc'|'price_desc'
 const NFT=/^[A-Za-z0-9]{3,12}-[a-f0-9]{6}-[a-f0-9]{2,16}$/i
 const API='https://api.multiversx.com'
@@ -87,11 +86,7 @@ export default function MarketplaceDiscoveryGrid({
     if(target)target.scrollIntoView({block:'center'})
   },[chainLoading,escrow])
   const all=useMemo<GalleryCard[]>(()=>{
-    // The four works are actual public xArtists media, not fake NFT listings.
-    const studio:GalleryCard[]=DRIVE_EXHIBITION.map(w=>({
-      key:'studio:'+w.id,title:w.id,sub:'xArtists · Atelier',
-      image:import.meta.env.BASE_URL+'art/drive/'+w.file,href:'/museum',price:null,source:'studio',
-    }))
+    // Drive source images are private mint candidates, never marketplace NFT cards.
     const seen=new Set<string>()
     const onChain=[...escrow.map(n=>fromNft(n,'escrow')),...owned.map(n=>fromNft(n,'owned'))]
       .filter(card=>{const id=card.key.split(':')[1];if(seen.has(id))return false;seen.add(id);return true})
@@ -108,22 +103,21 @@ export default function MarketplaceDiscoveryGrid({
         image:imageUrl(l.thumbnail||media),
         href:explorer(identifier),price:indexedEgld(l.price_egld),source:'index'}
     }):[]
-    return [...studio,...onChain,...indexed]
+    return [...onChain,...indexed]
   },[escrow,owned,listings,sourceReady])
   const cards=useMemo(()=>{
     const needle=query.trim().toLocaleLowerCase()
     const matches=all.filter(card=>
-      (filter==='all'||filter==='studio'&&card.source==='studio'||
-       filter==='chain'&&(card.source==='owned'||card.source==='escrow')||
+      (filter==='all'||filter==='chain'&&(card.source==='owned'||card.source==='escrow')||
        filter==='index'&&card.source==='index') &&
       (!needle||[card.title,card.sub,card.key].some(text=>text.toLocaleLowerCase().includes(needle))))
     if(sort==='price_asc')matches.sort((a,b)=>(a.price??Infinity)-(b.price??Infinity))
     if(sort==='price_desc')matches.sort((a,b)=>(b.price??-1)-(a.price??-1))
     return matches.slice(0,48)
   },[all,filter,query,sort])
-  const filters:Filter[]=['all','studio','chain','index']
+  const filters:Filter[]=['all','chain','index']
   const filterText:Record<Filter,string>={
-    all:c('marketGridAll'),studio:c('marketGridStudio'),chain:c('marketGridChain'),index:c('marketGridIndex'),
+    all:c('marketGridAll'),chain:c('marketGridChain'),index:c('marketGridIndex'),
   }
   return <section className="xa-market-grid" id="xa-market-grid" aria-labelledby="xa-market-grid-title">
     <div className="xa-market-grid__heading">
@@ -131,6 +125,10 @@ export default function MarketplaceDiscoveryGrid({
         <p className="xa-market-grid__eyebrow">xArtists / NFT / ART</p>
         <h1 id="xa-market-grid-title">{c('marketGridTitle')}</h1>
         <p>{c('marketGridDescription')}</p>
+        <p className="xa-market-grid__drive-mint">
+          <Link to="/studio#xa-studio-mint">{c('marketGridDriveMint')}</Link>
+          <span>{c('marketGridDriveMintNote')}</span>
+        </p>
       </div>
       <span className="xa-market-grid__count" aria-live="polite">{cards.length} {c('marketGridResults')}</span>
     </div>
@@ -159,7 +157,7 @@ export default function MarketplaceDiscoveryGrid({
     </div>
     {cards.length>0?<ul className="xa-market-grid__cards" aria-label={c('marketGridTitle')}>
       {cards.map((card,i)=>{
-        const badge=card.source==='studio'?'marketGridExhibit':card.source==='owned'?
+        const badge=card.source==='owned'?
           'marketGridHeld':card.source==='escrow'?'marketGridDeposit':'marketGridIndexed'
         const details=card.key==='escrow:ASFT-a6273a-01'
           ? verifiedSaleStatus==='verified'?c('marketGridVerifiedSale')
@@ -167,8 +165,7 @@ export default function MarketplaceDiscoveryGrid({
             :c('marketGridSaleUnverified')
           :card.source==='index'?card.price!==null?
           card.price.toFixed(4)+' EGLD · '+c('marketGridUnverified'):
-          c('marketPriceUnknown'):card.source==='studio'?
-          c('marketGridNotListed'):c('marketGridSaleUnverified')
+          c('marketPriceUnknown'):c('marketGridSaleUnverified')
         return <li key={card.key} className="xa-market-grid__card">
           <div className="xa-market-grid__media">
             <span className="xa-market-grid__placeholder" aria-hidden="true">xA</span>
@@ -181,11 +178,8 @@ export default function MarketplaceDiscoveryGrid({
             <h3 title={card.title}>{card.title}</h3>
             <p className="xa-market-grid__price"
               title={card.source==='index'?c('marketIndexPriceDisclaimer'):undefined}>{details}</p>
-            {card.href?(card.source==='studio'
-              ?<Link to={card.href} className="xa-market-grid__card-action">
-                {c('marketGridViewArt')} <span aria-hidden="true">↗</span></Link>
-              :<a href={card.href} target="_blank" rel="noopener noreferrer" className="xa-market-grid__card-action">
-                {c('marketGridVerify')} <span aria-hidden="true">↗</span></a>)
+            {card.href?<a href={card.href} target="_blank" rel="noopener noreferrer" className="xa-market-grid__card-action">
+              {c('marketGridVerify')} <span aria-hidden="true">↗</span></a>
               :<span className="xa-market-grid__card-inactive">{c('marketGridNoLink')}</span>}
             {card.key==='escrow:ASFT-a6273a-01'&&<MarketplaceVerifiedBuy onQuoteStatus={setVerifiedSaleStatus}/>}
           </div>
