@@ -3,42 +3,64 @@ hidden: true
 noIndex: true
 ---
 
-# Suite logique — 1er novembre 2026
+# Suite logique — 14 novembre 2026
 
-Probe 2026-11-01T05:48:00Z : epoch **2280** · EGLD **$3,44** · mcap **$106,92M** · APR **9,12 %** · LIA Ops **0,907888 EGLD** nonce **1487** · packs **10 / 5 / 2,5** · market **0,0175** · slot **0,5000** · $TRO circ **476 224** / **561** comptes · ~$0.00008223 · 2815 tx.
+Probe **2026-11-14T05:45Z** (UTC). Ce document est l'ordre d'exécution. Il ne lève aucun gate commercial.
 
-## Fait dans ce push (0.126.0)
+## Vérité déployée (à relire à chaque action)
 
-* Le site se republie via `static.yml`. Ce n’est **pas** un go-live trading.
-* Le repli réseau ne sert plus le 30 oct (epoch 2278, $3,21, nonce 1479, 1,585598 EGLD).
-* Le compteur KR est jour **9/29**, **15 j** / **20 j**. La copie dit que le défaut workflow est **0**, pas 1.
-* La rafale du **30 oct 17:20–17:29 UTC** est écrite dans le repli et dans `/go-live` : 8 TX, sortie TROMEX, **7,09 EGLD** vers le owner `$TRO`. Ce n’est pas un succès de mise en prod.
-* Correctif CI : retour à la racine avant la copie `_site`, et `BUILD_ID.txt` aligné.
-* `VITE_PAYBOX_ENABLED` reste **false**. Slot non payable. Hashes SC inchangés.
-* PR [#200](https://github.com/Neltud/xArtists/pull/200) **non mergée**. PR [#221](https://github.com/Neltud/xArtists/pull/221) n’est pas ce déploiement.
+| Surface | État observé |
+| --- | --- |
+| **Pages** [build-info.json](https://xartists.art/build-info.json) | `release_version=0.138.0` · `source_sha=ccf25e514370ca571797416277cd6532a0e10ad4` · `lia_live_trading=false` · `public_route_count=140` · `built_at=2026-11-13T21:39:48.598Z` |
+| **API** [health](https://xartists-access-api.onrender.com/health) | `ok=true` · `lia_live_trading=0` · `mint_live_enabled=false` · `mint_dry_run=true` · `studio_media_upload=off` · Stripe/MoonPay **off** · PayBox configuré mais `paybox_checkout_enabled=false` · `walletless_account_session_enabled=false` · `xorus_private_analysis_enabled=false` · `auction_enabled=false` |
+| **Studio DB** | [studio-store/status](https://xartists-access-api.onrender.com/v1/ops/studio-store/status) → **HTTP 503** |
+| **Trading autonome** | **NO-GO** (Pages + API alignés) |
+| **Commerce fiat** | **NO-GO** (aucun rail live certifié) |
+| **Mint live** | **NO-GO** (`mint_dry_run=true`) |
 
-## Ne pas faire
+Derniers commits humains utiles (13 nov) : evidence read-only multi-modules, refus d'éligibilité wallet forgée, mailbox schema isolée, soft-launch nav, SOL receipt read-only, bloc Jupiter unaudité.
 
-* Appeler ce déploiement un go-live trading parce que le site est en ligne, parce que le nonce a bougé, ou parce que 7,09 EGLD sont sortis.
-* Nouveau swap / wrap / liquidité / transfert sur LIA Ops. Ne pas recharger le hot wallet.
-* Allumer le live parce que le prix est à $3,44, parce que la fenêtre FET s’ouvre le 2 nov, ou parce qu’INIT est en revue.
-* `PAYBOX_ENV=prod`. `claimFees`. Fonds vers placeholders vides.
-* Merger la PR #200 tant que `npm ci` n’est pas rétabli.
-* `VITE_*_CODEHASH_OK=1` dans git.
-* Déverrouiller « Sign & broadcast » sans `signAndSend` utilisateur et sans garde KR.
-* Merger Vite 8 / ESLint 10.
-* Ouvrir le slot REAL.
-* Lire la PR release-please comme une autorisation de broadcast.
+## GO vs NO-GO (décision nette)
 
-## Ordre seulement après un maintien publié (Upbit ou Bithumb, après le 20 nov, ou plus tôt si une notice lève le warning **et** que les dépôts ne sont plus la porte fermée)
+| Module | Verdict | Condition de levée |
+| --- | --- | --- |
+| Site public / musée / exploration | **GO** | Déjà live |
+| xOrus paper (lecture) | **GO** | Déjà live ; verdict serveur ABSTAIN / paper_only |
+| Marketplace découverte | **GO lecture** | Listing/achat public **NO-GO** tant que nouveau listing signé + escrow + receipt non prouvés (#428) |
+| Studio upload IPFS/GLB | **NO-GO** | DB Studio liée + migrations 004–006 + backup/restore + Pinata + CID readback |
+| xPortal session réelle | **NO-GO preuve** | Allowlist Reown `xartists.art` + QR navigateur réel (#506) |
+| PayBox / Stripe / MoonPay | **NO-GO** | Webhook, révocation, S1/S2, conditions légales |
+| LIA / xOrus trading autonome | **NO-GO** | Gel ops + revue KR + cold/MPC ; incident 30 oct reste référence |
+| Slot REAL | **NO-GO** | `isPayable=false` |
+| Treasury claimFees | **NO-GO** | dest `null` |
+| Mail hello@ production | **NO-GO** | SMTP réception non certifiée |
 
-1. Une TX **utilisateur** sur l’explorer (1 TRO staké, ou Sentinel 2,5 EGLD, ou buy/bid listing **#2** — jamais l’id #1).
-2. Pas de micro-trade ops tant que la clé qui a signé le 30 oct n’est pas sous un garde explicite (cold / MPC). Un journal ne suffit plus : la règle écrite a déjà été ignorée.
-3. Inscription MX-8004 / First 100.
-4. Upgrade **du même** slot en payable, puis 1 spin poussière.
-5. Akash `VITE_BRAIN_WS` seulement si l’endpoint répond.
-6. Paybox : une carte test preprod + IPN + My Packs sans double livraison, **puis** `VITE_PAYBOX_ENABLED=true`. Le store Neon vient après, avec un lockfile complet.
+## Ordre d'exécution (suite logique uniquement)
 
-## D’ici le 16–20 nov
+1. **Wallet utilisateur** — Preuve Reown/xPortal sur origines réelles ; session live, pas d'adresse forgée depuis URL/localStorage.
+2. **Studio data plane** — Identifier `DATABASE_URL` runtime API ; backup/restore test ; migrations 004→006 ; un upload → CID → readback ; seulement ensuite `studio_media_upload`.
+3. **Marketplace cycle complet** — Un **nouveau** listing signé par artiste (pas le #2 historique) → achat distinct → receipt Explorer → possession acheteur.
+4. **Compte email + xOrus privé** — JWT email vérifié, liaison SIWX, entitlement serveur ; analyse privée hors frontend public (#548).
+5. **Un seul rail paiement** — Preprod → webhook → révocation → puis un flag unique. Jamais multi-PSP le même jour.
+6. **OVH parallèle** — Image déjà CI-verte ; bascule DNS seulement après recette de reprise avec Render en fallback.
 
-Le travail utile est la lisibilité publique (galerie, musée, market en lecture, packs, `/go-live` honnête, repli réseau à jour) et la recette Paybox preprod. Pas de capital nouveau sur LIA Ops. La fenêtre FET du 2–6 nov se lit, elle ne s’exécute pas.
+## Interdits absolus (inchangés)
+
+* Appeler « go-live total » un site en ligne avec trading/mint/fiat off.
+* Recharger ou signer depuis LIA Ops hot wallet (burst 30 oct).
+* `VITE_LIA_LIVE_TRADING=1`, `PAYBOX_ENV=prod`, `claimFees`, Jupiter live unaudité.
+* Migration Studio aveugle sur Neon sandbox ≠ prod.
+* Merger drafts #480/#481/#478 comme si c'était une autorisation commerciale.
+
+## Veille (contexte MultiversX, 14 nov 2026)
+
+* TVL DeFi MultiversX ~**$11.35M** ; Hatom ~**$9.5M** ; xExchange ~**$3.5M** ; volume DEX 24h ~**$187k**. EGLD ~**$2.80** (DefiLlama).
+* Supernova (600 ms) = surface d'agents ; stack agentique MX (MX-8004, Agent Kit) en construction écosystème — xArtists reste **paper** sur l'exécution autonome.
+* Fenêtre historique Upbit/Bithumb EGLD (16–20 nov) : relire notices officielles avant toute réouverture ops ; **pas** un signal d'exécution automatique.
+
+## Références
+
+* [ACTIVE_CONTEXT.md](../ACTIVE_CONTEXT.md)
+* [docs/STATUS.md](STATUS.md)
+* [docs/ANALYSE_DAPP_COMPLETE.md](ANALYSE_DAPP_COMPLETE.md)
+* [docs/security/launch-gates.md](security/launch-gates.md)
