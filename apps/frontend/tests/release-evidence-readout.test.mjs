@@ -20,7 +20,7 @@ test('observed API and matching SHA never become commercial go-live',()=>{
   assert.equal(r.matchingBuilds,true)
   assert.equal(row(r,'site').state,'observed')
   assert.equal(row(r,'xorus').state,'observed')
-  for(const key of ['mail','xportal','market','fiat','chains']){
+  for(const key of ['mail','xportal','market','fiat','chains','factory','gallery','physical','art_id','trailer']){
     assert.equal(row(r,key).state,'blocked')
   }
   assert.equal(row(r,'accounts').state,'blocked')
@@ -45,6 +45,50 @@ test('mismatched stamps and suspicious financial flags are never accepted as liv
   assert.equal(r.unsafeFlagReported,true)
   assert.equal(row(r,'deployment').state,'unknown')
   assert.equal(row(r,'fiat').state,'blocked')
+})
+test('execution flags in boolean, numeric or environment form raise a safety alert',()=>{
+  const scenarios=[
+    {health:{lia_live_trading:1}},
+    {health:{lia_live_trading:true}},
+    {health:{lia_live_trading:'true'}},
+    {health:{paybox_checkout_enabled:1}},
+    {health:{mint_live_enabled:'1'}},
+    {health:{mint_dry_run:false}},
+    {health:{auction_enabled:true}},
+    {catalog:{billing_checkout_enabled:1}},
+    {catalog:{contract_purchase_enabled:true}},
+    {catalog:{mint_enabled:'true'}},
+    {catalog:{sale_open:'1'}},
+  ]
+  for(const scenario of scenarios){
+    const r=interpretReleaseEvidence({
+      ...base,
+      health:{...base.health,...scenario.health},
+      catalog:{...base.catalog,...scenario.catalog},
+    })
+    assert.equal(r.unsafeFlagReported,true,JSON.stringify(scenario))
+    assert.equal(row(r,'fiat').state,'blocked')
+    assert.equal(row(r,'market').state,'blocked')
+  }
+  const nonLive=interpretReleaseEvidence({
+    ...base,health:{...base.health,lia_live_trading:0,mint_dry_run:true},
+    catalog:{...base.catalog,sale_open:false},
+  })
+  assert.equal(nonLive.unsafeFlagReported,false)
+})
+test('creator, gallery, physical art, forensics and trailer gates never claim live delivery',()=>{
+  const r=interpretReleaseEvidence({
+    ...base,
+    studio:{ok:true,table_ready:true},
+    health:{...base.health,walletless_account_session_enabled:true},
+    catalog:{...base.catalog,walletless_account_session_enabled:true},
+  })
+  for(const key of ['factory','gallery','physical','art_id','trailer']){
+    assert.equal(row(r,key).state,'blocked',key)
+    assert.ok(row(r,key).detail.length>35,key)
+  }
+  assert.equal(row(r,'studio').state,'partial')
+  assert.equal(row(r,'mail').state,'blocked')
 })
 test('network failures, invalid payloads and missing data remain unknown or blocked',()=>{
   const r=interpretReleaseEvidence({site:{source_sha:'not-sha'},health:{ok:true},catalog:{sale_open:true}})
