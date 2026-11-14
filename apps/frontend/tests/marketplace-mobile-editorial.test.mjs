@@ -112,6 +112,8 @@ test('Marketplace is an artwork grid first, not a technical dashboard', () => {
   assert.match(market, /showTech&&<div><LiaAndEscrowNfts/)
   assert.doesNotMatch(gallery, /DRIVE_EXHIBITION|art\/drive\//)
   assert.match(gallery, /marketGridDriveMint/)
+  assert.match(css, /\.xa-marketplace--art \.xa-market-grid__heading > div > p:not\(\.xa-market-grid__eyebrow\):not\(\.xa-market-grid__drive-mint\)/)
+  assert.doesNotMatch(css, /\.xa-marketplace--art \.xa-market-grid__heading p:last-child \{ display: none/)
 
   assert.match(gallery, /<ul className="xa-market-grid__cards"/)
   assert.match(gallery, /<img src=\{card\.image\}/)
