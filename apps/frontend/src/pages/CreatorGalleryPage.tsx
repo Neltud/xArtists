@@ -70,6 +70,9 @@ export default function CreatorGalleryPage(){
     const revision=++selectionRevision.current
     setSelectedImage(null)
     setCheckingImage(Boolean(file))
+    // Choosing a device image invalidates a previously entered HTTPS source
+    // even if validation fails. Never silently attach a stale remote asset.
+    if(file)setForm(value=>({...value,image:''}))
     if(!file)return
     try{
       const info=await inspectLocalGalleryImage(file)
