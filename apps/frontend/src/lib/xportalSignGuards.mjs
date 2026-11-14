@@ -40,7 +40,9 @@ export function validateXPortalSignBatch(txs,address,startingNonce){
       (tx.data!==undefined&&(typeof tx.data!=='string'||tx.data.length>20000)))
       throw new TypeError('xportal_invalid_sign_batch')
     const gas=tx.gasLimit===undefined?12000000:Number(tx.gasLimit)
-    if(!Number.isSafeInteger(gas)||gas<=0||
+    if((tx.gasLimit!==undefined&&
+      !['number','string'].includes(typeof tx.gasLimit))||
+      !Number.isSafeInteger(gas)||gas<=0||
       (typeof tx.gasLimit==='string'&&!DECIMAL.test(tx.gasLimit)))
       throw new TypeError('xportal_invalid_sign_batch')
     return tx
