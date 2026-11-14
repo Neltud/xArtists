@@ -119,7 +119,10 @@ d'utilisation des données tiers à lui seul.
    sur l'instance avant mise à jour système et protections.
 4. Installer Git + Docker Engine/Compose v2 selon la documentation officielle
    Docker Ubuntu. **Réutiliser exactement** `deploy/ovh/compose.yaml` :
-   ce dossier n'est pas spécifique au fournisseur.
+   ce dossier n'est pas spécifique au fournisseur. La CI Docker existante
+   vérifie l'image principalement en environnement x86 ; sur OCI **Arm64**,
+   construire et tester sur la VM Arm elle-même avant de déclarer la
+   compatibilité prouvée, notamment les modules npm et le worker Python.
 5. Suivre la procédure A sur cette VM, avec le **même nom de staging**, les
    mêmes garde-fous et le même contrôle SHA. Vérifier la consommation OCI et
    configurer un budget/alertes ; les alertes ne sont **pas** une garantie
