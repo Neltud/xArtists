@@ -1,0 +1,27 @@
+name: xPortal signing fail-closed (nonce and batch)
+
+on:
+  pull_request:
+    paths:
+      - 'apps/frontend/src/lib/xportalWc.ts'
+      - 'apps/frontend/src/lib/xportalSignGuards.mjs'
+      - 'apps/frontend/src/lib/xportalSignGuards.d.mts'
+      - 'apps/frontend/src/providers/bootstrapSendTx.ts'
+      - 'apps/frontend/tests/xportal-sign-guards.test.mjs'
+      - '.github/workflows/xportal-sign-failclosed.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  signing-guards:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify nonce and transaction-batch fail-closed contracts
+        run: node --test apps/frontend/tests/xportal-sign-guards.test.mjs
