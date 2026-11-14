@@ -6,6 +6,7 @@ import * as WcNs from '@multiversx/sdk-wallet-connect-provider'
 import type { Message } from '@multiversx/sdk-core'
 import {activateWalletSession,withDeadline} from './walletSession'
 import {safeXPortalLoginError} from './xportalDiagnostics'
+import {parseXPortalAccountNonce,validateXPortalSignBatch,validateXPortalSignedBatch,safeXPortalSignError} from './xportalSignGuards.mjs'
 
 const MAINNET = '1'
 const SESSION_ADDR_KEY = 'xartists_xportal_addr'
@@ -403,13 +404,16 @@ export async function loginWithXPortalMainnet(
 }
 
 async function fetchAccountNonce(address: string): Promise<number> {
+  // A missing/read-failed account nonce is never equivalent to a real nonce 0.
+  if(!/^erd1[a-z0-9]{58}$/i.test(address))throw new TypeError('xportal_nonce_unavailable')
   try {
-    const r = await fetch(`https://api.multiversx.com/accounts/${address}`, { cache: 'no-store' })
-    if (!r.ok) return 0
-    const j = await r.json()
-    return Number(j.nonce ?? 0)
-  } catch {
-    return 0
+    const r=await fetch(`https://api.multiversx.com/accounts/${address}`,{
+      method:'GET',cache:'no-store',redirect:'error',signal:AbortSignal.timeout(9000),
+    })
+    if(!r.ok)throw new TypeError('xportal_nonce_unavailable')
+    return parseXPortalAccountNonce(await r.json())
+  }catch{
+    throw new TypeError('xportal_nonce_unavailable')
   }
 }
 
@@ -471,34 +475,35 @@ export async function signWithXPortalSession(
     const session = getXPortalSession()!
     const { provider, address } = session
     const nonce = await fetchAccountNonce(address)
+    const valid=validateXPortalSignBatch(plains,address,nonce)
     const signables: unknown[] = []
-    for (let i = 0; i < plains.length; i++) {
-      signables.push(await toSignableTx(plains[i], address, nonce + i))
+    for (let i = 0; i < valid.length; i++) {
+      signables.push(await toSignableTx(valid[i], address, nonce + i))
     }
 
     let signed: unknown[]
     if (typeof provider.signTransactions === 'function') {
       signed = await provider.signTransactions(signables)
-    } else if (typeof provider.signTransaction === 'function') {
+    } else if (typeof provider.signTransaction === 'function' && signables.length===1) {
       signed = [await provider.signTransaction(signables[0])]
     } else {
-      return { ok: false, error: 'Provider WC sans signature — reconnecte xPortal.' }
+      return { ok: false, error: 'Ce wallet ne peut pas signer ce lot de transactions.' }
     }
+    // Prevent a single signed transaction from masquerading as a signed batch.
+    validateXPortalSignedBatch(signed,signables.length)
 
     activeProvider = provider
     activeAddress = address
     persistAddr(address)
     return { ok: true, signed }
   } catch (e) {
-    const msg = e instanceof Error ? e.message : String(e)
+    // Do not echo wallet SDK errors: they may contain wc: pairing tokens.
+    const msg=e instanceof Error?e.message:''
     if (/session|disconnect|expired|no matching/i.test(msg)) {
       activeProvider = null
       activeAddress = null
     }
-    if (/reject|denied|cancel/i.test(msg)) {
-      return { ok: false, error: 'Signature refusée dans xPortal.' }
-    }
-    return { ok: false, error: `Signature xPortal : ${msg.slice(0, 120)}` }
+    return {ok:false,error:safeXPortalSignError(e)}
   } finally {
     signingLock = Math.max(0, signingLock - 1)
   }
