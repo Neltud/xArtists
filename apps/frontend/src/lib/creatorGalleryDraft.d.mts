@@ -2,7 +2,8 @@ export type GalleryRole='artist'|'gallery'|'seller'
 export type GalleryKind='painting'|'sculpture'|'nft'|'mixed'
 export type GalleryArtwork={
   id:string;title:string;artist:string;image:string;description:string;
-  kind:GalleryKind;priceEgld:number|null;listing_verified:false
+  kind:GalleryKind;priceEgld:number|null;listing_verified:false;
+  sourceSha256:string|null;localFileName:string|null
 }
 export type GalleryDraft={
   schema:'xartists.gallery-draft.v1';role:GalleryRole;name:string;description:string;
@@ -14,7 +15,7 @@ export function newGalleryDraft():GalleryDraft
 export function validateGalleryDraft(draft:unknown):GalleryDraft|null
 export function addArtworkToDraft(draft:unknown,work:{
   title:string;artist?:string;image?:string;description?:string;kind?:GalleryKind;
-  priceEgld?:number|string|null
+  priceEgld?:number|string|null;sourceSha256?:string|null;localFileName?:string|null
 }):GalleryDraft|null
 export function galleryFrames(draft:unknown):Array<{
   id:string;title:string;artist:string;image:string|undefined;description:string;
@@ -23,3 +24,6 @@ export function galleryFrames(draft:unknown):Array<{
 }>
 export function loadGalleryDraft(storage?:Storage):GalleryDraft
 export function saveGalleryDraft(draft:unknown,storage?:Storage):boolean
+
+export type LocalGalleryImageInfo={readonly sourceSha256:string;readonly localFileName:string;readonly mime:string;readonly sizeBytes:number}
+export function inspectLocalGalleryImage(file:Pick<File,'type'|'name'|'size'|'arrayBuffer'>):Promise<LocalGalleryImageInfo>
