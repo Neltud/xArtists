@@ -1,0 +1,26 @@
+# Optional self-hosted IPFS node. No automatic launch or pin/mint.
+name: xartists-private-ipfs
+services:
+  kubo:
+    image: ${XARTISTS_KUBO_IMAGE:?Set reviewed Kubo image version and digest}
+    container_name: xartists-kubo
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    environment:
+      IPFS_PROFILE: server
+    volumes:
+      - ${XARTISTS_KUBO_DATA_DIR:?Set absolute private data directory}:/data/ipfs
+    ports:
+      - "127.0.0.1:5001:5001/tcp" # Admin API: NEVER public
+      - "127.0.0.1:8080:8080/tcp" # Gateway: localhost only
+      - "4001:4001/tcp"            # Libp2p: review firewall
+      - "4001:4001/udp"
+    healthcheck:
+      test: ["CMD-SHELL", "ipfs --api /ip4/127.0.0.1/tcp/5001 id >/dev/null 2>&1"]
+      interval: 45s
+      timeout: 10s
+      retries: 3
+      start_period: 60s

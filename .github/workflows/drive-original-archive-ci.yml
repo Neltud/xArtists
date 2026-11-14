@@ -1,0 +1,34 @@
+name: Private Drive original archive — offline integrity only
+on:
+  pull_request:
+    paths:
+      - 'scripts/ops/archive-drive-original.mjs'
+      - 'scripts/ops/archive-drive-original.test.mjs'
+      - 'deploy/ipfs/compose.yaml'
+      - 'docs/ops/DRIVE_IPFS_PRIVATE_ARCHIVE_2026-11-14.md'
+      - '.github/workflows/drive-original-archive-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  archive-integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Offline archive integrity, permissions, consent and idempotency
+        run: node --test scripts/ops/archive-drive-original.test.mjs
+      - name: Verify no auto-pinning or automatic mint in this offline archive
+        shell: bash
+        run: |
+          if grep -E 'pinFileToIPFS|sendTransaction\(|mintLive|PINATA_JWT|https?://' scripts/ops/archive-drive-original.mjs; then
+            echo 'Archive script may not contact IPFS, wallet or network' >&2
+            exit 1
+          fi
+          grep -q '127.0.0.1:5001:5001' deploy/ipfs/compose.yaml
+          grep -q '127.0.0.1:8080:8080' deploy/ipfs/compose.yaml

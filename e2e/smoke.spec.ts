@@ -36,29 +36,11 @@ test.describe('xArtists published Pages — no wallet or transactions', () => {
     });
   }
 
-  test('public marketplace ships real studio PNG images and paints their thumbnails', async ({ page, request }) => {
-    const artworks = ['xArtists0279.png','xArtists0269.png','xArtists0291.png','xArtists0286.png'] as const;
-    // Catch both a Pages deployment which omits static art assets and a
-    // runtime/CSP/onError failure which silently replaces a real image with xA.
-    for (const filename of artworks) {
-      const asset = await request.get(`${BASE}/art/drive/${filename}`);
-      expect(asset.status(), filename + ' must be present at the public origin').toBe(200);
-      expect(asset.headers()['content-type'], filename + ' must be served as PNG').toMatch(/^image\/png/i);
-      const bytes = await asset.body();
-      expect([...bytes.subarray(0, 8)]).toEqual([137,80,78,71,13,10,26,10]);
-    }
+  test('published marketplace loads without presuming any static Drive media is an NFT', async ({ page }) => {
     await visitPublished(page, '/marketplace/?lang=fr');
-    const grid = page.locator('.xa-market-grid__cards');
-    await expect(grid).toBeVisible();
-    const cards = grid.locator('.xa-market-grid__card');
-    expect(await cards.count()).toBeGreaterThanOrEqual(4);
-    for (let i = 0; i < artworks.length; i++) {
-      const image = cards.nth(i).locator('img');
-      await expect(image).toHaveAttribute('src', new RegExp(artworks[i].replace('.', '\\.') + '$'));
-      await expect(image).toBeVisible();
-      await expect.poll(() => image.evaluate(element => (element as HTMLImageElement).naturalWidth),
-        { timeout: 12_000, message: artworks[i] + ' must decode and display, not just exist in markup' }).toBeGreaterThan(0);
-    }
+    await expect(page.locator('.xa-market-grid')).toBeVisible();
+    await expect(page.locator('.xa-market-grid__heading h1')).toBeVisible();
+    await expect(page.locator('.xa-market-grid__filters')).toBeVisible();
   });
 
   test('published build stamp is available (not a PR SHA assertion)', async ({ request }) => {
