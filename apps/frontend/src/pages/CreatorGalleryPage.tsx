@@ -178,8 +178,21 @@ export default function CreatorGalleryPage(){
             <p className="text-sm">{w.artist||'Artiste non renseigné'} · {w.kind}</p>
             <p className="text-sm">{w.priceEgld===null?'Prix non indiqué':String(w.priceEgld)+' EGLD indicatifs'}</p>
             <p className="text-xs">Propriété, droits et listing : non vérifiés.</p>
+            {w.sourceSha256&&<div className="space-y-2 rounded-lg border border-[color:var(--xa-border)] p-2">
+              <p className="text-xs break-words">Source locale : {w.localFileName||'image'} ·
+                {previews[w.id]?' aperçu temporaire actif':' fichier à réassocier après rechargement'}</p>
+              <p className="font-mono break-all text-[11px]" title="Empreinte fournie localement ; ne prouve pas les droits">
+                SHA-256 : {w.sourceSha256}
+              </p>
+              {!previews[w.id]&&<label className="block text-xs">
+                Réassocier le même fichier (sans upload)
+                <input className="block w-full min-h-[44px] text-xs" type="file"
+                  accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
+                  onChange={e=>{void restorePreview(w.id,e.target.files?.[0]||null)}}/>
+              </label>}
+            </div>}
             <button type="button" className="xa-button secondary"
-              onClick={()=>update({...draft,works:draft.works.filter(x=>x.id!==w.id)})}>
+              onClick={()=>{forgetPreview(w.id);update({...draft,works:draft.works.filter(x=>x.id!==w.id)})}}>
               Retirer du brouillon
             </button>
           </article>)}
@@ -224,9 +237,25 @@ export default function CreatorGalleryPage(){
               {kinds.map(k=><option key={k.id} value={k.id}>{k.label}</option>)}
             </select>
           </label>
-          <label className="block text-sm space-y-1">Image HTTPS
+          <label className="block text-sm space-y-1">Photo depuis mon appareil (JPG, PNG, WebP)
+            <input ref={fileInputRef} className={inputClass} type="file"
+              accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
+              onChange={e=>{void chooseLocalImage(e.target.files?.[0]||null)}}/>
+          </label>
+          <p className="text-xs text-[color:var(--xa-text-secondary)]">
+            {checkingImage?'Contrôle des octets en cours…':
+              selectedImage?'Image prête : '+selectedImage.localFileName+' (aucun upload)':
+              'Aperçu privé seulement. Le fichier reste sur votre appareil et ne persiste pas après rechargement.'}
+          </p>
+          <label className="block text-sm space-y-1">Ou image HTTPS déjà autorisée
             <input className={inputClass} type="url" value={form.image}
-              onChange={e=>field('image',e.target.value)} placeholder="https://…"/>
+              onChange={e=>{
+                ++selectionRevision.current
+                setSelectedImage(null)
+                setCheckingImage(false)
+                if(fileInputRef.current)fileInputRef.current.value=''
+                field('image',e.target.value)
+              }} placeholder="https://…"/>
           </label>
           <label className="block text-sm space-y-1">Prix envisagé (EGLD)
             <input className={inputClass} type="number" min="0" step="0.0001"
@@ -237,7 +266,7 @@ export default function CreatorGalleryPage(){
               value={form.description} onChange={e=>field('description',e.target.value)}/>
           </label>
           <button type="button" className="xa-button primary"
-            disabled={draft.works.length>=MAX_ART} onClick={add}>Accrocher dans la salle</button>
+            disabled={checkingImage||draft.works.length>=MAX_ART} onClick={add}>Accrocher dans la salle</button>
         </div>
         <div className="rounded-xl border p-4 space-y-3">
           <h2 className="text-lg font-semibold">3. Mes NFT</h2>
@@ -251,7 +280,9 @@ export default function CreatorGalleryPage(){
         <div className="rounded-xl border p-4 space-y-3">
           <h2 className="text-lg font-semibold">4. Préparer la publication</h2>
           <p className="text-sm">
-            Ce brouillon est sauvegardé dans ce navigateur. Une galerie publique
+            Le texte et les empreintes du brouillon sont sauvegardés dans ce navigateur,
+            pas les photos locales. Après actualisation, réassociez le même fichier.
+            L’empreinte seule ne prouve ni l’auteur ni la propriété. Une galerie publique
             avec ventes nécessitera un compte vérifié, les droits sur les œuvres,
             un listing signé et une livraison vérifiée.
           </p>
@@ -260,7 +291,13 @@ export default function CreatorGalleryPage(){
               Exporter le brouillon
             </button>
             <button type="button" className="xa-button secondary"
-              onClick={()=>{update(newGalleryDraft());setNotice('Brouillon local réinitialisé.') }}>
+              onClick={()=>{
+                ++selectionRevision.current
+                setSelectedImage(null)
+                clearPreviews()
+                update(newGalleryDraft())
+                setNotice('Brouillon local réinitialisé et aperçus temporaires libérés.')
+              }}>
               Effacer
             </button>
           </div>
