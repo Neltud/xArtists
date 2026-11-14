@@ -110,8 +110,9 @@ test('Marketplace is an artwork grid first, not a technical dashboard', () => {
     'real artworks must appear before technical stock data and legal status')
   assert.match(market, /selected!=='art'&&<header className="xa-marketplace-hero"/)
   assert.match(market, /showTech&&<div><LiaAndEscrowNfts/)
-  assert.match(gallery, /DRIVE_EXHIBITION\.map/)
-  assert.match(gallery, /art\/drive\//)
+  assert.doesNotMatch(gallery, /DRIVE_EXHIBITION|art\/drive\//)
+  assert.match(gallery, /marketGridDriveMint/)
+
   assert.match(gallery, /<ul className="xa-market-grid__cards"/)
   assert.match(gallery, /<img src=\{card\.image\}/)
   assert.match(gallery, /role="group" aria-label=\{c\('marketGridFilters'\)\}/)
@@ -123,7 +124,7 @@ test('Marketplace is an artwork grid first, not a technical dashboard', () => {
 
 test('Marketplace must not invent listings, prices or buy buttons from NFTs', () => {
   assert.match(gallery, /API\+'\/accounts\/'\+encodeURIComponent\(address\)\+'\/nfts\?size=60'/)
-  assert.match(gallery, /source:'studio'/)
+  assert.doesNotMatch(gallery, /source:'studio'|source:"studio"/)
   assert.match(gallery, /fromNft\(n,'escrow'\)/)
   assert.match(gallery, /fromNft\(n,'owned'\)/)
   assert.match(gallery, /href:explorer\(identifier\),price:indexedEgld\(l\.price_egld\)/)
@@ -140,11 +141,11 @@ test('Marketplace grid controls are translated for all eight locales', () => {
   const locale = read('../src/experience/locale.ts')
   const keys = [
     'marketGridTitle','marketGridDescription','marketGridResults','marketGridSearch',
-    'marketGridSort','marketGridFilters','marketGridAll','marketGridStudio',
+    'marketGridSort','marketGridFilters','marketGridAll','marketGridDriveMint','marketGridDriveMintNote',
     'marketGridChain','marketGridIndex','marketGridRecent','marketGridLow',
-    'marketGridHigh','marketGridNotice','marketGridExhibit','marketGridHeld',
+    'marketGridHigh','marketGridNotice','marketGridHeld',
     'marketGridDeposit','marketGridIndexed','marketGridUnverified',
-    'marketGridNotListed','marketGridSaleUnverified','marketGridViewArt',
+    'marketGridSaleUnverified',
     'marketGridVerify','marketGridNoLink','marketGridLoading','marketGridEmpty',
     'marketGridReset','marketGridChainUnavailable','marketGridIndexUnavailable',
     'marketGridTechTitle',
