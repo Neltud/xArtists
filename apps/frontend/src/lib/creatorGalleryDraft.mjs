@@ -93,6 +93,26 @@ export function addArtworkToDraft(draft,work){
   if(!item)return null
   return validateGalleryDraft({...prev,works:[...prev.works,item]})
 }
+/**
+ * Re-open an exported private exhibition without a backend or wallet.
+ * JSON is untrusted; all publish/sale/ownership fields are discarded by the
+ * same strict validator used for local storage. Local image bytes are NOT here.
+ */
+export async function readGalleryDraftFile(file){
+  if(!file||typeof file.name!=='string'||!file.name.toLowerCase().endsWith('.json')||
+    !Number.isSafeInteger(file.size)||file.size<1||file.size>64*1024||
+    typeof file.arrayBuffer!=='function'||
+    !['','application/json','text/plain'].includes(file.type||''))
+    throw new TypeError('invalid_gallery_import_file')
+  const bytes=new Uint8Array(await file.arrayBuffer())
+  if(bytes.byteLength!==file.size)throw new TypeError('gallery_import_bytes_mismatch')
+  let parsed
+  try{parsed=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes))}
+  catch{throw new TypeError('invalid_gallery_import_json')}
+  const safe=validateGalleryDraft(parsed)
+  if(!safe)throw new TypeError('invalid_gallery_import_schema')
+  return safe
+}
 export function galleryFrames(draft){
   const safe=validateGalleryDraft(draft)
   return safe?.works.map(w=>({

@@ -53,7 +53,7 @@
 }
 .xa-directory-starter-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 12px;
 }
 .xa-directory-starter {
@@ -163,6 +163,22 @@
 }
 .xa-guide-extra-link > span { color: var(--xa-muted); font-size: 13px; line-height: 1.5; }
 .xa-guide-extra-link:hover { border-color: var(--xa-accent); }
+.xa-guide-owner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-top: 24px;
+  padding: 20px;
+  border: 1px solid var(--xa-border);
+  border-radius: 16px;
+  background: var(--xa-panel);
+  color: var(--xa-text);
+}
+.xa-guide-owner h2 { margin: 0 0 6px; font-size: clamp(18px, 2vw, 22px); }
+.xa-guide-owner p { margin: 0; color: var(--xa-muted); font-size: 13px; line-height: 1.6; max-width: 570px; }
+.xa-guide-owner a { display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; min-height: 44px; text-decoration: none; }
+.xa-guide-owner a:focus-visible { outline: 3px solid var(--xa-accent); outline-offset: 3px; }
 .xa-guide-actions { display: flex; flex-wrap: wrap; gap: 12px; }
 .xa-guide-actions a { min-height: 44px; }
 
@@ -173,6 +189,8 @@
   .xa-guide-page { padding-top: 22px; }
   .xa-guide-steps, .xa-directory-starter-grid { grid-template-columns: minmax(0,1fr); }
   .xa-guide-step { min-height: 170px; padding: 18px; }
+  .xa-guide-owner { align-items: stretch; flex-direction: column; }
+  .xa-guide-owner a { justify-content: center; }
   .xa-guide-extra-link { grid-template-columns: 1fr auto; }
   .xa-guide-extra-link > span { grid-column: 1; }
   .xa-guide-extra-link > svg { grid-column: 2; grid-row: 1; }

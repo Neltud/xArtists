@@ -10,11 +10,12 @@ export default function DemoTourPage() {
   const c = useCopy()
   const steps = [
     { to: '/museum', label: c('welcomeExplore'), lead: c('welcomeExploreDesc'), icon: 'museum' },
+    { to: '/create/gallery', label: c('welcomeExhibit'), lead: c('welcomeExhibitDesc'), icon: 'museum' },
     { to: '/studio', label: c('welcomeCreate'), lead: c('welcomeCreateDesc'), icon: 'create' },
     { to: '/marketplace', label: c('welcomeMarket'), lead: c('welcomeMarketDesc'), icon: 'market' },
-    { to: '/dao', label: c('welcomeDao'), lead: c('welcomeDaoDesc'), icon: 'network' },
   ]
   const extra = [
+    { to: '/dao', label: c('welcomeDao'), lead: c('welcomeDaoDesc') },
     { to: '/auction', label: c('auction'), lead: c('auctionLead') },
     { to: '/lia', label: c('lia'), lead: c('liaLead') },
     { to: '/offres', label: c('guideOffers'), lead: c('guideOffersLead') },
@@ -41,6 +42,15 @@ export default function DemoTourPage() {
           </Link>
         </li>)}
       </ol>
+    </section>
+    <section className="xa-guide-owner" aria-labelledby="xa-guide-owner-title">
+      <div>
+        <h2 id="xa-guide-owner-title">{c('guideOwnNftTitle')}</h2>
+        <p>{c('guideOwnNftDesc')}</p>
+      </div>
+      <Link to="/marketplace#xa-market-sell" className="xa-button secondary">
+        {c('guideOwnNftAction')}<Icon name="arrow" size={16}/>
+      </Link>
     </section>
     <details className="xa-guide-advanced">
       <summary>{c('welcomeAdvanced')}<Icon name="chevron" size={17}/></summary>

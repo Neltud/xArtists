@@ -46,7 +46,7 @@ export function Footer(){const c=useCopy();return <footer className="xa-footer">
 const MOBILE_DESTINATIONS = [
  {to:'/',label:'home',icon:'orb',paths:['/']},
  {to:'/museum',label:'explore',icon:'museum',paths:['/museum','/gallery','/explore/museum','/maison','/explore/maison']},
- {to:'/studio',label:'create',icon:'create',paths:['/studio','/create/studio','/nft-factory','/digital-twin','/create/nft-factory','/create/digital-twin','/create/world-rights']},
+ {to:'/studio',label:'create',icon:'create',paths:['/studio','/create/studio','/create/gallery','/gallery/create','/exposition','/nft-factory','/digital-twin','/create/nft-factory','/create/digital-twin','/create/world-rights']},
  {to:'/marketplace',label:'market',icon:'market',paths:['/marketplace','/market','/market-place','/explore/market','/auction','/encheres','/explore/auction','/rwa','/explore/rwa']},
  {to:'/intelligence/xorus',label:'lia',icon:'orb',paths:['/lia','/xorus','/intelligence/xorus','/intelligence/agents','/agents']},
 ] as const

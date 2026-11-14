@@ -572,14 +572,14 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
     await expect(page.locator('main h1')).toHaveCount(1)
     await expect(page.locator('a[href*="/slot"]')).toHaveCount(0)
     await expect(page.locator('.xa-guide-steps a')).toHaveCount(4)
-    for (const path of ['/museum', '/studio', '/marketplace', '/dao']) {
+    for (const path of ['/museum', '/create/gallery', '/studio', '/marketplace']) {
       await expect(page.locator(`.xa-guide-steps a[href*="${path}"]`)).toBeVisible()
     }
     const advancedGuide = page.locator('.xa-guide-advanced')
     await expect(advancedGuide).not.toHaveAttribute('open', '')
     await advancedGuide.locator('summary').press('Enter')
     await expect(advancedGuide).toHaveAttribute('open', '')
-    for (const path of ['/auction', '/lia', '/offres', '/legal']) {
+    for (const path of ['/dao', '/auction', '/lia', '/offres', '/legal']) {
       await expect(advancedGuide.locator(`a[href*="${path}"]`)).toBeVisible()
     }
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)
@@ -604,10 +604,11 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
     await expect(page.locator('.xa-mobile-menu')).toBeHidden()
   })
 
-  test('module directory exposes four simple paths while retaining complete filtered catalogue', async ({ page }) => {
+  test('module directory exposes five beginner paths including gallery while retaining filtered catalogue', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 })
     await visit(page, '/directory/')
-    await expect(page.locator('.xa-directory-starter')).toHaveCount(4)
+    await expect(page.locator('.xa-directory-starter')).toHaveCount(5)
+    await expect(page.locator('.xa-directory-starter[href*="/create/gallery"]')).toBeVisible()
     await expect(page.locator('.xa-directory-page .xa-module-card').first()).toBeVisible()
     await expect(page.locator('.xa-directory-stage-controls')).toBeVisible()
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)

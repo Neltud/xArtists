@@ -18,8 +18,9 @@ const [pages, shell, modules, core, dao, daoPage, locales, styles] = await Promi
 
 test('Novice home presents four understandable journeys and no mandatory wallet', () => {
   const home = pages.slice(pages.indexOf('export function Home()'), pages.indexOf('export function GroupPage'))
-  for (const id of ['visit','create','market','dao']) assert.match(home, new RegExp("id:'"+id+"'"))
-  for (const dest of ["'/museum'","'/studio'","'/marketplace'","'/dao'"]) assert.ok(home.includes(dest))
+  for (const id of ['visit','exhibit','create','market']) assert.match(home, new RegExp("id:'"+id+"'"))
+  for (const dest of ["'/museum'","'/create/gallery'","'/studio'","'/marketplace'"]) assert.ok(home.includes(dest))
+  assert.match(home, /to="\/dao" className="xa-first-context-link"/)
   assert.match(home, /welcomeIntro/)
   assert.match(home, /welcomeNoBridge/)
   assert.match(home, /welcomeEuros/)

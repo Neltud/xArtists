@@ -120,7 +120,10 @@ export default function MarketplacePage(){
         <h2 id="xa-market-categories-title">{c('marketExploreTitle')}</h2>
         <p>{c('marketExploreIntro')} {selected==='art'&&<a href="#xa-market-sell"
           className="inline-flex min-h-[40px] items-center font-semibold underline underline-offset-4"
-          aria-label="Vendre un NFT de mon wallet">Vendre mon NFT →</a>}</p>
+          aria-label="Vendre un NFT de mon wallet">Vendre mon NFT →</a>}{selected==='art'&&<Link to="/create/gallery"
+          className="inline-flex min-h-[40px] items-center font-semibold underline underline-offset-4 ml-3">
+          {c('welcomeExhibit')}
+        </Link>}</p>
       </div>
       <nav aria-label={c('marketCategoriesLabel')} className="xa-marketplace-categories__grid">
         {SHELVES.map((s,i)=><button key={s.id} type="button" onClick={()=>navigate(s.id)}

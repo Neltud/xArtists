@@ -31,9 +31,9 @@ export function Home(){
  const c=useCopy()
  const journeys=[
   {id:'visit',to:'/museum',module:'museum',label:c('welcomeExplore'),desc:c('welcomeExploreDesc'),icon:'museum'},
+  {id:'exhibit',to:'/create/gallery',module:'gallery-builder',label:c('welcomeExhibit'),desc:c('welcomeExhibitDesc'),icon:'museum'},
   {id:'create',to:'/studio',module:'studio',label:c('welcomeCreate'),desc:c('welcomeCreateDesc'),icon:'create'},
   {id:'market',to:'/marketplace',module:'market',label:c('welcomeMarket'),desc:c('welcomeMarketDesc'),icon:'market'},
-  {id:'dao',to:'/dao',module:'dao',label:c('welcomeDao'),desc:c('welcomeDaoDesc'),icon:'network'},
  ]
  return <div className="xa-container xa-first-visit">
   <section className="xa-first-hero" aria-labelledby="xa-first-title">
@@ -93,7 +93,7 @@ export function Home(){
   <details className="xa-first-details">
    <summary>{c('welcomeAdvanced')}</summary>
    <p>{c('welcomeMx')}. {c('welcomeOpenSea')}. {c('welcomeEuros')}. {c('welcomeNoBridge')}</p>
-   <Link to="/xorus" className="xa-first-context-link">{c('lia')}<Icon name="arrow" size={14}/></Link> <Link to="/lab?view=3d" className="xa-first-context-link">Labo sculpture 3D<Icon name="arrow" size={14}/></Link> <Link to="/go-live" className="xa-first-context-link">{c('status')}<Icon name="arrow" size={14}/></Link>
+   <Link to="/dao" className="xa-first-context-link">{c('dao')}<Icon name="arrow" size={14}/></Link> <Link to="/xorus" className="xa-first-context-link">{c('lia')}<Icon name="arrow" size={14}/></Link> <Link to="/lab?view=3d" className="xa-first-context-link">Labo sculpture 3D<Icon name="arrow" size={14}/></Link> <Link to="/go-live" className="xa-first-context-link">{c('status')}<Icon name="arrow" size={14}/></Link>
   </details>
  </div>
 }
@@ -158,7 +158,7 @@ export function Directory(){
  return <div className="xa-container xa-directory-page">
   <div className="xa-page-intro"><div><div className="xa-eyebrow">xArtists / {c('modules')}</div><h1>{c('directory')}<span>↗</span></h1><p>{c('welcomeToolsLead')}</p></div><span className="xa-directory-count" role="status" aria-live="polite">{list.length.toString().padStart(2,'0')}<small>{c('modules')}</small></span></div>
   <nav className="xa-directory-starters" aria-label={c('welcomeAsk')}><h2>{c('welcomeAsk')}</h2><div className="xa-directory-starter-grid">
-   {[{to:"/museum",icon:"museum",title:c("welcomeExplore"),lead:c("welcomeExploreDesc")},{to:"/studio",icon:"create",title:c("welcomeCreate"),lead:c("welcomeCreateDesc")},{to:"/marketplace",icon:"market",title:c("welcomeMarket"),lead:c("welcomeMarketDesc")},{to:"/guide",icon:"book",title:c("help"),lead:c("guideIntro")}].map(item=><Link to={item.to} key={item.to} className="xa-directory-starter"><Icon name={item.icon} size={22}/><strong>{item.title}</strong><small>{item.lead}</small></Link>)}
+   {[{to:"/museum",icon:"museum",title:c("welcomeExplore"),lead:c("welcomeExploreDesc")},{to:"/studio",icon:"create",title:c("welcomeCreate"),lead:c("welcomeCreateDesc")},{to:"/create/gallery",icon:"museum",title:c("welcomeExhibit"),lead:c("welcomeExhibitDesc")},{to:"/marketplace",icon:"market",title:c("welcomeMarket"),lead:c("welcomeMarketDesc")},{to:"/guide",icon:"book",title:c("help"),lead:c("guideIntro")}].map(item=><Link to={item.to} key={item.to} className="xa-directory-starter"><Icon name={item.icon} size={22}/><strong>{item.title}</strong><small>{item.lead}</small></Link>)}
   </div></nav>
   {!lab&&<p className="xa-soft-launch-advanced"><Link to="/directory?lab=1" className="xa-text-link">{c('advancedModules')} <Icon name="arrow" size={16}/></Link></p>}
   <div className="xa-directory-controls">

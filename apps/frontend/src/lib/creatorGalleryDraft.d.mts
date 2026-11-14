@@ -22,6 +22,7 @@ export function galleryFrames(draft:unknown):Array<{
   kind:GalleryKind;medium:'digital'|'physical'|'hybrid';priceLabel:string;
   onSale:false;provenance:string;license:string
 }>
+export function readGalleryDraftFile(file:Pick<File,'name'|'type'|'size'|'arrayBuffer'>):Promise<GalleryDraft>
 export function loadGalleryDraft(storage?:Storage):GalleryDraft
 export function saveGalleryDraft(draft:unknown,storage?:Storage):boolean
 

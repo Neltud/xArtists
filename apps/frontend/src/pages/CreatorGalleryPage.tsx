@@ -4,7 +4,7 @@ import MuseumHall from '../components/museum/MuseumHall'
 import {builtinBlueprintForMuseum} from '../lib/builtinBlueprints'
 import {useWallet} from '../context/WalletContext'
 import {useUserAccount} from '../hooks/useUserAccount'
-import {addArtworkToDraft,galleryFrames,inspectLocalGalleryImage,loadGalleryDraft,saveGalleryDraft,
+import {addArtworkToDraft,galleryFrames,inspectLocalGalleryImage,readGalleryDraftFile,loadGalleryDraft,saveGalleryDraft,
   validateGalleryDraft,MAX_ART,newGalleryDraft,
   type GalleryDraft,type GalleryRole,type GalleryKind} from '../lib/creatorGalleryDraft.mjs'
 
@@ -25,6 +25,7 @@ export default function CreatorGalleryPage(){
   const [notice,setNotice]=useState('')
   const [selectedImage,setSelectedImage]=useState<{file:File;sourceSha256:string;localFileName:string}|null>(null)
   const [checkingImage,setCheckingImage]=useState(false)
+  const [importingDraft,setImportingDraft]=useState(false)
   const [previews,setPreviews]=useState<Record<string,string>>({})
   const previewsRef=useRef<Record<string,string>>({})
   const draftRef=useRef(draft)
@@ -139,6 +140,23 @@ export default function CreatorGalleryPage(){
     }
     if(next&&count)update(next)
     setNotice(count+' NFT(s) ajoutés au brouillon, sans listing ni signature.')
+  }
+  const importDraft=async(file:File|null)=>{
+    if(!file)return
+    setImportingDraft(true)
+    try{
+      const safe=await readGalleryDraftFile(file)
+      ++selectionRevision.current
+      setSelectedImage(null)
+      setCheckingImage(false)
+      if(fileInputRef.current)fileInputRef.current.value=''
+      clearPreviews()
+      setForm(initial)
+      update(safe)
+      setNotice('Brouillon JSON réimporté sur cet appareil. Réassociez les images locales ; aucune publication ni vente.')
+    }catch{
+      setNotice('Import refusé : fichier JSON de brouillon xArtists invalide ou supérieur à 64 Kio. Aucune œuvre modifiée.')
+    }finally{setImportingDraft(false)}
   }
   const exportDraft=()=>{
     const safe=validateGalleryDraft(draft)
@@ -293,6 +311,12 @@ export default function CreatorGalleryPage(){
             <button type="button" className="xa-button secondary" onClick={exportDraft}>
               Exporter le brouillon
             </button>
+            <label className="text-sm font-semibold">
+              Importer un brouillon JSON
+              <input className="block min-h-[44px] w-full text-xs" type="file"
+                accept=".json,application/json" disabled={importingDraft}
+                onChange={e=>{const file=e.target.files?.[0]||null;e.currentTarget.value='';void importDraft(file)}}/>
+            </label>
             <button type="button" className="xa-button secondary"
               onClick={()=>{
                 ++selectionRevision.current
@@ -304,6 +328,10 @@ export default function CreatorGalleryPage(){
               Effacer
             </button>
           </div>
+          <p className="text-xs text-[color:var(--xa-muted)]">
+            Le JSON contient titres, descriptions, URLs d’images, prix envisagés et empreintes déclarées.
+            Ne le partagez pas s’il contient des informations privées. Les fichiers image ne sont jamais inclus.
+          </p>
           <p role="status" aria-live="polite" className="text-sm">{notice}</p>
           <p className="font-semibold text-sm">
             Publication, achat et vente : indisponibles dans cet éditeur.
