@@ -4,7 +4,7 @@ import {readFileSync} from 'node:fs'
 import {createHash} from 'node:crypto'
 import {
   GALLERY_KEY,MAX_ART,newGalleryDraft,validateGalleryDraft,
-  addArtworkToDraft,galleryFrames,saveGalleryDraft,loadGalleryDraft,inspectLocalGalleryImage,
+  addArtworkToDraft,galleryFrames,saveGalleryDraft,loadGalleryDraft,inspectLocalGalleryImage,readGalleryDraftFile,
 } from '../src/lib/creatorGalleryDraft.mjs'
 
 const base=newGalleryDraft()
@@ -126,6 +126,40 @@ test('gallery digest is not authentication and forged persisted proof cannot act
  }]})
  assert.equal(invalid.works[0].sourceSha256,null)
 })
+test('exported gallery JSON can be reimported without assuming publication or seller rights',async()=>{
+ const draft=addArtworkToDraft({...base,role:'seller',name:'Exposition mobile'},art)
+ const forged={...draft,publish_status:'published',sale_enabled:true,
+   works:draft.works.map(w=>({...w,onSale:true,listing_verified:true,verified_owner:true}))}
+ const bytes=new TextEncoder().encode(JSON.stringify(forged))
+ const file={name:'exposition.json',type:'application/json',size:bytes.length,
+   arrayBuffer:async()=>bytes.buffer}
+ const imported=await readGalleryDraftFile(file)
+ assert.equal(imported.name,'Exposition mobile')
+ assert.equal(imported.role,'seller')
+ assert.equal(imported.works.length,1)
+ assert.equal(imported.publish_status,'local_only')
+ assert.equal(imported.sale_enabled,false)
+ assert.equal(imported.works[0].listing_verified,false)
+ assert.equal('verified_owner' in imported.works[0],false)
+ assert.equal(galleryFrames(imported)[0].onSale,false)
+})
+test('JSON import refuses malformed, huge, disguised or foreign files, no side effects',async()=>{
+ const json=(value,name='private.json',type='application/json')=>{
+   const bytes=new TextEncoder().encode(value)
+   return {name,type,size:bytes.length,arrayBuffer:async()=>bytes.buffer}
+ }
+ await assert.rejects(readGalleryDraftFile(json('{bad')),/invalid_gallery_import_json/)
+ await assert.rejects(readGalleryDraftFile(json('{"schema":"other","works":[]}')),/invalid_gallery_import_schema/)
+ await assert.rejects(readGalleryDraftFile(json(JSON.stringify(base),'private.html')),/invalid_gallery_import_file/)
+ await assert.rejects(readGalleryDraftFile(json(JSON.stringify(base),'private.json','text/html')),/invalid_gallery_import_file/)
+ await assert.rejects(readGalleryDraftFile({name:'huge.json',type:'application/json',size:65537,
+   arrayBuffer:()=>{throw Error('must not read huge file')}}),/invalid_gallery_import_file/)
+ const tampered={...base,works:[{...art,id:'one',image:'javascript:alert(1)'}],
+   publish_status:'published',sale_enabled:true}
+ const imported=await readGalleryDraftFile(json(JSON.stringify(tampered)))
+ assert.equal(imported.works[0].image,'')
+ assert.equal(imported.sale_enabled,false)
+})
 test('page is a Three.js museum gallery creator, no mint, checkout or live-selling action',()=>{
  const page=readFileSync(new URL('../src/pages/CreatorGalleryPage.tsx',import.meta.url),'utf8')
  const renderer=readFileSync(new URL('../src/components/museum/MuseumWebGLHallLive.tsx',import.meta.url),'utf8')
@@ -135,6 +169,9 @@ test('page is a Three.js museum gallery creator, no mint, checkout or live-selli
  const museum=readFileSync(new URL('../src/pages/MuseumPage.tsx',import.meta.url),'utf8')
  assert.match(page,/<MuseumHall/)
  assert.match(page,/inspectLocalGalleryImage/)
+ assert.match(page,/readGalleryDraftFile/)
+ assert.match(page,/Importer un brouillon JSON/)
+ assert.match(page,/clearPreviews\(\)/)
  assert.match(page,/restorePreview/)
  assert.match(page,/forgetPreview/)
  assert.match(page,/type="file"/)
