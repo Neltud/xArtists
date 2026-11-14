@@ -128,6 +128,9 @@ test('gallery digest is not authentication and forged persisted proof cannot act
 })
 test('page is a Three.js museum gallery creator, no mint, checkout or live-selling action',()=>{
  const page=readFileSync(new URL('../src/pages/CreatorGalleryPage.tsx',import.meta.url),'utf8')
+ const renderer=readFileSync(new URL('../src/components/museum/MuseumWebGLHallLive.tsx',import.meta.url),'utf8')
+ assert.match(renderer,/frames\.filter\(f => !!f\.image\)/)
+ assert.doesNotMatch(renderer,/f\.kind !== 'sculpture'/)
  const routes=readFileSync(new URL('../src/experience/modules.ts',import.meta.url),'utf8')
  const museum=readFileSync(new URL('../src/pages/MuseumPage.tsx',import.meta.url),'utf8')
  assert.match(page,/<MuseumHall/)
