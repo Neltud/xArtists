@@ -23,13 +23,17 @@ export function interpretReleaseEvidence(input={}) {
   // Runtime flags can be booleans, numeric 0/1, or environment strings.
   // A live execution signal is an *alert*, never proof of an authorized launch.
   const enabled=value=>value===true||value===1||value==='1'||value==='true'
-  const flagsRisk=healthValid&&(
-    enabled(health.paybox_checkout_enabled)||
-    enabled(health.mint_live_enabled)||
-    enabled(health.lia_live_trading)||
-    health.mint_dry_run===false||
-    enabled(health.auction_enabled)||
-    (catalogValid&&(
+  const flagsRisk=Boolean(
+    (healthValid&&(
+      enabled(health.paybox_checkout_enabled)||
+      enabled(health.mint_live_enabled)||
+      enabled(health.lia_live_trading)||
+      health.mint_dry_run===false||
+      enabled(health.auction_enabled)
+    ))||
+    // A risky catalog flag is worth reporting even if health fails or
+    // the catalog schema is malformed. It never authorizes commerce.
+    (catalog&&(
       enabled(catalog.billing_checkout_enabled)||
       enabled(catalog.contract_purchase_enabled)||
       enabled(catalog.mint_enabled)||
