@@ -20,12 +20,21 @@ export function interpretReleaseEvidence(input={}) {
   const paperXorus=xorus?.ok===true&&xorus?.report?.schema==='xorus_analysis/v2'
   const studioSchema=studio?.ok===true&&studio?.table_ready===true
   const sessionsDeclared=catalogValid&&catalog.walletless_account_session_enabled===true
+  // Runtime flags can be booleans, numeric 0/1, or environment strings.
+  // A live execution signal is an *alert*, never proof of an authorized launch.
+  const enabled=value=>value===true||value===1||value==='1'||value==='true'
   const flagsRisk=healthValid&&(
-    health.paybox_checkout_enabled===true||
-    health.mint_live_enabled===true||
-    health.lia_live_trading==='1'||
-    catalog?.billing_checkout_enabled===true||
-    catalog?.mint_enabled===true
+    enabled(health.paybox_checkout_enabled)||
+    enabled(health.mint_live_enabled)||
+    enabled(health.lia_live_trading)||
+    health.mint_dry_run===false||
+    enabled(health.auction_enabled)||
+    (catalogValid&&(
+      enabled(catalog.billing_checkout_enabled)||
+      enabled(catalog.contract_purchase_enabled)||
+      enabled(catalog.mint_enabled)||
+      enabled(catalog.sale_open)
+    ))
   )
   return Object.freeze({
     observedAt:null, // Caller owns observation timestamp, not server publication time.
@@ -57,6 +66,16 @@ export function interpretReleaseEvidence(input={}) {
           'Stockage Studio non prouvé sur cette API',281),
       row('market','Marketplace NFT','blocked',
         'Un catalogue ou un historique ne prouvent pas un nouveau listing puis achat et réception',428),
+      row('factory','NFT Factory / distributeurs','blocked',
+        'Brouillons PAPER uniquement : média/CID, droits, mint et contrat distributeur audité non prouvés',428),
+      row('gallery','Galerie 3D / expositions','blocked',
+        'Constructeur présent dans le code ; publication serveur, droits d’exposition et vente non certifiés',393),
+      row('physical','Œuvres physiques / custody','blocked',
+        'Paiement, transporteur, réception signée et revue humaine restent des preuves distinctes',281),
+      row('art_id','xArt-ID / provenance','blocked',
+        'Empreinte ou similarité ne certifie ni authenticité, ni provenance, ni absence de vol ; revue humaine requise',324),
+      row('trailer','Trailer xArtists','blocked',
+        'Captures réelles desktop/mobile, droits promotionnels et fichiers MP4 finaux non certifiés'),
       row('fiat','Paiement / abonnements','blocked',
         'Webhook, règlement, droits et révocation de bout en bout non certifiés',548),
       row('chains','Solana / bridge / trading','blocked',
