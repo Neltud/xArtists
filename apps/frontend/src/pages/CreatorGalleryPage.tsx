@@ -1,10 +1,10 @@
-import {useMemo,useState} from 'react'
+import {useEffect,useMemo,useRef,useState} from 'react'
 import {Link} from 'react-router-dom'
 import MuseumHall from '../components/museum/MuseumHall'
 import {builtinBlueprintForMuseum} from '../lib/builtinBlueprints'
 import {useWallet} from '../context/WalletContext'
 import {useUserAccount} from '../hooks/useUserAccount'
-import {addArtworkToDraft,galleryFrames,loadGalleryDraft,saveGalleryDraft,
+import {addArtworkToDraft,galleryFrames,inspectLocalGalleryImage,loadGalleryDraft,saveGalleryDraft,
   validateGalleryDraft,MAX_ART,newGalleryDraft,
   type GalleryDraft,type GalleryRole,type GalleryKind} from '../lib/creatorGalleryDraft.mjs'
 
@@ -23,23 +23,104 @@ export default function CreatorGalleryPage(){
     ?newGalleryDraft():loadGalleryDraft(window.localStorage))
   const [form,setForm]=useState<Entry>(initial)
   const [notice,setNotice]=useState('')
+  const [selectedImage,setSelectedImage]=useState<{file:File;sourceSha256:string;localFileName:string}|null>(null)
+  const [checkingImage,setCheckingImage]=useState(false)
+  const [previews,setPreviews]=useState<Record<string,string>>({})
+  const previewsRef=useRef<Record<string,string>>({})
+  const draftRef=useRef(draft)
+  const fileInputRef=useRef<HTMLInputElement|null>(null)
+  const selectionRevision=useRef(0)
+  useEffect(()=>()=>{for(const url of Object.values(previewsRef.current))URL.revokeObjectURL(url)},[])
   const {connected,address}=useWallet()
   const account=useUserAccount(connected?address:null)
-  const frames=useMemo(()=>galleryFrames(draft),[draft])
+  const frames=useMemo(()=>galleryFrames(draft).map(frame=>({
+    ...frame,image:previews[frame.id]||frame.image,
+  })),[draft,previews])
   const blueprint=useMemo(()=>builtinBlueprintForMuseum('xartists'),[])
   const update=(next:unknown)=>{
     const valid=validateGalleryDraft(next)
     if(!valid){setNotice('Brouillon invalide : modification refusée.');return}
+    draftRef.current=valid
     setDraft(valid)
     setNotice(saveGalleryDraft(valid,window.localStorage)
       ?'Sauvegardé sur cet appareil uniquement.':'Aperçu local : stockage indisponible.')
   }
+  const putPreview=(id:string,file:File)=>{
+    const url=URL.createObjectURL(file)
+    const old=previewsRef.current[id]
+    previewsRef.current={...previewsRef.current,[id]:url}
+    setPreviews(previewsRef.current)
+    if(old)URL.revokeObjectURL(old)
+  }
+  const forgetPreview=(id:string)=>{
+    const old=previewsRef.current[id]
+    const next={...previewsRef.current}
+    delete next[id]
+    previewsRef.current=next
+    setPreviews(next)
+    if(old)URL.revokeObjectURL(old)
+  }
+  const clearPreviews=()=>{
+    const prior=Object.values(previewsRef.current)
+    previewsRef.current={}
+    setPreviews({})
+    for(const url of prior)URL.revokeObjectURL(url)
+  }
+  const chooseLocalImage=async(file:File|null)=>{
+    const revision=++selectionRevision.current
+    setSelectedImage(null)
+    setCheckingImage(Boolean(file))
+    if(!file)return
+    try{
+      const info=await inspectLocalGalleryImage(file)
+      if(revision!==selectionRevision.current)return
+      setSelectedImage({file,...info})
+      setForm(value=>({...value,image:''}))
+      setNotice('Photo vérifiée localement. Aucun upload, aucun NFT ni certificat.')
+    }catch{
+      if(revision===selectionRevision.current)
+        setNotice('Photo refusée : JPG/PNG/WebP réels, 16 Mio maximum. Aucun fichier transmis.')
+    }finally{
+      if(revision===selectionRevision.current)setCheckingImage(false)
+    }
+  }
+  const restorePreview=async(id:string,file:File|null)=>{
+    if(!file)return
+    try{
+      const info=await inspectLocalGalleryImage(file)
+      const work=draftRef.current.works.find(w=>w.id===id)
+      if(!work||work.sourceSha256!==info.sourceSha256){
+        setNotice('Image différente du brouillon : réassociation refusée, aucune preuve remplacée.')
+        return
+      }
+      putPreview(id,file)
+      setNotice('Aperçu local réassocié à la même empreinte. Droits toujours non vérifiés.')
+    }catch{
+      setNotice('Image locale invalide ou trop volumineuse : réassociation refusée.')
+    }
+  }
   const add=()=>{
+    if(checkingImage)return
     if(!form.title.trim()){setNotice('Indique un titre.');return}
     const next=addArtworkToDraft(draft,{...form,
+      ...(selectedImage?{image:'',sourceSha256:selectedImage.sourceSha256,
+        localFileName:selectedImage.localFileName}:{}),
       priceEgld:form.priceEgld===''?null:Number(form.priceEgld)})
     if(!next){setNotice('Œuvre invalide ou 16 emplacements atteints.');return}
-    update(next);setForm(initial)
+    const created=next.works[next.works.length-1]
+    update(next)
+    if(selectedImage){
+      try{
+        putPreview(created.id,selectedImage.file)
+        setNotice('Œuvre ajoutée avec aperçu privé. Fichier non sauvegardé ni publié.')
+      }catch{
+        setNotice('Œuvre ajoutée ; aperçu indisponible sur cet appareil.')
+      }
+    }
+    ++selectionRevision.current
+    setSelectedImage(null)
+    if(fileInputRef.current)fileInputRef.current.value=''
+    setForm(initial)
   }
   const importWallet=()=>{
     if(!connected||account.loading||!account.nfts.length){setNotice('Aucun NFT chargé.');return}
