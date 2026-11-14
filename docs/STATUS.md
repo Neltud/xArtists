@@ -3,26 +3,22 @@ hidden: true
 noIndex: true
 ---
 
-# Status — 2026-10-17 GO\_LIVE SC (probe live)
+# Status — 2026-11-14 probe live
 
-| Item          | State                                                                                                    |
-| ------------- | -------------------------------------------------------------------------------------------------------- |
-| Verdict       | **GO\_LIVE SC** (LIA paper — not a retail fund)                                                          |
-| Release       | **0.112.0** + correctif build (stamp `0.113.0`) · Neltud/xArtists                                        |
-| Pages         | `static.yml` rouge depuis le 16 oct — ce push débloque le déploiement Vite                               |
-| Demo          | https://neltud.github.io/xArtists/                                                                       |
-| Network       | MultiversX mainnet **Supernova 600 ms** (epoch **2265**, J+32)                                           |
-| LIA           | paper · `LIA_LIVE_TRADING=0` · **1.6038 EGLD** · nonce **1473**                                          |
-| Product SCs   | **LIVE** — codeHash match config (agents = buyPack upgrade)                                              |
-| Marketplace   | balance **0.0175 EGLD** · payable · listing #2 actif 0,25 EGLD · fee+bid                                 |
-| Agents        | balance **0.013 EGLD** · codeHash `igm9oUpgad+QO2cQqhphuLZuicEBNR7jdcQHk8YEe00=` · getPackPrice 10/5/2.5 |
-| Slot          | house **0.50 EGLD** · `isPayable=false` · REAL spin fermé                                                |
-| $TRO          | TRO-94c925 · 476 224 / 500 000 · 562 accounts · API **\~$0.000080**                                      |
-| TRO stake     | codeHash live · balance SC 0 (stakes already proved)                                                     |
-| Deployer      | `erd1kex0p…` · ops wallet                                                                                |
-| Treasury dest | **null** — do not route fees                                                                             |
-| MX-8004       | First 100 **not registered**                                                                             |
-| Upbit         | EGLD **investment warning** since 21 Sep · decision window **19–23 oct 2026**                            |
-| Recap         | [`ANALYSE_DAPP_COMPLETE.md`](ANALYSE_DAPP_COMPLETE.md)                                                   |
+| Item | State |
+| --- | --- |
+| Verdict site | **GO_LIVE SITE** (exploration, musée, xOrus paper) |
+| Verdict commerce | **NO-GO** (mint live, fiat, trading autonome) |
+| Release Pages | **0.138.0** · SHA `ccf25e514370ca571797416277cd6532a0e10ad4` |
+| Demo | https://xartists.art/ · https://neltud.github.io/xArtists/ |
+| Routes publiques | **140** |
+| LIA / xOrus trade | paper · `lia_live_trading=false` · `LIA_LIVE_TRADING=0` |
+| Studio upload | **OFF** · diagnostic store **HTTP 503** |
+| Mint | `mint_live_enabled=false` · `mint_dry_run=true` |
+| Stripe / MoonPay | non configurés live |
+| PayBox | configuré · checkout **disabled** |
+| Marketplace | SC payable · **0 listing actif** observé (preuve historique #2 seulement) |
+| Treasury dest | **null** — do not claimFees |
+| Recap | [`ANALYSE_DAPP_COMPLETE.md`](ANALYSE_DAPP_COMPLETE.md) · [`SUITE_LOGIQUE_NOW.md`](SUITE_LOGIQUE_NOW.md) · [`../ACTIVE_CONTEXT.md`](../ACTIVE_CONTEXT.md) |
 
-Hard refresh: Ctrl+Shift+R
+Hard refresh: Ctrl+Shift+R. Toujours relire [build-info.json](https://xartists.art/build-info.json) et [API health](https://xartists-access-api.onrender.com/health) avant une décision d'activation.
