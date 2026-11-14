@@ -77,7 +77,7 @@ async function readJson(url,fetchFn=fetch){
 }
 
 export async function probeCandidate({origin,expectedSha,fetchFn=fetch}){
-  const base=validateCandidateUrl(origin+'/')
+  const base=validateCandidateUrl(origin)
   if(!SHA.test(expectedSha||''))throw Error('candidate_expected_sha_required')
   const [health,build,studio,orders]=await Promise.all([
     readJson(base+'/health',fetchFn),
