@@ -325,11 +325,37 @@
   letter-spacing: -.02em;
   line-height: 1.2;
 }
-.xa-market-grid__heading p:last-child {
+.xa-market-grid__heading > div > p:not(.xa-market-grid__drive-mint) {
   margin: 7px 0 0;
   color: var(--xa-muted);
   font-size: 12px;
   line-height: 1.45;
+}
+.xa-market-grid__drive-mint {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px 12px;
+  align-items: center;
+  margin: 12px 0 0;
+  font-size: 12px;
+  line-height: 1.55;
+}
+.xa-market-grid__drive-mint a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--xa-accent);
+  font-weight: 750;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.xa-market-grid__drive-mint a:focus-visible {
+  outline: 3px solid var(--xa-accent);
+  outline-offset: 3px;
+}
+.xa-market-grid__drive-mint span {
+  max-width: 55ch;
+  color: var(--xa-muted);
 }
 .xa-market-grid__count {
   white-space: nowrap;
