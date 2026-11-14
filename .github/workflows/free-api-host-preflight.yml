@@ -1,0 +1,36 @@
+name: Free-host Render exit preflight (read-only)
+
+on:
+  pull_request:
+    paths:
+      - 'deploy/free-hosting/**'
+      - 'scripts/ops/probe-free-api-candidate.mjs'
+      - 'tests/probe-free-api-candidate.test.mjs'
+      - '.github/workflows/free-api-host-preflight.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  free-host-preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate candidate allowlist, read-only endpoints and NO-GO gates
+        run: node --test tests/probe-free-api-candidate.test.mjs
+      - name: Confirm existing standalone Docker Compose works without secrets
+        env:
+          API_HOSTNAME: api-staging.xartists.art
+        run: |
+          cp deploy/ovh/api.env.template deploy/ovh/.env.api
+          trap 'rm -f deploy/ovh/.env.api' EXIT
+          docker compose -f deploy/ovh/compose.yaml config --quiet
+      - name: No deploy, billing action, migration, DNS or production flags
+        run: |
+          test ! -e deploy/ovh/.env.api
+          echo "FREE_HOST_PREFLIGHT_PASS (source-only; operator deploy still required)"
