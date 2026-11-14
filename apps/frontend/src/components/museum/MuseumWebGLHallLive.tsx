@@ -144,7 +144,9 @@ export default function MuseumWebGLHallLive({
   const marketLive = canListBuyNft()
   const pal = PALETTE[room] || PALETTE.stone
   const paintings = useMemo(() => {
-    const list = frames.filter(f => !!f.image && f.kind !== 'sculpture').slice(0, MAX_ART)
+    // A sculpture may have a documentary photograph but no GLB mesh.
+    // Mount the photo in a frame; never represent it as a verified 3D twin.
+    const list = frames.filter(f => !!f.image).slice(0, MAX_ART)
     return list.map((f, i) => ({
       ...f,
       id: f.id && f.id !== 'default' ? f.id : `art-${i}-${(f.title || 'oeuvre').slice(0, 24)}`,
