@@ -146,20 +146,17 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
       const navigationDisplay = await page.locator('.xa-marketplace-categories__grid').evaluate(el =>
         getComputedStyle(el).display)
       expect(navigationDisplay, 'compact horizontally scrolling marketplace categories').toBe('flex')
-      const grid = page.locator('.xa-market-grid__cards')
-      await expect(grid).toBeVisible()
-      await expect(grid.locator('.xa-market-grid__card')).toHaveCount(4, { timeout: 1000 }).catch(async () => {
-        // On-chain cards can load after the four guaranteed curated artworks.
-        expect(await grid.locator('.xa-market-grid__card').count()).toBeGreaterThanOrEqual(4)
-      })
-      const columns = await grid.evaluate(el =>
-        getComputedStyle(el).gridTemplateColumns.split(' ').filter(Boolean).length)
-      expect(columns, 'two visual artwork columns on mobile').toBe(2)
-      await expect(grid.locator('img[src*="/art/drive/"]')).toHaveCount(4)
+      await expect(page.locator('.xa-market-grid__drive-mint a')).toHaveAttribute('href', /studio/)
+      await expect(page.locator('.xa-market-grid img[src*="/art/drive/"]')).toHaveCount(0)
       await expect(page.locator('.xa-market-tech')).not.toHaveAttribute('open', '')
-      await expect(page.locator('.xa-market-grid__card').first()).toContainText('xArtists0279')
-      const firstRowTop = await grid.evaluate(el => el.getBoundingClientRect().top)
-      expect(firstRowTop, 'first artwork row should start near the initial mobile viewport').toBeLessThan(850)
+      const grid = page.locator('.xa-market-grid__cards')
+      if (await grid.isVisible()) {
+        const columns = await grid.evaluate(el =>
+          getComputedStyle(el).gridTemplateColumns.split(' ').filter(Boolean).length)
+        expect(columns, 'two NFT columns on mobile').toBe(2)
+      } else {
+        await expect(page.locator('.xa-market-grid__empty')).toBeVisible()
+      }
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)
       expect(overflow, `Marketplace horizontal overflow at ${width}px`).toBeLessThanOrEqual(12)
       await page.screenshot({ animations: 'disabled', path: `artifacts/ux-mobile/marketplace-editorial-${width}.png` })
@@ -168,38 +165,39 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
     })
   }
 
-  test('FrameIT-like catalog filters work without wallet or false sale actions', async ({ page }) => {
+  test('NFT catalogue filters work without a wallet or pretending Drive originals are tokens', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 })
     await visit(page, '/marketplace/?lang=fr')
     const gallery = page.locator('.xa-market-grid')
     await expect(gallery.getByRole('heading', { name: 'Œuvres à découvrir' })).toBeVisible()
-    await expect(gallery.locator('.xa-market-grid__card').first()).toContainText('xArtists0279')
-    await expect(gallery.getByText('Exposition · hors vente').first()).toBeVisible()
-    await expect(gallery.getByRole('link', { name: /Voir la collection/ }).first()).toHaveAttribute('href', /museum/)
+    await expect(gallery.getByRole('link', { name: /Préparer le mint dans Studio/ })).toBeVisible()
+    await expect(gallery.locator('img[src*="/art/drive/"]')).toHaveCount(0)
+    await expect(gallery.getByRole('button', { name: 'Atelier xArtists' })).toHaveCount(0)
+    await expect(gallery.getByRole('button', { name: 'NFT MultiversX' })).toBeVisible()
+    await expect(gallery.getByRole('button', { name: 'Index externe' })).toBeVisible()
     await expect(gallery.getByRole('button', { name: /Acheter|Buy now|Enchérir/i })).toHaveCount(0)
-    await gallery.getByRole('searchbox').fill('xArtists0291')
-    await expect(gallery.locator('.xa-market-grid__card')).toHaveCount(1)
-    await expect(gallery.locator('.xa-market-grid__card').first()).toContainText('xArtists0291')
+    await gallery.getByRole('searchbox').fill('original-drive-not-minted')
+    await expect(gallery.locator('.xa-market-grid__card')).toHaveCount(0)
     await gallery.getByRole('searchbox').fill('')
-    await gallery.getByRole('button', { name: 'Atelier xArtists' }).click()
-    await expect(gallery.getByRole('button', { name: 'Atelier xArtists' })).toHaveAttribute('aria-pressed','true')
-    await expect(gallery.locator('.xa-market-grid__card')).toHaveCount(4)
     await gallery.getByRole('button', { name: 'NFT MultiversX' }).click()
     await expect(gallery.getByRole('button', { name: 'NFT MultiversX' })).toHaveAttribute('aria-pressed','true')
     await gallery.getByRole('button', { name: 'Tout voir' }).click()
-    await expect(gallery.locator('.xa-market-grid__card').first()).toContainText('xArtists0279')
   })
 
   for (const [width, expectedColumns] of [[768, 3], [1440, 4]] as const) {
-    test(`artwork catalog at ${width}px uses ${expectedColumns} card columns`, async ({ page }) => {
+    test(`NFT catalog at ${width}px is responsive even when the chain index is empty`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 })
       await visit(page, '/marketplace/?lang=fr')
       const cards = page.locator('.xa-market-grid__cards')
-      await expect(cards).toBeVisible()
-      const columns = await cards.evaluate(el =>
-        getComputedStyle(el).gridTemplateColumns.split(' ').filter(Boolean).length)
-      expect(columns, 'responsive desktop / tablet grid column count').toBe(expectedColumns)
-      await expect(cards.locator('img[src*="/art/drive/"]')).toHaveCount(4)
+      await expect(page.locator('.xa-market-grid')).toBeVisible()
+      await expect(page.locator('.xa-market-grid img[src*="/art/drive/"]')).toHaveCount(0)
+      if (await cards.isVisible()) {
+        const columns = await cards.evaluate(el =>
+          getComputedStyle(el).gridTemplateColumns.split(' ').filter(Boolean).length)
+        expect(columns, 'responsive NFT grid columns').toBe(expectedColumns)
+      } else {
+        await expect(page.locator('.xa-market-grid__empty')).toBeVisible()
+      }
       await expect(page.locator('.xa-marketplace-hero')).toHaveCount(0)
     })
   }
