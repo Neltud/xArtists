@@ -75,6 +75,16 @@ test('execution flags in boolean, numeric or environment form raise a safety ale
     catalog:{...base.catalog,sale_open:false},
   })
   assert.equal(nonLive.unsafeFlagReported,false)
+  // A broken health endpoint or an invalid catalog schema must not hide
+  // an explicit sale/checkout announcement; this is an alert only.
+  const missingHealth=interpretReleaseEvidence({
+    ...base,health:null,catalog:{sale_open:true},
+  })
+  assert.equal(missingHealth.unsafeFlagReported,true)
+  const malformedCatalog=interpretReleaseEvidence({
+    ...base,catalog:{schema:'unrecognized',mint_enabled:'1'},
+  })
+  assert.equal(malformedCatalog.unsafeFlagReported,true)
 })
 test('creator, gallery, physical art, forensics and trailer gates never claim live delivery',()=>{
   const r=interpretReleaseEvidence({
