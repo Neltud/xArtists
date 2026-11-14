@@ -79,7 +79,7 @@ export default function CreatorGalleryPage(){
       if(revision!==selectionRevision.current)return
       setSelectedImage({file,...info})
       setForm(value=>({...value,image:''}))
-      setNotice('Photo vérifiée localement. Aucun upload, aucun NFT ni certificat.')
+      setNotice('Format et SHA-256 contrôlés sur cet appareil. Aucun upload, NFT ou certificat.')
     }catch{
       if(revision===selectionRevision.current)
         setNotice('Photo refusée : JPG/PNG/WebP réels, 16 Mio maximum. Aucun fichier transmis.')
