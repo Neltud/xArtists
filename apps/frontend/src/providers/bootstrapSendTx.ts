@@ -224,6 +224,13 @@ function injectSendTx() {
       }
     }
 
+    // Web Wallet hook accepts one transaction only. Never silently drop
+    // 2..N transactions from a multi-TX request if prior providers fail.
+    if (list.length !== 1) {
+      const msg='Ce navigateur ne peut pas signer le lot complet. Aucune transaction envoyée.'
+      empireTxError(msg)
+      throw new Error(msg)
+    }
     const plain = toPlainTx(list[0])
     if (!plain.receiver || !plain.receiver.startsWith('erd1')) {
       const msg = 'Receiver invalide'
