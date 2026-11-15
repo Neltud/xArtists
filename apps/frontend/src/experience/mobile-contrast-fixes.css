@@ -21,6 +21,10 @@
   .xa-logo svg { width: 27px; height: 27px; flex: 0 0 27px; }
   .xa-header-actions { display: flex; flex: 0 0 auto; min-width: 0; gap: 4px; }
   .xa-header-actions .xa-lang { display: none; }
+  /* On mobile, language and theme settings live at the top of the menu. */
+  .xa-header-actions .xa-theme-toggle { display: none; }
+  .xa-mobile-utilities-top { margin: 12px 14px 14px; flex: 0 0 auto; }
+  .xa-mobile-utilities-top .xa-mobile-lang { font-weight: 650; }
   .xa-search-trigger { width: 36px; min-width: 36px; height: 40px; }
   .xa-connect {
     width: 40px;
