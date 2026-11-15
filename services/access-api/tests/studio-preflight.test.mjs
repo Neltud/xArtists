@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import {test} from 'node:test'
-import {checkStudioIpfsReadiness,validateStudioSchema} from '../src/studioPreflight.mjs'
+import {checkStudioIpfsReadiness,inspectStudioDatabase,validateStudioSchema} from '../src/studioPreflight.mjs'
 
 const names=[
   'id','wallet','mime','bytes','sha256','uri','status','created_at',
@@ -137,4 +137,23 @@ test('schema rejects a misleading quota index even when its name and validity ma
   const result=validateStudioSchema({...schema,indexes:[misleading]})
   assert.equal(result.quotaIndexReady,false)
   assert.equal(result.ready,false)
+})
+
+test('GLB migration 006 is required only when model upload is requested',async()=>{
+  const {client}=mockClient()
+  const basic=await inspectStudioDatabase({env,connect:async()=>client})
+  assert.equal(basic.ready,true)
+  const model=await inspectStudioDatabase({
+    env:{...env,STUDIO_GLB_UPLOAD_ENABLED:'1'},
+    connect:async()=>mockClient().client,
+  })
+  assert.equal(model.ready,false)
+  assert.equal(model.reason,'migration_006_missing')
+})
+test('missing status constraint blocks Studio without exposing database details',async()=>{
+  const {client}=mockClient({status:"CHECK (status IN ('reserved','pinned'))"})
+  const result=await inspectStudioDatabase({env,connect:async()=>client})
+  assert.equal(result.ready,false)
+  assert.equal(result.reason,'studio_schema_incomplete')
+  assert.equal(JSON.stringify(result).includes(env.DATABASE_URL),false)
 })
