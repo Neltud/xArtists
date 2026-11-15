@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import {test} from 'node:test'
-import {checkStudioIpfsReadiness,validateStudioSchema} from '../src/studioPreflight.mjs'
+import {checkStudioIpfsReadiness,inspectStudioDatabase,validateStudioSchema} from '../src/studioPreflight.mjs'
 
 const names=[
   'id','wallet','mime','bytes','sha256','uri','status','created_at',
@@ -114,4 +114,54 @@ test('missing credentials fail without sending any provider request',async()=>{
   assert.equal(result.checks.pinata.reason,'pinata_jwt_missing')
   assert.equal(result.checks.database.reason,'database_url_missing')
   assert.equal(calls,0)
+})
+
+test('database probe errors remain fail-closed and never expose SQL credentials',async()=>{
+  const credential='postgres://private-user:private-password@private-host/internal'
+  const result=await checkStudioIpfsReadiness({
+    env:{...env,DATABASE_URL:credential},
+    connect:async()=>({
+      query:async()=>{throw Error('connection failed: '+credential)},
+      end:async()=>{},
+    }),
+    request:async()=>({ok:true,status:200}),
+  })
+  assert.equal(result.ok,false)
+  assert.equal(result.checks.database.reason,'database_probe_failed')
+  assert.equal(JSON.stringify(result).includes(credential),false)
+  assert.equal(JSON.stringify(result).includes('private-password'),false)
+})
+test('schema rejects a misleading quota index even when its name and validity match',()=>{
+  const misleading={...indexes[0],definition:
+    'CREATE INDEX xartists_studio_media_wallet_created_idx ON public.xartists_studio_media USING btree (wallet, id)'}
+  const result=validateStudioSchema({...schema,indexes:[misleading]})
+  assert.equal(result.quotaIndexReady,false)
+  assert.equal(result.ready,false)
+})
+
+test('GLB migration 006 is required only when model upload is requested',async()=>{
+  const {client}=mockClient()
+  const basic=await inspectStudioDatabase({env,connect:async()=>client})
+  assert.equal(basic.ready,true)
+  const model=await inspectStudioDatabase({
+    env:{...env,STUDIO_GLB_UPLOAD_ENABLED:'1'},
+    connect:async()=>mockClient().client,
+  })
+  assert.equal(model.ready,false)
+  assert.equal(model.reason,'migration_006_missing')
+})
+test('missing status constraint blocks Studio without exposing database details',async()=>{
+  const {client}=mockClient({status:"CHECK (status IN ('reserved','pinned'))"})
+  const result=await inspectStudioDatabase({env,connect:async()=>client})
+  assert.equal(result.ready,false)
+  assert.equal(result.reason,'studio_schema_incomplete')
+  assert.equal(JSON.stringify(result).includes(env.DATABASE_URL),false)
+})
+
+test('quota index on a different table never authorizes Studio upload',()=>{
+  const forged={...indexes[0],definition:
+    'CREATE INDEX xartists_studio_media_wallet_created_idx ON public.other_media USING btree (wallet, created_at DESC)'}
+  const result=validateStudioSchema({...schema,indexes:[forged]})
+  assert.equal(result.quotaIndexReady,false)
+  assert.equal(result.ready,false)
 })
