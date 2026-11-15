@@ -3,64 +3,65 @@ hidden: true
 noIndex: true
 ---
 
-# Suite logique — 14 novembre 2026
+# Suite logique — 15 novembre 2026
 
-Probe **2026-11-14T05:45Z** (UTC). Ce document est l'ordre d'exécution. Il ne lève aucun gate commercial.
+Probe **2026-11-15T05:35Z**. Ce document est l'ordre d'exécution. Il ne lève aucun gate commercial. Appeler « go-live total » un site dont le trading, le mint et le fiat sont éteints reste interdit.
 
-## Vérité déployée (à relire à chaque action)
+## Vérité déployée
 
 | Surface | État observé |
 | --- | --- |
-| **Pages** [build-info.json](https://xartists.art/build-info.json) | `release_version=0.138.0` · `source_sha=ccf25e514370ca571797416277cd6532a0e10ad4` · `lia_live_trading=false` · `public_route_count=140` · `built_at=2026-11-13T21:39:48.598Z` |
-| **API** [health](https://xartists-access-api.onrender.com/health) | `ok=true` · `lia_live_trading=0` · `mint_live_enabled=false` · `mint_dry_run=true` · `studio_media_upload=off` · Stripe/MoonPay **off** · PayBox configuré mais `paybox_checkout_enabled=false` · `walletless_account_session_enabled=false` · `xorus_private_analysis_enabled=false` · `auction_enabled=false` |
-| **Studio DB** | [studio-store/status](https://xartists-access-api.onrender.com/v1/ops/studio-store/status) → **HTTP 503** |
-| **Trading autonome** | **NO-GO** (Pages + API alignés) |
-| **Commerce fiat** | **NO-GO** (aucun rail live certifié) |
-| **Mint live** | **NO-GO** (`mint_dry_run=true`) |
+| **Pages** [build-info.json](https://xartists.art/build-info.json) | `0.139.0` · `7b280ccf29765ec7660451559d8a1b453fb79d4a` · `lia_live_trading=false` · 140 routes · `built_at=2026-11-14T18:48:35.921Z` |
+| **API** [health](https://xartists-access-api.onrender.com/health) | HTTP 200 · `ok=true` · SHA `8b6fae84e15084883d94e2121a7ab8f6219b7845` (**14 nov 05:04 UTC**, en retard) · `lia_live_trading=0` · `mint_live_enabled=false` · `mint_dry_run=true` · `mint_oidc_pull_enabled=true` · `studio_media_upload=off` · Stripe / MoonPay off · PayBox `mode=prod` et `checkout=false` · sessions sans wallet off · xOrus privé off · enchères off · pont $TRO off |
+| **Studio DB** | [studio-store/status](https://xartists-access-api.onrender.com/v1/ops/studio-store/status) → **HTTP 503**, tables et schéma absents |
+| **Trading autonome** | **NO-GO** |
+| **Commerce fiat** | **NO-GO** |
+| **Mint live** | **NO-GO** |
 
-Derniers commits humains utiles (13 nov) : evidence read-only multi-modules, refus d'éligibilité wallet forgée, mailbox schema isolée, soft-launch nav, SOL receipt read-only, bloc Jupiter unaudité.
+Le pull OIDC de mint est armé. Ce n'est pas un mint live : dry-run vrai, dispatch faux, live faux.
 
-## GO vs NO-GO (décision nette)
+## GO vs NO-GO
 
 | Module | Verdict | Condition de levée |
 | --- | --- | --- |
-| Site public / musée / exploration | **GO** | Déjà live |
-| xOrus paper (lecture) | **GO** | Déjà live ; verdict serveur ABSTAIN / paper_only |
-| Marketplace découverte | **GO lecture** | Listing/achat public **NO-GO** tant que nouveau listing signé + escrow + receipt non prouvés (#428) |
-| Studio upload IPFS/GLB | **NO-GO** | DB Studio liée + migrations 004–006 + backup/restore + Pinata + CID readback |
-| xPortal session réelle | **NO-GO preuve** | Allowlist Reown `xartists.art` + QR navigateur réel (#506) |
-| PayBox / Stripe / MoonPay | **NO-GO** | Webhook, révocation, S1/S2, conditions légales |
-| LIA / xOrus trading autonome | **NO-GO** | Gel ops + revue KR + cold/MPC ; incident 30 oct reste référence |
-| Slot REAL | **NO-GO** | `isPayable=false` |
-| Treasury claimFees | **NO-GO** | dest `null` |
-| Mail hello@ production | **NO-GO** | SMTP réception non certifiée |
+| Site public / musée / exploration | **GO** | Déjà live en 0.139.0 |
+| xOrus paper | **GO lecture** | Rester paper. Ne pas afficher LIVE |
+| Marketplace découverte | **GO lecture** | Listing / achat **NO-GO** tant que #428 n'a pas un cycle neuf |
+| Studio upload IPFS / GLB | **NO-GO** | DB liée, 004–006, backup, Pinata, CID relu |
+| xPortal | **NO-GO preuve** | Allowlist Reown + QR navigateur réel (#506) |
+| PayBox / Stripe / MoonPay | **NO-GO** | Webhook, révocation, cadre légal. Le mode `prod` de PayBox ne suffit pas |
+| LIA / xOrus trading | **NO-GO** | Gel ops. Incident 30 oct = référence |
+| Mail hello@ | **NO-GO** | Réception non certifiée |
+| API = Pages | **ÉCART** | Redéployer Render sur `7b280cc` sans toucher aux drapeaux |
 
-## Ordre d'exécution (suite logique uniquement)
+## Ordre
 
-1. **Wallet utilisateur** — Preuve Reown/xPortal sur origines réelles ; session live, pas d'adresse forgée depuis URL/localStorage.
-2. **Studio data plane** — Identifier `DATABASE_URL` runtime API ; backup/restore test ; migrations 004→006 ; un upload → CID → readback ; seulement ensuite `studio_media_upload`.
-3. **Marketplace cycle complet** — Un **nouveau** listing signé par artiste (pas le #2 historique) → achat distinct → receipt Explorer → possession acheteur.
-4. **Compte email + xOrus privé** — JWT email vérifié, liaison SIWX, entitlement serveur ; analyse privée hors frontend public (#548).
-5. **Un seul rail paiement** — Preprod → webhook → révocation → puis un flag unique. Jamais multi-PSP le même jour.
-6. **OVH parallèle** — Image déjà CI-verte ; bascule DNS seulement après recette de reprise avec Render en fallback.
+1. **Wallet** — session Reown / xPortal réelle. Pas d'adresse forgée.
+2. **Studio** — `DATABASE_URL` runtime, backup / restore, migrations, un upload, un CID, une relecture. Ensuite seulement le drapeau d'upload.
+3. **Marché** — un listing **nouveau**, signé par l'artiste, acheté par un autre wallet, reçu Explorer, possession acheteur (#428).
+4. **Comptes** — JWT email, SIWX, entitlement serveur (#548).
+5. **Un rail** — preprod, webhook, révocation, un seul drapeau.
+6. **API puis OVH** — aligner le SHA Render. L'image OVH reste parallèle tant que la reprise n'est pas jouée.
 
-## Interdits absolus (inchangés)
+## Interdits
 
-* Appeler « go-live total » un site en ligne avec trading/mint/fiat off.
-* Recharger ou signer depuis LIA Ops hot wallet (burst 30 oct).
-* `VITE_LIA_LIVE_TRADING=1`, `PAYBOX_ENV=prod`, `claimFees`, Jupiter live unaudité.
-* Migration Studio aveugle sur Neon sandbox ≠ prod.
-* Merger drafts #480/#481/#478 comme si c'était une autorisation commerciale.
+* Traiter la 0.139.0 comme une ouverture commerciale.
+* Signer ou recharger le hot wallet LIA Ops.
+* `VITE_LIA_LIVE_TRADING=1`, checkout PayBox, `claimFees`, Jupiter live non audité.
+* Migrer Studio à l'aveugle.
+* Confondre `mint_oidc_pull_enabled=true` avec un mint public.
+* Confondre `paybox_mode=prod` avec un encaissement.
 
-## Veille (contexte MultiversX, 14 nov 2026)
+## Veille (15 nov 2026, matin)
 
-* TVL DeFi MultiversX ~**$11.35M** ; Hatom ~**$9.5M** ; xExchange ~**$3.5M** ; volume DEX 24h ~**$187k**. EGLD ~**$2.80** (DefiLlama).
-* Supernova (600 ms) = surface d'agents ; stack agentique MX (MX-8004, Agent Kit) en construction écosystème — xArtists reste **paper** sur l'exécution autonome.
-* Fenêtre historique Upbit/Bithumb EGLD (16–20 nov) : relire notices officielles avant toute réouverture ops ; **pas** un signal d'exécution automatique.
+* DefiLlama, chaîne MultiversX, datée du 15 nov : TVL **10,51 M$** (−7,8 % / 24 h), DEX 24 h **~390 k$**, EGLD affiché **2,59 $** / capitalisation **80,65 M$**. La fiche token du même matin imprimait **2,51 $** et **78,38 M$**. On cite l'écart. On n'en fait pas un ordre.
+* Hatom ~**8,65 M$** (−10 % / 24 h, −22 % / 30 j). xExchange ~**3,23 M$**.
+* Upbit, notice `207379109` du 23 oct : vigilance EGLD jusqu'au **16–20 nov 2026**. Pas de levée relue ce matin.
+* Reown AppKit (1.8.x, SIWX, social, QR) ne remplace pas la preuve #506. Les passkeys P-256 ne signent pas un compte MultiversX.
 
 ## Références
 
 * [ACTIVE_CONTEXT.md](../ACTIVE_CONTEXT.md)
-* [docs/STATUS.md](STATUS.md)
 * [docs/ANALYSE_DAPP_COMPLETE.md](ANALYSE_DAPP_COMPLETE.md)
 * [docs/security/launch-gates.md](security/launch-gates.md)
+* [#506](https://github.com/Neltud/xArtists/issues/506) · [#428](https://github.com/Neltud/xArtists/issues/428) · [#548](https://github.com/Neltud/xArtists/issues/548)

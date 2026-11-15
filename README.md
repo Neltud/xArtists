@@ -15,13 +15,18 @@ xArtists est une dApp d'art et de création : découverte sans wallet, œuvres p
 
 Les identifiants historiques `/lia` et `lia/` restent en compatibilité pendant la migration vers **xOrus**. L'archive Vellum/Chorus n'est plus un moteur autorisé à lancer des transactions. Le vote externe ChatGPT est au plus de 15 % ; Sentinel garde son veto.
 
-## État confirmé au 12 novembre 2026
+## État confirmé au 15 novembre 2026
 
-- **GitHub Pages** : version **0.136.0**, SHA de référence `7a0290664cbf5a5efe991271037fc7ee832e9602` vérifié le 12 novembre dans [build-info.json](https://xartists.art/build-info.json). La lecture du SHA public **actuel** prime sur toute version imprimée dans le README. Le backend API Render suit `main` séparément.
-- **Marketplace vendeurs** : PR [#518](https://github.com/Neltud/xArtists/pull/518) et [#514](https://github.com/Neltud/xArtists/pull/514) intégrées ; préparation du listing de **ses propres NFT**, contrôle frais/royalties depuis la chaîne, codeHash/payable et signature wallet. **Un listing utilisateur signé sur cette version et son dépôt confirmé en escrow restent à prouver** ([issue #428](https://github.com/Neltud/xArtists/issues/428)). Les gates achat/enchères/packs sont distincts.
-- **Creator Studio** : collection NFT mainnet, rôle `ESDTRoleNFTCreate`, création d'un NFT par signature personnelle. Le premier mint d'une sculpture depuis le parcours complet n'est **pas** documenté comme confirmé.
-- **IPFS / GLB** : le frontend et l'API existent, mais l'upload est **OFF** en production. Les migrations PostgreSQL `004`, `005` puis `006` (MIME GLB / 32 Mio) existent dans le repo ; leur application à la **base réelle de production n'est pas prouvée**. Le diagnostic public Studio retourne actuellement HTTP 503. Avant activation, vérifier backup/restauration, schéma, Pinata, JWT, quotas, IPFS readback et propriétaire wallet. **Aucune clé serveur dans Vite, GitHub ou le navigateur.**
-- **Comptes sans wallet et abonnement EUR** : parcours de préparation/sandbox, pas de compte email production ni de droit NFT présumé. Le bouton « accès simplifié » est un **accès visiteur sans inscription** ; le faux identifiant invité fiat→mint a été supprimé (#532). Les offres Genesis/PayBox, RWA, enchères payables et trading autonome restent soumis à des GO/NO-GO séparés. Stripe et MoonPay ne sont pas configurés en production.
+Probe `2026-11-15T05:35Z`. Cette section ne lève aucun gate. La lecture fraîche de [build-info.json](https://xartists.art/build-info.json) et de [health](https://xartists-access-api.onrender.com/health) prime sur les versions imprimées plus bas dans l'historique.
+
+- **GitHub Pages** : version **0.139.0**, SHA `7b280ccf29765ec7660451559d8a1b453fb79d4a`, construit le 14 novembre 2026 à 18:48 UTC, `lia_live_trading=false`, **140** routes. Ce build isole les originaux Drive du catalogue NFT.
+- **API Render** : `ok=true`, mais SHA **`8b6fae84e15084883d94e2121a7ab8f6219b7845`** (14 novembre 05:04 UTC). L'API est **en retard** sur les Pages. L'aligner ne doit changer aucun drapeau.
+- **Marketplace** : préparation du listing de ses propres NFT. **Un listing utilisateur signé sur cette version et son dépôt confirmé en escrow restent à prouver** ([issue #428](https://github.com/Neltud/xArtists/issues/428)). Achat, enchères et packs ont des gates distincts, tous fermés côté API (`auction_enabled=false`).
+- **Creator Studio** : parcours de préparation. Le diagnostic public retourne **HTTP 503** (`table_ready=false`, `schema_ready=false`, `model_schema_ready=false`). Le premier mint d'une sculpture sur le parcours complet n'est pas confirmé.
+- **IPFS / GLB** : upload **OFF** (`studio_media_upload=off`). `mint_live_enabled=false`, `mint_dry_run=true`. `mint_oidc_pull_enabled=true` est un bras de lecture, pas un mint public. Migrations 004–006 non certifiées sur la base réelle.
+- **Paiements** : Stripe et MoonPay off. PayBox est **configuré** (`paybox_mode=prod`) et le **checkout est désactivé**. Le mode prod n'est pas un encaissement.
+- **Comptes** : exploration sans wallet ≠ compte email (`walletless_account_session_enabled=false`) ≠ wallet signataire. xPortal / Reown : preuve QR toujours ouverte ([issue #506](https://github.com/Neltud/xArtists/issues/506)).
+- **xOrus privé** : `xorus_private_analysis_enabled=false` ([issue #548](https://github.com/Neltud/xArtists/issues/548)).
 
 ## Google Drive et originaux de collection
 
@@ -50,6 +55,6 @@ npm run typecheck
 npm run build
 ```
 
-Le frontend est React/Vite/TypeScript ; l'API séparée vit dans `services/access-api`. Le déploiement public est géré par [`.github/workflows/static.yml`](.github/workflows/static.yml). Le futur backend parallèle **OVH** (image API autonome et Caddy HTTPS) est préparé dans [deploy/ovh](deploy/ovh/README.md) et validé par [#534](https://github.com/Neltud/xArtists/pull/534) ; **aucun serveur OVH n'a encore été migré ou basculé**. Le statut technique et les priorités courantes sont dans [ACTIVE_CONTEXT.md](ACTIVE_CONTEXT.md). Un build vert ne prouve ni déploiement ni paiement. Aucun script de documentation ne doit activer trading, PayBox, Stripe ou upload IPFS.
+Le frontend est React/Vite/TypeScript ; l'API séparée vit dans `services/access-api`. Le déploiement public est géré par [`.github/workflows/static.yml`](.github/workflows/static.yml). Le futur backend parallèle **OVH** (image API autonome et Caddy HTTPS) est préparé dans [deploy/ovh](deploy/ovh/README.md) ; **aucun serveur OVH n'a encore été migré ou basculé**. Le statut technique et les priorités courantes sont dans [ACTIVE_CONTEXT.md](ACTIVE_CONTEXT.md). Un build vert ne prouve ni déploiement ni paiement. Aucun script de documentation ne doit activer trading, PayBox, Stripe ou upload IPFS.
 
 **Sécurité :** jamais de seed, PEM, JWT Pinata, jetons Google, secrets PSP ou clé de portefeuille dans les issues, commits ou captures d'écran. Toute action NFT, mint, vente ou dépense exige une vérification et une signature personnelle. [Issues](https://github.com/Neltud/xArtists/issues) · [Licence et conditions](LICENSE) · [Gates de lancement](docs/security/launch-gates.md).
