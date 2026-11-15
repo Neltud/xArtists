@@ -1,42 +1,91 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-15T00:47:24.714Z",
+  "updatedAt": "2026-11-15T10:25:34.358Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1794703644420",
-      "timestamp": "00:47",
+      "id": "egld-1794738333871",
+      "timestamp": "10:25",
       "source": "EGLD",
-      "title": "Cotation publique · $2.53 (API MultiversX economics)",
+      "title": "Cotation publique · $2.64 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
-      "id": "rss-CoinTelegraph-0-1794655692000",
+      "id": "rss-CoinTelegraph-0-1794730078000",
+      "timestamp": "08:07",
+      "source": "CoinTelegraph",
+      "title": "Coinone warns of phishing, identity theft after customer data breach",
+      "link": "https://cointelegraph.com/news/coinone-data-breach-phishing-identity-theft-customer-information?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1794724046000",
+      "timestamp": "06:27",
+      "source": "CoinTelegraph",
+      "title": "RWA protocol stUSDT winds down three years after $2.3B TVL peak",
+      "link": "https://cointelegraph.com/news/rwa-protocol-stusdt-winds-down-three-years-after-23b-tvl-peak?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1794655692000",
       "timestamp": "11:28",
       "source": "CoinTelegraph",
       "title": "Here’s what happened in crypto today",
       "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-1-1794652446000",
+      "id": "rss-CoinTelegraph-3-1794652446000",
       "timestamp": "10:34",
       "source": "CoinTelegraph",
       "title": "Microsoft confirms global outage resolved, rules out cyberattack",
       "link": "https://cointelegraph.com/news/microsoft-365-outage-resolved-cyberattack-ruled-out?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-2-1794643950000",
+      "id": "rss-CoinTelegraph-4-1794643950000",
       "timestamp": "08:12",
       "source": "CoinTelegraph",
       "title": "MegaETH parent cuts 20% of staff amid restructuring, AI push",
       "link": "https://cointelegraph.com/news/megaeth-parent-cuts-20-percent-staff-ai-push?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-3-1794637993000",
+      "id": "rss-CoinTelegraph-5-1794637993000",
       "timestamp": "06:33",
       "source": "CoinTelegraph",
       "title": "Bitcoin ETFs shed $2.35B in 2 weeks, BlackRock’s losing streak hits 11",
       "link": "https://cointelegraph.com/markets/bitcoin-etf-outflows-2-35-billion-blackrock-11-session-streak?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1794711057000",
+      "timestamp": "02:50",
+      "source": "CoinDesk",
+      "title": "XRP crashes to its lowest since November 2024 as money leaves crypto",
+      "link": "https://www.coindesk.com/markets/2026/11/15/xrp-crashes-to-its-lowest-since-november-2024-as-money-leaves-crypto"
+    },
+    {
+      "id": "rss-CoinDesk-1-1794674009000",
+      "timestamp": "16:33",
+      "source": "CoinDesk",
+      "title": "Bitcoin crashes to 3-month low below $63,000 as analyst flags fourth capitulation wave",
+      "link": "https://www.coindesk.com/markets/2026/11/14/bitcoin-drifts-back-to-usd65-000-deep-value-zone-says-analyst"
+    },
+    {
+      "id": "rss-CoinDesk-2-1794674003000",
+      "timestamp": "16:33",
+      "source": "CoinDesk",
+      "title": "Ethereum scaling project MegaETH slashes staff by 20% as it pursues AI business",
+      "link": "https://www.coindesk.com/business/2026/11/14/ethereum-scaling-project-megaeth-slashes-staff-by-20-as-it-pursues-ai-business"
+    },
+    {
+      "id": "rss-CoinDesk-3-1794670707000",
+      "timestamp": "15:38",
+      "source": "CoinDesk",
+      "title": "Kazakhstan plans tokenized government bonds in first quarter after $22 million note sale",
+      "link": "https://www.coindesk.com/business/2026/11/14/kazakhstan-plans-tokenized-government-bonds-in-first-quarter-after-usd22-million-note-sale"
+    },
+    {
+      "id": "egld-1794703644420",
+      "timestamp": "00:47",
+      "source": "EGLD",
+      "title": "Cotation publique · $2.53 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
     },
     {
       "id": "rss-CoinTelegraph-4-1794607263000",
@@ -58,20 +107,6 @@
       "source": "CoinDesk",
       "title": "Bitcoin slides to 3-month low of $65,000 as analyst flags fourth capitulation wave",
       "link": "https://www.coindesk.com/markets/2026/11/14/bitcoin-drifts-back-to-usd65-000-deep-value-zone-says-analyst"
-    },
-    {
-      "id": "rss-CoinDesk-1-1794674003000",
-      "timestamp": "16:33",
-      "source": "CoinDesk",
-      "title": "Ethereum scaling project MegaETH slashes staff by 20% as it pursues AI business",
-      "link": "https://www.coindesk.com/business/2026/11/14/ethereum-scaling-project-megaeth-slashes-staff-by-20-as-it-pursues-ai-business"
-    },
-    {
-      "id": "rss-CoinDesk-2-1794670707000",
-      "timestamp": "15:38",
-      "source": "CoinDesk",
-      "title": "Kazakhstan plans tokenized government bonds in first quarter after $22 million note sale",
-      "link": "https://www.coindesk.com/business/2026/11/14/kazakhstan-plans-tokenized-government-bonds-in-first-quarter-after-usd22-million-note-sale"
     },
     {
       "id": "rss-CoinDesk-3-1794668400000",
@@ -163,41 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Metaplanet swings to $170M loss as Bitcoin sale hits earnings",
       "link": "https://cointelegraph.com/news/metaplanet-swings-170m-loss-bitcoin-sale-earnings?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-3-1794585687000",
-      "timestamp": "16:01",
-      "source": "CoinDesk",
-      "title": "Bitcoin heads for sixth weekly loss as Anthropic’s blockbuster IPO looms",
-      "link": "https://www.coindesk.com/markets/2026/11/13/bitcoin-heads-for-sixth-weekly-loss-as-anthropic-s-blockbuster-ipo-looms"
-    },
-    {
-      "id": "egld-1794604309368",
-      "timestamp": "21:11",
-      "source": "EGLD",
-      "title": "Cotation publique · $2.92 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1794587951000",
-      "timestamp": "16:39",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin holds below $70K as stocks slip despite a cooler US PPI print",
-      "link": "https://cointelegraph.com/markets/bitcoin-below-70k-stocks-slip-cooler-us-ppi-print?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1794577286000",
-      "timestamp": "13:41",
-      "source": "CoinTelegraph",
-      "title": "Arthur Hayes ‘flattered’ as Coinbase backs US stock perps",
-      "link": "https://cointelegraph.com/news/arthur-hayes-coinbase-us-stock-perps-cftc?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1794575059000",
-      "timestamp": "13:04",
-      "source": "CoinTelegraph",
-      "title": "Nakamoto shares fall 6% premarket after Q3 revenue turns negative",
-      "link": "https://cointelegraph.com/markets/nakamoto-shares-fall-after-negative-q3-revenue?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
