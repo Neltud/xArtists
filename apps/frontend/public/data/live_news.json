@@ -1,13 +1,13 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-14T19:43:03.916Z",
+  "updatedAt": "2026-11-15T00:47:24.714Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1794685383566",
-      "timestamp": "19:43",
+      "id": "egld-1794703644420",
+      "timestamp": "00:47",
       "source": "EGLD",
-      "title": "Cotation publique · $2.63 (API MultiversX economics)",
+      "title": "Cotation publique · $2.53 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
@@ -51,6 +51,41 @@
       "source": "CoinTelegraph",
       "title": "Adam Back makes case for simpler security as Blockstream launches Bitcoin custody system",
       "link": "https://cointelegraph.com/news/adam-back-simpler-security-blockstream-bitcoin-custody-system?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1794674009000",
+      "timestamp": "16:33",
+      "source": "CoinDesk",
+      "title": "Bitcoin slides to 3-month low of $65,000 as analyst flags fourth capitulation wave",
+      "link": "https://www.coindesk.com/markets/2026/11/14/bitcoin-drifts-back-to-usd65-000-deep-value-zone-says-analyst"
+    },
+    {
+      "id": "rss-CoinDesk-1-1794674003000",
+      "timestamp": "16:33",
+      "source": "CoinDesk",
+      "title": "Ethereum scaling project MegaETH slashes staff by 20% as it pursues AI business",
+      "link": "https://www.coindesk.com/business/2026/11/14/ethereum-scaling-project-megaeth-slashes-staff-by-20-as-it-pursues-ai-business"
+    },
+    {
+      "id": "rss-CoinDesk-2-1794670707000",
+      "timestamp": "15:38",
+      "source": "CoinDesk",
+      "title": "Kazakhstan plans tokenized government bonds in first quarter after $22 million note sale",
+      "link": "https://www.coindesk.com/business/2026/11/14/kazakhstan-plans-tokenized-government-bonds-in-first-quarter-after-usd22-million-note-sale"
+    },
+    {
+      "id": "rss-CoinDesk-3-1794668400000",
+      "timestamp": "15:00",
+      "source": "CoinDesk",
+      "title": "UK, Singapore, and Thailand central banks test cross-border FX settlement as stablecoins gain ground",
+      "link": "https://www.coindesk.com/policy/2026/11/14/uk-singapore-and-thailand-central-banks-test-cross-border-fx-settlement-as-stablecoins-gain-ground"
+    },
+    {
+      "id": "egld-1794685383566",
+      "timestamp": "19:43",
+      "source": "EGLD",
+      "title": "Cotation publique · $2.63 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
     },
     {
       "id": "rss-CoinDesk-0-1794661200000",
@@ -163,41 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Nakamoto shares fall 6% premarket after Q3 revenue turns negative",
       "link": "https://cointelegraph.com/markets/nakamoto-shares-fall-after-negative-q3-revenue?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-3-1794578520000",
-      "timestamp": "14:02",
-      "source": "CoinDesk",
-      "title": "Kraken parent Payward says expansion outside crypto trading helps cushion revenue decline",
-      "link": "https://www.coindesk.com/business/2026/11/13/kraken-parent-payward-says-expansion-outside-crypto-trading-helps-cushion-revenue-decline"
-    },
-    {
-      "id": "egld-1794578296196",
-      "timestamp": "13:58",
-      "source": "EGLD",
-      "title": "Cotation publique · $3.00 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1794572341000",
-      "timestamp": "12:19",
-      "source": "CoinTelegraph",
-      "title": "Israeli police arrest five in $5M WhatsApp crypto trading probe",
-      "link": "https://cointelegraph.com/news/israel-police-arrest-five-5m-whatsapp-crypto-scheme?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1794563901000",
-      "timestamp": "09:58",
-      "source": "CoinTelegraph",
-      "title": "Unocoin keeps deposits and withdrawals halted over suspect transfers",
-      "link": "https://cointelegraph.com/news/unocoin-withdrawals-halted-bitgo-wallet-transfer-probe?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1794562745000",
-      "timestamp": "09:39",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin returns to 200-week trend line as analyst sees risk of $57.7K next",
-      "link": "https://cointelegraph.com/markets/bitcoin-returns-200-week-trend-line-analyst-sees-risk-57k-next?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
