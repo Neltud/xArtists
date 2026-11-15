@@ -12,6 +12,7 @@ noIndex: true
 | `fr` | Français (défaut) | LTR       |
 | `en` | English           | LTR       |
 | `es` | Español           | LTR       |
+| `de` | Deutsch           | LTR       |
 | `ru` | Русский           | LTR       |
 | `uk` | Українська        | LTR       |
 | `zh` | 中文                | LTR       |
@@ -40,7 +41,7 @@ return <h1>{t('home.title')}</h1>
 
 ## Sélecteur langue
 
-Le sélecteur du header est visible sur desktop et **sur mobile** sous forme compacte `FR / EN / ES…`. Dans le menu mobile, « Langue » est également placé **en premier**, et non sous le catalogue de modules. Les deux utilisent `setLang`. Le choix est mémorisé via `localStorage` (`xartists_lang`) et reflété dans `?lang=`. Après changement : `document.documentElement.lang` + `dir` (RTL arabe). Le mode clair/sombre reste disponible dans le menu sur petit écran.
+Le sélecteur de langue reste visible **sur ordinateur**. Sur **mobile (≤840 px)**, il ne figure **pas** dans la barre supérieure : pour changer de langue, ouvrir ☰ puis utiliser « Langue », **en premier** dans le menu. Ce sélecteur utilise `setLang` ; le choix est mémorisé via `localStorage` (`xartists_lang`) et reflété dans `?lang=`. Sans préférence enregistrée, la langue du navigateur est détectée. Après changement : `document.documentElement.lang` + `dir` (RTL arabe). Le réglage clair/sombre reste dans le menu mobile.
 
 ## Hors scope pour l’instant
 
