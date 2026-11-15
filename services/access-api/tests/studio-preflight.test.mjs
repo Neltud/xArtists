@@ -157,3 +157,11 @@ test('missing status constraint blocks Studio without exposing database details'
   assert.equal(result.reason,'studio_schema_incomplete')
   assert.equal(JSON.stringify(result).includes(env.DATABASE_URL),false)
 })
+
+test('quota index on a different table never authorizes Studio upload',()=>{
+  const forged={...indexes[0],definition:
+    'CREATE INDEX xartists_studio_media_wallet_created_idx ON public.other_media USING btree (wallet, created_at DESC)'}
+  const result=validateStudioSchema({...schema,indexes:[forged]})
+  assert.equal(result.quotaIndexReady,false)
+  assert.equal(result.ready,false)
+})
