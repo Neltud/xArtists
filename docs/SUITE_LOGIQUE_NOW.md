@@ -65,3 +65,12 @@ Le pull OIDC de mint est armé. Ce n'est pas un mint live : dry-run vrai, dispat
 * [docs/ANALYSE_DAPP_COMPLETE.md](ANALYSE_DAPP_COMPLETE.md)
 * [docs/security/launch-gates.md](security/launch-gates.md)
 * [#506](https://github.com/Neltud/xArtists/issues/506) · [#428](https://github.com/Neltud/xArtists/issues/428) · [#548](https://github.com/Neltud/xArtists/issues/548)
+
+## Reprise de passation — 15 novembre, après PR #594
+
+- **Code vérifié dans GitHub** : [PR #594](https://github.com/Neltud/xArtists/pull/594) fusionnée au SHA `7d313eac760fab8770f10f5982ad9f53f9aa2fe6`. Le contrôle Studio exige désormais que l'index quota vise la table attendue ; cinq tests de régression ajoutés, CI PR 7/7 success avant fusion.
+- **Observation de déploiement transmise par l'opérateur** : Pages 0.139.0 / SHA `7d313eac` à 10:56 UTC, **non revalidée ici**. Ne pas confondre un SHA Pages avec le SHA API.
+- **Tentative de sonde de cette session** : les quatre endpoints build-info, health, studio-store/status et xorus/analysis n'ont pas pu être atteints depuis l'environnement d'exécution (DNS indisponible / accès web refusé). **Aucun nouveau verdict live** ne peut être déduit.
+- **P0 strict** : #506 preuve navigateur Reown QR + xPortal ; Studio : identité DB externe attestée et backup/restore avant migrations 004/005 et 006 optionnelle. #428 listing signé + achat autre wallet + receipt et possession seulement après #506.
+- **Cible hébergement** : serveur OVH pour l'API, en parallèle sans bascule DNS. `deploy/ovh/README.md` décrit un package, pas un serveur déjà déployé. Ne pas copier un `DATABASE_URL` non identifié.
+- **Commerce** : tous les flags financiers, mint et trading restent NO-GO ; aucune activation implicite par ce document.
