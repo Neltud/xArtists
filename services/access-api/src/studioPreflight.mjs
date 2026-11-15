@@ -23,7 +23,7 @@ export function validateStudioSchema({columns=[],statusDefinition='',statusValid
     ['image/jpeg','image/png','image/webp','video/mp4'].every(m=>mimes.has(m))
   const modelReady=mimeReady&&mimes.has('model/gltf-binary')
   const quotaIndexReady=indexes.some(i=>i.indexname==='xartists_studio_media_wallet_created_idx'
-    &&i.valid===true&&/USING btree \(wallet, created_at DESC\)$/.test(i.definition||''))
+    &&i.valid===true&&/ ON (?:ONLY )?(?:public\.)?xartists_studio_media USING btree \(wallet, created_at DESC\)$/.test(i.definition||''))
   return {
     ready:missingColumns.length===0&&invalidColumns.length===0&&statusReady&&mimeReady
       &&quotaIndexReady&&(!requireModel||modelReady),
