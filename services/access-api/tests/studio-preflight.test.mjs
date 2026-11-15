@@ -115,3 +115,26 @@ test('missing credentials fail without sending any provider request',async()=>{
   assert.equal(result.checks.database.reason,'database_url_missing')
   assert.equal(calls,0)
 })
+
+test('database probe errors remain fail-closed and never expose SQL credentials',async()=>{
+  const credential='postgres://private-user:private-password@private-host/internal'
+  const result=await checkStudioIpfsReadiness({
+    env:{...env,DATABASE_URL:credential},
+    connect:async()=>({
+      query:async()=>{throw Error('connection failed: '+credential)},
+      end:async()=>{},
+    }),
+    request:async()=>({ok:true,status:200}),
+  })
+  assert.equal(result.ok,false)
+  assert.equal(result.checks.database.reason,'database_probe_failed')
+  assert.equal(JSON.stringify(result).includes(credential),false)
+  assert.equal(JSON.stringify(result).includes('private-password'),false)
+})
+test('schema rejects a misleading quota index even when its name and validity match',()=>{
+  const misleading={...indexes[0],definition:
+    'CREATE INDEX xartists_studio_media_wallet_created_idx ON public.xartists_studio_media USING btree (wallet, id)'}
+  const result=validateStudioSchema({...schema,indexes:[misleading]})
+  assert.equal(result.quotaIndexReady,false)
+  assert.equal(result.ready,false)
+})
