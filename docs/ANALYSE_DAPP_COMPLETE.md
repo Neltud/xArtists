@@ -3,122 +3,81 @@ hidden: true
 noIndex: true
 ---
 
-# Analyse DApp complète xArtists — 1er novembre 2026
+# Analyse DApp complète xArtists — 15 novembre 2026
 
 ## Verdict
 
-xArtists est une dApp **MultiversX mainnet**, pas un fonds. Tips ≠ investissement. Wallet utilisateur ≠ LIA Ops.
+xArtists est une dApp **MultiversX mainnet** et une vitrine d'art. Ce n'est pas un fonds. Un pourboire n'est pas un investissement. Le wallet d'un visiteur n'est pas le wallet LIA Ops.
 
-**Le site est en ligne. Le trading autonome ne l’est pas.** Un « go-live total » qui rallumerait LIA Ops, le slot REAL, Paybox prod ou `claimFees` serait une erreur de contrôle, pas une mise en production.
-
-`static.yml` pose `VITE_LIA_LIVE_TRADING` à **0** sauf variable de dépôt explicite. Même à 1, ce drapeau n’est qu’une micro-signature **xPortal** (caps), jamais un PEM et jamais le wallet ops. Paybox UI est **fail-closed**. Le rail Render reste **preprod**.
-
-**Upbit** (notice `207379109`, 23 oct 06:02 UTC) prolonge la surveillance EGLD jusqu’au **16–20 novembre 2026**. Aucun message `@Official_Upbit` de levée depuis cette notice (contrôle 1er nov). **Bithumb** : prochaine annonce EGLD le **16–20 nov**. La fenêtre **FET (2–6 nov)** n’est pas la même porte. Dernier statut wallet Upbit observé (30 oct, non revu le 1er nov) : **retraits ouverts, dépôts bloqués**, désignation toujours affichée.
-
-Au probe **1er nov 05:48 UTC** : jour **9/29**, **15 jours** avant le 16 nov, **20 jours** avant le 21 nov 00:00 UTC.
+**Le site est en ligne. Le trading autonome ne l'est pas.** Un « go-live total » qui rallumerait LIA Ops, le slot REAL, le checkout PayBox ou `claimFees` serait une erreur de contrôle.
 
 | | |
 | --- | --- |
-| **Live** | https://neltud.github.io/xArtists/ |
-| **GO_LIVE** | https://neltud.github.io/xArtists/#/go-live |
-| **Packs** | https://neltud.github.io/xArtists/#/agents |
-| **Musée** | https://neltud.github.io/xArtists/#/museum |
+| **Live** | https://xartists.art/ |
+| **Musée** | https://xartists.art/museum/ |
+| **Marché** | https://xartists.art/marketplace/ |
+| **Studio** | https://xartists.art/studio/ |
+| **xOrus** | https://xartists.art/intelligence/xorus/ |
 | **Repo** | https://github.com/Neltud/xArtists |
-| **Posture** | **Site public** — trading **paper** — LIA Ops **à ne plus signer** — spin REAL **fermé** — Paybox UI **fermé** |
-| **Indexer** | healthy · epoch **2280** · refreshRate **600** · rounds **78106** / 144000 |
-| **Supernova** | LIVE depuis le 10 sept 2026 (epoch 2233) · **+47 epochs** |
-| **EGLD** | **$3,44** · mcap **$106,92M** · circ 31,08M · staked 13,90M · APR **9,12 %** |
-| **LIA Ops** | **0,907888 EGLD** · nonce **1487** · dernière TX **30 oct 17:29 UTC** |
-| **Slot** | **0,5000 EGLD** · hash inchangé · `isPayable=false` · REAL fermé |
-| **Market** | **0,0175 EGLD** · hash inchangé · payable · acheter seulement **#2** |
-| **Agents SC** | **0,013 EGLD** · non payable par SC · packs **10 / 5 / 2,5** |
-| **$TRO** | `TRO-94c925` · circ **476 224** · **561** comptes · ~$0.00008223 · mcap **~$39,16** · 2815 tx |
-| **Build** | stamp Pages **0.126.0** · LIA default **0** · Paybox default off |
+| **Pages** | **0.139.0** · `7b280ccf` · 14 nov 18:48 UTC · 140 routes · trading **faux** |
+| **API** | HTTP 200 · SHA **`8b6fae84`** · 14 nov 05:04 UTC · **en retard d'environ 14 h** |
+| **Studio store** | HTTP **503** · schéma absent |
+| **Posture** | Vitrine **GO** — marché **lecture** — mint **dry-run** — fiat **fermé** — ops **gelées** |
 
-***
+Le SHA public des Pages prime sur toute version imprimée plus ancienne (0.136, 0.138). L'API ne suit pas encore ce SHA. Les aligner est une opération de déploiement, pas une autorisation commerciale.
 
-## Rupture ops — fait, pas une opinion
+## Couches
 
-Entre le probe du **30 oct 05:36 UTC** (nonce 1479, 1,585598 EGLD, « figé depuis le 17 oct ») et celui du **1er nov**, le signataire LIA Ops a exécuté une rafale de 9 minutes :
-
-1. Cinq `xo` xExchange (USDC, HTM, MEX, XOXNO, stables/ASH).
-2. `removeLiquidity` sur le LP **TROMEX** (sortie de pool $TRO/MEX).
-3. `composeTasks` MEX → WEGLD.
-4. Transfert **7,09 EGLD** vers `erd1mmh2j5y8esv2tmmyeau3hr4xa2u2te3zc3j9wumn3v5vm8uvsczqnucj5l`, owner du token `$TRO`.
-
-Hash du transfert : [`8ad06a59…0a0a`](https://explorer.multiversx.com/transactions/8ad06a590619824325bf382bb48fb2e8de13368f8ad8bb39f5f3bda9e52c0a0a).
-
-Le hot wallet est passé de **1,585598** à **0,907888 EGLD**. Le code du site ne signe pas ces appels. Le gel était une règle d’opération, pas un verrou de clé. **Conséquence** : tant que la revue KR n’est pas levée par une notice de maintien, aucune nouvelle signature ops, aucun rechargement, aucune lecture de cette rafale comme un « test de go-live réussi ».
-
-Alternative de sécurisation, dans l’ordre : (1) cesser de signer, (2) sortir le reste du hot wallet vers un cold / MPC si le signataire n’est pas sous contrôle exclusif, (3) seulement après maintien KR, une micro-TX **utilisateur** journalisée — pas un nouvel `xo` ops.
-
-***
-
-## Couches produit
-
-| Layer | Rôle | État 1er nov |
+| Couche | État au 15 nov | Limite |
 | --- | --- | --- |
-| Studio / Gallery | NFT (NFTUDURI + musée) | Lecture API + musée immersif — surface de go-live |
-| Marketplace | List / Buy / Bid | SC live · escrow `ASFT-a6273a-01` · id **#2** seulement |
-| Agents | Pulse · Yield · Sentinel | SC live · 10 / 5 / 2,5 EGLD · fiat 110 / 75 / 50 € **non encaissable** |
-| LIA | Copilote | Défaut paper. Ops a tradé le 30 oct au soir **contre** la consigne. Mandat trading **suspendu**. |
-| $TRO | Utility | Illiquide (561 comptes). 2815 tx. La sortie LP TROMEX réduit encore la profondeur, elle ne crée pas un marché. |
-| Slot | Primordial | House 0,5 · REAL fermé · compte non payable |
-| Treasury | Split fees | codeHash live · **destination null** · balance 0 · ne pas `claimFees` |
-| Checkout fiat | Paybox / quote Rule 1 | HMAC/IPN en repo. UI fail-closed. Render **preprod**. PR Neon **non mergée** |
-| Vellum (Hatom, relayer gasless, Apple/Google Pay) | Abstraction | **Hors chemin critique** tant que la notice KR n’est pas une levée. |
+| Accueil, musée, exploration, lab 3D local | **GO** | Consultation. Le lab ne certifie pas un mesh |
+| Marketplace | **Lecture** | Cycle listing → escrow → receipt non prouvé (#428).  L'historique #2 ne suffit pas |
+| Originaux Drive | **Hors catalogue NFT** | Inventaire privé du 11 nov (291 PNG, 4 MP4). Pas 295 NFT. Pas d'URL de partage publique |
+| Galerie 3D créateur | **Brouillon local** | Import JSON strict, 64 Kio. Pas de publication |
+| Studio / IPFS | **NO-GO** | 503, `table_ready=false`. Upload off |
+| Mint | **NO-GO live** | `mint_dry_run=true`, `mint_live_enabled=false`, dispatch off. `mint_oidc_pull_enabled=true` est un bras de lecture |
+| xPortal | **NO-GO preuve** | #506, allowlist Reown + QR réel |
+| xOrus | **Paper** | Analyse privée off (#548). Ne pas écrire LIVE |
+| Comptes email | **OFF** | Exploration sans wallet ≠ compte ≠ signataire |
+| Fiat | **NO-GO** | Stripe off, MoonPay off. PayBox configuré, `paybox_mode=prod`, **checkout false** |
+| Enchères / OpenSea / pont $TRO / Artprice | **OFF** | Drapeaux health tous faux ou non licenciés |
+| Physique | **OFF** | `physical_works=off`, legacy lecture seule |
+| Trésorerie | **Ne pas claimFees** | Destination historiquement nulle. Non re-sondée on-chain ce matin |
+| OVH | **Parallèle** | Pas de bascule DNS |
+| Vellum (Hatom, relayer gasless, Apple / Google Pay) | **Hors chemin** | Tant que wallet, Studio et un cycle marché ne sont pas prouvés |
 
-***
+## Dérive qui compte
 
-## Veille technologique (1er nov 2026, 05:48 UTC)
+Les Pages du 14 nov au soir embarquent l'isolement Drive → catalogue honnête (`7b280cc`). L'API health sert encore `8b6fae84`, un commit de refresh news du matin. Conséquence : la vitrine et le backend ne décrivent pas le même commit. On redéploie l'API **sans** changer `PAYBOX_*`, `MINT_*`, `LIA_*` ni la base Studio.
 
-### Corée — bloquant n°1
+`orders_backend=postgres` veut dire que des tables de commandes répondent. Ça ne veut pas dire qu'une commande a livré un NFT.
 
-* **Upbit**, 23 oct 06:02 UTC : warning MultiversX (EGLD/KRW, EGLD/BTC, EGLD/USDT) jusqu’à la **3ᵉ semaine de novembre (16–20 nov)**. Notice : https://www.upbit.com/service_center/notice?id=207379109. Toujours la référence. Pas de notice suivante trouvée.
-* **Bithumb**, 23 oct : EGLD **et** FET. Annonce EGLD **16–20 nov**. FET **2–6 nov**. Ce ne sont pas la même décision. EGLD n’est pas dans les delist déjà décidés (SOPH / ZIL).
-* Le prix a remonté de **$3,21** (30 oct matin, API `/economics`) à **$3,44**. Mcap ~$106,92M. Contexte. Pas un signal.
-* Conséquence produit : **aucun nouveau trade LIA Ops**. Le site (galerie, musée, market en lecture, packs) est le seul go-live.
+## Rupture ops — archive, non re-sondée le 15 nov
 
-### MultiversX
+Le 30 octobre 2026, le signataire LIA Ops a enchaîné, contre la consigne de gel : des swaps xExchange, un retrait de liquidité TROMEX, une composition vers WEGLD, puis un transfert de **7,09 EGLD**. Hash : [`8ad06a59…0a0a`](https://explorer.multiversx.com/transactions/8ad06a590619824325bf382bb48fb2e8de13368f8ad8bb39f5f3bda9e52c0a0a).
 
-* Supernova 600 ms stable. Epoch **2280** (2278 le 30 oct). Rien de protocole à shipper.
-* API publique : `/stats`, `/economics`, `/accounts`, `/tokens/TRO-94c925` répondent. Hashes agents / market / slot / treasury **identiques** au 30 oct.
-* Market payable. Agents, slot, treasury **non** payables par smart contract. Slot rejette toujours l’EGLD.
-* Front : `@multiversx/sdk-dapp` ^3, Vite 5, Node **20** sur le runner Pages. Ne pas merger Vite 8 / ESLint 10 sans QA.
+Le solde résiduel cité le 1er nov (0,907888 EGLD, nonce 1487) **n'a pas été relu le 15 nov**. On ne le republie pas comme un chiffre frais. La règle, elle, tient : pas de nouvelle signature ops, pas de rechargement, pas de lecture de cette rafale comme un go-live.
 
-### NFT / agents / fiat
+Alternative, dans l'ordre : cesser de signer ; sortir le reste vers un cold ou un MPC si le signataire n'est pas sous contrôle exclusif ; seulement ensuite, et après maintien, une micro-transaction **utilisateur** journalisée.
 
-* MX-8004 : LIA non inscrit. Après une annonce de maintien seulement.
-* Paybox : UI fermée par défaut. `PAYBOX_ENV=prod` = NO-GO tant que la carte test + IPN + My Packs ne sont pas verts.
-* Acheter un pack en EGLD dépense 10 / 5 / 2,5 vrais EGLD. Paper mint = DEV only.
-* [PR #200](https://github.com/Neltud/xArtists/pull/200) laissée ouverte. Lockfile `access-api` cassé.
-* [PR #221](https://github.com/Neltud/xArtists/pull/221) release-please 0.126.0 : ne pas la confondre avec ce stamp manuel, ne pas la merger pour publier.
+## Veille
 
-***
+* **Prix.** EGLD autour de **2,5–2,6 $** le 15 nov au matin (DefiLlama). TVL chaîne **10,51 M$**. Ce n'est pas le régime des 3,4 $ du 1er nov, et ce n'est pas non plus un motif de trade.
+* **Corée.** Fenêtre Upbit **16–20 nov 2026** ouverte par la notice du 23 oct. Aucune levée relue aujourd'hui. Bithumb partageait la même fenêtre annoncée en octobre. On relit les notices officielles avant toute phrase publique sur les dépôts.
+* **Supernova / agents.** La chaîne rapide est le terrain des agents. xArtists reste paper sur l'exécution. MX-8004 et un kit d'agents ne sont pas une inscription de LIA.
+* **Wallets.** Reown AppKit couvre QR, e-mail, social et SIWX. Utile après #506, inutile avant. Une passkey P-256 (EIP-7951, Ethereum) ne signe pas un compte MultiversX.
+* **Liquidité.** Hatom porte l'essentiel de la TVL et baisse sur 30 jours. Un orchestrateur de rendement qui traverserait Hatom / xExchange aujourd'hui optimiserait du slippage sur un marché mince. On ne le branche pas.
 
-## Ce passage (0.126.0)
+## Sécurité — inchangée
 
-1. Le fallback réseau et les JSON publics servent le probe du **1er nov** (epoch 2280, EGLD $3,44, LIA 0,907888 / nonce 1487). Plus le chrome du 30 oct.
-2. La copie `/go-live` dit le défaut workflow à 0, la rupture du 30 oct 17:29, et que la fenêtre FET n’est pas une levée.
-3. `BUILD_ID.txt` rattrape le stamp (il était resté sur 0.124.0 alors que `package.json` disait 0.125.0).
-4. `static.yml` copie `dist/` vers `_site/` **depuis la racine**. L’étape précédente restait dans `apps/frontend` et cherchait `apps/frontend/dist` au mauvais endroit — le prochain Pages aurait pu publier un artifact vide.
-5. Ce push change du TypeScript et du JSON, donc `static.yml` part. Les markdown seuls ne déclenchent pas le workflow (`paths-ignore`).
-
-***
-
-## Sécurité — inchangé, plus un fait nouveau
-
-* Ne pas committer `VITE_*_CODEHASH_OK=1`.
-* Ne pas financer les placeholders legacy vides.
-* Ne pas `claimFees`.
-* Ne pas forcer le slot payable.
-* Ne pas coller de PEM. Ne pas annoncer un fonds retail.
-* Ne pas traiter « le site est déployé », « EGLD a repris », « FET est examiné cette semaine », « le nonce a bougé donc le live est ouvert » comme une autorisation.
-* Ne pas merger la PR #200 en l’état.
-* **Ne pas signer une neuvième transaction LIA Ops.**
-
-***
+* Pas de PEM, de seed, de JWT Pinata, de secret PSP dans un commit ou une capture.
+* Pas de `VITE_LIA_LIVE_TRADING=1`.
+* Pas de `claimFees`.
+* Pas de slot forcé payable.
+* Pas de mint public pendant que le dry-run est vrai.
+* Pas de checkout pendant que `paybox_checkout_enabled` est faux, même si `paybox_mode` dit prod.
+* Pas de fusion d'un brouillon commercial lu comme une autorisation.
 
 ## Suite
 
-Voir [`SUITE_LOGIQUE_NOW.md`](SUITE_LOGIQUE_NOW.md).
+[`SUITE_LOGIQUE_NOW.md`](SUITE_LOGIQUE_NOW.md).
