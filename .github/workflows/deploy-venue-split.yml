@@ -121,7 +121,7 @@ jobs:
           mxpy --version
 
       - name: Setup Rust (MX 0.66 needs wasm32v1-none)
-        uses: dtolnay/rust-toolchain@1.98.0
+        uses: dtolnay/rust-toolchain@1.120.0
         with:
           targets: wasm32-unknown-unknown,wasm32v1-none
 
