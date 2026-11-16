@@ -94,11 +94,11 @@ class PublicLiveChecksTests(unittest.TestCase):
             headers.add_header("Access-Control-Allow-Origin", smoke.PAGES)
 
         with patch.object(smoke, "urlopen", return_value=ProxyResponse()):
-            status, headers, _ = smoke.fetch_public("https://example.test", smoke.RENDER, attempts=1)
+            status, headers, _ = smoke.fetch_public("https://example.test", smoke.PAGES, attempts=1)
         self.assertEqual(status, 200)
         self.assertIn("Origin", headers["vary"])
         self.assertIn("Accept-Encoding", headers["vary"])
-        smoke.check_cors(headers, smoke.RENDER, allowed=True)
+        smoke.check_cors(headers, smoke.PAGES, allowed=True)
 
     def test_transient_503_can_recover_but_404_fails_immediately(self):
         transient = HTTPError("https://example.test", 503, "asleep", {}, None)
