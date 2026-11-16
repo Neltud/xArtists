@@ -126,19 +126,54 @@ export default function StudioPage() {
         <p className="section-label">{xaRender("Création")}</p>
         <h1 className="section-title display text-2xl">{xaRender(sculptureMode ? "Créer le NFT de ma sculpture" : "Creator Studio")}</h1>
         <p className="text-sm leading-7 text-[color:var(--xa-text-secondary)]">
-          {xaRender("Prépare ton œuvre, publie-la sur IPFS, puis crée ton NFT avec la signature de ton propre wallet. Aucun mint automatique. ")}</p>
+          {xaRender("Ajoute une image, une vidéo ou une musique depuis ton appareil. La publication et la création NFT demandent ensuite des vérifications et une signature. ")}</p>
       </header>
 
+      <section id="xa-studio-mint" className="card xa-studio-workflow space-y-3">
+        <h2 className="text-sm font-semibold text-[color:var(--xa-text)]">{xaRender("Importer une image, une vidéo ou une musique")}</h2>
+        <label className="block text-sm font-medium" htmlFor="xa-studio-nft-name">
+          Nom de l’œuvre à publier
+        </label>
+        <input
+          id="xa-studio-nft-name"
+          value={nftName}
+          onChange={e => setNftName(e.target.value)}
+          className="w-full rounded-lg border border-[color:var(--xa-border)] bg-[color:var(--xa-bg-elevated)] px-2 py-1.5 text-sm text-[color:var(--xa-text)]"
+          placeholder={xaLocalize("Nom de l’œuvre")}
+          maxLength={50}
+        />
+        <CreatorMediaUpload title={nftName} onReady={pin => {
+          setPinnedMedia(pin)
+          setNftMediaUri(pin?.mediaUri || '')
+        }} />
+        <label className="block text-sm text-[color:var(--xa-text-secondary)]">
+          Adresse IPFS/HTTPS (remplie après publication, ou saisie manuelle)
+          <input
+            value={nftMediaUri}
+            onChange={e => {setNftMediaUri(e.target.value);setPinnedMedia(null)}}
+            className="mt-1 w-full rounded-lg border border-[color:var(--xa-border)] bg-[color:var(--xa-bg-elevated)] px-3 py-2 text-xs text-[color:var(--xa-text)]"
+            placeholder="ipfs://bafy.../artwork.png"
+          />
+        </label>
+        <p className="text-xs text-amber-900 dark:text-amber-100">Un fichier sélectionné seul ne suffit pas : le mint exige un upload IPFS confirmé ou une URL déjà hébergée. Vérifie la collection, le rôle NFTCreate et les détails dans xPortal avant la signature.</p>
+        <button
+          type="button"
+          className="btn-secondary text-sm"
+          disabled={mint.pending || !activeCollectionId || !nftMediaUri.trim() || !mint.canSign}
+          onClick={() => void runMint()}
+        >
+          {xaRender(mint.pending ? 'Signature…' : 'Signer la création NFT')}
+        </button>
+        {mint.lastTx && <p className="break-all text-xs text-cyan-900 dark:text-cyan-100">Session / Tx : {mint.lastTx}
+          {/^[a-f0-9]{64}$/i.test(mint.lastTx) && <a
+            href={'https://explorer.multiversx.com/transactions/' + mint.lastTx}
+            target="_blank" rel="noopener noreferrer" className="ml-2 underline">Voir Explorer</a>}
+        </p>}
+        {xaRender(mint.error && <p className="text-sm text-amber-900 dark:text-amber-100">{xaRender(asText(mint.error))}</p>)}
+      </section>
+
+
       <MainnetJourney current="studio" />
-      <aside aria-label="Depuis Google Drive ou une collection privée" className="rounded-2xl border border-[color:var(--xa-border)] p-3 text-sm text-[color:var(--xa-text-secondary)]">
-        <strong className="text-[color:var(--xa-text)]">Importer une œuvre depuis Google Drive</strong>
-        <p className="mt-1">Choisis un fichier dont tu possèdes les droits, télécharge une copie sur ton appareil, puis sélectionne cette copie ci-dessous. Les dossiers Drive privés ne sont ni importés ni publiés automatiquement.</p>
-        <div className="mt-2 flex flex-wrap gap-2">
-          <a href="#xa-studio-mint" className="btn-secondary text-xs">Choisir mon fichier</a>
-          <Link to="/create/nft-factory" className="btn-secondary text-xs">Préparer une collection</Link>
-          <Link to="/create/world-rights" className="btn-secondary text-xs">Préparer une licence</Link>
-        </div>
-      </aside>
       <section aria-label="Parcours création sculpture" className="card space-y-2 border border-cyan-500/25">
         <h2 className="font-semibold text-[color:var(--xa-text)]">Ma sculpture → NFT sur MultiversX</h2>
         <p className="text-sm text-[color:var(--xa-text-secondary)]">
@@ -243,49 +278,6 @@ export default function StudioPage() {
       </section>
 
       <div id="xa-studio-turntable"><ArtworkTurntableLab /></div>
-
-      <section id="xa-studio-mint" className="card xa-studio-workflow space-y-3">
-        <h2 className="text-sm font-semibold text-[color:var(--xa-text)]">{xaRender("Préparer et créer mon NFT")}</h2>
-        <label className="block text-sm font-medium" htmlFor="xa-studio-nft-name">
-          Nom de l’œuvre à publier
-        </label>
-        <input
-          id="xa-studio-nft-name"
-          value={nftName}
-          onChange={e => setNftName(e.target.value)}
-          className="w-full rounded-lg border border-[color:var(--xa-border)] bg-[color:var(--xa-bg-elevated)] px-2 py-1.5 text-sm text-[color:var(--xa-text)]"
-          placeholder={xaLocalize("Nom de l’œuvre")}
-          maxLength={50}
-        />
-        <CreatorMediaUpload title={nftName} onReady={pin => {
-          setPinnedMedia(pin)
-          setNftMediaUri(pin?.mediaUri || '')
-        }} />
-        <label className="block text-sm text-[color:var(--xa-text-secondary)]">
-          2. URI média IPFS/HTTPS (automatique après upload, ou saisie manuelle)
-          <input
-            value={nftMediaUri}
-            onChange={e => {setNftMediaUri(e.target.value);setPinnedMedia(null)}}
-            className="mt-1 w-full rounded-lg border border-[color:var(--xa-border)] bg-[color:var(--xa-bg-elevated)] px-3 py-2 text-xs text-[color:var(--xa-text)]"
-            placeholder="ipfs://bafy.../artwork.png"
-          />
-        </label>
-        <p className="text-xs text-amber-900 dark:text-amber-100">Un fichier sélectionné seul ne suffit pas : le mint exige un upload IPFS confirmé ou une URL déjà hébergée. Vérifie la collection, le rôle NFTCreate et les détails dans xPortal avant la signature.</p>
-        <button
-          type="button"
-          className="btn-secondary text-sm"
-          disabled={mint.pending || !activeCollectionId || !nftMediaUri.trim() || !mint.canSign}
-          onClick={() => void runMint()}
-        >
-          {xaRender(mint.pending ? 'Signature…' : 'Signer la création NFT')}
-        </button>
-        {mint.lastTx && <p className="break-all text-xs text-cyan-900 dark:text-cyan-100">Session / Tx : {mint.lastTx}
-          {/^[a-f0-9]{64}$/i.test(mint.lastTx) && <a
-            href={'https://explorer.multiversx.com/transactions/' + mint.lastTx}
-            target="_blank" rel="noopener noreferrer" className="ml-2 underline">Voir Explorer</a>}
-        </p>}
-        {xaRender(mint.error && <p className="text-sm text-amber-900 dark:text-amber-100">{xaRender(asText(mint.error))}</p>)}
-      </section>
 
       <section className="card xa-studio-workflow space-y-3">
         <h2 className="text-sm font-semibold text-[color:var(--xa-text)]">{xaRender("Mes NFT (")}{xaRender(owned.length)})</h2>
