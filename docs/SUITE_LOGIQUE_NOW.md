@@ -3,61 +3,66 @@ hidden: true
 noIndex: true
 ---
 
-# Suite logique — 15 novembre 2026
+# Suite logique — 16 novembre 2026
 
-Probe **2026-11-15T05:35Z**. Ce document est l'ordre d'exécution. Il ne lève aucun gate commercial. Appeler « go-live total » un site dont le trading, le mint et le fiat sont éteints reste interdit.
+Probe **2026-11-16T05:33Z**. Ce document est l'ordre d'exécution. Il ne lève aucun gate commercial. Appeler « go-live total » un site dont le trading, le mint et le fiat sont éteints reste interdit.
 
 ## Vérité déployée
 
 | Surface | État observé |
 | --- | --- |
-| **Pages** [build-info.json](https://xartists.art/build-info.json) | `0.139.0` · `7b280ccf29765ec7660451559d8a1b453fb79d4a` · `lia_live_trading=false` · 140 routes · `built_at=2026-11-14T18:48:35.921Z` |
-| **API** [health](https://xartists-access-api.onrender.com/health) | HTTP 200 · `ok=true` · SHA `8b6fae84e15084883d94e2121a7ab8f6219b7845` (**14 nov 05:04 UTC**, en retard) · `lia_live_trading=0` · `mint_live_enabled=false` · `mint_dry_run=true` · `mint_oidc_pull_enabled=true` · `studio_media_upload=off` · Stripe / MoonPay off · PayBox `mode=prod` et `checkout=false` · sessions sans wallet off · xOrus privé off · enchères off · pont $TRO off |
-| **Studio DB** | [studio-store/status](https://xartists-access-api.onrender.com/v1/ops/studio-store/status) → **HTTP 503**, tables et schéma absents |
+| **Pages** [build-info.json](https://xartists.art/build-info.json) | `0.139.0` · `5bf83162852840b6331f42ce1f59db4224e79a2c` · `lia_live_trading=false` · 140 routes · `built_at=2026-11-15T15:21:23.194Z` |
+| **API** [health](https://xartists-access-api.onrender.com/health) | HTTP 200 · `ok=true` · SHA `8b6fae84e15084883d94e2121a7ab8f6219b7845` (**14 nov 05:04 UTC**, en retard) · `lia_live_trading=0` · `mint_live_enabled=false` · `mint_dry_run=true` · `mint_dispatch_enabled=false` · `mint_oidc_pull_enabled=true` · `studio_media_upload=off` · Stripe / MoonPay off · PayBox `mode=prod` et `checkout=false` · sessions sans wallet off · xOrus privé off · enchères off · pont $TRO off |
+| **Studio DB** | [studio-store/status](https://xartists-access-api.onrender.com/v1/ops/studio-store/status) → **HTTP 503**, `backend=postgres`, tables et schéma absents. Pas de code raison dans le JSON |
+| **xOrus** | `paper_only` · **ABSTAIN** `thin_tape` · 16 nov 05:33 UTC · aucune exécution |
 | **Trading autonome** | **NO-GO** |
 | **Commerce fiat** | **NO-GO** |
 | **Mint live** | **NO-GO** |
 
 Le pull OIDC de mint est armé. Ce n'est pas un mint live : dry-run vrai, dispatch faux, live faux.
 
+Le tip `main` peut être un commit news `[skip ci]`. Le SHA qui compte pour le public est celui de `build-info.json`, pas le tip git.
+
 ## GO vs NO-GO
 
 | Module | Verdict | Condition de levée |
 | --- | --- | --- |
-| Site public / musée / exploration | **GO** | Déjà live en 0.139.0 |
-| xOrus paper | **GO lecture** | Rester paper. Ne pas afficher LIVE |
+| Site public / musée / exploration | **GO** | Déjà live en 0.139.0 / `5bf83162` |
+| xOrus paper | **GO lecture** | Rester paper. Ne pas afficher LIVE. Abstention en cours |
 | Marketplace découverte | **GO lecture** | Listing / achat **NO-GO** tant que #428 n'a pas un cycle neuf |
-| Studio upload IPFS / GLB | **NO-GO** | DB liée, 004–006, backup, Pinata, CID relu |
+| Studio upload IPFS / GLB | **NO-GO** | DB liée, backup, 004–006, Pinata, CID relu |
 | xPortal | **NO-GO preuve** | Allowlist Reown + QR navigateur réel (#506) |
 | PayBox / Stripe / MoonPay | **NO-GO** | Webhook, révocation, cadre légal. Le mode `prod` de PayBox ne suffit pas |
 | LIA / xOrus trading | **NO-GO** | Gel ops. Incident 30 oct = référence |
 | Mail hello@ | **NO-GO** | Réception non certifiée |
-| API = Pages | **ÉCART** | Redéployer Render sur `7b280cc` sans toucher aux drapeaux |
+| API = Pages | **ÉCART** | Redéployer Render sur le `main` courant sans toucher aux drapeaux |
 
 ## Ordre
 
-1. **Wallet** — session Reown / xPortal réelle. Pas d'adresse forgée.
+1. **Wallet** — session Reown / xPortal réelle. Pas d'adresse forgée. Dashboard, pas un commit.
 2. **Studio** — `DATABASE_URL` runtime, backup / restore, migrations, un upload, un CID, une relecture. Ensuite seulement le drapeau d'upload.
-3. **Marché** — un listing **nouveau**, signé par l'artiste, acheté par un autre wallet, reçu Explorer, possession acheteur (#428).
-4. **Comptes** — JWT email, SIWX, entitlement serveur (#548).
-5. **Un rail** — preprod, webhook, révocation, un seul drapeau.
-6. **API puis OVH** — aligner le SHA Render. L'image OVH reste parallèle tant que la reprise n'est pas jouée.
+3. **API** — redéploiement Render du code déjà sur `main`, variables inchangées. Le push git ne redéploie pas Render tout seul.
+4. **Marché** — un listing **nouveau**, signé par l'artiste, acheté par un autre wallet, reçu Explorer, possession acheteur (#428).
+5. **Comptes** — JWT email, SIWX, entitlement serveur (#548).
+6. **Un rail** — preprod, webhook, révocation, un seul drapeau. OVH reste un package parallèle.
 
 ## Interdits
 
 * Traiter la 0.139.0 comme une ouverture commerciale.
 * Signer ou recharger le hot wallet LIA Ops.
 * `VITE_LIA_LIVE_TRADING=1`, checkout PayBox, `claimFees`, Jupiter live non audité.
-* Migrer Studio à l'aveugle.
+* Migrer Studio à l'aveugle ou sur une sandbox Neon orpheline.
 * Confondre `mint_oidc_pull_enabled=true` avec un mint public.
 * Confondre `paybox_mode=prod` avec un encaissement.
+* Écrire `migration_004_missing` comme un fait frais : le JSON public ne le dit plus.
 
-## Veille (15 nov 2026, matin)
+## Veille (16 nov 2026, 05:33 UTC)
 
-* DefiLlama, chaîne MultiversX, datée du 15 nov : TVL **10,51 M$** (−7,8 % / 24 h), DEX 24 h **~390 k$**, EGLD affiché **2,59 $** / capitalisation **80,65 M$**. La fiche token du même matin imprimait **2,51 $** et **78,38 M$**. On cite l'écart. On n'en fait pas un ordre.
-* Hatom ~**8,65 M$** (−10 % / 24 h, −22 % / 30 j). xExchange ~**3,23 M$**.
-* Upbit, notice `207379109` du 23 oct : vigilance EGLD jusqu'au **16–20 nov 2026**. Pas de levée relue ce matin.
-* Reown AppKit (1.8.x, SIWX, social, QR) ne remplace pas la preuve #506. Les passkeys P-256 ne signent pas un compte MultiversX.
+* DefiLlama, chaîne MultiversX, page datée du 16 nov : TVL **10,73 M$** (+1,82 % / 24 h), volume DEX 24 h **~165 k$**, EGLD **2,62 $**, capitalisation **81,59 M$**. Le 15 nov au matin la même famille de chiffres était ~10,51 M$ et ~2,5–2,6 $. On cite l'écart. On n'en fait pas un ordre. xOrus, au même instant, **s'abstient** (`thin_tape`).
+* Hatom (protocole, page chaîne) ~**8,9 M$** (+3,2 % / 24 h, −10 % / 7 j, −21 % / 30 j). xExchange ~**3,28 M$**. Le module liquid staking Hatom est un autre chiffre (~2,2 M$ au 15 nov) : ne pas les additionner deux fois.
+* Upbit, notice `207379109` : vigilance EGLD **jusqu'au 16–20 nov 2026**. Nous sommes **dans** la fenêtre. Pas de levée relue. Pas de phrase publique sur la sûreté des dépôts.
+* Reown AppKit ne remplace pas la preuve #506. Les passkeys P-256 ne signent pas un compte MultiversX.
+* Un orchestrateur de rendement Hatom / xExchange, aujourd'hui, optimiserait du slippage sur un marché mince. On ne le branche pas.
 
 ## Références
 
@@ -66,11 +71,6 @@ Le pull OIDC de mint est armé. Ce n'est pas un mint live : dry-run vrai, dispat
 * [docs/security/launch-gates.md](security/launch-gates.md)
 * [#506](https://github.com/Neltud/xArtists/issues/506) · [#428](https://github.com/Neltud/xArtists/issues/428) · [#548](https://github.com/Neltud/xArtists/issues/548)
 
-## Reprise de passation — 15 novembre, après PR #594
+## Archive de sonde — 15 novembre
 
-- **Code vérifié dans GitHub** : [PR #594](https://github.com/Neltud/xArtists/pull/594) fusionnée au SHA `7d313eac760fab8770f10f5982ad9f53f9aa2fe6`. Le contrôle Studio exige désormais que l'index quota vise la table attendue ; cinq tests de régression ajoutés, CI PR 7/7 success avant fusion.
-- **Observation de déploiement transmise par l'opérateur** : Pages 0.139.0 / SHA `7d313eac` à 10:56 UTC, **non revalidée ici**. Ne pas confondre un SHA Pages avec le SHA API.
-- **Tentative de sonde de cette session** : les quatre endpoints build-info, health, studio-store/status et xorus/analysis n'ont pas pu être atteints depuis l'environnement d'exécution (DNS indisponible / accès web refusé). **Aucun nouveau verdict live** ne peut être déduit.
-- **P0 strict** : #506 preuve navigateur Reown QR + xPortal ; Studio : identité DB externe attestée et backup/restore avant migrations 004/005 et 006 optionnelle. #428 listing signé + achat autre wallet + receipt et possession seulement après #506.
-- **Cible hébergement** : serveur OVH pour l'API, en parallèle sans bascule DNS. `deploy/ovh/README.md` décrit un package, pas un serveur déjà déployé. Ne pas copier un `DATABASE_URL` non identifié.
-- **Commerce** : tous les flags financiers, mint et trading restent NO-GO ; aucune activation implicite par ce document.
+Les SHA `7b280cc` (Pages, soir du 14) puis l'observation opérateur `7d313eac` (matin du 15) sont dépassés par le build `5bf83162` de 15:21 UTC. PR #594 (index quota Studio) reste fusionnée dans git ; elle n'a pas rendu le store prêt, et l'API qui répond encore est plus ancienne que cette PR.

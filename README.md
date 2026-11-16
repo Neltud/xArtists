@@ -15,18 +15,20 @@ xArtists est une dApp d'art et de création : découverte sans wallet, œuvres p
 
 Les identifiants historiques `/lia` et `lia/` restent en compatibilité pendant la migration vers **xOrus**. L'archive Vellum/Chorus n'est plus un moteur autorisé à lancer des transactions. Le vote externe ChatGPT est au plus de 15 % ; Sentinel garde son veto.
 
-## État confirmé au 15 novembre 2026
+## État confirmé au 16 novembre 2026
 
-Probe `2026-11-15T05:35Z`. Cette section ne lève aucun gate. La lecture fraîche de [build-info.json](https://xartists.art/build-info.json) et de [health](https://xartists-access-api.onrender.com/health) prime sur les versions imprimées plus bas dans l'historique.
+Probe `2026-11-16T05:33Z`. Cette section ne lève aucun gate. La lecture fraîche de [build-info.json](https://xartists.art/build-info.json) et de [health](https://xartists-access-api.onrender.com/health) prime sur les versions imprimées plus bas dans l'historique.
 
-- **GitHub Pages** : version **0.139.0**, SHA `7b280ccf29765ec7660451559d8a1b453fb79d4a`, construit le 14 novembre 2026 à 18:48 UTC, `lia_live_trading=false`, **140** routes. Ce build isole les originaux Drive du catalogue NFT.
-- **API Render** : `ok=true`, mais SHA **`8b6fae84e15084883d94e2121a7ab8f6219b7845`** (14 novembre 05:04 UTC). L'API est **en retard** sur les Pages. L'aligner ne doit changer aucun drapeau.
+- **GitHub Pages** : version **0.139.0**, SHA `5bf83162852840b6331f42ce1f59db4224e79a2c`, construit le 15 novembre 2026 à 15:21 UTC, `lia_live_trading=false`, **140** routes. Correctif d'accessibilité du header mobile, au-dessus de l'isolement Drive / catalogue NFT.
+- **API Render** : `ok=true`, mais SHA **`8b6fae84e15084883d94e2121a7ab8f6219b7845`** (14 novembre 05:04 UTC). L'API est **en retard** sur les Pages. L'aligner ne doit changer aucun drapeau. Un push git ne redéploie pas Render.
 - **Marketplace** : préparation du listing de ses propres NFT. **Un listing utilisateur signé sur cette version et son dépôt confirmé en escrow restent à prouver** ([issue #428](https://github.com/Neltud/xArtists/issues/428)). Achat, enchères et packs ont des gates distincts, tous fermés côté API (`auction_enabled=false`).
-- **Creator Studio** : parcours de préparation. Le diagnostic public retourne **HTTP 503** (`table_ready=false`, `schema_ready=false`, `model_schema_ready=false`). Le premier mint d'une sculpture sur le parcours complet n'est pas confirmé.
+- **Creator Studio** : parcours de préparation. Le diagnostic public retourne **HTTP 503** (`backend=postgres`, `table_ready=false`, `schema_ready=false`, `model_schema_ready=false`). Le corps public ne nomme pas la migration manquante. Le premier mint d'une sculpture sur le parcours complet n'est pas confirmé.
 - **IPFS / GLB** : upload **OFF** (`studio_media_upload=off`). `mint_live_enabled=false`, `mint_dry_run=true`. `mint_oidc_pull_enabled=true` est un bras de lecture, pas un mint public. Migrations 004–006 non certifiées sur la base réelle.
 - **Paiements** : Stripe et MoonPay off. PayBox est **configuré** (`paybox_mode=prod`) et le **checkout est désactivé**. Le mode prod n'est pas un encaissement.
 - **Comptes** : exploration sans wallet ≠ compte email (`walletless_account_session_enabled=false`) ≠ wallet signataire. xPortal / Reown : preuve QR toujours ouverte ([issue #506](https://github.com/Neltud/xArtists/issues/506)).
-- **xOrus privé** : `xorus_private_analysis_enabled=false` ([issue #548](https://github.com/Neltud/xArtists/issues/548)).
+- **xOrus** : paper, décision **ABSTAIN** (`thin_tape`) au 16 nov 05:33 UTC. Analyse privée `xorus_private_analysis_enabled=false` ([issue #548](https://github.com/Neltud/xArtists/issues/548)).
+
+Le site public est donc **live**. Le commerce ne l'est pas. Les deux phrases sont vraies en même temps.
 
 ## Google Drive et originaux de collection
 
