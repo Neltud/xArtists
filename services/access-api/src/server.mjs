@@ -445,7 +445,7 @@ async function handleRequest(req, res) {
     return
   }
   if (req.method === 'POST' && pth === '/v1/studio/media/challenge') {
-    if (!studioMediaConfig().enabled) {
+    if (!studioMediaConfig().enabled || !(await probeStudioStore()).ok) {
       json(res,503,{ok:false,error:'studio_upload_not_configured'});return
     }
     const {body}=await readRawAndBody(req)
@@ -456,7 +456,7 @@ async function handleRequest(req, res) {
     return
   }
   if (req.method === 'POST' && pth === '/v1/studio/media/session') {
-    if (!studioMediaConfig().enabled) {
+    if (!studioMediaConfig().enabled || !(await probeStudioStore()).ok) {
       json(res,503,{ok:false,error:'studio_upload_not_configured'});return
     }
     const {body}=await readRawAndBody(req)
@@ -471,7 +471,7 @@ async function handleRequest(req, res) {
     return
   }
   if (req.method === 'POST' && pth === '/v1/studio/media/upload') {
-    if (!studioMediaConfig().enabled) {
+    if (!studioMediaConfig().enabled || !(await probeStudioStore()).ok) {
       json(res,503,{ok:false,error:'studio_upload_not_configured'});return
     }
     const actor=mediaActor(req.headers,JWT_SECRET)
@@ -486,7 +486,7 @@ async function handleRequest(req, res) {
     return
   }
   if (req.method === 'POST' && pth === '/v1/studio/media/metadata') {
-    if (!studioMediaConfig().enabled) {
+    if (!studioMediaConfig().enabled || !(await probeStudioStore()).ok) {
       json(res,503,{ok:false,error:'studio_upload_not_configured'});return
     }
     const actor=mediaActor(req.headers,JWT_SECRET)
