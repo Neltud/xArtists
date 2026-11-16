@@ -37,6 +37,26 @@ test('Studio HTTP status is no-store, sanitized and does not enable uploads',asy
     assert.equal(config.enabled,false)
   }finally{await server.close()}
 })
+test('configured upload secrets alone cannot enable real Studio without verified schema',async()=>{
+  const srv=await startServer({
+    DATABASE_URL:'postgres://private@127.0.0.1:1/not-a-real-db',PGSSL:'0',
+    CREATOR_MEDIA_UPLOAD_ENABLED:'1',PINATA_JWT:'Z'.repeat(96),
+    ACCESS_JWT_SECRET:'test-signing-secret-should-never-be-logged',
+  })
+  try{
+    const response=await fetch(srv.base+'/v1/studio/media/config')
+    assert.equal(response.status,200)
+    const body=await response.json()
+    assert.equal(body.enabled,false)
+    assert.equal(body.modelEnabled,false)
+    const ch=await fetch(srv.base+'/v1/studio/media/challenge',{
+      method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({address:'erd1'+'a'.repeat(58)}),
+    })
+    assert.equal(ch.status,503)
+    const challengeBody=await ch.text()
+    assert.doesNotMatch(challengeBody,/private@|127\\.0\\.0\\.1|test-signing-secret/)
+  }finally{await srv.close()}
+})
 test('Studio unreachable database returns safe booleans with no connection details',async()=>{
   const server=await startServer({DATABASE_URL:'postgres://hidden_user:hidden_password@127.0.0.1:1/hidden_db',PGSSL:'0'})
   try{
