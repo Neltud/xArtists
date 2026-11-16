@@ -22,32 +22,24 @@ class FakeResponse:
 
 
 class PublicLiveChecksTests(unittest.TestCase):
-    def test_canonical_pages_and_render_use_their_actual_distinct_bases(self):
+    def test_canonical_pages_routes_only(self):
         calls = []
         def read(url, *args, **kwargs):
             calls.append(url)
             return 200, {"content-type": "text/html"}, b"<html>xArtists</html>"
         with patch.object(smoke, "fetch_public", side_effect=read):
             smoke.check_frontend(smoke.PAGES)
-            smoke.check_frontend(smoke.RENDER, base_path="/xArtists")
-        self.assertEqual(calls, [
-            "https://xartists.art/", "https://xartists.art/tro/sale/",
-            smoke.RENDER + "/xArtists/", smoke.RENDER + "/xArtists/tro/sale/",
-        ])
+        self.assertEqual(calls, ["https://xartists.art/", "https://xartists.art/tro/sale/"])
 
-    def test_both_exact_origins_are_allowed(self):
-        for origin in (smoke.PAGES, smoke.RENDER):
-            headers = {
-                "access-control-allow-origin": origin,
-                "vary": "Accept-Encoding, Origin",
-            }
-            smoke.check_cors(headers, origin, allowed=True)
-            with self.assertRaises(AssertionError):
-                smoke.check_cors(headers, "https://attacker.example", allowed=False)
+    def test_only_owned_pages_origin_is_allowed(self):
+        headers = {"access-control-allow-origin": smoke.PAGES, "vary": "Accept-Encoding, Origin"}
+        smoke.check_cors(headers, smoke.PAGES, allowed=True)
+        with self.assertRaises(AssertionError):
+            smoke.check_cors(headers, "https://attacker.example", allowed=False)
 
     def test_wildcard_and_credentialed_cors_fail_closed(self):
         with self.assertRaises(AssertionError):
-            smoke.check_cors({"access-control-allow-origin": "*", "vary": "Origin"}, smoke.RENDER, allowed=True)
+            smoke.check_cors({"access-control-allow-origin": "*", "vary": "Origin"}, smoke.PAGES, allowed=True)
         with self.assertRaises(AssertionError):
             smoke.check_cors({
                 "access-control-allow-origin": smoke.PAGES,
@@ -99,7 +91,7 @@ class PublicLiveChecksTests(unittest.TestCase):
             headers.add_header("Content-Type", "application/json")
             headers.add_header("Vary", "Origin")
             headers.add_header("Vary", "Accept-Encoding")
-            headers.add_header("Access-Control-Allow-Origin", smoke.RENDER)
+            headers.add_header("Access-Control-Allow-Origin", smoke.PAGES)
 
         with patch.object(smoke, "urlopen", return_value=ProxyResponse()):
             status, headers, _ = smoke.fetch_public("https://example.test", smoke.RENDER, attempts=1)
