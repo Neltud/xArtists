@@ -33,7 +33,7 @@ const LABELS: Record<Lang, Labels> = {
   fr: {
     kicker: 'Sous le musée · xArtists',
     title: 'Distributeur NFT aléatoire',
-    lead: 'Découvrez une œuvre au hasard parmi les visuels xArtists déjà publiés depuis Drive.',
+    lead: 'Découvrez une œuvre au hasard parmi les créations xArtists présentées ici.',
     mystery: 'Œuvre mystère',
     reveal: 'Découvrir une œuvre',
     again: 'Nouveau tirage',
@@ -45,7 +45,7 @@ const LABELS: Record<Lang, Labels> = {
   en: {
     kicker: 'Below the museum · xArtists',
     title: 'Random NFT distributor',
-    lead: 'Reveal a random artwork from xArtists Drive visuals already published on this site.',
+    lead: 'Reveal a random artwork from the xArtists collection featured here.',
     mystery: 'Mystery artwork',
     reveal: 'Reveal an artwork',
     again: 'Draw again',
@@ -57,7 +57,7 @@ const LABELS: Record<Lang, Labels> = {
   es: {
     kicker: 'Debajo del museo · xArtists',
     title: 'Distribuidor NFT aleatorio',
-    lead: 'Descubre al azar una obra de Drive ya publicada en xArtists.',
+    lead: 'Descubre al azar una obra publicada en xArtists.',
     mystery: 'Obra misteriosa',
     reveal: 'Descubrir una obra',
     again: 'Nuevo sorteo',
@@ -69,7 +69,7 @@ const LABELS: Record<Lang, Labels> = {
   de: {
     kicker: 'Unter dem Museum · xArtists',
     title: 'Zufälliger NFT-Verteiler',
-    lead: 'Entdecke zufällig ein bereits veröffentlichtes xArtists-Werk aus Drive.',
+    lead: 'Entdecke zufällig ein veröffentlichtes xArtists-Kunstwerk.',
     mystery: 'Überraschungskunstwerk',
     reveal: 'Kunstwerk aufdecken',
     again: 'Erneut ziehen',
@@ -81,7 +81,7 @@ const LABELS: Record<Lang, Labels> = {
   ru: {
     kicker: 'Под музеем · xArtists',
     title: 'Случайный NFT-дистрибьютор',
-    lead: 'Откройте случайную работу xArtists из уже опубликованных материалов Drive.',
+    lead: 'Откройте случайную опубликованную работу xArtists.',
     mystery: 'Загадочная работа',
     reveal: 'Открыть работу',
     again: 'Повторить выбор',
@@ -93,7 +93,7 @@ const LABELS: Record<Lang, Labels> = {
   uk: {
     kicker: 'Під музеєм · xArtists',
     title: 'Випадковий NFT-дистрибʼютор',
-    lead: 'Відкрийте випадковий твір xArtists із вже опублікованих матеріалів Drive.',
+    lead: 'Відкрийте випадковий опублікований твір xArtists.',
     mystery: 'Таємничий твір',
     reveal: 'Відкрити твір',
     again: 'Спробувати ще',
@@ -105,7 +105,7 @@ const LABELS: Record<Lang, Labels> = {
   zh: {
     kicker: '博物馆下方 · xArtists',
     title: '随机 NFT 分发器',
-    lead: '随机探索已在本站公开的 xArtists Drive 艺术作品。',
+    lead: '随机探索已在本站公开的 xArtists 艺术作品。',
     mystery: '神秘作品',
     reveal: '揭晓作品',
     again: '再抽一次',
@@ -117,7 +117,7 @@ const LABELS: Record<Lang, Labels> = {
   ar: {
     kicker: 'أسفل المتحف · xArtists',
     title: 'موزّع NFT عشوائي',
-    lead: 'اكتشف عملاً عشوائياً من صور xArtists المنشورة مسبقاً من Drive.',
+    lead: 'اكتشف عملاً عشوائياً من أعمال xArtists المعروضة هنا.',
     mystery: 'عمل فني غامض',
     reveal: 'اكشف عن عمل فني',
     again: 'سحب جديد',
