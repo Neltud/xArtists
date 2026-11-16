@@ -83,3 +83,24 @@ Missing valid DNS/HTTPS, unknown database identity, ineffective backup,
 auth failures, unexpected non-readonly capability, leakage of credentials,
 or a failed wallet/order regression = **NO-GO**. Never report sales or
 NFT delivery as live merely because the API health check is green.
+
+## Staging external smoke via GitHub Actions (no additional hosting)
+
+After the private server has been configured and `api-staging.xartists.art`
+resolves to it over valid HTTPS, the operator may run
+**Actions → Self-hosted API staging smoke (read-only) → Run workflow**.
+Enter the *deployed API checkout's exact 40-character commit SHA* in
+`source_sha` (not a guessed SHA, and not necessarily the Pages build SHA).
+
+The workflow uses the existing `scripts/ops/probe-free-api-candidate.mjs`,
+checks its unit tests, and performs only four GET requests to the explicitly
+allowlisted staging hostname. It fails on an unverified code identity or
+unexpected commerce/mint/trading/upload capabilities. HTTP 200 on `/health`
+alone is not sufficient; store readiness and real database identity remain
+operator-managed. The workflow uses **no secrets, SSH keys, Render token,
+wallet, paid third-party account, deploy action, or DNS change**.
+
+A successful workflow is **read-only preflight evidence**, not permission to
+change GitHub Pages `VITE_ACCESS_API_BASE`, shut down Render, enable walletless
+accounts, create NFTs, run trading, perform payment delivery, or migrate data.
+Those remain an explicit manual cutover after rollback and database evidence.
