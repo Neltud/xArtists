@@ -48,13 +48,17 @@ test('Kubo media CID must come from one file plus the wrapped directory',async()
     {Name:file,Hash:cid,Size:'123'},
     {Name:'',Hash:dir,Size:'456'},
   ]
-  const calls=[]
-  const result=await kuboAddFile({buffer:Buffer.from('fixture-not-a-real-image'),filename:file,
+  const calls=[],original=Buffer.from('fixture-not-a-real-image')
+  const result=await kuboAddFile({buffer:original,filename:file,
     wrap:true,env,request:async(url,init)=>{
-      calls.push({url,init});return response(replies.map(x=>JSON.stringify(x)).join('\n')+'\n')
+      calls.push({url,init})
+      if(url.includes('/api/v0/cat'))return {ok:true,body:(async function*(){yield original})()}
+      return response(replies.map(x=>JSON.stringify(x)).join('\n')+'\n')
     }})
   assert.equal(result,dir)
-  assert.equal(calls.length,1)
+  assert.equal(calls.length,2)
+  assert.equal(calls[1].init.method,'POST')
+  assert.equal(new URL(calls[1].url).searchParams.get('arg'),'/ipfs/'+dir+'/'+file)
   assert.equal(calls[0].init.method,'POST')
   assert.equal(calls[0].init.redirect,'error')
   assert.equal(calls[0].init.body.get('file').name,file)
@@ -67,10 +71,13 @@ test('Kubo media CID must come from one file plus the wrapped directory',async()
 })
 
 test('immutable metadata CID is a single object without a directory wrapper',async()=>{
-  const file='metadata-aaa-bbb.json'
-  const result=await kuboAddFile({buffer:Buffer.from('{"ok":true}'),filename:file,env,
-    request:async(url)=>{assert.equal(new URL(url).searchParams.get('wrap-with-directory'),'false')
-      return response(JSON.stringify({Name:file,Hash:cid,Size:'11'})+'\n')}})
+  const file='metadata-aaa-bbb.json',source=Buffer.from('{"ok":true}')
+  const result=await kuboAddFile({buffer:source,filename:file,env,
+    request:async(url)=>{
+      if(url.includes('/api/v0/cat'))return {ok:true,body:(async function*(){yield source})()}
+      assert.equal(new URL(url).searchParams.get('wrap-with-directory'),'false')
+      return response(JSON.stringify({Name:file,Hash:cid,Size:'11'})+'\n')
+    }})
   assert.equal(result,cid)
 })
 
@@ -92,6 +99,26 @@ test('invalid CID, missing directory, mismatched filename and provider errors fa
   await assert.rejects(kuboAddFile({buffer:data,filename:file,env,
     request:async()=>{throw Error('internal hostname or credentials must not be leaked')}}),
     /kubo_service_unavailable/)
+})
+
+test('Kubo must return byte-exact local readback after pinning',async()=>{
+  const file='artwork-abcdef.mp3',buffer=Buffer.from('original local bytes')
+  const added=[{Name:file,Hash:cid},{Name:'',Hash:dir}].map(x=>JSON.stringify(x)).join('\n')+'\n'
+  for(const reply of [
+    {ok:true,body:(async function*(){yield Buffer.from('wrong bytes')})()},
+    {ok:false},
+    {ok:true,body:(async function*(){yield Buffer.alloc(buffer.length+1)})()},
+  ]){
+    await assert.rejects(kuboAddFile({buffer,filename:file,wrap:true,env,
+      request:async url=>url.includes('/api/v0/cat')?reply:response(added)}),
+      /kubo_readback_unverified/)
+  }
+  const bytes=Buffer.concat([Buffer.from('original'),Buffer.from(' local bytes')])
+  const pinned=await kuboAddFile({buffer,filename:file,wrap:true,env,
+    request:async url=>url.includes('/api/v0/cat')
+      ? {ok:true,body:(async function*(){yield bytes.subarray(0,3);yield bytes.subarray(3)})()}
+      : response(added)})
+  assert.equal(pinned,dir)
 })
 
 test('optional OVH compose overlay never publishes privileged RPC or forces a live upload',()=>{
