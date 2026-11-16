@@ -14,7 +14,8 @@ services:
       REQUIRE_SIWX: "1"
       MINT_LIVE_ENABLED: "0"
       MINT_DRY_RUN: "1"
-      CREATOR_MEDIA_UPLOAD_ENABLED: "0"
+      # A separate, deliberate operator switch. Defaults OFF even with .env.api populated.
+      CREATOR_MEDIA_UPLOAD_ENABLED: "${XARTISTS_STUDIO_UPLOAD_APPROVED:-0}"
       STUDIO_GLB_UPLOAD_ENABLED: "0"
       STRIPE_LIVE_CHECKOUT_ENABLED: "0"
       PAYBOX_CHECKOUT_ENABLED: "0"
