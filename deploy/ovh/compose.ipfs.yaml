@@ -1,0 +1,34 @@
+# Optional self-hosted Studio IPFS backend. Use ONLY with deploy/ovh/compose.yaml.
+# Kubo's privileged RPC is reachable by the API container ONLY, never published on host ports.
+# Requires an operator-reviewed image pinned to an immutable digest and a backed-up host path.
+services:
+  api:
+    environment:
+      STUDIO_IPFS_PROVIDER: kubo
+      STUDIO_KUBO_API_URL: http://kubo:5001
+    depends_on:
+      kubo:
+        condition: service_healthy
+
+  kubo:
+    image: ${XARTISTS_KUBO_IMAGE:?Set an operator-reviewed ipfs/kubo image pinned by digest}
+    environment:
+      IPFS_PROFILE: server
+    volumes:
+      - ${XARTISTS_KUBO_DATA_DIR:?Set an absolute persistent and backed-up data directory}:/data/ipfs
+    expose:
+      - "5001"
+    networks:
+      - internal
+    restart: unless-stopped
+    init: true
+    security_opt:
+      - no-new-privileges:true
+    # Deliberately no ports: RPC, Gateway and P2P are NOT published via this overlay.
+    # Public accessibility and replication must be tested separately before declaring durability.
+    healthcheck:
+      test: ["CMD-SHELL", "ipfs --api /ip4/127.0.0.1/tcp/5001 diag healthy >/dev/null 2>&1"]
+      interval: 45s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
