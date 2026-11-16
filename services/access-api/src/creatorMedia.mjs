@@ -1,11 +1,12 @@
 /**
  * xArtists Studio: real image/video/audio -> IPFS pin, then user-signed MultiversX NFT.
  * No wallet keys, NFT signing, or transfers are ever handled by this service.
- * Disabled without explicit config. Requires persistent PG quota + secret Pinata JWT.
+ * Disabled without explicit config. Requires persistent PG quota and an approved storage provider.
  */
 import crypto from 'node:crypto'
 import { signJwt, verifyJwt } from './verifyAccess.mjs'
 import { erdToPubkey } from './siwx.mjs'
+import { kuboConfigured,kuboAddFile } from './studioKubo.mjs'
 
 const FORMATS = Object.freeze({
   'image/jpeg': { ext:'jpg', limit: 16 * 1024 * 1024 },
@@ -24,12 +25,14 @@ const fail=(reason,statusCode=400)=>Object.assign(new Error(reason),{statusCode}
 const digest=raw=>crypto.createHash('sha256').update(raw).digest('hex')
 let pool
 export function studioMediaConfig(env=process.env){
-  const enabled=env.CREATOR_MEDIA_UPLOAD_ENABLED==='1'
-    && String(env.PINATA_JWT||'').length>=40
+  const mode=String(env.STUDIO_IPFS_PROVIDER||'pinata')
+  const providerReady=mode==='kubo'?kuboConfigured(env)
+    :mode==='pinata'&&String(env.PINATA_JWT||'').length>=40
+  const enabled=env.CREATOR_MEDIA_UPLOAD_ENABLED==='1'&&providerReady
     && Boolean(String(env.DATABASE_URL||'').trim())
     && String(env.ACCESS_JWT_SECRET||env.JWT_SECRET||'').length>=16
   return {enabled,modelEnabled:enabled && env.STUDIO_GLB_UPLOAD_ENABLED==='1',
-    provider:enabled?'pinata_ipfs':'disabled',maxImageMiB:16,maxVideoMiB:48,maxAudioMiB:48,maxModelMiB:32,
+    provider:enabled?(mode==='kubo'?'kubo_ipfs':'pinata_ipfs'):'disabled',maxImageMiB:16,maxVideoMiB:48,maxAudioMiB:48,maxModelMiB:32,
     maxUploadsPerWalletDaily:MAX_UPLOADS_DAY,signer:'artist_wallet'}
 }
 export function mediaJwt(address,secret){
@@ -174,19 +177,24 @@ export async function uploadStudioMedia(media,wallet,request=fetch){
     throw fail('studio_glb_upload_disabled',503)
   const uploadId=await reserve(wallet,check)
   const filename='artwork-'+check.sha256.slice(0,24)+'.'+check.ext
-  const fd=new FormData()
-  fd.append('file',new Blob([media.buffer],{type:check.mime}),filename)
-  fd.append('pinataOptions',JSON.stringify({cidVersion:1,wrapWithDirectory:true}))
-  fd.append('pinataMetadata',JSON.stringify({name:filename}))
-  let res
-  try{
-    res=await request('https://api.pinata.cloud/pinning/pinFileToIPFS',{
-      method:'POST',headers:{Authorization:'Bearer '+process.env.PINATA_JWT},
-      body:fd,signal:AbortSignal.timeout(120000)})
-  }catch{throw fail('pinata_service_unavailable',503)}
-  if(!res.ok)throw fail('pinata_upload_failed',502)
-  const result=await res.json().catch(()=>({}))
-  const cid=safePinataCid(result.IpfsHash)
+  let cid
+  if(studioMediaConfig().provider==='kubo_ipfs'){
+    cid=await kuboAddFile({buffer:media.buffer,filename,wrap:true,request})
+  }else{
+    const fd=new FormData()
+    fd.append('file',new Blob([media.buffer],{type:check.mime}),filename)
+    fd.append('pinataOptions',JSON.stringify({cidVersion:1,wrapWithDirectory:true}))
+    fd.append('pinataMetadata',JSON.stringify({name:filename}))
+    let res
+    try{
+      res=await request('https://api.pinata.cloud/pinning/pinFileToIPFS',{
+        method:'POST',headers:{Authorization:'Bearer '+process.env.PINATA_JWT},
+        body:fd,signal:AbortSignal.timeout(120000)})
+    }catch{throw fail('pinata_service_unavailable',503)}
+    if(!res.ok)throw fail('pinata_upload_failed',502)
+    const result=await res.json().catch(()=>({}))
+    cid=safePinataCid(result.IpfsHash)
+  }
   // wrapWithDirectory preserves an extension for the MultiversX media indexer.
   const uri='ipfs://'+cid+'/'+filename
   await tx(c=>c.query("UPDATE xartists_studio_media SET status='pinned',sha256=$2,uri=$3 WHERE id=$1 AND wallet=$4",
@@ -272,24 +280,29 @@ export async function pinStudioMetadata(wallet,body,request=fetch,dbTx=tx){
   // could create another published CID with inconsistent artist metadata.
   let definitivelyRejected=false
   try{
-    let res
-    try{
-      res=await request('https://api.pinata.cloud/pinning/pinJSONToIPFS',{
-        method:'POST',headers:{Authorization:'Bearer '+process.env.PINATA_JWT,
-          'Content-Type':'application/json'},
-        body:JSON.stringify({pinataContent:content,
-          pinataMetadata:{name:'xartists-metadata-'+id+'.json'},
-          pinataOptions:{cidVersion:1}}),
-        signal:AbortSignal.timeout(30000)})
-    }catch{throw fail('metadata_pin_result_unknown_reconcile',503)}
-    if(!res.ok){
-      // A definite non-2xx reply is the only case we permit to be retried
-      // automatically. The failed request still consumes an artist quota slot.
-      definitivelyRejected=true
-      throw fail('pinata_metadata_failed',502)
+    let cid
+    if(studioMediaConfig().provider==='kubo_ipfs'){
+      cid=await kuboAddFile({buffer:Buffer.from(JSON.stringify(content)),
+        filename:'metadata-'+id+'.json',wrap:false,request})
+    }else{
+      let res
+      try{
+        res=await request('https://api.pinata.cloud/pinning/pinJSONToIPFS',{
+          method:'POST',headers:{Authorization:'Bearer '+process.env.PINATA_JWT,
+            'Content-Type':'application/json'},
+          body:JSON.stringify({pinataContent:content,
+            pinataMetadata:{name:'xartists-metadata-'+id+'.json'},
+            pinataOptions:{cidVersion:1}}),
+          signal:AbortSignal.timeout(30000)})
+      }catch{throw fail('metadata_pin_result_unknown_reconcile',503)}
+      if(!res.ok){
+        // A definite rejection is the only condition eligible for an operator retry.
+        definitivelyRejected=true
+        throw fail('pinata_metadata_failed',502)
+      }
+      const response=await res.json().catch(()=>({}))
+      cid=safePinataCid(response.IpfsHash)
     }
-    const response=await res.json().catch(()=>({}))
-    const cid=safePinataCid(response.IpfsHash)
     const metadataUri='ipfs://'+cid
     const saved=await dbTx(c=>c.query(
       "UPDATE xartists_studio_media SET metadata_uri=$2,metadata_sha256=$3,status='pinned' WHERE id=$1 AND wallet=$4 AND status='metadata_pinning' AND metadata_uri IS NULL",
