@@ -206,10 +206,10 @@ export default function NftDistributorPage() {
     </header>
 
     <aside className="rounded-xl border border-[color:var(--xa-border)] p-4 text-sm text-[color:var(--xa-muted)]">
-      <strong className="text-[color:var(--xa-text)]">Des œuvres existent déjà dans votre Drive ?</strong>
-      <p className="mt-1">Téléchargez une copie autorisée, vérifiez ses droits et préparez une fiche par œuvre. Aucun accès Google Drive automatique, aucune publication IPFS, aucun NFT minté ni distributeur commercial activé depuis ce brouillon.</p>
+      <strong className="text-[color:var(--xa-text)]">Ajouter des œuvres à votre collection</strong>
+      <p className="mt-1">Importez une image, une vidéo ou une musique depuis votre appareil dans le Studio. Vérifiez vos droits avant publication. Cette page prépare une collection sans créer ni vendre de NFT.</p>
       <div className="mt-2 flex flex-wrap gap-2">
-        <Link to="/studio?mode=sculpture" className="btn-primary text-sm">Publier un NFT dans le Studio</Link>
+        <Link to="/studio?mode=sculpture" className="btn-primary text-sm">Importer mon fichier</Link>
         <Link to="/lab?view=3d" className="btn-secondary text-sm">Prévisualiser ma sculpture</Link>
       </div>
     </aside>

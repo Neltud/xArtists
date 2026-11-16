@@ -59,6 +59,23 @@ test('binary media magic header is checked separately from claimed MIME',()=>{
   assert.throws(()=>validateCreatorMedia(Buffer.alloc(0),'image/jpeg'),/media_size_invalid/)
   assert.throws(()=>validateCreatorMedia(Buffer.alloc(16*1024*1024+1),'image/jpeg'),/media_size_invalid/)
 })
+test('music formats require verified bytes and publish as audio, never a fake image',()=>{
+ const mp3=Buffer.concat([Buffer.from('ID3\\x04\\x00\\x00\\x00\\x00\\x00\\x00','binary'),Buffer.alloc(40)])
+ const wav=Buffer.alloc(44);wav.write('RIFF',0);wav.writeUInt32LE(36,4);wav.write('WAVE',8)
+ const flac=Buffer.concat([Buffer.from('fLaC'),Buffer.alloc(48)])
+ assert.equal(validateCreatorMedia(mp3,'audio/mpeg').ext,'mp3')
+ assert.equal(validateCreatorMedia(wav,'audio/wav').ext,'wav')
+ assert.equal(validateCreatorMedia(flac,'audio/flac').ext,'flac')
+ assert.throws(()=>validateCreatorMedia(jpg,'audio/mpeg'),/media_content_signature_invalid/)
+ assert.throws(()=>validateCreatorMedia(jpg,'audio/wav'),/media_content_signature_invalid/)
+ assert.throws(()=>validateCreatorMedia(jpg,'audio/flac'),/media_content_signature_invalid/)
+ const meta=createStudioMetadata({...row,mime:'audio/mpeg',uri:row.uri.replace('.jpg','.mp3')},
+   {title:'Original music',rightsAccepted:true},owner)
+ assert.equal(meta.animation_url.endsWith('.mp3'),true)
+ assert.equal(meta.properties.category,'audio')
+ assert.equal('image' in meta,false)
+})
+
 test('raw media request requires valid bounded Content-Length and MIME signature',async()=>{
   const req=Readable.from([jpg])
   req.headers={'content-length':String(jpg.length),'content-type':'image/jpeg'}

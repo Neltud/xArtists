@@ -1,4 +1,4 @@
-/** Artist-controlled JPG/PNG/WebP/MP4 and separately gated GLB → IPFS pin → metadata → NFT mint URI.
+/** Artist-controlled image/video/audio and separately gated GLB → IPFS pin → metadata → NFT mint URI.
  * No browser token for Pinata; uploads only through signed backend with daily quota.
  */
 import { useEffect, useRef, useState } from 'react'
@@ -12,6 +12,7 @@ type Props={title:string;onReady:(pin:Pinned|null)=>void}
 const allowed:Record<string,number>={
   'image/jpeg':16*1024*1024,'image/png':16*1024*1024,
   'image/webp':16*1024*1024,'video/mp4':48*1024*1024,
+  'audio/mpeg':24*1024*1024,'audio/wav':48*1024*1024,'audio/flac':48*1024*1024,
   'model/gltf-binary':32*1024*1024,
 }
 async function postJson(base:string,path:string,body:unknown,token?:string){
@@ -82,7 +83,7 @@ export default function CreatorMediaUpload({title,onReady}:Props){
     if(!base){setEnabled(false);setModelEnabled(false);return}
     const c=new AbortController()
     let active=true
-    // A sleeping Render instance can recover without forcing an app reload.
+    // Retry service readiness without forcing an app reload.
     // A retry only re-reads public config: it never authorizes an upload.
     const timeout=window.setTimeout(()=>c.abort(),12000)
     setEnabled(null)
@@ -95,24 +96,28 @@ export default function CreatorMediaUpload({title,onReady}:Props){
     return ()=>{active=false;window.clearTimeout(timeout);c.abort()}
   },[base,statusRetry])
   const pick=(next:File|null)=>{
-    // Android document providers may label .glb as application/octet-stream.
-    // Normalize ONLY the exact .glb extension; backend verifies glTF magic/chunks.
-    const chosen=next && /\.glb$/i.test(next.name) &&
-      (next.type==='' || next.type==='application/octet-stream')
-      ? new File([next],next.name,{type:'model/gltf-binary',lastModified:next.lastModified})
+    // File providers may return an empty/generic MIME. The server still verifies file bytes.
+    const inferred = next && (next.type==='' || next.type==='application/octet-stream')
+      ? (/\.glb$/i.test(next.name) ? 'model/gltf-binary'
+        : /\.mp3$/i.test(next.name) ? 'audio/mpeg'
+        : /\.wav$/i.test(next.name) ? 'audio/wav'
+        : /\.flac$/i.test(next.name) ? 'audio/flac' : '')
+      : next?.type==='audio/x-wav' || next?.type==='audio/wave' ? 'audio/wav' : ''
+    const chosen = next && inferred
+      ? new File([next],next.name,{type:inferred,lastModified:next.lastModified})
       : next
     revision.current+=1
     setError('');setFile(chosen);setPosterFile(null);setPinned(null);onReady(null)
     setNeedsReconciliation(false)
     if(chosen && (!allowed[chosen.type]||chosen.size<=0||chosen.size>allowed[chosen.type])){
       setFile(null)
-      setError('Format attendu : JPG, PNG, WebP (16 Mio), MP4 (48 Mio) ou GLB (32 Mio).')
+      setError('Formats : images JPG/PNG/WebP, vidéo MP4, musique MP3/WAV/FLAC ou modèle 3D GLB.')
     }
   }
   const pin=async()=>{
     if(pending||needsReconciliation)return
     setError('')
-    if(!file||!allowed[file.type]){setError('Choisissez un fichier JPG, PNG, WebP, MP4 ou GLB.');return}
+    if(!file||!allowed[file.type]){setError('Choisissez une image, une vidéo ou une musique (ou un modèle 3D GLB).');return}
     if(file.type==='model/gltf-binary' && (!posterFile || !['image/jpeg','image/png','image/webp'].includes(posterFile.type) || posterFile.size<1 || posterFile.size>16*1024*1024)) {
       setError('Choisissez une image de couverture JPG, PNG ou WebP de 16 Mio maximum pour ce GLB.');return
     }
@@ -180,15 +185,15 @@ export default function CreatorMediaUpload({title,onReady}:Props){
   return (
     <div className="space-y-3 rounded-xl border border-cyan-500/20 bg-cyan-500/[0.04] p-3 sm:p-4">
       <div>
-        <h3 className="font-semibold text-white text-sm">1. Prévisualiser l’œuvre puis préparer sa publication</h3>
-        <p className="text-xs text-zinc-400 mt-1">JPG · PNG · WebP (16 Mio), MP4 (48 Mio), GLB glTF 2.0 (32 Mio, si autorisé).
+        <h3 className="font-semibold text-white text-sm">Choisir mon fichier</h3>
+        <p className="text-xs text-zinc-400 mt-1">Image JPG/PNG/WebP (16 Mio), vidéo MP4 (48 Mio), musique MP3 (24 Mio), WAV/FLAC (48 Mio) ou 3D GLB (32 Mio).
           Les fichiers sont publiés sur IPFS uniquement après signature de connexion et confirmation.</p>
       </div>
       {enabled===null&&<p role="status" className="rounded-lg border border-white/15 p-3 text-xs text-zinc-300">
         Vérification du service d’upload… Aucun fichier n’est transmis pendant cette étape.
       </p>}
       {enabled===false&&<p role="status" className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 text-xs leading-relaxed text-amber-100">
-        Upload IPFS indisponible : la photo ou vidéo sélectionnée reste uniquement sur votre appareil.
+        Publication IPFS indisponible : le fichier sélectionné reste uniquement sur votre appareil.
         L’aperçu local n’est pas un fichier publié, une transaction ou un NFT minté.
         <button type="button" className="mt-2 inline-flex min-h-[44px] items-center rounded-lg border border-amber-400/40 px-3 py-2 text-xs font-semibold"
           onClick={()=>setStatusRetry(n=>n+1)}>Retester la connexion IPFS</button>
@@ -196,13 +201,15 @@ export default function CreatorMediaUpload({title,onReady}:Props){
         ne signez aucune transaction avant d’avoir vérifié le média, les droits et la collection.
       </p>}
       <label className="block text-xs text-zinc-300">
-        Photo ou vidéo originale (ou modèle 3D GLB)
-        <input type="file" accept=".jpg,.jpeg,.png,.webp,.mp4,.glb,image/jpeg,image/png,image/webp,video/mp4,model/gltf-binary"
+        Image, vidéo ou musique (ou fichier 3D)
+        <input type="file" accept=".jpg,.jpeg,.png,.webp,.mp4,.mp3,.wav,.flac,.glb,image/jpeg,image/png,image/webp,video/mp4,audio/mpeg,audio/wav,audio/flac,model/gltf-binary"
           className="mt-1 block w-full rounded-lg border border-white/10 p-2 text-xs text-white"
           onChange={e=>pick(e.target.files?.[0]||null)}/>
       </label>
       {file&&<div className="space-y-2">
-        {file.type==='video/mp4'
+        {file.type.startsWith('audio/')
+          ? <audio src={preview} controls preload="metadata" className="w-full" aria-label="Écouter le fichier audio sélectionné"/>
+          : file.type==='video/mp4'
           ? <video src={preview} controls playsInline preload="metadata" className="w-full max-h-64 rounded-lg bg-black"/>
           : file.type==='model/gltf-binary'
           ? <>
