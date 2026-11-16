@@ -7,7 +7,7 @@ import {
 import {readFileSync} from 'node:fs'
 
 const neon='https://ep-synthetic.neonauth.c-8.eu-central-1.aws.neon.tech/xartists_access/auth'
-const api=PUBLIC_ACCESS_API
+const api='https://api.xartists.art'
 const email='artist@example.test',otp='123456'
 const token='a'.repeat(80)+'.'+'b'.repeat(80)+'.'+'c'.repeat(80)
 const uid='550e8400-e29b-41d4-a716-446655440000'
@@ -24,6 +24,7 @@ const errorCode=async fn=>{
 }
 test('OTP destination pin rejects hostile domains, HTTP, credentials and query tokens',()=>{
   assert.equal(verifiedNeonAuthBase(neon),neon)
+  assert.equal(PUBLIC_ACCESS_API,'')
   assert.equal(verifiedXartistsApiBase(api),api)
   assert.equal(verifiedXartistsApiBase('https://api.xartists.art'),'https://api.xartists.art')
   for(const value of [
@@ -35,9 +36,10 @@ test('OTP destination pin rejects hostile domains, HTTP, credentials and query t
     'https://ep-synthetic.neonauth.c-8.eu-central-1.aws.neon.tech/other',
   ])assert.equal(verifiedNeonAuthBase(value),null,value)
   for(const value of [
+    'https://xartists-access-api.onrender.com',
     'https://xartists-access-api.onrender.com.evil.test',
     'https://xartists.art',
-    'http://xartists-access-api.onrender.com',
+    'http://api.xartists.art',
     'https://api.xartists.art?q=1',
   ])assert.equal(verifiedXartistsApiBase(value),null,value)
 })
@@ -52,7 +54,7 @@ test('request OTP only posts email to pinned Neon and never sends email to xArti
   assert.deepEqual(JSON.parse(calls[0].options.body),{email,type:'sign-in'})
   assert.equal(calls[0].options.redirect,'error')
   for(const bad of ['x@y','a'.repeat(255)+'@example.test','x@y.example\nX:evil']){
-    assert.equal(await errorCode(()=>requestWalletlessOtp({email:bad,authBase:neon,fetchImpl})),
+    assert.equal(await errorCode(()=>requestWalletlessOtp({email:bad,authBase:neon,apiBase:api,fetchImpl})),
       'invalid_email')
   }
 })
@@ -93,19 +95,19 @@ test('OTP completion verifies hosted session, passes only JWT to xArtists and re
 test('invalid OTP, opaque session token and false checkout / forged profile fail closed',async()=>{
   const mock=(replies)=>async()=>replies.shift()||resp({}, {ok:false})
   assert.equal(await errorCode(()=>completeWalletlessOtp({
-    email,otp:'1',authBase:neon,fetchImpl:async()=>{throw Error('never')}})),'invalid_otp_request')
+    email,otp:'1',authBase:neon,apiBase:api,fetchImpl:async()=>{throw Error('never')}})),'invalid_otp_request')
   assert.equal(await errorCode(()=>completeWalletlessOtp({
-    email,otp,authBase:neon,fetchImpl:mock([resp({},{ok:false})])})),'otp_not_verified')
+    email,otp,authBase:neon,apiBase:api,fetchImpl:mock([resp({},{ok:false})])})),'otp_not_verified')
   assert.equal(await errorCode(()=>completeWalletlessOtp({
-    email,otp,authBase:neon,fetchImpl:mock([resp({}),resp({session:{token:'opaque-token'}})])})),
+    email,otp,authBase:neon,apiBase:api,fetchImpl:mock([resp({}),resp({session:{token:'opaque-token'}})])})),
     'verified_session_unavailable')
   assert.equal(await errorCode(()=>completeWalletlessOtp({
-    email,otp,authBase:neon,fetchImpl:mock([
+    email,otp,authBase:neon,apiBase:api,fetchImpl:mock([
       resp({}),resp({session:{token}}),
       resp({ok:true,account:{id:uid},checkoutAuthorized:true,nftEntitlement:false}),
     ])})),'account_bridge_unavailable')
   assert.equal(await errorCode(()=>completeWalletlessOtp({
-    email,otp,authBase:neon,fetchImpl:mock([
+    email,otp,authBase:neon,apiBase:api,fetchImpl:mock([
       resp({}),resp({session:{token}}),
       resp({ok:true,account:{id:uid},checkoutAuthorized:false,nftEntitlement:false}),
       resp({ok:true,account:{id:uid,type:'walletless',linkedWalletCount:0},
