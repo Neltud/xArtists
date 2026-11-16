@@ -1,8 +1,85 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-16T10:40:33.873Z",
+  "updatedAt": "2026-11-16T21:39:47.060Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1794865186660",
+      "timestamp": "21:39",
+      "source": "EGLD",
+      "title": "Cotation publique · $2.61 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1794861947000",
+      "timestamp": "20:45",
+      "source": "CoinTelegraph",
+      "title": "Bitmine edges toward 5% of ETH supply as treasuries report buys amid market slump",
+      "link": "https://cointelegraph.com/markets/bitmine-nears-5-eth-supply-treasuries-report-buys-amid-market-slump?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1794860282000",
+      "timestamp": "20:18",
+      "source": "CoinTelegraph",
+      "title": "Boris Johnson says UK must lead blockchain development despite crypto doubts",
+      "link": "https://cointelegraph.com/news/boris-johnson-uk-must-lead-blockchain-development-despite-crypto-doubts?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1794858978000",
+      "timestamp": "19:56",
+      "source": "CoinTelegraph",
+      "title": "Coinbase and Broadridge propose standard for tokenized stock disclosures",
+      "link": "https://cointelegraph.com/news/coinbase-broadridge-tokenized-stock-shareholder-notices?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1794852469000",
+      "timestamp": "18:07",
+      "source": "CoinTelegraph",
+      "title": "Nvidia turmoil tests Bitcoin miners’ AI funding plans",
+      "link": "https://cointelegraph.com/news/nvidia-turmoil-tests-bitcoin-miners-ai-funding-plans?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1794851353000",
+      "timestamp": "17:49",
+      "source": "CoinTelegraph",
+      "title": "Safe wallet reportedly loses $6.5M as Zodiac suspects key compromise",
+      "link": "https://cointelegraph.com/news/safe-wallet-reportedly-loses-millions-after-key-compromise?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1794846412000",
+      "timestamp": "16:26",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin price fails to hold $65K as US stocks drop further on AI nerves",
+      "link": "https://cointelegraph.com/markets/bitcoin-price-fails-to-hold-65k-us-stocks-drop-on-ai-nerves?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1794861321000",
+      "timestamp": "20:35",
+      "source": "CoinDesk",
+      "title": "Bitcoin risks falling below $60,000 as Nvidia earnings threaten to deepen crypto sell-off",
+      "link": "https://www.coindesk.com/markets/2026/11/16/bitcoin-risks-falling-below-usd60-000-as-nvidia-earnings-threaten-to-deepen-crypto-sell-off"
+    },
+    {
+      "id": "rss-CoinDesk-1-1794855259000",
+      "timestamp": "18:54",
+      "source": "CoinDesk",
+      "title": "U.S. Senate Democrats tell CFTC to back off its demand prediction markets defy bans",
+      "link": "https://www.coindesk.com/policy/2026/11/16/u-s-senate-democrats-tell-cftc-to-back-off-its-demand-prediction-markets-defy-bans"
+    },
+    {
+      "id": "rss-CoinDesk-2-1794847302000",
+      "timestamp": "16:41",
+      "source": "CoinDesk",
+      "title": "Lighter suspends all withdrawals after $10.4 million crypto exploit",
+      "link": "https://www.coindesk.com/tech/2026/11/16/lighter-suspends-all-withdrawals-after-usd10-4-million-crypto-exploit"
+    },
+    {
+      "id": "rss-CoinDesk-3-1794844451000",
+      "timestamp": "15:54",
+      "source": "CoinDesk",
+      "title": "Brazil's central bank faces backlash over stablecoin money laundering remarks",
+      "link": "https://www.coindesk.com/business/2026/11/16/brazil-s-central-bank-faces-backlash-over-stablecoin-money-laundering-remarks"
+    },
     {
       "id": "egld-1794825633515",
       "timestamp": "10:40",
@@ -121,83 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Coinone warns of phishing, identity theft after customer data breach",
       "link": "https://cointelegraph.com/news/coinone-data-breach-phishing-identity-theft-customer-information?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1794771000000",
-      "timestamp": "19:30",
-      "source": "CoinDesk",
-      "title": "Did prediction markets call the U.S. midterm election?: State of Crypto",
-      "link": "https://www.coindesk.com/policy/2026/11/15/did-prediction-markets-call-the-u-s-midterm-election-state-of-crypto"
-    },
-    {
-      "id": "rss-CoinDesk-1-1794751200000",
-      "timestamp": "14:00",
-      "source": "CoinDesk",
-      "title": "Crypto insiders aren't counting on silver linings in Congress' 'lame duck' session",
-      "link": "https://www.coindesk.com/news-analysis/2026/11/13/crypto-insiders-aren-t-counting-on-silver-linings-in-congress-lame-duck-session"
-    },
-    {
-      "id": "rss-CoinDesk-2-1794711057000",
-      "timestamp": "02:50",
-      "source": "CoinDesk",
-      "title": "XRP crashes to its lowest since November 2024 as money leaves crypto",
-      "link": "https://www.coindesk.com/markets/2026/11/15/xrp-crashes-to-its-lowest-since-november-2024-as-money-leaves-crypto"
-    },
-    {
-      "id": "rss-CoinDesk-3-1794674009000",
-      "timestamp": "16:33",
-      "source": "CoinDesk",
-      "title": "Bitcoin crashes to 3-month low below $63,000 as analyst flags fourth capitulation wave",
-      "link": "https://www.coindesk.com/markets/2026/11/14/bitcoin-drifts-back-to-usd65-000-deep-value-zone-says-analyst"
-    },
-    {
-      "id": "egld-1794767417401",
-      "timestamp": "18:30",
-      "source": "EGLD",
-      "title": "Cotation publique · $2.59 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1794724046000",
-      "timestamp": "06:27",
-      "source": "CoinTelegraph",
-      "title": "RWA protocol stUSDT winds down three years after $2.3B TVL peak",
-      "link": "https://cointelegraph.com/news/rwa-protocol-stusdt-winds-down-three-years-after-23b-tvl-peak?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1794652446000",
-      "timestamp": "10:34",
-      "source": "CoinTelegraph",
-      "title": "Microsoft confirms global outage resolved, rules out cyberattack",
-      "link": "https://cointelegraph.com/news/microsoft-365-outage-resolved-cyberattack-ruled-out?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-3-1794674003000",
-      "timestamp": "16:33",
-      "source": "CoinDesk",
-      "title": "Ethereum scaling project MegaETH slashes staff by 20% as it pursues AI business",
-      "link": "https://www.coindesk.com/business/2026/11/14/ethereum-scaling-project-megaeth-slashes-staff-by-20-as-it-pursues-ai-business"
-    },
-    {
-      "id": "egld-1794738333871",
-      "timestamp": "10:25",
-      "source": "EGLD",
-      "title": "Cotation publique · $2.64 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1794643950000",
-      "timestamp": "08:12",
-      "source": "CoinTelegraph",
-      "title": "MegaETH parent cuts 20% of staff amid restructuring, AI push",
-      "link": "https://cointelegraph.com/news/megaeth-parent-cuts-20-percent-staff-ai-push?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1794637993000",
-      "timestamp": "06:33",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin ETFs shed $2.35B in 2 weeks, BlackRock’s losing streak hits 11",
-      "link": "https://cointelegraph.com/markets/bitcoin-etf-outflows-2-35-billion-blackrock-11-session-streak?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
