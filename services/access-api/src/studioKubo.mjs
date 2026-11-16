@@ -19,7 +19,7 @@ export async function checkKuboReadiness({env=process.env,request=fetch}={}){
     })
     if(!response.ok)return {ready:false,reason:'kubo_not_ready'}
     const result=await response.json()
-    return typeof result?.Version==='string'&&/^\\d+\\.\\d+\\.\\d+/.test(result.Version)
+    return typeof result?.Version==='string'&&/^\d+\.\d+\.\d+/.test(result.Version)
       ? {ready:true,reason:'kubo_rpc_verified'}
       : {ready:false,reason:'kubo_invalid_response'}
   }catch{return {ready:false,reason:'kubo_unreachable'}}
@@ -33,7 +33,7 @@ export async function kuboAddFile({buffer,filename,wrap=false,env=process.env,re
   if(!kuboConfigured(env))throw fail('kubo_not_configured')
   if(!Buffer.isBuffer(buffer)||buffer.length===0||buffer.length>48*1024*1024)
     throw fail('kubo_file_invalid',413)
-  if(typeof filename!=='string'||!/^[-a-z0-9]+\\.(?:jpg|png|webp|mp4|mp3|wav|flac|glb|json)$/.test(filename))
+  if(typeof filename!=='string'||!/^[-a-z0-9]+\.(?:jpg|png|webp|mp4|mp3|wav|flac|glb|json)$/.test(filename))
     throw fail('kubo_filename_invalid',400)
   const fd=new FormData()
   fd.append('file',new Blob([buffer]),filename)
@@ -49,7 +49,7 @@ export async function kuboAddFile({buffer,filename,wrap=false,env=process.env,re
   try{content=await response.text()}catch{throw fail('kubo_result_invalid',502)}
   if(content.length>16384)throw fail('kubo_result_invalid',502)
   let rows
-  try{rows=content.trim().split(/\\r?\\n/).map(x=>JSON.parse(x))}
+  try{rows=content.trim().split(/\r?\n/).map(x=>JSON.parse(x))}
   catch{throw fail('kubo_result_invalid',502)}
   const files=rows.filter(row=>row&&row.Name===filename)
   const roots=rows.filter(row=>row&&row.Name==='')
