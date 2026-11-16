@@ -114,6 +114,31 @@ test('invalid Pinata credential fails closed without disclosing provider error',
   assert.equal(result.ok,false)
   assert.equal(result.checks.pinata.reason,'pinata_auth_rejected')
 })
+test('self-hosted Kubo readiness replaces Pinata only after exact private RPC opt-in',async()=>{
+  const {client}=mockClient()
+  const urls=[]
+  const result=await checkStudioIpfsReadiness({
+    env:{...env,PINATA_JWT:'',STUDIO_IPFS_PROVIDER:'kubo',
+      STUDIO_KUBO_API_URL:'http://kubo:5001'},
+    connect:async()=>client,
+    request:async(url,opts)=>{
+      urls.push(url)
+      assert.equal(opts.method,'POST')
+      return {ok:true,json:async()=>({Version:'0.43.1'})}
+    },
+  })
+  assert.equal(result.ok,true)
+  assert.equal(result.checks.kubo.ready,true)
+  assert.equal(result.checks.pinata,undefined)
+  assert.deepEqual(urls,['http://kubo:5001/api/v0/version'])
+  const denied=await checkStudioIpfsReadiness({
+    env:{...env,STUDIO_IPFS_PROVIDER:'kubo',STUDIO_KUBO_API_URL:'http://evil.example'},
+    connect:async()=>mockClient().client,
+    request:async()=>{throw Error('network must not be used')},
+  })
+  assert.equal(denied.ok,false)
+  assert.equal(denied.checks.kubo.reason,'kubo_not_configured')
+})
 test('missing credentials fail without sending any provider request',async()=>{
   let calls=0
   const result=await checkStudioIpfsReadiness({
