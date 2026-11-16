@@ -10,7 +10,7 @@ const COLUMN_TYPES=Object.freeze({
   status:'text',created_at:'timestamptz',metadata_uri:'text',metadata_sha256:'text',
 })
 export function validateStudioSchema({columns=[],statusDefinition='',statusValidated=false,
-  mimeDefinition='',mimeValidated=false,indexes=[],requireModel=false}={}){
+  mimeDefinition='',mimeValidated=false,indexes=[],requireModel=false,requireAudio=false}={}){
   const names=new Set(columns.map(c=>c.column_name))
   const missingColumns=REQUIRED_COLUMNS.filter(name=>!names.has(name))
   const invalidColumns=REQUIRED_COLUMNS.filter(name=>names.has(name)&&
@@ -22,12 +22,13 @@ export function validateStudioSchema({columns=[],statusDefinition='',statusValid
   const mimeReady=mimeValidated===true&&
     ['image/jpeg','image/png','image/webp','video/mp4'].every(m=>mimes.has(m))
   const modelReady=mimeReady&&mimes.has('model/gltf-binary')
+  const audioReady=mimeReady&&['audio/mpeg','audio/wav','audio/flac'].every(m=>mimes.has(m))
   const quotaIndexReady=indexes.some(i=>i.indexname==='xartists_studio_media_wallet_created_idx'
     &&i.valid===true&&/ ON (?:ONLY )?(?:public\.)?xartists_studio_media USING btree \(wallet, created_at DESC\)$/.test(i.definition||''))
   return {
     ready:missingColumns.length===0&&invalidColumns.length===0&&statusReady&&mimeReady
-      &&quotaIndexReady&&(!requireModel||modelReady),
-    missingColumns,invalidColumns,statusReady,mimeReady,modelReady,quotaIndexReady,
+      &&quotaIndexReady&&(!requireModel||modelReady)&&(!requireAudio||audioReady),
+    missingColumns,invalidColumns,statusReady,mimeReady,modelReady,audioReady,quotaIndexReady,
   }
 }
 async function pgConnect(env){
@@ -63,9 +64,11 @@ export async function inspectStudioDatabase({env=process.env,connect=pgConnect}=
       statusValidated:status?.convalidated,mimeDefinition:String(mime?.definition||''),
       mimeValidated:mime?.convalidated,indexes:index.rows,
       requireModel:env.STUDIO_GLB_UPLOAD_ENABLED==='1',
+      requireAudio:env.CREATOR_MEDIA_UPLOAD_ENABLED==='1',
     })
     return {...schema,tableReady:true,reason:schema.ready?'verified':
       env.STUDIO_GLB_UPLOAD_ENABLED==='1'&&!schema.modelReady?'migration_006_missing':
+      env.CREATOR_MEDIA_UPLOAD_ENABLED==='1'&&!schema.audioReady?'migration_007_missing':
       'studio_schema_incomplete'}
   }catch{
     // Never echo PostgreSQL exceptions: may contain hostnames, credentials or queries.
