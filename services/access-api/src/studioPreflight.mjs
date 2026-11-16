@@ -1,6 +1,8 @@
-/** Studio/Pinata read-only preflight. No upload, mutation, or secret disclosure.
+/** Studio/IPFS read-only preflight. No upload, mutation, or secret disclosure.
  * Usage via scripts/check-studio-ipfs.mjs on the confirmed API runtime, on any host.
  */
+import { checkKuboReadiness } from './studioKubo.mjs'
+
 const REQUIRED_COLUMNS=Object.freeze([
   'id','wallet','mime','bytes','sha256','uri','status','created_at',
   'metadata_uri','metadata_sha256',
@@ -98,15 +100,17 @@ export async function checkStudioIpfsReadiness(
 ){
   const jwtSecret=String(env.ACCESS_JWT_SECRET||env.JWT_SECRET||'')
   const signingReady=jwtSecret.length>=16
-  const [database,pinata]=await Promise.all([
-    inspectStudioDatabase({env,connect}),inspectPinata(env,request),
+  const selfHosted=env.STUDIO_IPFS_PROVIDER==='kubo'
+  const [database,storage]=await Promise.all([
+    inspectStudioDatabase({env,connect}),
+    selfHosted?checkKuboReadiness({env,request}):inspectPinata(env,request),
   ])
   return {
-    ok:signingReady&&database.ready&&pinata.ready,
+    ok:signingReady&&database.ready&&storage.ready,
     checks:{
       walletSession:{ready:signingReady,reason:signingReady?'configured':'jwt_secret_missing'},
       database,
-      pinata,
+      ...(selfHosted?{kubo:storage}:{pinata:storage}),
       // Informational only. Never switch this flag within a preflight.
       publicUploadEnabled:env.CREATOR_MEDIA_UPLOAD_ENABLED==='1',
     },
