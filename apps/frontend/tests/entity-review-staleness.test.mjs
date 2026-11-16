@@ -15,13 +15,11 @@ test('impossible dates, unknown clocks and future reports fail closed',()=>{
  assert.equal(stale('2026-11-10',NaN),true)
  assert.equal(stale('2026-11-10',now,0),true)
 })
-test('network view does not render a stale green GO card or obsolete codeHash null claim',()=>{
+test('public ecosystem view never exposes internal historical review or retired LIA/Vellum screen',()=>{
  const ui=readFileSync(new URL('../src/pages/EntityMap.tsx',import.meta.url),'utf8')
- assert.match(ui,/const reviewStale = isStaleEntityReview\(review\?\.date\)/)
- assert.match(ui,/!reviewStale && verdict\.includes\('GO'\)/)
- assert.match(ui,/ARCHIVE · REVALIDATION REQUISE/)
- assert.match(ui,/Ancienne roadmap P0–P2 \(archive\)/)
- assert.match(ui,/to="\/marketplace"/)
- assert.doesNotMatch(ui,/Marketplace & agents on-chain : codeHash null/)
- assert.doesNotMatch(ui,/\$\{xaRender\('\{'\)/)
-});
+ assert.match(ui,/public-ecosystem/)
+ assert.match(ui,/\/create\/studio/)
+ assert.match(ui,/\/create\/gallery/)
+ assert.match(ui,/\/intelligence\/xorus/)
+ assert.doesNotMatch(ui,/Revue historique|ARCHIVE · REVALIDATION|LIA \/ Vellum|Organisation protocole/)
+})
