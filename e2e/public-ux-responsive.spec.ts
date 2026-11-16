@@ -683,6 +683,11 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
     await page.setViewportSize({width:390,height:844})
     for(const [path,selector] of [['/explore/rwa/','.rwa-public__lead h1'],['/finance/tro/sale/','#tro-hero-title']] as const){
       await visit(page,path)
+      // On 390px mobile the header theme toggle is deliberately hidden.
+      // Exercise the actual accessible theme control inside the mobile menu.
+      await page.locator('.xa-mobile-trigger').click()
+      const mobileTheme = page.locator('.xa-mobile-preferences .xa-button').first()
+      await expect(mobileTheme).toBeVisible()
       for(const theme of ['light','dark'] as const){
         await expect(page.locator('html')).toHaveAttribute('data-theme',theme)
         // The app intentionally fades body background over .24s. Verify the
@@ -693,9 +698,10 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
           }))
           return contrastRatio(colors.ink,colors.paper)
         },{message:path+' '+theme+' settled contrast',timeout:3000}).toBeGreaterThanOrEqual(7)
-        if(theme==='light')await page.locator('.xa-theme-toggle').click()
+        if(theme==='light')await mobileTheme.click()
       }
-      await page.locator('.xa-theme-toggle').click()
+      await mobileTheme.click()
+      await expect(page.locator('html')).toHaveAttribute('data-theme','light')
       await expect(page.locator('main')).toHaveCount(1)
     }
   })
