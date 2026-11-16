@@ -96,3 +96,50 @@ The public file picker and local previews do **not** require a wallet. Real IPFS
 6. For any failed readiness check, unset the opt-in and recreate the API. Never interpret HTTP 200 on `/health`, green CI, or a local preview as proof that an upload occurred.
 
 **Operator-only requirement:** The actual server's Docker context, DNS/certificate, PostgreSQL identity and secret values cannot be verified or changed from Git commits alone. Keep public upload NO-GO until those are independently observed.
+
+## Option autonome : Kubo IPFS local, sans stockage Pinata obligatoire
+
+`deploy/ovh/compose.ipfs.yaml` est une **surcouche optionnelle** au déploiement OVH.
+Kubo reçoit les médias sous un réseau Docker dédié `ipfs_rpc` accessible à
+l'API, sans port 5001/8080 publié sur l'hôte. La gateway publique et l'accès
+indépendant aux CIDs ne sont pas garantis par ce seul nœud. Aucun fichier client
+n'est importé au démarrage.
+
+Sur le serveur contrôlé par l'opérateur (et **après** identification de la bonne
+base PostgreSQL, sauvegarde/restauration et migrations 004→005→006→007) :
+
+```bash
+# Digest exact d'une image Kubo stable vérifiée par l'opérateur, jamais :latest.
+export XARTISTS_KUBO_IMAGE='ipfs/kubo@sha256:<digest-reel-64-hex>'
+# Répertoire hors dépôt, sur volume persistant sauvegardé avec restauration testée.
+export XARTISTS_KUBO_DATA_DIR='/chemin/prive/vers/ipfs'
+export API_HOSTNAME='api-staging.xartists.art'
+# L'upload doit rester OFF au premier lancement.
+unset XARTISTS_STUDIO_UPLOAD_APPROVED
+docker compose -f deploy/ovh/compose.yaml -f deploy/ovh/compose.ipfs.yaml config --quiet
+docker compose -f deploy/ovh/compose.yaml -f deploy/ovh/compose.ipfs.yaml up -d --build
+docker compose -f deploy/ovh/compose.yaml -f deploy/ovh/compose.ipfs.yaml \
+  exec -T api node scripts/check-studio-ipfs.mjs
+```
+
+Le chemin d'upload Kubo valide l'empreinte SHA-256 par relecture **locale** des octets via le RPC privé après chaque ajout du fichier et des métadonnées. Cela ne prouve toujours pas la récupération par une passerelle indépendante ni la sauvegarde.
+
+La commande de vérification ne fait **aucun upload** : elle interroge les
+métadonnées du schéma en lecture seule et le RPC privé `/api/v0/version`.
+Même un retour `ok:true` n'autorise pas le public : l'opérateur doit encore
+vérifier la preuve de contrôle xPortal, les droits, le CID, la reprise après
+coupure, l'indexation et l'accès depuis deux systèmes indépendants, et
+répliquer les données hors serveur. L'absence de port P2P publié dans cette
+surcouche interdit de présumer une disponibilité IPFS mondiale ; examiner
+pare-feu et publication P2P séparément sans exposer le RPC admin.
+
+**Bascule distincte :** seulement après ces preuves, l'opérateur peut mettre
+`XARTISTS_STUDIO_UPLOAD_APPROVED=1` dans l'environnement privé de déploiement
+et recréer le service, puis répéter le préflight et une publication de recette
+signée. Toute perte de stockage ou erreur de schéma impose retour à `0`.
+Les paiements, la vente, le mint automatique, les clés privées de wallet et le
+trading restent désactivés indépendamment.
+
+Mode Pinata historique : sans `compose.ipfs.yaml`, `STUDIO_IPFS_PROVIDER`
+reste `pinata` par défaut et nécessite un JWT serveur. Aucun repli automatique
+de Kubo vers Pinata ne survient si le nœud autonome est indisponible.

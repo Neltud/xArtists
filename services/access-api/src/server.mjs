@@ -40,6 +40,7 @@ import { troBridgeStatus } from './troBridgeStatus.mjs'
 import { createOpenSeaPreviewService } from './openseaPreview.mjs'
 import { artpriceReadiness } from './artpriceLicensed.mjs'
 import { probeStudioStore } from './studioStoreProbe.mjs'
+import { checkKuboReadiness } from './studioKubo.mjs'
 import { createXorusAnalysisService } from './xorusAnalysis.mjs'
 import { createRuntimeBuildInfo } from './runtimeBuildInfo.mjs'
 import { PUBLIC_FRONTEND_ORIGINS } from './publicOrigins.mjs'
@@ -434,18 +435,23 @@ async function handleRequest(req, res) {
     return
   }
 
-  // Artist-owned image/video/audio IPFS upload, disabled unless PINATA_JWT + PG + explicit gate.
+  // Artist-owned image/video/audio IPFS upload. No signing or mint on the server.
+  const isStudioUploadReady=async()=>{
+    const config=studioMediaConfig()
+    if(!config.enabled || !(await probeStudioStore()).ok)return false
+    return config.provider!=='kubo_ipfs'||(await checkKuboReadiness()).ready===true
+  }
   // The wallet alone signs the mint; this backend does NOT submit any tx.
   if (req.method === 'GET' && pth === '/v1/studio/media/config') {
     const config=studioMediaConfig()
-    // Never tell the browser upload is ready when schema/migrations are incomplete.
-    const schemaReady=config.enabled ? (await probeStudioStore()).ok === true : false
-    json(res,200,{ok:true,...config,enabled:config.enabled&&schemaReady,
-      modelEnabled:config.modelEnabled&&schemaReady,mint_requires_artist_signature:true})
+    // A healthy API process alone does not certify the PostgreSQL schema or Kubo RPC.
+    const ready=await isStudioUploadReady()
+    json(res,200,{ok:true,...config,enabled:ready,
+      modelEnabled:ready&&config.modelEnabled,mint_requires_artist_signature:true})
     return
   }
   if (req.method === 'POST' && pth === '/v1/studio/media/challenge') {
-    if (!studioMediaConfig().enabled || !(await probeStudioStore()).ok) {
+    if (!(await isStudioUploadReady())) {
       json(res,503,{ok:false,error:'studio_upload_not_configured'});return
     }
     const {body}=await readRawAndBody(req)
@@ -456,7 +462,7 @@ async function handleRequest(req, res) {
     return
   }
   if (req.method === 'POST' && pth === '/v1/studio/media/session') {
-    if (!studioMediaConfig().enabled || !(await probeStudioStore()).ok) {
+    if (!(await isStudioUploadReady())) {
       json(res,503,{ok:false,error:'studio_upload_not_configured'});return
     }
     const {body}=await readRawAndBody(req)
@@ -471,7 +477,7 @@ async function handleRequest(req, res) {
     return
   }
   if (req.method === 'POST' && pth === '/v1/studio/media/upload') {
-    if (!studioMediaConfig().enabled || !(await probeStudioStore()).ok) {
+    if (!(await isStudioUploadReady())) {
       json(res,503,{ok:false,error:'studio_upload_not_configured'});return
     }
     const actor=mediaActor(req.headers,JWT_SECRET)
@@ -486,7 +492,7 @@ async function handleRequest(req, res) {
     return
   }
   if (req.method === 'POST' && pth === '/v1/studio/media/metadata') {
-    if (!studioMediaConfig().enabled || !(await probeStudioStore()).ok) {
+    if (!(await isStudioUploadReady())) {
       json(res,503,{ok:false,error:'studio_upload_not_configured'});return
     }
     const actor=mediaActor(req.headers,JWT_SECRET)

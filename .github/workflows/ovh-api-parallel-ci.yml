@@ -41,6 +41,15 @@ jobs:
           cp deploy/ovh/api.env.template deploy/ovh/.env.api
           docker compose -f deploy/ovh/compose.yaml config --quiet
           rm deploy/ovh/.env.api
+      - name: Validate optional private Kubo overlay only (never start or pull)
+        env:
+          API_HOSTNAME: api-staging.example.org
+          XARTISTS_KUBO_IMAGE: ipfs/kubo@sha256:0000000000000000000000000000000000000000000000000000000000000000
+          XARTISTS_KUBO_DATA_DIR: /tmp/xartists-kubo-config-only
+        run: |
+          cp deploy/ovh/api.env.template deploy/ovh/.env.api
+          docker compose -f deploy/ovh/compose.yaml -f deploy/ovh/compose.ipfs.yaml config --quiet
+          rm deploy/ovh/.env.api
       - name: Build locked standalone API image
         run: docker build --pull -t xa-ovh-api:ci -f services/access-api/Dockerfile .
       - name: Verify Python analysis and shared contract in the actual image, offline

@@ -53,7 +53,7 @@ jobs:
           expected = os.environ['GITHUB_SHA']
           for attempt in range(20):
               try:
-                  with urlopen('https://xartists-access-api.onrender.com/v1/ops/build-info', timeout=10) as response:
+                  with urlopen('https://api.xartists.art/v1/ops/build-info', timeout=10) as response:
                       identity = json.loads(response.read(8192))
                   if (identity.get('ok') is True and identity.get('service') == 'access-api'
                       and identity.get('source_sha') == expected
@@ -66,7 +66,7 @@ jobs:
               except (URLError, TimeoutError, OSError, ValueError):
                   pass
               if attempt == 19:
-                  raise SystemExit('Public API did not publish the pushed SHA within the bounded wait')
+                  raise SystemExit('Self-managed API not deployed at the pushed SHA; API remains NO-GO')
               time.sleep(15)
           PY
       - name: Probe Pages and access-api
@@ -86,7 +86,7 @@ jobs:
             if [ "$code" != "200" ]; then fail=1; fi
           }
           BASE=https://xartists.art
-          API=https://xartists-access-api.onrender.com
+          API=https://api.xartists.art
 
           check "$BASE/"
           check "$BASE/packs/pulse/"
@@ -113,16 +113,14 @@ jobs:
                   h = json.load(f)
           except (json.JSONDecodeError, UnicodeError) as exc:
               raise SystemExit(
-                  'P0 WRONG RENDER IMAGE: /health is not JSON. '
-                  'The shared root Dockerfile requires XARTISTS_ROLE=api '
-                  'on the dedicated Render API service (PR #289 / issue #287).'
+                  'P0 WRONG API: /health is not valid JSON from the approved self-managed API.'
               ) from exc
           with open('/tmp/lia_status.json', encoding='utf-8') as f:
               lia = json.load(f)
           with open('/tmp/orders_store_status.json', encoding='utf-8') as f:
               db = json.load(f)
           assert h.get('service') == 'access-api', (
-              'P0 WRONG SERVICE: /health does not identify access-api; see issue #287'
+              'P0 WRONG SERVICE: /health does not identify the xArtists Access API'
           )
 
           print('API safety flags:', {k: h.get(k) for k in (
@@ -153,6 +151,6 @@ jobs:
           print('GO public smoke OK — public surfaces, DB read-only readiness and safety flags verified')
           PY
 
-      - name: Verify Pages and Render origins, safe CORS, TRO bridge and DB
+      - name: Verify Pages and self-managed API origins, safe CORS, TRO bridge and DB
         if: github.event_name != 'pull_request'
         run: python3 scripts/ops/public_live_extra_checks.py

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read-only public xArtists release smoke: two frontends, API CORS and locked commerce.
+"""Read-only public xArtists release smoke: Pages, owned API CORS and locked commerce.
 
 Never sends a POST, wallet transaction, payment, signed message, or order write.
 Called by the 6h GO workflow AFTER the existing Pages/DB/LIA checks.
@@ -12,8 +12,7 @@ from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 PAGES = "https://xartists.art"
-RENDER = "https://xartists-services-and-products.onrender.com"
-API = "https://xartists-access-api.onrender.com"
+API = "https://api.xartists.art"
 TRANSIENT = {408, 429, 500, 502, 503, 504}
 
 
@@ -23,7 +22,7 @@ def require(ok: bool, reason: str) -> None:
 
 
 def fetch_public(url: str, origin: str | None = None, *, attempts: int = 4):
-    """GET only. Retry bounded transient CDN / Render Free wake responses."""
+    """GET only. Retry bounded transient CDN or temporary service responses."""
     headers = {"User-Agent": "xArtists-readonly-go-smoke/1.0", "Accept": "*/*"}
     if origin is not None:
         headers["Origin"] = origin
@@ -119,13 +118,10 @@ def check_frontend(origin: str, *, base_path: str = "") -> None:
 
 def main() -> None:
     check_frontend(PAGES)
-    check_frontend(RENDER, base_path="/xArtists")
-
-    for frontend in (PAGES, RENDER):
-        cors, bridge = get_json(API + "/v1/tro/bridge/status", origin=frontend)
-        check_cors(cors, frontend, allowed=True)
-        check_bridge(bridge)
-        print(f"Read-only TRO bridge and CORS verified for {frontend}")
+    cors, bridge = get_json(API + "/v1/tro/bridge/status", origin=PAGES)
+    check_cors(cors, PAGES, allowed=True)
+    check_bridge(bridge)
+    print(f"Read-only TRO bridge and CORS verified for {PAGES}")
 
     # Unexpected origins receive no CORS grant; no payment/order data is queried.
     cors, doc = get_json(API + "/v1/tro/bridge/status", origin="https://untrusted.example")
@@ -138,7 +134,7 @@ def main() -> None:
     require(db.get("ok") is True and db.get("backend") == "postgres" and
             db.get("table_ready") is True, "Public Postgres readiness failed")
 
-    print("GO READ-ONLY release check OK: both sites, exact CORS, Postgres and no commercial activation")
+    print("GO READ-ONLY release check OK: Pages + self-managed API, exact CORS, Postgres and no commercial activation")
 
 
 if __name__ == "__main__":
