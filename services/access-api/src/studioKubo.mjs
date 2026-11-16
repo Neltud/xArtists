@@ -3,6 +3,8 @@
  * The only approved transport is the private Docker service alias.
  * Every file publication still requires the signed Creator Studio flow.
  */
+import crypto from 'node:crypto'
+
 const KUBO_RPC='http://kubo:5001'
 const CID=/^(Qm[1-9A-HJ-NP-Za-km-z]{44}|bafy[a-z2-7]{20,})$/
 const fail=(code,statusCode=503)=>Object.assign(new Error(code),{statusCode})
@@ -56,5 +58,28 @@ export async function kuboAddFile({buffer,filename,wrap=false,env=process.env,re
   if(files.length!==1||(wrap?roots.length!==1||rows.length!==2:roots.length!==0||rows.length!==1))
     throw fail('kubo_result_invalid',502)
   acceptedCid(files[0].Hash)
-  return acceptedCid(wrap?roots[0].Hash:files[0].Hash)
+  const cid=acceptedCid(wrap?roots[0].Hash:files[0].Hash)
+  // A syntactically valid CID is not evidence that the bytes were actually stored.
+  // Read the exact object back from the private local node before reporting success.
+  const path=wrap?cid+'/'+filename:cid
+  const queryCat=new URLSearchParams({arg:'/ipfs/'+path})
+  let readback
+  try{
+    readback=await request(KUBO_RPC+'/api/v0/cat?'+queryCat.toString(),{
+      method:'POST',redirect:'error',signal:AbortSignal.timeout(120000),
+    })
+  }catch{throw fail('kubo_readback_unverified')}
+  if(!readback.ok||!readback.body)throw fail('kubo_readback_unverified')
+  const observed=crypto.createHash('sha256')
+  let count=0
+  try{
+    for await(const chunk of readback.body){
+      count+=chunk.length
+      if(count>buffer.length)throw fail('kubo_readback_unverified')
+      observed.update(chunk)
+    }
+  }catch{throw fail('kubo_readback_unverified')}
+  if(count!==buffer.length||observed.digest('hex')!==crypto.createHash('sha256').update(buffer).digest('hex'))
+    throw fail('kubo_readback_unverified')
+  return cid
 }
