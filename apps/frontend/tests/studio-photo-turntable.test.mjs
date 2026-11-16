@@ -5,10 +5,10 @@ import { readFileSync } from 'node:fs'
 const lab = readFileSync(new URL('../src/components/ArtworkTurntableLab.tsx', import.meta.url), 'utf8')
 const studio = readFileSync(new URL('../src/pages/StudioPage.tsx', import.meta.url), 'utf8')
 
-test('Creator Studio exposes the local touch turntable lab before publication', () => {
+test('Creator Studio offers direct media selection before the optional 3D turntable lab', () => {
   assert.match(studio, /import ArtworkTurntableLab from '\.\.\/components\/ArtworkTurntableLab'/)
   assert.match(studio, /<ArtworkTurntableLab \/>/)
-  assert.ok(studio.indexOf('<ArtworkTurntableLab />') < studio.indexOf('<CreatorMediaUpload title='))
+  assert.ok(studio.indexOf('<CreatorMediaUpload title=') < studio.indexOf('<ArtworkTurntableLab />'))
 })
 
 test('turntable accepts only local still photos with explicit resource limits', () => {
