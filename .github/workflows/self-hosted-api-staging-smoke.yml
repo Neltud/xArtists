@@ -1,0 +1,45 @@
+# Bounded, operator-triggered read-only smoke check for our own server.
+# Does NOT SSH, deploy, migrate, change DNS, enable checkout, mint or trade.
+name: Self-hosted API staging smoke (read-only)
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: 'Exact 40-character deployed API Git commit SHA (not the Pages build SHA)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: self-hosted-api-staging-smoke
+  cancel-in-progress: false
+
+jobs:
+  verify-staging-api:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify the bounded probe policy with local unit tests
+        run: node --test tests/probe-free-api-candidate.test.mjs
+
+      - name: Probe operator-owned staging API (four GET requests only)
+        env:
+          EXPECTED_SOURCE_SHA: ${{ inputs.source_sha }}
+        run: |
+          node scripts/ops/probe-free-api-candidate.mjs \
+            --url https://api-staging.xartists.art \
+            --sha "$EXPECTED_SOURCE_SHA"
+
+      - name: State limitations
+        run: echo 'Read-only candidate smoke complete. No DNS cutover, merchant GO, DB migration or Render shutdown was performed.'

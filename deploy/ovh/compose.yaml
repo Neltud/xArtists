@@ -12,6 +12,8 @@ services:
       NODE_ENV: production
       PORT: "8787"
       REQUIRE_SIWX: "1"
+      MINT_DISPATCH_ENABLED: "0"
+      MINT_OIDC_PULL_ENABLED: "0"
       MINT_LIVE_ENABLED: "0"
       MINT_DRY_RUN: "1"
       CREATOR_MEDIA_UPLOAD_ENABLED: "0"
