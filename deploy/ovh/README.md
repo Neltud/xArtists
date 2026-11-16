@@ -70,8 +70,8 @@ or source truth. `/health.source_sha` uses the same immutable process identity.
 - Run API tests, CORS checks from `https://xartists.art`, mobile/desktop
   browser tests, and wallet/fiat rejection paths. Verify no checkout, mint,
   bridge, auction settlement or LIA trading can execute from staging.
-- Update the Pages `VITE_ACCESS_API_BASE` **only after** an operator-approved
-  cutover and a proven rollback URL. Observe errors, order idempotency, and
+- Set the GitHub Pages variable `VITE_ACCESS_API_BASE=https://api.xartists.art` **only after** an operator-approved
+  cutover and a proven rollback URL. Pages now ignores any Render or unknown URL and leaves the API unconfigured rather than silently falling back. Observe errors, order idempotency, and
   signed request behavior. Revert the frontend API base if verification fails;
   leave Render running through the validation window.
 - Caddy TLS requires functioning DNS and inbound 80/443; no OVH console or
@@ -83,3 +83,16 @@ Missing valid DNS/HTTPS, unknown database identity, ineffective backup,
 auth failures, unexpected non-readonly capability, leakage of credentials,
 or a failed wallet/order regression = **NO-GO**. Never report sales or
 NFT delivery as live merely because the API health check is green.
+
+## Studio image / video / music: opt-in after database validation
+
+The public file picker and local previews do **not** require a wallet. Real IPFS publication still requires an artist-owned xPortal signature, rights confirmation, server quota, TLS, the exact verified PostgreSQL database, and server-side Pinata credentials. This deployment does not accept anonymous uploads or automatically mint NFTs.
+
+1. Keep `XARTISTS_STUDIO_UPLOAD_APPROVED` **unset** (Compose defaults to `0`). The existing `.env.api` includes `CREATOR_MEDIA_UPLOAD_ENABLED=0`, and Compose intentionally overrides it with this separate operator-only switch.
+2. Identify the **actual** API database with a read-only probe, encrypted backup and verified restore. Apply reviewed SQL migrations **004, 005, 006, then 007 (audio MIME)** on that database only. Never run migrations automatically at startup or against an unknown Neon project.
+3. On the server, run `node services/access-api/scripts/check-studio-ipfs.mjs` from the confirmed runtime with its validated secrets; require `ok:true` for schema, JWT and Pinata. Review CORS `https://xartists.art`, xPortal signed challenge/session and exact SHA before any opt-in.
+4. Only after every prerequisite is independently proven, explicitly set `XARTISTS_STUDIO_UPLOAD_APPROVED=1` in the **operator-managed deployment environment** and recreate the API container. Do not put that switch or secrets into GitHub Pages variables. `STUDIO_GLB_UPLOAD_ENABLED` remains `0` and payments/mint/trading remain OFF.
+5. Verify `GET https://api.xartists.art/v1/studio/media/config` returns `enabled:true` only with complete production readiness. With an authorized small media file, test signed upload, returned CID/SHA-256, metadata, independent retrieval and backup/restore; no real NFT mint without a separate signed transaction and verification.
+6. For any failed readiness check, unset the opt-in and recreate the API. Never interpret HTTP 200 on `/health`, green CI, or a local preview as proof that an upload occurred.
+
+**Operator-only requirement:** The actual server's Docker context, DNS/certificate, PostgreSQL identity and secret values cannot be verified or changed from Git commits alone. Keep public upload NO-GO until those are independently observed.
