@@ -7,7 +7,7 @@ import {inspectStudioDatabase} from './studioPreflight.mjs'
 
 const SAFE_REASONS=new Set([
   'verified','database_url_missing','migration_004_missing',
-  'migration_006_missing','studio_schema_incomplete','database_probe_failed',
+  'migration_006_missing','migration_007_missing','studio_schema_incomplete','database_probe_failed',
 ])
 function safeReason(schema){
   if(schema?.ready===true)return 'verified'
