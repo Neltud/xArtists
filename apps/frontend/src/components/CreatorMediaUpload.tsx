@@ -26,7 +26,7 @@ const studioMediaErrors:Record<string,string>={
   metadata_immutable_request_mismatch:'Les métadonnées déjà publiées sont immuables. Sélectionnez à nouveau votre fichier pour créer une nouvelle publication.',
   metadata_pinning_in_progress:'Une publication des métadonnées est déjà en cours. Réessayez après vérification de son état.',
   metadata_pinning_in_progress_or_complete:'La publication est en cours ou déjà terminée. Vérifiez son état avant de recommencer.',
-  metadata_pin_result_unknown_reconcile:'Réponse Pinata incertaine : les métadonnées peuvent déjà être publiques. Ne recommencez pas l’upload avant une vérification de l’opérateur.',
+  metadata_pin_result_unknown_reconcile:'Réponse IPFS incertaine : les métadonnées peuvent déjà être publiques. Ne recommencez pas l’upload avant une vérification de l’opérateur.',
   daily_upload_quota_exhausted:'Quota de huit publications sur 24 heures atteint pour ce wallet.',
   pinata_service_unavailable:'Pinata ne répond pas actuellement. Aucun mint n’a été créé.',
   studio_upload_not_configured:'Le service IPFS sécurisé n’est pas encore activé sur le serveur.',
@@ -48,6 +48,7 @@ export default function CreatorMediaUpload({title,onReady}:Props){
   const [enabled,setEnabled]=useState<boolean|null>(null)
   const [statusRetry,setStatusRetry]=useState(0)
   const [modelEnabled,setModelEnabled]=useState(false)
+  const [provider,setProvider]=useState<'pinata_ipfs'|'kubo_ipfs'|null>(null)
   const [file,setFile]=useState<File|null>(null)
   const [preview,setPreview]=useState('')
   const [posterFile,setPosterFile]=useState<File|null>(null)
@@ -80,7 +81,7 @@ export default function CreatorMediaUpload({title,onReady}:Props){
     return ()=>URL.revokeObjectURL(url)
   },[posterFile])
   useEffect(()=>{
-    if(!base){setEnabled(false);setModelEnabled(false);return}
+    if(!base){setEnabled(false);setModelEnabled(false);setProvider(null);return}
     const c=new AbortController()
     let active=true
     // Retry service readiness without forcing an app reload.
@@ -88,9 +89,10 @@ export default function CreatorMediaUpload({title,onReady}:Props){
     const timeout=window.setTimeout(()=>c.abort(),12000)
     setEnabled(null)
     setModelEnabled(false)
+    setProvider(null)
     fetch(base+'/v1/studio/media/config',{signal:c.signal,cache:'no-store'})
       .then(async r=>r.ok?r.json():null)
-      .then(j=>{if(!c.signal.aborted){setEnabled(j?.enabled===true);setModelEnabled(j?.modelEnabled===true)}})
+      .then(j=>{if(!c.signal.aborted){setEnabled(j?.enabled===true);setModelEnabled(j?.modelEnabled===true);setProvider(j?.enabled===true&&['pinata_ipfs','kubo_ipfs'].includes(j?.provider)?j.provider:null)}})
       .catch(()=>{if(!c.signal.aborted){setEnabled(false);setModelEnabled(false)}})
       .finally(()=>{window.clearTimeout(timeout);if(active && c.signal.aborted)setEnabled(false)})
     return ()=>{active=false;window.clearTimeout(timeout);c.abort()}
@@ -121,7 +123,7 @@ export default function CreatorMediaUpload({title,onReady}:Props){
     if(file.type==='model/gltf-binary' && (!posterFile || !['image/jpeg','image/png','image/webp'].includes(posterFile.type) || posterFile.size<1 || posterFile.size>16*1024*1024)) {
       setError('Choisissez une image de couverture JPG, PNG ou WebP de 16 Mio maximum pour ce GLB.');return
     }
-    if(!base||!enabled){setError('Upload non activé côté serveur : configuration Pinata et PostgreSQL requise.');return}
+    if(!base||!enabled){setError('Upload non activé côté serveur : stockage IPFS et PostgreSQL vérifiés requis.');return}
     if(file.type==='model/gltf-binary'&&!modelEnabled){setError('Upload GLB désactivé côté serveur : contrôle opérateur requis.');return}
     if(!connected||!address||method!=='xportal'){setError('Connexion xPortal et signature requises.');return}
     if(title.trim().length<2||title.trim().length>50){setError('Titre de 2 à 50 caractères requis.');return}
@@ -252,14 +254,14 @@ export default function CreatorMediaUpload({title,onReady}:Props){
       </button>
       {file?.type==='model/gltf-binary'&&!modelEnabled&&<p role="status" className="text-xs text-amber-200">Publication du GLB verrouillée : le backend exige le drapeau séparé STUDIO_GLB_UPLOAD_ENABLED=1. Le média n’est pas envoyé.</p>}
       {pinned&&!stale&&<div role="status" className="space-y-1 rounded-lg border border-amber-500/30 bg-amber-500/5 p-2 text-xs text-amber-100">
-        <p className="font-semibold">Pinata a annoncé l’épinglage du média et des métadonnées. Le NFT n'est PAS encore minté.</p>
+        <p className="font-semibold">{provider==='kubo_ipfs'?'Le nœud IPFS xArtists a annoncé l’épinglage du média et des métadonnées.':'Pinata a annoncé l’épinglage du média et des métadonnées.'} Le NFT n'est PAS encore minté.</p>
         <p className="break-all">Média : {pinned.mediaUri}</p>
         <p className="break-all">Métadonnées : {pinned.metadataUri}</p>
-        <p>Preuve de conservation non certifiée : le retour Pinata ne démontre ni récupération indépendante des octets, ni seconde copie chez un autre fournisseur IPFS, ni archivage.</p>
+        <p>Preuve de conservation non certifiée : la réponse IPFS ne prouve ni récupération indépendante des octets, ni seconde copie chez un autre nœud IPFS, ni archivage.</p>
         <p>Avant une signature mainnet, vérifier les fichiers et leurs empreintes SHA-256 sur des passerelles indépendantes ainsi que la collection, le destinataire et les frais. Un mint reste une action distincte signée dans votre wallet.</p>
       </div>}
       {needsReconciliation&&<p role="status" className="text-xs text-amber-200">
-        Publication suspendue pour ce fichier : une réponse Pinata est incertaine.
+        Publication suspendue pour ce fichier : une réponse du nœud IPFS est incertaine.
         Une vérification de l’opérateur est requise avant tout nouvel essai.
       </p>}
       {stale&&<p className="text-xs text-amber-200">Le titre a changé depuis l'upload. Republiez les métadonnées avant de minter.</p>}
