@@ -30,11 +30,14 @@ test('public edge exposes HTTPS, not the Access API port',()=>{
 })
 
 test('a parallel probe cannot enable financial, IPFS or trading actions',()=>{
-  for(const flag of ['MINT_LIVE_ENABLED','CREATOR_MEDIA_UPLOAD_ENABLED',
+  for(const flag of ['MINT_LIVE_ENABLED',
     'STUDIO_GLB_UPLOAD_ENABLED','STRIPE_LIVE_CHECKOUT_ENABLED',
     'PAYBOX_CHECKOUT_ENABLED','LIA_LIVE_TRADING']){
     assert.ok(compose.includes(flag+': "0"'),flag)
   }
+  assert.match(compose,/CREATOR_MEDIA_UPLOAD_ENABLED: "\$\{XARTISTS_STUDIO_UPLOAD_APPROVED:-0\}"/)
+  assert.match(env,/^CREATOR_MEDIA_UPLOAD_ENABLED=0$/m)
+  assert.match(guide,/007 \(audio MIME\)/)
   assert.match(compose,/MINT_DRY_RUN: "1"/)
   assert.match(env,/^DATABASE_URL=\s*$/m)
   assert.match(env,/^ACCESS_JWT_SECRET=\s*$/m)

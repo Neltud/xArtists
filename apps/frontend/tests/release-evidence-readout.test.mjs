@@ -111,11 +111,11 @@ test('fetch uses only public fixed GET requests and refuses foreign API origins'
   const calls=[]
   const urls=[
     'https://xartists.art/build-info.json',
-    'https://xartists-access-api.onrender.com/v1/ops/build-info',
-    'https://xartists-access-api.onrender.com/health',
-    'https://xartists-access-api.onrender.com/v1/commercial/catalog',
-    'https://xartists-access-api.onrender.com/v1/ops/studio-store/status',
-    'https://xartists-access-api.onrender.com/v1/xorus/analysis',
+    'https://api.xartists.art/v1/ops/build-info',
+    'https://api.xartists.art/health',
+    'https://api.xartists.art/v1/commercial/catalog',
+    'https://api.xartists.art/v1/ops/studio-store/status',
+    'https://api.xartists.art/v1/xorus/analysis',
   ]
   const fetchImpl=async(url,init)=>{
     calls.push({url,init})
@@ -127,7 +127,7 @@ test('fetch uses only public fixed GET requests and refuses foreign API origins'
     return {ok:true,json:async()=>[base.site,base.api,base.health,base.catalog,base.studio,base.xorus][i]}
   }
   const result=await fetchPublicReleaseEvidence({
-    siteBase:'https://xartists.art/',apiBase:'https://xartists-access-api.onrender.com/',
+    siteBase:'https://xartists.art/',apiBase:'https://api.xartists.art/',
     fetchImpl,
   })
   assert.equal(calls.length,6)
@@ -137,10 +137,13 @@ test('fetch uses only public fixed GET requests and refuses foreign API origins'
   await assert.rejects(fetchPublicReleaseEvidence({
     siteBase:'https://xartists.art/',apiBase:'https://evil.example/',fetchImpl,
   }),/invalid_release_probe_origin/)
+  await assert.rejects(fetchPublicReleaseEvidence({
+    siteBase:'https://xartists.art/',apiBase:'https://xartists-access-api.onrender.com/',fetchImpl,
+  }),/invalid_release_probe_origin/)
 })
 test('503 or malformed xOrus never relabels as real analysis',async()=>{
   const result=await fetchPublicReleaseEvidence({
-    siteBase:'https://xartists.art/',apiBase:'https://xartists-access-api.onrender.com/',
+    siteBase:'https://xartists.art/',apiBase:'https://api.xartists.art/',
     fetchImpl:async(url)=>url.endsWith('/v1/xorus/analysis')?{ok:false,status:503}:
       {ok:true,json:async()=>({})},
   })

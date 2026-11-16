@@ -52,6 +52,17 @@ test('a GLB upload gate requires migration 006 while image uploads still accept 
   assert.equal(validateStudioSchema({...schema,requireModel:true,
     mimeDefinition:mimeDefinition.replace("'video/mp4'","'video/mp4','model/gltf-binary'")}).ready,true)
 })
+test('audio upload needs migration 007 only when the public upload gate is requested',()=>{
+  const original=validateStudioSchema(schema)
+  assert.equal(original.ready,true)
+  assert.equal(original.audioReady,false)
+  assert.equal(validateStudioSchema({...schema,requireAudio:true}).ready,false)
+  const audioMime=mimeDefinition.replace("'video/mp4'","'video/mp4','model/gltf-binary','audio/mpeg','audio/wav','audio/flac'")
+  const advanced=validateStudioSchema({...schema,requireAudio:true,mimeDefinition:audioMime})
+  assert.equal(advanced.audioReady,true)
+  assert.equal(advanced.ready,true)
+  assert.equal(validateStudioSchema({...schema,requireAudio:true,mimeDefinition:audioMime.replace(",'audio/wav'","")}).ready,false)
+})
 test('wrong column types, unvalidated constraints and a renamed wrong index fail readiness',()=>{
   assert.equal(validateStudioSchema({...schema,columns:columns.map(c=>
     c.column_name==='bytes'?{...c,udt_name:'text'}:c)}).ready,false)
@@ -149,6 +160,14 @@ test('GLB migration 006 is required only when model upload is requested',async()
   })
   assert.equal(model.ready,false)
   assert.equal(model.reason,'migration_006_missing')
+})
+test('Studio cannot advertise audio uploads before its exact DB MIME migration',async()=>{
+  const denied=await inspectStudioDatabase({
+    env:{...env,CREATOR_MEDIA_UPLOAD_ENABLED:'1'},
+    connect:async()=>mockClient().client,
+  })
+  assert.equal(denied.ready,false)
+  assert.equal(denied.reason,'migration_007_missing')
 })
 test('missing status constraint blocks Studio without exposing database details',async()=>{
   const {client}=mockClient({status:"CHECK (status IN ('reserved','pinned'))"})

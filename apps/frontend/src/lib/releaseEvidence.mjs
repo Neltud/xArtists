@@ -92,7 +92,7 @@ export async function fetchPublicReleaseEvidence({siteBase,apiBase,fetchImpl=fet
   const api=typeof apiBase==='string'?new URL(apiBase):null
   const site=typeof siteBase==='string'?new URL(siteBase):null
   if(!site||site.protocol!=='https:'||!api||api.protocol!=='https:'||
-    !['xartists-access-api.onrender.com','api.xartists.art'].includes(api.hostname)||
+    !['api.xartists.art'].includes(api.hostname)||
     api.pathname!=='/'||api.search||api.hash)throw new TypeError('invalid_release_probe_origin')
   const probes={
     site:new URL('build-info.json',site).href,

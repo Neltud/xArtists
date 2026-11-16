@@ -434,14 +434,18 @@ async function handleRequest(req, res) {
     return
   }
 
-  // Artist-owned image/video IPFS upload, disabled unless PINATA_JWT + PG + explicit gate.
+  // Artist-owned image/video/audio IPFS upload, disabled unless PINATA_JWT + PG + explicit gate.
   // The wallet alone signs the mint; this backend does NOT submit any tx.
   if (req.method === 'GET' && pth === '/v1/studio/media/config') {
-    json(res,200,{ok:true,...studioMediaConfig(),mint_requires_artist_signature:true})
+    const config=studioMediaConfig()
+    // Never tell the browser upload is ready when schema/migrations are incomplete.
+    const schemaReady=config.enabled ? (await probeStudioStore()).ok === true : false
+    json(res,200,{ok:true,...config,enabled:config.enabled&&schemaReady,
+      modelEnabled:config.modelEnabled&&schemaReady,mint_requires_artist_signature:true})
     return
   }
   if (req.method === 'POST' && pth === '/v1/studio/media/challenge') {
-    if (!studioMediaConfig().enabled) {
+    if (!studioMediaConfig().enabled || !(await probeStudioStore()).ok) {
       json(res,503,{ok:false,error:'studio_upload_not_configured'});return
     }
     const {body}=await readRawAndBody(req)
@@ -452,7 +456,7 @@ async function handleRequest(req, res) {
     return
   }
   if (req.method === 'POST' && pth === '/v1/studio/media/session') {
-    if (!studioMediaConfig().enabled) {
+    if (!studioMediaConfig().enabled || !(await probeStudioStore()).ok) {
       json(res,503,{ok:false,error:'studio_upload_not_configured'});return
     }
     const {body}=await readRawAndBody(req)
@@ -467,7 +471,7 @@ async function handleRequest(req, res) {
     return
   }
   if (req.method === 'POST' && pth === '/v1/studio/media/upload') {
-    if (!studioMediaConfig().enabled) {
+    if (!studioMediaConfig().enabled || !(await probeStudioStore()).ok) {
       json(res,503,{ok:false,error:'studio_upload_not_configured'});return
     }
     const actor=mediaActor(req.headers,JWT_SECRET)
@@ -482,7 +486,7 @@ async function handleRequest(req, res) {
     return
   }
   if (req.method === 'POST' && pth === '/v1/studio/media/metadata') {
-    if (!studioMediaConfig().enabled) {
+    if (!studioMediaConfig().enabled || !(await probeStudioStore()).ok) {
       json(res,503,{ok:false,error:'studio_upload_not_configured'});return
     }
     const actor=mediaActor(req.headers,JWT_SECRET)

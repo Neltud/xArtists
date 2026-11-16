@@ -5,7 +5,7 @@
  */
 const emailRe=/^[^\s@]{1,64}@[^\s@]{1,185}\.[^\s@]{2,32}$/
 const jwtRe=/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/
-export const PUBLIC_ACCESS_API='https://xartists-access-api.onrender.com'
+export const PUBLIC_ACCESS_API=''
 
 export function verifiedNeonAuthBase(input){
   if(typeof input!=='string'||!input||input.length>600)return null
@@ -22,7 +22,7 @@ export function verifiedXartistsApiBase(input){
   try{
     const u=new URL(input)
     if(u.protocol!=='https:'||u.username||u.password||u.port||u.search||u.hash||
-       !['xartists-access-api.onrender.com','api.xartists.art'].includes(u.hostname)||
+       !['api.xartists.art'].includes(u.hostname)||
        !['','/'].includes(u.pathname))return null
     return u.origin
   }catch{return null}
