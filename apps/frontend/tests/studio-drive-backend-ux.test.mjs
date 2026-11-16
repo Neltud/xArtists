@@ -7,9 +7,10 @@ const media=read('../src/components/CreatorMediaUpload.tsx')
 const factory=read('../src/pages/NftDistributorPage.tsx')
 const rights=read('../src/pages/WorldRightsPage.tsx')
 
-test('Studio supports user-initiated Drive handoff but never auto-pulls private files',()=>{
- assert.match(studio,/Depuis Google Drive ou une collection privée/)
- assert.match(studio,/télécharge une copie sur ton appareil/)
+test('Studio starts with direct local-media selection instead of Drive instructions',()=>{
+ assert.match(studio,/Importer une image, une vidéo ou une musique/)
+ assert.ok(studio.indexOf('id="xa-studio-mint"') < studio.indexOf('<MainnetJourney'), 'file picker should appear first')
+ assert.doesNotMatch(studio,/Google Drive/i)
  assert.match(studio,/to="\/create\/nft-factory"/)
  assert.match(studio,/to="\/create\/world-rights"/)
  assert.doesNotMatch(studio,/drive\.google\.com\/uc\?|drive\.googleapis\.com|googleapis\.com\/drive/)
@@ -25,8 +26,17 @@ test('IPFS readiness retry reads config only and never enables uploads itself',(
  assert.doesNotMatch(media,/VITE_PINATA_JWT|PINATA_JWT\s*=/)
 })
 test('NFT Factory and xRights display their license/mint limitations',()=>{
- assert.match(factory,/Des œuvres existent déjà dans votre Drive/)
- assert.match(factory,/Aucun accès Google Drive automatique/)
+ assert.match(factory,/Importez une image, une vidéo ou une musique/)
+ assert.doesNotMatch(factory,/Google Drive/i)
  assert.match(rights,/ZIP premium/)
  assert.doesNotMatch(rights,/\.zip'/)
+})
+
+test('music files preview locally and use the signed upload pipeline',()=>{
+ assert.match(media,/audio\/mpeg/)
+ assert.match(media,/audio\/wav/)
+ assert.match(media,/audio\/flac/)
+ assert.match(media,/<audio src=\{preview\} controls/)
+ assert.match(media,/signAccessMessage/)
+ assert.match(media,/disabled=\{!enabled\|\|pending/)
 })
