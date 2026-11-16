@@ -122,7 +122,9 @@ docker compose -f deploy/ovh/compose.yaml -f deploy/ovh/compose.ipfs.yaml \
   exec -T api node scripts/check-studio-ipfs.mjs
 ```
 
-Le chemin d'upload Kubo valide l'empreinte SHA-256 par relecture **locale** des octets via le RPC privé après chaque ajout du fichier et des métadonnées. Cela ne prouve toujours pas la récupération par une passerelle indépendante ni la sauvegarde.\n\nLa commande de vérification ne fait **aucun upload** : elle interroge les
+Le chemin d'upload Kubo valide l'empreinte SHA-256 par relecture **locale** des octets via le RPC privé après chaque ajout du fichier et des métadonnées. Cela ne prouve toujours pas la récupération par une passerelle indépendante ni la sauvegarde.
+
+La commande de vérification ne fait **aucun upload** : elle interroge les
 métadonnées du schéma en lecture seule et le RPC privé `/api/v0/version`.
 Même un retour `ok:true` n'autorise pas le public : l'opérateur doit encore
 vérifier la preuve de contrôle xPortal, les droits, le CID, la reprise après
