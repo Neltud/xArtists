@@ -6,6 +6,9 @@ services:
     environment:
       STUDIO_IPFS_PROVIDER: kubo
       STUDIO_KUBO_API_URL: http://kubo:5001
+    networks:
+      - internal
+      - ipfs_rpc
     depends_on:
       kubo:
         condition: service_healthy
@@ -19,7 +22,7 @@ services:
     expose:
       - "5001"
     networks:
-      - internal
+      - ipfs_rpc
     restart: unless-stopped
     init: true
     security_opt:
@@ -32,3 +35,9 @@ services:
       timeout: 10s
       retries: 3
       start_period: 60s
+
+networks:
+  ipfs_rpc:
+    # Dedicated network. Unlike Docker 'internal: true', permits Kubo to dial IPFS peers.
+    # Only the API service joins it; Caddy stays on the public-edge bridge.
+    driver: bridge
