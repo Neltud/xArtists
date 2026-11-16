@@ -12,7 +12,6 @@ import RouteErrorBoundary from '../components/RouteErrorBoundary'
 import GenesisPackShelf from '../components/packs/GenesisPackShelf'
 import IntelligencePath from '../components/intelligence/IntelligencePath'
 import HomeHeroSculpture from './HomeHeroSculpture'
-import DriveArtShowcase from './DriveArtShowcase'
 import MainnetJourney from '../components/MainnetJourney'
 import { MultiversXProvider } from '../context/MultiversXContext'
 const API='https://api.multiversx.com'
@@ -68,7 +67,6 @@ export function Home(){
    </ul>
   </section>
   <MainnetJourney current="home" />
-  <DriveArtShowcase />
   <section className="xa-home-roadmap" aria-labelledby="xa-home-roadmap-title">
    <div><h2 id="xa-home-roadmap-title">{c('roadmapTitle')}</h2><p>{c('roadmapFutureLead')}</p></div>
    <Link className="xa-button secondary" to="/roadmap">{c('roadmapLabel')}<Icon name="arrow" size={16}/></Link>

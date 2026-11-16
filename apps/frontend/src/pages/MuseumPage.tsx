@@ -12,7 +12,7 @@ import {
   type FrameItem,
 } from '../components/museum/MuseumCorridor'
 import MuseumHall from '../components/museum/MuseumHall'
-import DriveArtShowcase from '../experience/DriveArtShowcase'
+import DriveNftDistributor from '../experience/DriveNftDistributor'
 import AdSlot from '../components/AdSlot'
 import {useCopy} from '../experience/state'
 import Icon from '../experience/Icon'
@@ -334,8 +334,6 @@ export default function MuseumPage() {
         </a>
       </header>
 
-      {museumId === 'xartists' && <DriveArtShowcase compact />}
-
       <div id="museum-visit" tabIndex={-1} role="group" aria-label="Parcours du musée" className="flex flex-wrap gap-2 scroll-mt-28">
         {xaRender((['explore', 'venue', 'map', 'mine', 'pulse'] as Mode[]).map(m => (
           <button
@@ -368,6 +366,7 @@ export default function MuseumPage() {
             allowBuy
           />
           <ArtworkGrid frames={hallFrames} title={xaLocalize("Œuvres de la salle")} wallCount={wallCount} />
+          {museumId === 'xartists' && <DriveNftDistributor />}
           <AdSlot id="drop_feature" />
         </>
       ))}

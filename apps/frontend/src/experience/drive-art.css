@@ -1,54 +1,165 @@
-/* Real Drive artwork, art-first exhibition. Never presented as a minted/listed NFT. */
-.xa-drive-exhibition{
-  position:relative;isolation:isolate;overflow:hidden;
-  margin:clamp(18px,4vw,42px) 0 clamp(32px,6vw,70px);
-  padding:clamp(20px,4vw,44px);
-  border:1px solid var(--xa-border);border-radius:24px;
-  background:linear-gradient(125deg,#151614 0%,#271311 55%,#141311 100%);
-  color:#f6f4ee;
+/* Random Drive artwork preview BELOW the museum. No NFT custody or payment. */
+.xa-drive-distributor {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  margin: clamp(18px, 4vw, 38px) 0;
+  padding: clamp(20px, 3.8vw, 38px);
+  border: 1px solid var(--xa-border);
+  border-radius: 24px;
+  background: linear-gradient(135deg, #181512 0%, #271b17 54%, #111312 100%);
+  color: #faf7f0;
 }
-.xa-drive-exhibition:before{
-  content:"";pointer-events:none;position:absolute;inset:-25%;
-  background:radial-gradient(ellipse at 80% 20%,rgba(176,55,30,.2),transparent 55%),
-    radial-gradient(ellipse at 8% 90%,rgba(177,151,75,.12),transparent 48%);
-  z-index:-1;
+.xa-drive-distributor::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -35%;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 78% 12%, #b85c2a29, transparent 55%),
+    radial-gradient(ellipse at 8% 95%, #be9d5526, transparent 50%);
 }
-.xa-drive-exhibition-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:26px}
-.xa-drive-exhibition-head>div{max-width:650px}
-.xa-drive-exhibition-head .xa-eyebrow{color:#e9c59f}
-.xa-drive-exhibition-head h2{margin:8px 0 10px;font-size:clamp(23px,3vw,38px);line-height:1.15;letter-spacing:-.04em;font-weight:550;color:#fff}
-.xa-drive-exhibition-head p:not(.xa-eyebrow){font-size:13px;line-height:1.7;color:#d8d3c8;max-width:600px;margin:0}
-.xa-drive-exhibition-link{display:inline-flex;flex-shrink:0;align-items:center;gap:10px;min-height:44px;padding:12px 16px;
- border:1px solid #ffffff66;border-radius:100px;color:#fff;background:#ffffff12;font-size:12px;font-weight:600}
-.xa-drive-exhibition-link:hover,.xa-drive-exhibition-link:focus-visible{background:#ffffff25;outline-offset:3px}
-.xa-drive-exhibition-works{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(8px,1.8vw,18px)}
-.xa-drive-exhibition-work{margin:0;min-width:0;overflow:hidden;position:relative;min-height:0;
- background:#0c0a09;border:1px solid #ffffff28;border-radius:14px;box-shadow:0 15px 32px #0005;
- animation:xa-art-arrive .65s ease both;animation-delay:calc(var(--xa-art-index) * 100ms)}
-.xa-drive-exhibition-work img{display:block;width:100%;height:auto;aspect-ratio:4/5;object-fit:contain;object-position:center;
- transition:transform .6s ease}
-.xa-drive-exhibition-work:hover img{transform:scale(1.035)}
-.xa-drive-exhibition-work figcaption{display:flex;align-items:center;justify-content:space-between;padding:10px 13px;
- font-size:10px;letter-spacing:.06em;color:#f6eae0;border-top:1px solid #ffffff20;background:#171210}
-.xa-drive-exhibition-work figcaption strong{font-weight:550;color:#efd6a5}
-.xa-drive-exhibition.is-compact{margin:14px 0 22px;padding:20px;border-radius:20px}
-.xa-drive-exhibition.is-compact .xa-drive-exhibition-head{margin-bottom:16px}
-.xa-drive-exhibition.is-compact .xa-drive-exhibition-head h2{font-size:clamp(20px,2.5vw,28px)}
-.xa-drive-exhibition.is-compact .xa-drive-exhibition-work img{aspect-ratio:4/3}
-@keyframes xa-art-arrive{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-@media(max-width:650px){
- .xa-drive-exhibition{padding:16px;margin:12px 0 32px;border-radius:18px}
- .xa-drive-exhibition-head{display:block;margin-bottom:16px}
- .xa-drive-exhibition-link{margin-top:14px}
- .xa-drive-exhibition-works{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
- .xa-drive-exhibition-work img,.xa-drive-exhibition.is-compact .xa-drive-exhibition-work img{aspect-ratio:4/4.4}
- .xa-drive-exhibition-work figcaption{padding:8px 10px}
- .xa-drive-exhibition.is-compact{padding:14px;margin:10px 0 22px}
+.xa-drive-distributor__heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 26px;
 }
-@media(prefers-reduced-motion:reduce){
- .xa-drive-exhibition-work{animation:none}
- .xa-drive-exhibition-work img{transition:none}
- .xa-drive-exhibition-work:hover img{transform:none}
+.xa-drive-distributor__heading > div { max-width: 600px; }
+.xa-drive-distributor__eyebrow {
+  margin: 0 0 10px;
+  color: #e6bd91;
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  font-weight: 700;
 }
-html[data-motion="off"] .xa-drive-exhibition-work{animation:none}
-html[data-motion="off"] .xa-drive-exhibition-work img{transition:none}
+.xa-drive-distributor__heading h2 {
+  color: #fff;
+  font-size: clamp(23px, 3vw, 36px);
+  font-weight: 600;
+  line-height: 1.18;
+  letter-spacing: -.035em;
+  margin: 0 0 10px;
+}
+.xa-drive-distributor__heading p:not(.xa-drive-distributor__eyebrow) {
+  color: #d8d0c5;
+  font-size: 14px;
+  line-height: 1.65;
+  margin: 0;
+}
+.xa-drive-distributor__status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 6px 11px;
+  border: 1px solid #d0ad7a6b;
+  border-radius: 999px;
+  font-size: 10px;
+  letter-spacing: .06em;
+  font-weight: 700;
+  color: #efd0a2;
+  white-space: nowrap;
+}
+.xa-drive-distributor__body {
+  display: grid;
+  grid-template-columns: minmax(200px, 310px) minmax(0, 1fr);
+  gap: clamp(20px, 4vw, 44px);
+  align-items: center;
+}
+.xa-drive-distributor__art {
+  overflow: hidden;
+  width: 100%;
+  aspect-ratio: 4/5;
+  border: 1px solid #ffffff36;
+  border-radius: 18px;
+  background: #0c0a09;
+  box-shadow: 0 15px 36px #0006;
+}
+.xa-drive-distributor__art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.xa-drive-distributor__mystery {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  width: 100%;
+  height: 100%;
+  color: #dcb586;
+  background: radial-gradient(circle at center, #554035, #1d1917 64%, #0e0c0b);
+}
+.xa-drive-distributor__mystery span:first-child { font-size: clamp(34px, 5vw, 66px); opacity: .7; }
+.xa-drive-distributor__mystery span:last-child { font-size: clamp(54px, 7vw, 96px); line-height: 1; font-weight: 300; }
+.xa-drive-distributor__controls { display: flex; flex-direction: column; align-items: flex-start; gap: 15px; }
+.xa-drive-distributor__serial {
+  color: #f6ede1;
+  font-size: clamp(17px, 2.5vw, 27px);
+  font-weight: 600;
+  letter-spacing: -.025em;
+  overflow-wrap: anywhere;
+  margin: 0;
+}
+.xa-drive-distributor__draw {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 13px 23px;
+  min-height: 48px;
+  border: 1px solid #f7d4a0;
+  border-radius: 999px;
+  background: #f4d2a2;
+  color: #221810;
+  font-size: 14px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: transform .15s ease, background .15s ease;
+}
+.xa-drive-distributor__draw:hover { background: #ffe1b5; transform: translateY(-1px); }
+.xa-drive-distributor__draw:focus-visible,
+.xa-drive-distributor__studio:focus-visible { outline: 3px solid #ffdd91; outline-offset: 4px; }
+.xa-drive-distributor__studio {
+  color: #f2d6af;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  font-size: 13px;
+}
+.xa-drive-distributor__studio:hover { color: #fff; }
+.xa-drive-distributor__notice {
+  margin: 0;
+  max-width: 550px;
+  color: #c9c1b7;
+  font-size: 12px;
+  line-height: 1.65;
+}
+.xa-drive-distributor__error {
+  margin: 0;
+  color: #ffcbab;
+  font-size: 13px;
+}
+@media(max-width:650px) {
+  .xa-drive-distributor { padding: 18px; margin: 16px 0 28px; border-radius: 18px; }
+  .xa-drive-distributor__heading { margin-bottom: 18px; }
+  .xa-drive-distributor__body { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  .xa-drive-distributor__art { max-width: 320px; justify-self: center; }
+  .xa-drive-distributor__controls { align-items: stretch; }
+  .xa-drive-distributor__draw { width: 100%; }
+  .xa-drive-distributor__serial { text-align: center; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .xa-drive-distributor__draw { transition: none; }
+  .xa-drive-distributor__draw:hover { transform: none; }
+}
+html[data-motion="off"] .xa-drive-distributor__draw { transition: none; }
+html[data-motion="off"] .xa-drive-distributor__draw:hover { transform: none; }
