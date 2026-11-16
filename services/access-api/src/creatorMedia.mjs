@@ -1,5 +1,5 @@
 /**
- * xArtists Studio: real image/video -> IPFS pin, then user-signed MultiversX NFT.
+ * xArtists Studio: real image/video/audio -> IPFS pin, then user-signed MultiversX NFT.
  * No wallet keys, NFT signing, or transfers are ever handled by this service.
  * Disabled without explicit config. Requires persistent PG quota + secret Pinata JWT.
  */
@@ -12,6 +12,9 @@ const FORMATS = Object.freeze({
   'image/png': { ext:'png', limit: 16 * 1024 * 1024 },
   'image/webp': { ext:'webp', limit: 16 * 1024 * 1024 },
   'video/mp4': { ext:'mp4', limit: 48 * 1024 * 1024 },
+  'audio/mpeg': { ext:'mp3', limit: 24 * 1024 * 1024 },
+  'audio/wav': { ext:'wav', limit: 48 * 1024 * 1024 },
+  'audio/flac': { ext:'flac', limit: 48 * 1024 * 1024 },
   'model/gltf-binary': { ext:'glb', limit: 32 * 1024 * 1024 },
 })
 const MAX_UPLOADS_DAY=8
@@ -26,7 +29,7 @@ export function studioMediaConfig(env=process.env){
     && Boolean(String(env.DATABASE_URL||'').trim())
     && String(env.ACCESS_JWT_SECRET||env.JWT_SECRET||'').length>=16
   return {enabled,modelEnabled:enabled && env.STUDIO_GLB_UPLOAD_ENABLED==='1',
-    provider:enabled?'pinata_ipfs':'disabled',maxImageMiB:16,maxVideoMiB:48,maxModelMiB:32,
+    provider:enabled?'pinata_ipfs':'disabled',maxImageMiB:16,maxVideoMiB:48,maxAudioMiB:48,maxModelMiB:32,
     maxUploadsPerWalletDaily:MAX_UPLOADS_DAY,signer:'artist_wallet'}
 }
 export function mediaJwt(address,secret){
@@ -102,6 +105,11 @@ export function validateCreatorMedia(buffer,type){
   if(mime==='image/png')magic=buffer.length>=8 && buffer.subarray(0,8).equals(Buffer.from('89504e470d0a1a0a','hex'))
   if(mime==='image/webp')magic=buffer.length>=12 && buffer.toString('ascii',0,4)==='RIFF' && buffer.toString('ascii',8,12)==='WEBP'
   if(mime==='video/mp4')magic=buffer.length>=16 && buffer.toString('ascii',4,8)==='ftyp'
+  if(mime==='audio/mpeg')magic=(buffer.length>=10 && buffer.toString('ascii',0,3)==='ID3') ||
+    (buffer.length>=4 && buffer[0]===0xff && (buffer[1]&0xe0)===0xe0 &&
+      (buffer[1]&0x18)!==0x08 && (buffer[1]&0x06)!==0 && (buffer[2]&0xf0)!==0xf0 && (buffer[2]&0x0c)!==0x0c)
+  if(mime==='audio/wav')magic=buffer.length>=44 && buffer.toString('ascii',0,4)==='RIFF' && buffer.toString('ascii',8,12)==='WAVE'
+  if(mime==='audio/flac')magic=buffer.length>=42 && buffer.toString('ascii',0,4)==='fLaC'
   if(mime==='model/gltf-binary'){validateStudioGlb(buffer);magic=true}
   if(!magic)throw fail('media_content_signature_invalid')
   return {mime,ext:cfg.ext,bytes:buffer.length,sha256:digest(buffer)}
@@ -201,7 +209,9 @@ export function createStudioMetadata(row,body,wallet,previewRow=null){
   const meta={
     name:title,
     description:description||'Original artwork published by the artist using xArtists Creator Studio.',
-    ...(row.mime==='video/mp4'
+    ...(row.mime.startsWith('audio/')
+      ? {animation_url:row.uri,properties:{category:'audio',mime:row.mime}}
+      : row.mime==='video/mp4'
       ? {animation_url:row.uri,properties:{category:'video',mime:row.mime}}
       : row.mime==='model/gltf-binary'
       ? {image:previewRow.uri,animation_url:row.uri,properties:{category:'model',mime:row.mime,
