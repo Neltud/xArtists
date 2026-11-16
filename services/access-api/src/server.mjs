@@ -434,10 +434,14 @@ async function handleRequest(req, res) {
     return
   }
 
-  // Artist-owned image/video IPFS upload, disabled unless PINATA_JWT + PG + explicit gate.
+  // Artist-owned image/video/audio IPFS upload, disabled unless PINATA_JWT + PG + explicit gate.
   // The wallet alone signs the mint; this backend does NOT submit any tx.
   if (req.method === 'GET' && pth === '/v1/studio/media/config') {
-    json(res,200,{ok:true,...studioMediaConfig(),mint_requires_artist_signature:true})
+    const config=studioMediaConfig()
+    // Never tell the browser upload is ready when schema/migrations are incomplete.
+    const schemaReady=config.enabled ? (await probeStudioStore()).ok === true : false
+    json(res,200,{ok:true,...config,enabled:config.enabled&&schemaReady,
+      modelEnabled:config.modelEnabled&&schemaReady,mint_requires_artist_signature:true})
     return
   }
   if (req.method === 'POST' && pth === '/v1/studio/media/challenge') {
