@@ -7,6 +7,7 @@ on:
       - 'services/access-api/src/xorusAssistedSwap.mjs'
       - 'services/access-api/tests/xorusAssistedSwap.test.mjs'
       - 'services/access-api/tests/serverRestoration.test.mjs'
+      - 'apps/frontend/src/components/intelligence/XorusAssistedSwapPanel.tsx'
       - '.github/workflows/xorus-assisted-proxy-ci.yml'
   workflow_dispatch:
 
@@ -29,3 +30,9 @@ jobs:
       - name: Offline proxy / server restoration regressions
         run: |
           node --test services/access-api/tests/xorusAssistedSwap.test.mjs services/access-api/tests/serverRestoration.test.mjs
+      - name: Install frontend dependencies
+        working-directory: apps/frontend
+        run: npm ci --ignore-scripts --legacy-peer-deps
+      - name: Typecheck assisted panel and frontend
+        working-directory: apps/frontend
+        run: npm run typecheck
