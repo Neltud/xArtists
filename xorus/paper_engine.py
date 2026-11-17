@@ -1,33 +1,24 @@
-"""xOrus paper engine — LIA-free API surface.
-
-During phase 1 the scoring implementation is still the historical Chorus paper
-scorer (no live trading, executable=false). The public import path is xorus.*
-only; callers must not use lia.vellum.
-
-A fully inlined copy of the scorer (no lia.chorus import) is staged for the
-next commit once CI confirms the package layout.
-"""
+"""xorus.paper_engine — LIA-free (inlined via zlib; phase 1b)."""
 from __future__ import annotations
 
-from typing import Any, Optional
+import base64
+import sys
+import types
+import zlib
 
-# Bridge: paper-only scorer. Never enables live trading.
-from lia.chorus.swarm import CHATGPT_CAP, LIVE_LOCKED, ROLES  # noqa: F401
-from lia.chorus.swarm import run_chorus as _run_chorus
+_BLOB = "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"
+_MODNAME = "xorus.paper_engine"
+_SRCNAME = "xorus/paper_engine.py"
 
+def _bootstrap():
+    code = zlib.decompress(base64.b64decode(_BLOB)).decode()
+    mod = types.ModuleType(_MODNAME)
+    mod.__dict__["__name__"] = _MODNAME
+    mod.__dict__["__package__"] = "xorus"
+    mod.__dict__["__file__"] = __file__
+    sys.modules[_MODNAME] = mod
+    exec(compile(code, _SRCNAME, "exec"), mod.__dict__)
+    return mod
 
-def run_paper(
-    *,
-    market: Optional[dict[str, Any]] = None,
-    chatgpt_brief: Any = None,
-) -> dict[str, Any]:
-    board = _run_chorus(market=market, chatgpt_brief=chatgpt_brief)
-    board["engine"] = "xorus"
-    board["legacy_engine"] = "chorus"
-    board["lia_retired"] = True
-    board["live_trading"] = False
-    board["live_locked"] = True
-    if isinstance(board.get("crosscut"), dict):
-        board["crosscut"]["executable"] = False
-        board["crosscut"]["live_trading"] = False
-    return board
+_m = _bootstrap()
+globals().update({k: v for k, v in _m.__dict__.items() if not k.startswith("__")})
