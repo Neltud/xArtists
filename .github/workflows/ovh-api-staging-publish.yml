@@ -13,7 +13,9 @@ concurrency:
 
 jobs:
   publish:
-    if: github.ref == 'refs/heads/main'
+    # No OVH VPS/dedicated host exists. Explicit NO-GO: do not try SSH until
+    # a new audited deployment plan is approved. See issue #613 (Neon Free).
+    if: github.ref == 'refs/heads/main' && false
     runs-on: ubuntu-latest
     environment: ovh-api-staging
     timeout-minutes: 45
