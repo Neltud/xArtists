@@ -4,6 +4,63 @@ This deploy is a **portable API package**, not a claim that the user's OVH serve
 email, account database, Pinata or checkout are configured. It leaves GitHub Pages
 and the current Render API untouched until a separate, proven cutover.
 
+
+## Publication OVH depuis GitHub — manuelle et verrouillée
+
+Le workflow [`ovh-api-staging-publish.yml`](../../.github/workflows/ovh-api-staging-publish.yml)
+est un **vrai déploiement SSH manuel** vers le serveur du propriétaire, et
+non un build GitHub Pages. Il publie uniquement sur
+`https://api-staging.xartists.art`. Aucune mise à jour DNS, aucune migration
+SQL, aucun upload IPFS ni transaction financière ne sont effectués. Il laisse
+`https://xartists.art` et la messagerie existante intacts.
+
+**Avant le premier lancement** :
+
+1. Dans GitHub, créer/protéger l’environnement Actions `ovh-api-staging`
+   avec une validation humaine. Définir ses **variables** `OVH_SSH_HOST`
+   (adresse du serveur), `OVH_SSH_USER` (compte dédié, non root) et, si
+   nécessaire, `OVH_SSH_PORT` (défaut 22). Définir ses **secrets**
+   `OVH_SSH_PRIVATE_KEY` et `OVH_SSH_KNOWN_HOSTS`. Le fichier
+   `known_hosts` doit provenir d’une empreinte de clé vérifiée par
+   l’opérateur **hors bande**, jamais de `ssh-keyscan` seul. Pour un port
+   non standard, utiliser `[hôte]:port` dans `known_hosts`.
+   **Ne jamais transmettre de clé privée dans un chat, une issue GitHub ou le dépôt.**
+2. Sur l’OVH, le compte dédié doit disposer de Docker/Compose v2, Git,
+   curl et flock ainsi que des droits nécessaires sur Docker. Attention :
+   l’accès au démon Docker accorde des privilèges importants ; isoler
+   ce compte et les clefs. Les ports 80/443 doivent être réservés à la
+   passerelle Caddy de cette API ou faire l’objet d’un plan d’intégration
+   explicite avec le reverse-proxy existant. Ne pas interrompre d’autre site.
+3. Placer **sur le serveur uniquement** le fichier privé
+   `~/xartists-api-staging/config/.env.api` (mode 600, propriétaire compte
+   de déploiement), à partir de `api.env.template`. Les secrets
+   `DATABASE_URL` et `ACCESS_JWT_SECRET` sont des paramètres privés ;
+   ne pas fabriquer une identité de base ni remplacer la base active
+   sans sauvegarde/restauration contrôlées. Le SHA public est injecté
+   indépendamment par l’overlay Compose.
+4. Configurer et prouver le DNS exact de
+   `api-staging.xartists.art`, son routage vers le serveur OVH, le
+   pare-feu 80/443 et la capacité de Caddy à obtenir un certificat TLS.
+   Ne pas modifier les MX ni les A/AAAA du domaine principal.
+5. Sur [GitHub Actions](https://github.com/Neltud/xArtists/actions/workflows/ovh-api-staging-publish.yml),
+   déclencher manuellement **Deploy Access API on own OVH — staging** depuis
+   `main`. Une clé/empreinte SSH absente refuse immédiatement le
+   déploiement. La branche et le SHA sont vérifiés ; le serveur récupère
+   exactement ce commit et lance Docker Compose avec
+   `XARTISTS_STUDIO_UPLOAD_APPROVED=0`, mint/paiement/trading désactivés.
+   La réussite exige aussi la concordance du SHA et des garde-fous depuis
+   le conteneur et l’URL HTTPS publique.
+6. Vérifier indépendamment `/health`, `/v1/ops/build-info`,
+   `/v1/ops/studio-store/status` et la réponse de
+   `/v1/studio/media/config` (upload désactivé). **Ne pas** pointer
+   la dApp de production vers cette API tant que le dossier #608 n’a
+   pas prouvé schéma PostgreSQL, auth/xPortal et récupération IPFS.
+
+Un contrôle d’état réussi est une **publication de préproduction de l’API**,
+pas une validation de l’upload réel ni du commerce. Aucun service de
+stockage/paiement/mint ne sera activé par ce workflow. L’étape de
+bascule `api.xartists.art` reste séparée, volontaire et documentée.
+
 ## Architecture
 
 - **GitHub Pages** keeps the public dapp while the backend is moved.
