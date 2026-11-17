@@ -93,6 +93,20 @@ test('missing raw minOut or worse build minimum always blocks before simulation'
   }
 })
 
+test('raw quote minOut and transaction object are both required',async()=>{
+  for (const options of [
+    {quote:{quotedOut:'100',minOut:{human:'99.5'} }},
+    {build:{transaction:'not-an-object',minOut:{human:'99.5',raw:'99500000'},signingLink:LINK}},
+  ]) {
+    await withMockMcp(responses(options),async ()=>{
+      const out=await runAssistedSwap(INTENT)
+      assert.equal(out.ok,false)
+      assert.equal(out.stage,'build')
+      assert.ok(!out.build?.signingLink)
+    })
+  }
+})
+
 test('simulation must be status success AND exact boolean meetsMinOut',async()=>{
   for (const sim of [
     {status:'success'}, {status:'success',meetsMinOut:'true'},
