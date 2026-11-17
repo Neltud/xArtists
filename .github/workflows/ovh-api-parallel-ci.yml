@@ -15,6 +15,9 @@ on:
       - 'packages/core/src/xorusAnalysisContract.mjs'
       - 'services/access-api/tests/ovhDeployment.test.mjs'
       - '.github/workflows/ovh-api-parallel-ci.yml'
+      - '.github/workflows/ovh-api-staging-publish.yml'
+      - 'scripts/ops/deploy-ovh-api-staging.sh'
+      - 'services/access-api/tests/ovhManualPublish.test.mjs'
   push:
     branches: [main]
     paths:
@@ -34,6 +37,16 @@ jobs:
       - uses: actions/checkout@v4
       - name: Check non-commercial infrastructure contract
         run: node --test services/access-api/tests/ovhDeployment.test.mjs
+      - name: Verify manual OVH staging publish is protected and does not alter production
+        run: node --test services/access-api/tests/ovhManualPublish.test.mjs
+      - name: Validate staging Compose SHA identity without SSH or remote writes
+        env:
+          API_HOSTNAME: api-staging.example.org
+          XARTISTS_SOURCE_SHA: 0000000000000000000000000000000000000000
+        run: |
+          cp deploy/ovh/api.env.template deploy/ovh/.env.api
+          trap 'rm -f deploy/ovh/.env.api' EXIT
+          docker compose -f deploy/ovh/compose.yaml -f deploy/ovh/compose.staging-deploy.yaml config --quiet
       - name: Validate Compose without real DNS, secrets, or writes
         env:
           API_HOSTNAME: api-staging.example.org
