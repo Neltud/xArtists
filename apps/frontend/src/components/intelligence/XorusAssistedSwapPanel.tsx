@@ -16,6 +16,18 @@ const API_BASE = ((import.meta.env.VITE_ACCESS_API_BASE as string | undefined) |
   .trim()
   .replace(/\/+$/, '')
 
+function approvedSigningLink(link: string): boolean {
+  try {
+    const url = new URL(link)
+    return url.protocol === 'https:' && url.hostname === 'wallet.multiversx.com'
+      && (url.port === '' || url.port === '443')
+      && url.username === '' && url.password === ''
+      && url.pathname === '/hook/transaction' && !url.hash
+  } catch {
+    return false
+  }
+}
+
 type QuoteView = {
   quotedOut?: string
   minOut?: string
@@ -71,6 +83,16 @@ export default function XorusAssistedSwapPanel() {
   const [simOk, setSimOk] = useState<boolean | null>(null)
   const [stage, setStage] = useState<string | null>(null)
 
+  // A preview is strictly tied to the exact intent that produced it.
+  // Editing any field immediately revokes a previously shown signing link.
+  const clearPreview = () => {
+    setError(null)
+    setQuote(null)
+    setBuild(null)
+    setSimOk(null)
+    setStage(null)
+  }
+
   const run = useCallback(async () => {
     setError(null)
     setQuote(null)
@@ -119,7 +141,8 @@ export default function XorusAssistedSwapPanel() {
         })
       }
 
-      if (data.stage === 'ready_to_sign' && data.ok) {
+      if (res.ok && data.stage === 'ready_to_sign' && data.ok === true
+          && data.simulation?.ok === true && data.simulation.meetsMinOut === true) {
         setSimOk(true)
       } else if (data.stage === 'simulate') {
         setSimOk(false)
@@ -139,7 +162,12 @@ export default function XorusAssistedSwapPanel() {
     }
   }, [tokenIn, tokenOut, amountIn, sender, fr])
 
-  const canShowSigningLink = Boolean(build?.signingLink && simOk === true)
+  const canShowSigningLink = Boolean(
+    !busy && !error && stage === 'ready_to_sign' && simOk === true &&
+    build?.signingLink && approvedSigningLink(build.signingLink) &&
+    (!build.expiresAt || (Number.isFinite(Date.parse(build.expiresAt))
+      && Date.parse(build.expiresAt) > Date.now())),
+  )
 
   return (
     <section
@@ -169,7 +197,8 @@ export default function XorusAssistedSwapPanel() {
           <input
             className="w-full rounded border border-white/10 bg-black/50 px-2 py-1.5 text-sm text-white"
             value={tokenIn}
-            onChange={(e) => setTokenIn(e.target.value)}
+            disabled={busy}
+            onChange={(e) => { clearPreview(); setTokenIn(e.target.value) }}
           />
         </label>
         <label className="text-xs text-zinc-400 space-y-1">
@@ -177,7 +206,8 @@ export default function XorusAssistedSwapPanel() {
           <input
             className="w-full rounded border border-white/10 bg-black/50 px-2 py-1.5 text-sm text-white"
             value={tokenOut}
-            onChange={(e) => setTokenOut(e.target.value)}
+            disabled={busy}
+            onChange={(e) => { clearPreview(); setTokenOut(e.target.value) }}
           />
         </label>
         <label className="text-xs text-zinc-400 space-y-1">
@@ -185,7 +215,8 @@ export default function XorusAssistedSwapPanel() {
           <input
             className="w-full rounded border border-white/10 bg-black/50 px-2 py-1.5 text-sm text-white"
             value={amountIn}
-            onChange={(e) => setAmountIn(e.target.value)}
+            disabled={busy}
+            onChange={(e) => { clearPreview(); setAmountIn(e.target.value) }}
           />
         </label>
         <label className="text-xs text-zinc-400 space-y-1 sm:col-span-2 lg:col-span-1">
@@ -193,7 +224,8 @@ export default function XorusAssistedSwapPanel() {
           <input
             className="w-full rounded border border-white/10 bg-black/50 px-2 py-1.5 text-sm text-white font-mono"
             value={sender}
-            onChange={(e) => setSender(e.target.value.trim())}
+            disabled={busy}
+            onChange={(e) => { clearPreview(); setSender(e.target.value.trim()) }}
             placeholder="erd1…"
           />
         </label>
@@ -272,8 +304,8 @@ export default function XorusAssistedSwapPanel() {
           {simOk === true && (
             <p className="text-emerald-400">
               {fr
-                ? 'Simulation OK — vous pouvez signer'
-                : 'Simulation OK — safe to sign'}
+                ? 'Simulation favorable — vérifiez chaque détail dans votre wallet'
+                : 'Simulation passed — verify every detail in your wallet'}
             </p>
           )}
           {simOk === false && (
