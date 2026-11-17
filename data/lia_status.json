@@ -1,56 +1,15 @@
 {
   "schema": "lia_status/v1",
-  "ts": "2026-11-17T00:04:50Z",
+  "ts": "2026-11-17T10:25:20Z",
   "paper": true,
   "LIA_LIVE_TRADING": 0,
   "onchain": {
     "address": "erd1p4zyy5476u5nkw4hprhk6dh63znvksm4ppkxglxqasz2kum0lerqu0crn6",
-    "egld": 0.005,
-    "egld_usd": 0.013,
-    "tokens": [
-      {
-        "identifier": "ASH-a642d1",
-        "ticker": "ASH",
-        "balance": 544.35637
-      },
-      {
-        "identifier": "HWBTC-49ca31",
-        "ticker": "HWBTC",
-        "balance": 0.0
-      },
-      {
-        "identifier": "LPROARTRO-f1212f",
-        "ticker": "LPROARTRO-f1212f",
-        "balance": 0.040862
-      },
-      {
-        "identifier": "TRO-94c925",
-        "ticker": "TRO",
-        "balance": 154329.710452
-      },
-      {
-        "identifier": "TROUSDT-67d574",
-        "ticker": "TROUSDT-67d574",
-        "balance": 0.0
-      },
-      {
-        "identifier": "TROWEGLD-ca2874",
-        "ticker": "TROWEGLD-ca2874",
-        "balance": 1.865681
-      },
-      {
-        "identifier": "TROXOXNO-500f78",
-        "ticker": "TROXOXNO-500f78",
-        "balance": 0.578465
-      },
-      {
-        "identifier": "XOXNO-c1293a",
-        "ticker": "XOXNO",
-        "balance": 3.7e-05
-      }
-    ],
+    "egld": null,
+    "egld_usd": null,
+    "tokens": [],
     "tx_count": null,
-    "error": null
+    "error": "HTTP Error 404: Not Found"
   },
   "mindset": {
     "strategy": "YIELD",
@@ -61,17 +20,10 @@
     "LIA_LIVE_TRADING": 0
   },
   "shadow": {
-    "fills": 169,
-    "shadow_pnl_usd": 8.8707,
-    "win_rate": 0.6213,
+    "fills": 170,
+    "shadow_pnl_usd": 8.7779,
+    "win_rate": 0.6176,
     "last_shadow": [
-      {
-        "id": "ba708a0c-4db",
-        "side": "BUY",
-        "asset": "EGLD",
-        "pnl_usd": 0.2158,
-        "ts": "2026-11-15T19:38:32Z"
-      },
       {
         "id": "f2233fac-a69",
         "side": "BUY",
@@ -99,6 +51,13 @@
         "asset": "EGLD",
         "pnl_usd": 0.2477,
         "ts": "2026-11-17T00:04:49Z"
+      },
+      {
+        "id": "b8f7f48e-03f",
+        "side": "BUY",
+        "asset": "TRO",
+        "pnl_usd": -0.0928,
+        "ts": "2026-11-17T10:25:19Z"
       }
     ],
     "source": "lia_paper_legs.json+friction",
