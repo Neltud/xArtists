@@ -13,6 +13,7 @@ import LiveAssetTape from '../components/LiveAssetTape'
 import RceStrip from '../components/RceStrip'
 import Pack3DCockpit from '../components/packs/Pack3DCockpit'
 import { XORUS_BADGE, XORUS_LIVE_TRADING } from '../config/xorusConfig'
+import XorusAssistedSwapPanel from '../components/intelligence/XorusAssistedSwapPanel'
 
 export default function XorusPage() {
   const { lang } = useI18n()
@@ -47,6 +48,10 @@ export default function XorusPage() {
 
       <section aria-label="xOrus decision">
         <XorusDecisionDesk />
+      </section>
+
+      <section aria-label="Assisted OneDex swap">
+        <XorusAssistedSwapPanel />
       </section>
 
       <section className="grid gap-4 md:grid-cols-2" aria-label="Signals and tape">
