@@ -75,7 +75,6 @@ def run_assisted(intent: SwapIntent, *, skip_quote: bool = False) -> AssistedOut
             return AssistedOutcome(
                 stage="quote",
                 intent=intent,
-                quote=QuoteResult(ok=False, error=str(e)),
                 message=f"Quote failed: {e}",
             )
 
@@ -147,14 +146,15 @@ def run_assisted(intent: SwapIntent, *, skip_quote: bool = False) -> AssistedOut
             message=f"Simulation failed: {e}",
         )
 
-    if not sim.ok or sim.meets_min_out is False:
+    # Strict: require status OK AND meets_min_out explicitly True (audit 2026-11-17)
+    if not sim.ok or sim.meets_min_out is not True:
         return AssistedOutcome(
             stage="simulate",
             intent=intent,
             quote=quote_result,
             build=build_result,
             simulation=sim,
-            message="Simulation did not pass (status or minOut). Do not sign.",
+            message="Simulation did not pass (status or minOut inconclusive/failed). Do not sign.",
         )
 
     # 5. Ready for human signature

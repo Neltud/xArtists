@@ -1,9 +1,11 @@
 """Hard policy gates for OneDex execution under xOrus.
 
 All limits are code-enforced. The model proposes; policy decides.
+Strict allowlist + numeric hygiene (audit 2026-11-17).
 """
 from __future__ import annotations
 
+import math
 from typing import Any
 
 from xorus.execution.types import PolicyDecision, SwapIntent
@@ -11,7 +13,8 @@ from xorus.execution.types import PolicyDecision, SwapIntent
 
 # --- Hard limits (tune in one place) -----------------------------------------
 
-# Tokens the agent is allowed to touch (ticker or full identifier).
+# Tokens the agent is allowed to touch.
+# Exact ticker OR exact full MultiversX identifier only.
 # Empty set = refuse everything until configured.
 ALLOWED_TOKENS: set[str] = {
     "EGLD",
@@ -20,11 +23,11 @@ ALLOWED_TOKENS: set[str] = {
     "USDC",
     "USDT",
     "WETH",
-    # add verified tickers only
+    # add verified tickers or full identifiers only, e.g. "ONE-f9954f"
 }
 
 # Maximum input amount per trade (human units, approximate).
-# Keyed by token ticker (upper). Use conservative values.
+# Keyed by exact ticker (upper) or base of identifier.
 MAX_AMOUNT_IN: dict[str, float] = {
     "EGLD": 2.0,
     "WEGLD": 2.0,
@@ -42,10 +45,38 @@ DAILY_BUDGET_USD: float = 1_000.0
 
 
 def _normalize(token: str) -> str:
-    t = token.strip().upper()
-    if "-" in t:  # identifier like ONE-f9954f → keep as-is for matching
-        return t
-    return t
+    return (token or "").strip().upper()
+
+
+def _is_allowed_token(tok: str, allowed: set[str]) -> bool:
+    """Strict: exact match only (ticker or full identifier). No prefix wildcards."""
+    if not tok:
+        return False
+    if tok in allowed:
+        return True
+    # Full identifier listed exactly (e.g. ONE-F9954F in allowlist)
+    return False
+
+
+def _parse_amount(raw: Any) -> float | None:
+    """Reject non-finite, non-positive, or non-numeric amounts."""
+    if raw is None:
+        return None
+    if isinstance(raw, bool):
+        return None
+    try:
+        if isinstance(raw, str):
+            s = raw.strip().replace(",", "")
+            if not s or s.lower() in ("nan", "inf", "+inf", "-inf"):
+                return None
+            amount = float(s)
+        else:
+            amount = float(raw)
+    except (TypeError, ValueError):
+        return None
+    if not math.isfinite(amount) or amount <= 0:
+        return None
+    return amount
 
 
 def check_intent(intent: SwapIntent) -> PolicyDecision:
@@ -53,47 +84,43 @@ def check_intent(intent: SwapIntent) -> PolicyDecision:
     tin = _normalize(intent.token_in)
     tout = _normalize(intent.token_out)
 
-    # 1. Token allowlist
-    allowed_tickers = {_normalize(t) for t in ALLOWED_TOKENS}
-    # Accept either exact ticker or identifier that starts with an allowed ticker
-    def is_allowed(tok: str) -> bool:
-        if tok in allowed_tickers:
-            return True
-        base = tok.split("-")[0]
-        return base in allowed_tickers
+    allowed = {_normalize(t) for t in ALLOWED_TOKENS}
 
-    if not is_allowed(tin):
-        return PolicyDecision(False, f"token_in '{intent.token_in}' not in ALLOWED_TOKENS")
-    if not is_allowed(tout):
-        return PolicyDecision(False, f"token_out '{intent.token_out}' not in ALLOWED_TOKENS")
+    if not _is_allowed_token(tin, allowed):
+        return PolicyDecision(
+            False,
+            f"token_in '{intent.token_in}' not in ALLOWED_TOKENS (exact match required)",
+        )
+    if not _is_allowed_token(tout, allowed):
+        return PolicyDecision(
+            False,
+            f"token_out '{intent.token_out}' not in ALLOWED_TOKENS (exact match required)",
+        )
 
-    # 2. Slippage
-    if intent.max_slippage_bps > MAX_SLIPPAGE_BPS:
+    if intent.max_slippage_bps is not None and intent.max_slippage_bps > MAX_SLIPPAGE_BPS:
         return PolicyDecision(
             False,
             f"max_slippage_bps {intent.max_slippage_bps} exceeds hard limit {MAX_SLIPPAGE_BPS}",
         )
 
-    # 3. Amount
-    try:
-        amount = float(intent.amount_in)
-    except (TypeError, ValueError):
-        return PolicyDecision(False, f"invalid amount_in: {intent.amount_in!r}")
+    amount = _parse_amount(intent.amount_in)
+    if amount is None:
+        return PolicyDecision(
+            False,
+            f"invalid amount_in: {intent.amount_in!r} (must be finite number > 0)",
+        )
 
-    if amount <= 0:
-        return PolicyDecision(False, "amount_in must be > 0")
-
-    # Resolve max for this token (try base ticker)
+    # Resolve max: prefer exact token key, else base of identifier (EGLD from EGLD-...)
     base = tin.split("-")[0]
-    max_amt = MAX_AMOUNT_IN.get(base) or MAX_AMOUNT_IN.get(tin)
+    max_amt = MAX_AMOUNT_IN.get(tin) or MAX_AMOUNT_IN.get(base)
     if max_amt is not None and amount > max_amt:
         return PolicyDecision(
             False,
             f"amount_in {amount} exceeds MAX_AMOUNT_IN for {base} ({max_amt})",
         )
 
-    # 4. Sender must look like a public MultiversX address
-    if not intent.sender.startswith("erd1") or len(intent.sender) < 62:
+    sender = (intent.sender or "").strip()
+    if not sender.startswith("erd1") or len(sender) < 62:
         return PolicyDecision(False, "sender must be a valid public erd1… address")
 
     return PolicyDecision(
@@ -103,5 +130,6 @@ def check_intent(intent: SwapIntent) -> PolicyDecision:
             "max_slippage_bps": MAX_SLIPPAGE_BPS,
             "max_amount": max_amt,
             "allowed_tokens": sorted(ALLOWED_TOKENS),
+            "match_mode": "exact",
         },
     )
