@@ -1,30 +1,20 @@
 /**
- * xOrus Assisted Swap Panel — OneDex MCP, human-in-the-loop only.
+ * xOrus Assisted Swap Panel — human-in-the-loop via backend proxy.
  * Never holds keys. Displays quote, costSummary, warnings, signingLink.
  * XORUS_LIVE_TRADING remains false; this panel only prepares unsigned txs.
  *
- * Security (audit 2026-11-17):
- * - Client-side allowlist + amount caps mirror backend policy (defense in depth).
- * - Signing link shown ONLY when simulation status is success AND meetsMinOut === true.
- * - Indeterminate / failed simulation → explicit "do not sign" message, no link.
- * - Note: this panel still calls OneDex MCP directly. A policy-aware backend proxy
- *   is the next hardening step before any production financial use.
+ * Security:
+ * - All OneDex MCP calls go through POST /v1/xorus/assisted-swap (access-api).
+ * - Policy (exact allowlist + amount caps) is enforced server-side.
+ * - signingLink only returned by backend when simulation is strictly OK.
+ * - Client still mirrors basic checks for UX; backend is source of truth.
  */
 import { useCallback, useState } from 'react'
 import { useI18n } from '../../i18n/I18nContext'
 
-const MCP = 'https://aggregator.onedex.app/ai/mcp'
-
-/** Mirror of xorus/execution/policy.py — keep in sync. Exact match only. */
-const ALLOWED_TOKENS = new Set(['EGLD', 'WEGLD', 'ONE', 'USDC', 'USDT', 'WETH'])
-const MAX_AMOUNT_IN: Record<string, number> = {
-  EGLD: 2.0,
-  WEGLD: 2.0,
-  ONE: 50_000,
-  USDC: 500,
-  USDT: 500,
-  WETH: 0.5,
-}
+const API_BASE = ((import.meta.env.VITE_ACCESS_API_BASE as string | undefined) || '')
+  .trim()
+  .replace(/\/+$/, '')
 
 type QuoteView = {
   quotedOut?: string
@@ -41,97 +31,29 @@ type BuildView = {
   expiresAt?: string
 }
 
-function normalizeToken(t: string): string {
-  return (t || '').trim().toUpperCase()
-}
-
-function isAllowedToken(t: string): boolean {
-  return ALLOWED_TOKENS.has(normalizeToken(t))
-}
-
-function parseAmount(raw: string): number | null {
-  const s = (raw || '').trim().replace(/,/g, '')
-  if (!s || /^(nan|inf|\+inf|-inf)$/i.test(s)) return null
-  const n = Number(s)
-  if (!Number.isFinite(n) || n <= 0) return null
-  return n
-}
-
-function clientPolicyCheck(
-  tokenIn: string,
-  tokenOut: string,
-  amountIn: string,
-  sender: string,
-  fr: boolean,
-): string | null {
-  if (!isAllowedToken(tokenIn)) {
-    return fr
-      ? `Token entrant non autorisé (exact: ${[...ALLOWED_TOKENS].join(', ')})`
-      : `token_in not allowed (exact: ${[...ALLOWED_TOKENS].join(', ')})`
+type ProxyResponse = {
+  ok: boolean
+  stage: string
+  message?: string
+  quote?: {
+    quotedOut?: string
+    minOut?: string
+    costSummary?: string
+    priceImpact?: string
+    warnings?: string[]
   }
-  if (!isAllowedToken(tokenOut)) {
-    return fr
-      ? `Token sortant non autorisé (exact: ${[...ALLOWED_TOKENS].join(', ')})`
-      : `token_out not allowed (exact: ${[...ALLOWED_TOKENS].join(', ')})`
+  build?: {
+    summary?: string
+    signingLink?: string | null
+    minOut?: string
+    expiresAt?: string
   }
-  const amount = parseAmount(amountIn)
-  if (amount === null) {
-    return fr
-      ? 'Montant invalide (nombre fini > 0 requis)'
-      : 'Invalid amount (finite number > 0 required)'
+  simulation?: {
+    ok?: boolean
+    status?: string
+    meetsMinOut?: boolean | null
   }
-  const base = normalizeToken(tokenIn).split('-')[0]
-  const maxAmt = MAX_AMOUNT_IN[base]
-  if (maxAmt != null && amount > maxAmt) {
-    return fr
-      ? `Montant ${amount} > plafond ${maxAmt} pour ${base}`
-      : `amount ${amount} exceeds max ${maxAmt} for ${base}`
-  }
-  if (!sender.startsWith('erd1') || sender.length < 62) {
-    return fr ? 'Adresse publique erd1… requise' : 'Public erd1… address required'
-  }
-  return null
-}
-
-async function mcpCall(name: string, args: Record<string, unknown>) {
-  const body = {
-    jsonrpc: '2.0',
-    id: 1,
-    method: 'tools/call',
-    params: { name, arguments: args },
-  }
-  const res = await fetch(MCP, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json, text/event-stream',
-    },
-    body: JSON.stringify(body),
-  })
-  if (!res.ok) throw new Error(`HTTP ${res.status}`)
-  const json = await res.json()
-  if (json.error) throw new Error(json.error.message || 'RPC error')
-  const result = json.result
-  if (result?.structuredContent) return result.structuredContent
-  const text = result?.content?.[0]?.text
-  if (text) {
-    try {
-      return JSON.parse(text)
-    } catch {
-      return { text }
-    }
-  }
-  return result || {}
-}
-
-function pickMinOut(data: Record<string, unknown>): string | undefined {
-  const mo = data.minOut
-  if (mo && typeof mo === 'object') {
-    const o = mo as Record<string, unknown>
-    return String(o.human || o.amount || '')
-  }
-  if (mo != null) return String(mo)
-  return undefined
+  policy?: { reason?: string }
 }
 
 export default function XorusAssistedSwapPanel() {
@@ -146,69 +68,69 @@ export default function XorusAssistedSwapPanel() {
   const [error, setError] = useState<string | null>(null)
   const [quote, setQuote] = useState<QuoteView | null>(null)
   const [build, setBuild] = useState<BuildView | null>(null)
-  /** true = safe to sign; false = failed; null = indeterminate / not run */
   const [simOk, setSimOk] = useState<boolean | null>(null)
+  const [stage, setStage] = useState<string | null>(null)
 
   const run = useCallback(async () => {
     setError(null)
     setQuote(null)
     setBuild(null)
     setSimOk(null)
+    setStage(null)
 
-    const policyErr = clientPolicyCheck(tokenIn, tokenOut, amountIn, sender, fr)
-    if (policyErr) {
-      setError(policyErr)
+    if (!API_BASE) {
+      setError(
+        fr
+          ? 'VITE_ACCESS_API_BASE non configuré — proxy backend requis'
+          : 'VITE_ACCESS_API_BASE not configured — backend proxy required',
+      )
+      return
+    }
+    if (!sender.startsWith('erd1') || sender.length < 62) {
+      setError(fr ? 'Adresse publique erd1… requise' : 'Public erd1… address required')
       return
     }
 
     setBusy(true)
     try {
-      const q = await mcpCall('get_quote', {
-        tokenIn,
-        tokenOut,
-        amountIn,
+      const res = await fetch(`${API_BASE}/v1/xorus/assisted-swap`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ tokenIn, tokenOut, amountIn, sender }),
       })
-      const qView: QuoteView = {
-        quotedOut: String(q.quotedOut || q.amountOut || ''),
-        minOut: pickMinOut(q),
-        costSummary: String(q.costSummary || q.costs || ''),
-        priceImpact: String(q.priceImpact || ''),
-        warnings: Array.isArray(q.warnings) ? q.warnings.map(String) : [],
-      }
-      setQuote(qView)
+      const data = (await res.json()) as ProxyResponse
+      setStage(data.stage || null)
 
-      const b = await mcpCall('build_swap_tx', {
-        tokenIn,
-        tokenOut,
-        amountIn,
-        sender,
-      })
-      const bView: BuildView = {
-        summary: String(b.summary || ''),
-        signingLink: b.signingLink ? String(b.signingLink) : undefined,
-        minOut: pickMinOut(b),
-        expiresAt: b.expiresAt ? String(b.expiresAt) : undefined,
-      }
-      setBuild(bView)
-
-      if (b.transaction) {
-        const s = await mcpCall('simulate_swap_tx', {
-          transaction: b.transaction,
-          minOut:
-            (b.minOut && typeof b.minOut === 'object'
-              ? (b.minOut as { raw?: string }).raw
-              : undefined) || b.minOutRaw,
+      if (data.quote) {
+        setQuote({
+          quotedOut: data.quote.quotedOut,
+          minOut: data.quote.minOut,
+          costSummary: data.quote.costSummary,
+          priceImpact: data.quote.priceImpact,
+          warnings: Array.isArray(data.quote.warnings) ? data.quote.warnings : [],
         })
-        const status = String(s.status || '').toLowerCase()
-        const meets = s.meetsMinOut
-        // Strict: only true when status success AND meetsMinOut is explicitly true
-        const statusOk = status === 'success' || status === 'ok'
-        const meetsOk = meets === true || meets === 'true' || meets === 1
-        // Indeterminate (null/"—" / missing) → not safe
-        const ok = statusOk && meetsOk
-        setSimOk(ok)
+      }
+      if (data.build) {
+        setBuild({
+          summary: data.build.summary,
+          signingLink: data.build.signingLink || undefined,
+          minOut: data.build.minOut,
+          expiresAt: data.build.expiresAt,
+        })
+      }
+
+      if (data.stage === 'ready_to_sign' && data.ok) {
+        setSimOk(true)
+      } else if (data.stage === 'simulate') {
+        setSimOk(false)
+      } else if (data.simulation) {
+        setSimOk(data.simulation.ok === true && data.simulation.meetsMinOut === true)
       } else {
         setSimOk(null)
+      }
+
+      if (!data.ok) {
+        setError(data.message || data.policy?.reason || `stage=${data.stage}`)
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e))
@@ -227,7 +149,7 @@ export default function XorusAssistedSwapPanel() {
     >
       <div>
         <p className="text-[10px] uppercase tracking-[0.2em] text-amber-500/80">
-          {fr ? 'Exécution assistée · beta' : 'Assisted execution · beta'}
+          {fr ? 'Exécution assistée · proxy · beta' : 'Assisted execution · proxy · beta'}
         </p>
         <h2 className="text-lg font-medium text-white mt-1">
           {fr
@@ -236,8 +158,8 @@ export default function XorusAssistedSwapPanel() {
         </h2>
         <p className="text-xs text-zinc-400 mt-1 max-w-2xl">
           {fr
-            ? 'xOrus appelle OneDex MCP pour le quote, la construction de la tx non signée et la simulation. Aucune clé privée ne quitte votre wallet. Vous signez via le lien fourni.'
-            : 'xOrus calls OneDex MCP for quote, unsigned tx build and simulation. No private key leaves your wallet. You sign via the provided link.'}
+            ? 'Le navigateur n’appelle plus OneDex directement. xOrus (access-api) applique la policy, puis quote → build → simulate. Aucune clé privée ne quitte votre wallet.'
+            : 'The browser no longer calls OneDex directly. xOrus (access-api) enforces policy, then quote → build → simulate. No private key leaves your wallet.'}
         </p>
       </div>
 
@@ -279,7 +201,7 @@ export default function XorusAssistedSwapPanel() {
 
       <button
         type="button"
-        disabled={busy}
+        disabled={busy || !API_BASE}
         onClick={run}
         className="rounded-lg bg-amber-600/90 px-4 py-2 text-sm font-medium text-black hover:bg-amber-500 disabled:opacity-50"
       >
@@ -288,13 +210,22 @@ export default function XorusAssistedSwapPanel() {
             ? 'Préparation…'
             : 'Preparing…'
           : fr
-            ? 'Quote → Build → Simulate'
-            : 'Quote → Build → Simulate'}
+            ? 'Policy → Quote → Build → Simulate'
+            : 'Policy → Quote → Build → Simulate'}
       </button>
+
+      {!API_BASE && (
+        <p className="text-sm text-amber-400" role="status">
+          {fr
+            ? 'Proxy non configuré (VITE_ACCESS_API_BASE). Aucun appel MCP depuis le navigateur.'
+            : 'Proxy not configured (VITE_ACCESS_API_BASE). No browser-side MCP calls.'}
+        </p>
+      )}
 
       {error && (
         <p className="text-sm text-red-400" role="alert">
           {error}
+          {stage ? ` · ${stage}` : ''}
         </p>
       )}
 
@@ -352,11 +283,11 @@ export default function XorusAssistedSwapPanel() {
                 : 'Simulation failed or minOut not met — do not sign'}
             </p>
           )}
-          {simOk === null && build && (
+          {simOk === null && (
             <p className="text-amber-400">
               {fr
-                ? 'Simulation non conclusive — ne pas signer'
-                : 'Simulation inconclusive — do not sign'}
+                ? 'Simulation non conclusive ou non atteinte — ne pas signer'
+                : 'Simulation inconclusive or not reached — do not sign'}
             </p>
           )}
           {canShowSigningLink ? (
@@ -370,13 +301,11 @@ export default function XorusAssistedSwapPanel() {
               <span aria-hidden>↗</span>
             </a>
           ) : (
-            build.signingLink && (
-              <p className="text-xs text-zinc-500">
-                {fr
-                  ? 'Lien de signature masqué tant que la simulation n’est pas strictement OK.'
-                  : 'Signing link hidden until simulation is strictly OK.'}
-              </p>
-            )
+            <p className="text-xs text-zinc-500">
+              {fr
+                ? 'Lien de signature uniquement si le proxy valide policy + simulation.'
+                : 'Signing link only when the proxy validates policy + simulation.'}
+            </p>
           )}
           {build.expiresAt && (
             <p className="text-xs text-zinc-500">
@@ -388,8 +317,8 @@ export default function XorusAssistedSwapPanel() {
 
       <p className="text-[11px] text-zinc-500">
         {fr
-          ? 'OneDex MCP · non-custodial · minOut on-chain · xOrus ne signe jamais. Mode autonome non activé. Policy client + backend (exact allowlist).'
-          : 'OneDex MCP · non-custodial · on-chain minOut · xOrus never signs. Autonomous mode not enabled. Client + backend policy (exact allowlist).'}
+          ? 'Proxy access-api · OneDex MCP serveur · non-custodial · xOrus ne signe jamais. Mode autonome non activé.'
+          : 'access-api proxy · server-side OneDex MCP · non-custodial · xOrus never signs. Autonomous mode not enabled.'}
       </p>
     </section>
   )

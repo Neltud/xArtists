@@ -14,6 +14,19 @@ POST https://aggregator.onedex.app/ai/mcp
 
 No API key. Mainnet only.
 
+## Production path (required)
+
+Browser **must not** call OneDex MCP directly.
+
+```
+Front → POST {VITE_ACCESS_API_BASE}/v1/xorus/assisted-swap
+     → access-api (policy + MCP server-side)
+     → signingLink only if simulation strictly OK
+```
+
+Module: `services/access-api/src/xorusAssistedSwap.mjs`  
+Python mirror: `xorus/execution/policy.py` + `assisted.py`
+
 ## Tools used
 
 | Tool | Usage in assisted flow |
@@ -24,7 +37,7 @@ No API key. Mainnet only.
 | list_tokens / get_wallet_balances | Optional helpers |
 | tx_status | Post-broadcast tracking (caller responsibility) |
 
-## Quick start (assisted)
+## Quick start (Python assisted)
 
 ```python
 from xorus.execution import SwapIntent, run_assisted
@@ -40,7 +53,6 @@ outcome = run_assisted(intent)
 
 if outcome.stage == "ready_to_sign":
     print(outcome.message)
-    # Open outcome.build.signing_link in a wallet, verify, sign.
 elif outcome.stage == "blocked":
     print("Policy:", outcome.message)
 else:
@@ -49,12 +61,11 @@ else:
 
 ## Policy (hard limits)
 
-Edit `policy.py`:
+Edit `policy.py` **and** keep `xorusAssistedSwap.mjs` in sync:
 
-- `ALLOWED_TOKENS` — **exact match only** (ticker or full identifier)
+- `ALLOWED_TOKENS` — **exact match only**
 - `MAX_AMOUNT_IN`
 - `MAX_SLIPPAGE_BPS`
-- `DAILY_BUDGET_USD` (placeholder for later metering)
 
 Amounts must be finite numbers > 0 (NaN / Inf / ≤0 rejected).
 
@@ -64,17 +75,17 @@ Amounts must be finite numbers > 0 (NaN / Inf / ≤0 rejected).
 - This package never signs and never broadcasts.
 - Receiver is enforced by OneDex (aggregator contract).
 - Simulation must pass **and** `meetsMinOut` must be explicitly `true` before a signing link is proposed.
-- Autonomous mode is **not** implemented in this first drop.
+- Autonomous mode is **not** implemented.
 
-## Audit hardening (2026-11-17)
+## Audit hardening
 
 - Strict token allowlist (no prefix matching).
-- Numeric amount hygiene (finite, > 0).
+- Numeric amount hygiene.
 - Frontend + backend: signing link only when `simOk === true`.
-- Frontend currently calls OneDex MCP directly (beta). A policy-aware backend proxy is the next step before production financial use.
+- **Client bypass closed**: MCP only from access-api proxy.
 
 ## Next steps
 
-1. Backend proxy endpoint that applies `check_intent` then MCP (close client bypass).
-2. Wire into decision_agent / swarm as an optional execution path.
+1. Deploy access-api with the new route (ops).
+2. Ensure `VITE_ACCESS_API_BASE` points at that deployment for Pages builds.
 3. Later: autonomous path behind explicit flag + dedicated agent wallet + daily budget ledger.
