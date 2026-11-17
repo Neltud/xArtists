@@ -1,107 +1,78 @@
-"""Hard policy gates for OneDex execution under xOrus.
+"""Hard, fail-closed input policy for OneDex-assisted (unsigned) swaps.
 
-All limits are code-enforced. The model proposes; policy decides.
+This policy does NOT authorize autonomous execution. Token identifiers must be
+verified and explicitly allowlisted before production use; ticker-only entries
+are temporary beta conveniences, not on-chain asset verification.
 """
 from __future__ import annotations
 
-from typing import Any
+import re
+from decimal import Decimal, InvalidOperation
 
 from xorus.execution.types import PolicyDecision, SwapIntent
 
 
-# --- Hard limits (tune in one place) -----------------------------------------
+# Exactly matched symbols only. Do not accept token-id prefixes: anyone can
+# issue a token whose identifier starts with "USDC-" or another trusted symbol.
+# Production should replace symbols with independently verified full IDs.
+ALLOWED_TOKENS: set[str] = {"EGLD", "WEGLD", "ONE", "USDC", "USDT", "WETH"}
 
-# Tokens the agent is allowed to touch (ticker or full identifier).
-# Empty set = refuse everything until configured.
-ALLOWED_TOKENS: set[str] = {
-    "EGLD",
-    "WEGLD",
-    "ONE",
-    "USDC",
-    "USDT",
-    "WETH",
-    # add verified tickers only
+MAX_AMOUNT_IN: dict[str, Decimal] = {
+    "EGLD": Decimal("2"),
+    "WEGLD": Decimal("2"),
+    "ONE": Decimal("50000"),
+    "USDC": Decimal("500"),
+    "USDT": Decimal("500"),
+    "WETH": Decimal("0.5"),
 }
+MAX_SLIPPAGE_BPS: int = 300
 
-# Maximum input amount per trade (human units, approximate).
-# Keyed by token ticker (upper). Use conservative values.
-MAX_AMOUNT_IN: dict[str, float] = {
-    "EGLD": 2.0,
-    "WEGLD": 2.0,
-    "ONE": 50_000.0,
-    "USDC": 500.0,
-    "USDT": 500.0,
-    "WETH": 0.5,
-}
+# Future autonomous budget, NOT ENFORCED here. No autonomous execution exists.
+DAILY_BUDGET_USD: float = 0.0
 
-# Max slippage in basis points (100 = 1%).
-MAX_SLIPPAGE_BPS: int = 300  # 3% hard ceiling for assisted mode
-
-# Daily notional budget in USD (rough). 0 = disabled.
-DAILY_BUDGET_USD: float = 1_000.0
-
-
-def _normalize(token: str) -> str:
-    t = token.strip().upper()
-    if "-" in t:  # identifier like ONE-f9954f → keep as-is for matching
-        return t
-    return t
+# Public MultiversX addresses use bech32 (erd1 + 58 charset characters).
+# This is a syntax check, not checksum/on-chain ownership proof.
+_PUBLIC_ADDRESS = re.compile(r"erd1[023456789acdefghjklmnpqrstuvwxyz]{58}\\Z")
 
 
 def check_intent(intent: SwapIntent) -> PolicyDecision:
-    """Return whether this intent is allowed under current hard limits."""
-    tin = _normalize(intent.token_in)
-    tout = _normalize(intent.token_out)
+    """Reject invalid or ambiguous intents before any network call."""
+    if not isinstance(intent.token_in, str) or not isinstance(intent.token_out, str):
+        return PolicyDecision(False, "token identifier must be a string")
+    token_in = intent.token_in.strip().upper()
+    token_out = intent.token_out.strip().upper()
 
-    # 1. Token allowlist
-    allowed_tickers = {_normalize(t) for t in ALLOWED_TOKENS}
-    # Accept either exact ticker or identifier that starts with an allowed ticker
-    def is_allowed(tok: str) -> bool:
-        if tok in allowed_tickers:
-            return True
-        base = tok.split("-")[0]
-        return base in allowed_tickers
+    if token_in not in ALLOWED_TOKENS or token_out not in ALLOWED_TOKENS:
+        return PolicyDecision(False, "tokens must match explicit ALLOWED_TOKENS entries")
+    if token_in == token_out:
+        return PolicyDecision(False, "token_in and token_out must differ")
 
-    if not is_allowed(tin):
-        return PolicyDecision(False, f"token_in '{intent.token_in}' not in ALLOWED_TOKENS")
-    if not is_allowed(tout):
-        return PolicyDecision(False, f"token_out '{intent.token_out}' not in ALLOWED_TOKENS")
+    if (isinstance(intent.max_slippage_bps, bool)
+            or not isinstance(intent.max_slippage_bps, int)
+            or not 0 <= intent.max_slippage_bps <= MAX_SLIPPAGE_BPS):
+        return PolicyDecision(False, "max_slippage_bps outside permitted range")
 
-    # 2. Slippage
-    if intent.max_slippage_bps > MAX_SLIPPAGE_BPS:
-        return PolicyDecision(
-            False,
-            f"max_slippage_bps {intent.max_slippage_bps} exceeds hard limit {MAX_SLIPPAGE_BPS}",
-        )
-
-    # 3. Amount
+    if not isinstance(intent.amount_in, str):
+        return PolicyDecision(False, "amount_in must be a decimal string")
     try:
-        amount = float(intent.amount_in)
-    except (TypeError, ValueError):
-        return PolicyDecision(False, f"invalid amount_in: {intent.amount_in!r}")
+        amount = Decimal(intent.amount_in.strip())
+    except (InvalidOperation, ValueError):
+        return PolicyDecision(False, "invalid amount_in")
+    if not amount.is_finite() or amount <= 0:
+        return PolicyDecision(False, "amount_in must be finite and positive")
+    max_amount = MAX_AMOUNT_IN.get(token_in)
+    if max_amount is None or amount > max_amount:
+        return PolicyDecision(False, f"amount_in exceeds MAX_AMOUNT_IN for {token_in}")
 
-    if amount <= 0:
-        return PolicyDecision(False, "amount_in must be > 0")
-
-    # Resolve max for this token (try base ticker)
-    base = tin.split("-")[0]
-    max_amt = MAX_AMOUNT_IN.get(base) or MAX_AMOUNT_IN.get(tin)
-    if max_amt is not None and amount > max_amt:
-        return PolicyDecision(
-            False,
-            f"amount_in {amount} exceeds MAX_AMOUNT_IN for {base} ({max_amt})",
-        )
-
-    # 4. Sender must look like a public MultiversX address
-    if not intent.sender.startswith("erd1") or len(intent.sender) < 62:
-        return PolicyDecision(False, "sender must be a valid public erd1… address")
+    if not isinstance(intent.sender, str) or not _PUBLIC_ADDRESS.fullmatch(intent.sender):
+        return PolicyDecision(False, "sender must be a syntactically valid public erd1 address")
 
     return PolicyDecision(
-        True,
-        "ok",
+        True, "ok",
         limits_applied={
             "max_slippage_bps": MAX_SLIPPAGE_BPS,
-            "max_amount": max_amt,
+            "max_amount": str(max_amount),
             "allowed_tokens": sorted(ALLOWED_TOKENS),
+            "autonomous_execution": False,
         },
     )
