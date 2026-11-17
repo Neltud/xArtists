@@ -1,34 +1,32 @@
-# xOrus backend (paper only)
+# xOrus backend (paper only) — v0.2
 
-Canonical intelligence backend for xArtists. **Replaces LIA / Vellum execution.**
+Canonical intelligence backend. **LIA / Vellum execution path retired.**
 
-## Contract
+## Modules
 
-| Flag | Value |
-|------|--------|
-| `executable` | `false` |
-| `live_trading` | `false` |
-| `sentinel_veto` | `true` |
-| ChatGPT weight | ≤ 15 % |
-| Defined signals | 120 (catalog) |
-
-No mint, sign, trade, or payment authorization from this package.
+| Module | Role |
+|--------|------|
+| `catalog.py` | 120 defined signals (12×10) |
+| `paper_engine.py` | scorer + crosscut (ex-Chorus, LIA-free) |
+| `swarm.py` | `run_xorus()` public API |
+| `analysis_cycle.py` | Binance public klines → report |
+| `analysis_report.py` | sealed analysis document |
+| `decision_agent.py` | bounded advisory board |
+| `data_feed.py` | proof-bound signal counts |
+| `preprod_gate.py` | preflight gates |
+| `production_run.py` | operator cycle + data mirror |
+| `safety.py` | immutable `executable=false` contract |
 
 ## Commands
 
 ```bash
 export PYTHONPATH=.
-python -m xorus                    # one board → stdout
-python -m xorus.production_run     # board + data/ + public mirror
+python -m xorus
+python -m xorus.production_run
 ```
 
-## Migration from LIA
+## Safety
 
-| Legacy | Replacement |
-|--------|-------------|
-| `python -m lia.vellum.production_run` | `python -m xorus.production_run` |
-| `python -m lia.xorus` | `python -m xorus` |
-| `LIA_LIVE_TRADING` | **forbidden** (hard error if set to 1) |
-| `lia/` trading / vellum cycles | **retired** — see `docs/ops/LIA_PURGE_XORUS_BACKEND.md` |
-
-Daily dual reports (Grok + ChatGPT) remain in `services/signals-worker/` and the `daily-signals` workflow.
+- `LIA_LIVE_TRADING=1` → refused in `production_run`
+- Sentinel veto, ChatGPT weight ≤ 15 %
+- No mint / sign / trade / payment authorization

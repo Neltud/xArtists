@@ -1,4 +1,4 @@
-"""python -m xorus — one paper board cycle (stdout JSON)."""
+"""python -m xorus"""
 from xorus.swarm import main
 
 if __name__ == "__main__":
