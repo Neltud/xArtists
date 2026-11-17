@@ -45,6 +45,10 @@ jobs:
             echo "::error::OVH_SSH_USER must be a dedicated unprivileged Linux user"
             exit 2
           }
+          if [[ "$OVH_SSH_USER" == "root" ]]; then
+            echo "::error::Root SSH deployment is forbidden; use a dedicated account"
+            exit 2
+          fi
           port="${OVH_SSH_PORT:-22}"
           [[ "$port" =~ ^[0-9]{1,5}$ ]] && (( 10#$port > 0 && 10#$port <= 65535 )) || {
             echo "::error::OVH_SSH_PORT is invalid"
