@@ -33,20 +33,19 @@ test('public status differentiates source age, checking time and simulated perfo
   assert.doesNotMatch(overview, /\{hub\.note\}/)
 })
 
-test('xOrus top-level page remains browse-only and exposes market, auction and packs', () => {
+test('xOrus public page is paper-first with assisted swap separated from autonomous trading', () => {
   const page = source('pages/XorusPage.tsx')
-  assert.match(page, /PAPER \/ SHADOW/)
-  assert.match(page, /advancedOpen &&/)
-  assert.match(page, /aria-expanded=\{advancedOpen\}/)
-  assert.match(page, /to="\/explore\/market"/)
-  assert.match(page, /to="\/explore\/auction"/)
-  assert.match(page, /to="\/intelligence\/agents"/)
-  assert.match(page, /Simulated P&L is not realized profit/)
-  assert.doesNotMatch(page, /\{hub\?\.note\}/)
-  assert.doesNotMatch(page, /LIVE user-sign xPortal/)
-  assert.match(page, /Archived strategy withheld/)
-  assert.match(page, /producerFreshness\.is_stale/)
+  assert.match(page, /XORUS_LIVE_TRADING/)
+  assert.match(page, /Bureau de décision xOrus/)
+  assert.match(page, /<XorusDecisionDesk\s*\/>/)
+  assert.match(page, /<XorusAssistedSwapPanel\s*\/>/)
+  assert.match(page, /showArchive &&/)
+  assert.match(page, /Consoles LIA archivées/)
+  assert.match(page, /to="\/studio"/)
+  assert.match(page, /to="\/agents"/)
+  assert.doesNotMatch(page, /sendTransaction\(|mintNFT\(|LIVE user-sign xPortal/)
 })
+
 
 test('legacy page delegates to xOrus without a second implementation', () => {
   const legacy = source('pages/LiaPage.tsx')
