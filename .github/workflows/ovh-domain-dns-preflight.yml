@@ -9,6 +9,10 @@ on:
       - 'scripts/ops/ovh-domain-dns-preflight.test.mjs'
       - 'docs/ops/OVH_DOMAIN_MAIL_RENDER_POSTGRES_BOUNDARIES_2026-11-10.md'
       - '.github/workflows/ovh-domain-dns-preflight.yml'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/ovh-domain-dns-preflight.yml'
   workflow_dispatch:
 
 permissions:
@@ -30,8 +34,8 @@ jobs:
         run: node --test scripts/ops/ovh-domain-dns-preflight.test.mjs
 
   public-dns:
-    name: Public xartists.art DNS observation (manual)
-    if: github.event_name == 'workflow_dispatch'
+    name: Public xartists.art DNS/MX/SPF/DMARC observation (read-only)
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
