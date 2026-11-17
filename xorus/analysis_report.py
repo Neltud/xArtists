@@ -1,7 +1,24 @@
-"""xOrus analysis report — sealed paper document (phase-1 bridge)."""
+"""xorus.analysis_report — LIA-free (inlined via zlib; phase 1b)."""
 from __future__ import annotations
 
-try:
-    from lia.xorus.analysis_report import *  # noqa: F401,F403
-except Exception as exc:  # pragma: no cover
-    raise ImportError("xorus.analysis_report phase-1 bridge failed") from exc
+import base64
+import sys
+import types
+import zlib
+
+_BLOB = "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"
+_MODNAME = "xorus.analysis_report"
+_SRCNAME = "xorus/analysis_report.py"
+
+def _bootstrap():
+    code = zlib.decompress(base64.b64decode(_BLOB)).decode()
+    mod = types.ModuleType(_MODNAME)
+    mod.__dict__["__name__"] = _MODNAME
+    mod.__dict__["__package__"] = "xorus"
+    mod.__dict__["__file__"] = __file__
+    sys.modules[_MODNAME] = mod
+    exec(compile(code, _SRCNAME, "exec"), mod.__dict__)
+    return mod
+
+_m = _bootstrap()
+globals().update({k: v for k, v in _m.__dict__.items() if not k.startswith("__")})
