@@ -69,3 +69,23 @@ Edit `policy.py`:
 1. Wire into decision_agent / swarm as an optional execution path.
 2. Front: display signingLink + costSummary + warnings.
 3. Later: autonomous path behind explicit flag + dedicated agent wallet + daily budget ledger.
+
+## Controls and residual blockers — Nov 17, 2026
+
+- Only exact token symbols are accepted in the beta input policy; names or
+  token-ID prefixes are **not** evidence of a verified on-chain asset.
+  Switch to verified full token identifiers before production approval.
+- Amounts use Python `Decimal` (finite, strictly positive, token-specific cap).
+- Quoted human-readable `minOut` must prove the requested slippage cap;
+  the built raw minimum must not worsen versus the quoted raw minimum.
+- `meetsMinOut` must be the actual JSON boolean `true`, not absent or a string.
+- The signing link must be HTTPS on `wallet.multiversx.com/hook/transaction`.
+- If any required proof is missing, return `blocked`; no signing URL is approved.
+- Tests: `python -m unittest tests.test_xorus_execution` (offline mocks only).
+- **Production NO-GO:** the React beta still calls OneDex directly and has
+  browser-side checks, not server-enforced policy. A server-owned `run_assisted`
+  API route, authenticated session/rate limits, contract/token-ID validation,
+  on-chain amount checks and real-wallet browser smoke tests are still required.
+- `DAILY_BUDGET_USD` is not metered. Autonomous mode stays disabled.
+- Neither OneDex nor xOrus signature-free simulation guarantees on-chain
+  execution, quoted price, or wallet safety. Review recipient/data and amounts.
