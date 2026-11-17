@@ -2,43 +2,53 @@
 
 Thin **Neon Functions Free** HTTP surface for P0 host when **no VPS** is available.
 
+## Entry point
+
+Neon expects a Web-standard export:
+
+```js
+export async function fetch(request) { ... }
+```
+
+Defined in `handler.mjs`. Do not rename to a bare `handler` without a `fetch` alias.
+
 ## Scope (v0)
 
-| Route | Behavior |
-|--------|----------|
-| `GET /health` | Liveness + build identity |
-| `GET /v1/ops/build-info` | SHA / role / flags (all financial OFF) |
-| `GET /v1/xorus/assisted-swap` | Policy JSON, **`enabled: false`** always in this edge unless env explicitly set (default OFF) |
-| `POST /v1/xorus/assisted-swap` | **503** while disabled — no MCP, no signingLink |
+| Route | Methods | Behavior |
+|--------|---------|----------|
+| `/health` | GET, HEAD | Liveness; **never** claims swap execution |
+| `/v1/ops/build-info` | GET, HEAD | SHA / role / flags |
+| `/v1/xorus/assisted-swap` | GET | Policy + `enabled: false` |
+| `/v1/xorus/assisted-swap` | POST | **503** if flag off; **501** if flag on (not implemented on edge) |
+
+### Flag vs capability
+
+| Field | Meaning |
+|--------|---------|
+| `assisted_swap_flag_configured` | `XORUS_ASSISTED_SWAP_ENABLED===1` in env |
+| `assisted_swap_capable` | Always **false** on neon-edge-v0 |
+| `assisted_swap_enabled` / `enabled` | Always **false** on this edge |
 
 ## Non-goals
 
-- Not a replacement for full `services/access-api` (~133 routes)
+- Not a replacement for full `services/access-api`
 - Not Studio / mint / Paybox / escrow
-- Do **not** set `VITE_ACCESS_API_BASE` to this edge until product accepts a partial API
-- No DNS change required for first deploy (use Neon Function URL for smoke)
+- Do **not** set `VITE_ACCESS_API_BASE` here until product accepts a partial API
+- No DNS change for first deploy (use Neon Function URL for smoke)
 
-## Flags
+## Local smoke
 
-| Env | Default | Meaning |
-|-----|---------|----------|
-| `XORUS_ASSISTED_SWAP_ENABLED` | unset / not `1` | POST remains 503 |
-| `GIT_SHA` | `unknown` | Reported in health/build-info |
-| `CORS_ORIGINS` | `https://xartists.art,https://www.xartists.art` | Exact-origin only |
+```bash
+node services/neon-edge/smoke-local.mjs
+```
 
 ## Deploy (owner)
 
-1. Neon Console → project sandbox → **Functions** → create Node handler from `handler.mjs`.
-2. Set `GIT_SHA` to the deploy commit.
-3. Leave `XORUS_ASSISTED_SWAP_ENABLED` unset.
-4. Public smoke:
+1. Neon Console → Functions → Node handler using `export async function fetch`.
+2. Set `GIT_SHA` to the deploy commit. Leave `XORUS_ASSISTED_SWAP_ENABLED` unset.
+3. Smoke:
    ```bash
    curl -sS "$NEON_FN_URL/health"
-   curl -sS "$NEON_FN_URL/v1/xorus/assisted-swap"
-   curl -sS -X POST "$NEON_FN_URL/v1/xorus/assisted-swap" -H 'content-type: application/json' -d '{}'  # expect 503
+   curl -sS -X POST "$NEON_FN_URL/v1/xorus/assisted-swap" -H 'content-type: application/json' -d '{}'  # 503
    ```
-5. Comment results on issue **#613** (URL + SHA, no secrets).
-
-## Relation to access-api
-
-`xorusAssistedSwap.mjs` in access-api remains the **full** proxy (MCP + policy) for when a complete host exists. This edge intentionally **does not** call OneDex until a later controlled promotion and explicit flag + review.
+4. Report URL + SHA on issue **#613**.
