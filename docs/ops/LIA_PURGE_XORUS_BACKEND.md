@@ -12,7 +12,7 @@
 | 1b analysis_* / data_feed / preprod / decision full inline | **Done** |
 | 2 Front XorusPage without LIA UI | **Done** |
 | 3 `lia.vellum` → ImportError | **Done** |
-| 4 Physical archive of `lia/` | Pending |
+| 4 Physical archive of `lia/` | Pending (after CI green) |
 
 ## Commands
 
