@@ -56,8 +56,8 @@ class AssistedPreparationTests(unittest.TestCase):
         simulated = sim if sim is not None else {
             "status": "success", "meetsMinOut": True
         }
-        with patch("xorus.execution.assisted.client.get_quote", return_value=quoted), \\
-             patch("xorus.execution.assisted.client.build_swap_tx", return_value=built), \\
+        with patch("xorus.execution.assisted.client.get_quote", return_value=quoted), \
+             patch("xorus.execution.assisted.client.build_swap_tx", return_value=built), \
              patch("xorus.execution.assisted.client.simulate_swap_tx", return_value=simulated):
             return run_assisted(intent(), **flags)
 
