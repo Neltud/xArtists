@@ -36,7 +36,7 @@ class SwapPolicyTests(unittest.TestCase):
         for slip in (-1, 301, True, 1.5):
             with self.subTest(slip=slip):
                 self.assertFalse(check_intent(intent(max_slippage_bps=slip)).allowed)
-        self.assertFalse(check_intent(intent(sender="erd1" + "x" * 58)).allowed)
+        self.assertFalse(check_intent(intent(sender="erd1" + "1" * 58)).allowed)
         self.assertFalse(check_intent(intent(sender=SENDER + "z")).allowed)
 
     def test_allows_bounded_intent(self):
@@ -90,6 +90,24 @@ class AssistedPreparationTests(unittest.TestCase):
                 result = self._run(sim=sim)
                 self.assertNotEqual(result.stage, "ready_to_sign")
                 self.assertFalse(result.requires_human_signature)
+
+
+    def test_excessive_slippage_in_quote_is_blocked(self):
+        outcome = self._run(quote={
+            "quotedOut": "100",
+            "minOut": {"human": "95", "raw": "95000000"},
+        })
+        self.assertEqual(outcome.stage, "blocked")
+        self.assertFalse(outcome.requires_human_signature)
+
+    def test_built_minimum_cannot_worsen_quote(self):
+        outcome = self._run(build={
+            "transaction": {"mock": "unsigned"},
+            "minOut": {"human": "98", "raw": "98000000"},
+            "signingLink": SAFE_LINK,
+        })
+        self.assertEqual(outcome.stage, "blocked")
+        self.assertFalse(outcome.requires_human_signature)
 
     def test_signing_link_must_be_exact_wallet_origin(self):
         for link in (
