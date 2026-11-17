@@ -46,9 +46,17 @@ def _rpc(method: str, params: Optional[dict] = None, req_id: int = 1) -> dict[st
 
     try:
         parsed = json.loads(body)
-    except json.JSONDecodeError as e:
-        raise OneDexClientError(f"invalid JSON: {body[:200]}") from e
+    except json.JSONDecodeError:
+        # Streamable HTTP may return text/event-stream instead of JSON.
+        events = [line[5:].strip() for line in body.splitlines()
+                  if line.startswith("data:") and line[5:].strip() != "[DONE]"]
+        try:
+            parsed = json.loads(events[-1])
+        except (ValueError, IndexError) as e:
+            raise OneDexClientError("invalid JSON/SSE MCP response") from e
 
+    if not isinstance(parsed, dict):
+        raise OneDexClientError("invalid JSON-RPC result type")
     if "error" in parsed:
         err = parsed["error"]
         raise OneDexClientError(f"RPC error {err.get('code')}: {err.get('message')}")
@@ -73,8 +81,10 @@ def call_tool(name: str, arguments: dict[str, Any]) -> dict[str, Any]:
         "tools/call",
         {"name": name, "arguments": arguments},
     )
-    # MCP often returns content list; prefer structuredContent
+    # Tool-level failures may carry content without a JSON-RPC error.
     if isinstance(result, dict):
+        if result.get("isError") is True:
+            raise OneDexClientError(f"OneDex tool {name} reported an error")
         if "structuredContent" in result:
             return result["structuredContent"]
         # sometimes nested
@@ -152,4 +162,4 @@ def simulate_swap_tx(transaction: dict[str, Any], min_out_raw: Optional[str] = N
 
 
 def tx_status(tx_hash: str) -> dict[str, Any]:
-    return call_tool("tx_status", {"txHash": tx_hash})
+    return call_tool("tx_status", {"hash": tx_hash})
