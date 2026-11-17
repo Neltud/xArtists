@@ -1,7 +1,24 @@
-"""xOrus decision agent — bounded advisory paper board (phase-1 bridge)."""
+"""xorus.decision_agent — LIA-free (inlined via zlib; phase 1b)."""
 from __future__ import annotations
 
-try:
-    from lia.xorus.decision_agent import *  # noqa: F401,F403
-except Exception as exc:  # pragma: no cover
-    raise ImportError("xorus.decision_agent phase-1 bridge failed") from exc
+import base64
+import sys
+import types
+import zlib
+
+_BLOB = "PLACEHOLDER"
+_MODNAME = "xorus.decision_agent"
+_SRCNAME = "xorus/decision_agent.py"
+
+def _bootstrap():
+    code = zlib.decompress(base64.b64decode(_BLOB)).decode()
+    mod = types.ModuleType(_MODNAME)
+    mod.__dict__["__name__"] = _MODNAME
+    mod.__dict__["__package__"] = "xorus"
+    mod.__dict__["__file__"] = __file__
+    sys.modules[_MODNAME] = mod
+    exec(compile(code, _SRCNAME, "exec"), mod.__dict__)
+    return mod
+
+_m = _bootstrap()
+globals().update({k: v for k, v in _m.__dict__.items() if not k.startswith("__")})
