@@ -1,5 +1,7 @@
 # xArtists — sortir de Render sans nouvel abonnement (14 novembre 2026)
 
+> **MISE À JOUR — 17 novembre 2026 (configuration confirmée).** Le propriétaire indique ne **posséder ni VPS ni serveur dédié**. Le plan ci-dessous du 14 novembre qui présupposait un serveur OVH existant est donc **historique et non applicable** : ne pas déclencher `ovh-api-staging-publish.yml` ni chercher d'accès SSH VPS. L'hébergement **Web OVH et MX Plan restent intacts** ; aucune nouvelle VM, facture ou migration DNS. Le plan applicable est [Neon Functions Free, strictement préproduction](../neon/README.md), avec l'API publique actuelle **non publiée** et toutes les fonctions transactionnelles OFF. Le backend complet doit être porté séparément et ne peut pas être servi par un simple statut HTTP.
+
 **Décision proposée :** garder `https://xartists.art` sur GitHub Pages et déplacer
 **seulement** `services/access-api` vers un hôte Docker déjà disponible,
 ou une VM Oracle Cloud **Always Free** si un hébergement supplémentaire
