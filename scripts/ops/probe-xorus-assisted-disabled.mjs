@@ -13,12 +13,6 @@ const SHA = /^[a-f0-9]{40}$/
 const ALLOWED_ORIGIN = 'https://xartists.art'
 const TIMEOUT_MS = 8000
 
-function checkJson(response, status) {
-  if (response.status !== status) throw Error('assisted_unexpected_http_status')
-  if (!String(response.headers.get('content-type') || '').toLowerCase().includes('application/json'))
-    throw Error('assisted_invalid_content_type')
-}
-
 async function requestJson(url, { method = 'GET', body, fetchFn = fetch } = {}) {
   const opts = {
     method,
@@ -61,7 +55,7 @@ export async function probeAssistedDisabled({ origin, expectedSha, fetchFn = fet
 
   // 5th request: exact public policy route.
   const get = await requestJson(base + '/v1/xorus/assisted-swap', {fetchFn})
-  checkJson({ status:get.status, headers:{get:()=> 'application/json'} }, 200)
+  if (get.status !== 200) throw Error('assisted_policy_status_invalid')
   const policy = get.body
   if (policy.ok !== true || policy.mode !== 'assisted_only' ||
       policy.enabled !== false || policy.live_trading !== false ||
