@@ -1,21 +1,91 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-17T06:42:48.398Z",
+  "updatedAt": "2026-11-17T18:10:19.745Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1794939019173",
+      "timestamp": "18:10",
+      "source": "EGLD",
+      "title": "Cotation publique · $2.55 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1794937913000",
+      "timestamp": "17:51",
+      "source": "CoinTelegraph",
+      "title": "Lighter incident exposes risks beyond withdrawal controls",
+      "link": "https://cointelegraph.com/news/lighter-incident-exposes-risks-beyond-withdrawal-controls?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1794937181000",
+      "timestamp": "17:39",
+      "source": "CoinTelegraph",
+      "title": "Fed’s Waller cites Binance hack in warning over tokenized finance",
+      "link": "https://cointelegraph.com/news/feds-waller-cites-binance-hack-in-warning-over-tokenized-finance?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1794933583000",
+      "timestamp": "16:39",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin drops 2.5% as Nvidia stock risks new 5-month lows into Q3 earnings",
+      "link": "https://cointelegraph.com/markets/bitcoin-drops-25-nvidia-stock-risks-new-5-month-low-q3-earnings?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1794927280000",
+      "timestamp": "14:54",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1794926749000",
+      "timestamp": "14:45",
+      "source": "CoinTelegraph",
+      "title": "Solana Foundation takes majority interest in crypto data firm CoinGecko",
+      "link": "https://cointelegraph.com/news/coingecko-solana-foundation-majority-stake?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1794922200000",
+      "timestamp": "13:30",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin to $1M by 2030? ‘Almost certainly not,’ says Dragonfly’s Qureshi",
+      "link": "https://cointelegraph.com/magazine/bitcoin-to-1m-by-2030-almost-certainly-not-says-dragonflys-qureshi?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1794920576000",
+      "timestamp": "13:02",
+      "source": "CoinDesk",
+      "title": "Ethereum's Glamsterdam upgrade risks breaking up to 15,000 automated apps",
+      "link": "https://www.coindesk.com/tech/2026/11/17/ethereum-s-glamsterdam-upgrade-risks-breaking-up-to-15-000-contracts"
+    },
+    {
+      "id": "rss-CoinDesk-1-1794920400000",
+      "timestamp": "13:00",
+      "source": "CoinDesk",
+      "title": "Decentralized exchange Grvt looks to makes commodity trading more predictable with stable funding perps",
+      "link": "https://www.coindesk.com/markets/2026/11/17/decentralized-exchange-grvt-makes-commodity-trading-more-predictable-with-stable-funding-perps"
+    },
+    {
+      "id": "rss-CoinDesk-2-1794917813000",
+      "timestamp": "12:16",
+      "source": "CoinDesk",
+      "title": "Crypto's 'casino-chips' are disappearing, adding to pain from spot ETF outflows",
+      "link": "https://www.coindesk.com/daybook-us/2026/11/17/crypto-s-casino-chips-are-disappearing-adding-to-pain-from-spot-etf-outflows"
+    },
+    {
+      "id": "rss-CoinDesk-3-1794916855000",
+      "timestamp": "12:00",
+      "source": "CoinDesk",
+      "title": "Ex-OpenAI researcher fund dumps bitcoin miners, cuts IREN 94% after portfolio slump",
+      "link": "https://www.coindesk.com/business/2026/11/17/ex-openai-researcher-fund-dumps-bitcoin-miners-cuts-iren-94-after-portfolio-slump"
+    },
     {
       "id": "egld-1794897767902",
       "timestamp": "06:42",
       "source": "EGLD",
       "title": "Cotation publique · $2.60 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1794895200000",
-      "timestamp": "06:00",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "rss-CoinTelegraph-1-1794887182000",
@@ -128,76 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Bitcoin price fails to hold $65K as US stocks drop further on AI nerves",
       "link": "https://cointelegraph.com/markets/bitcoin-price-fails-to-hold-65k-us-stocks-drop-on-ai-nerves?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-3-1794844451000",
-      "timestamp": "15:54",
-      "source": "CoinDesk",
-      "title": "Brazil's central bank faces backlash over stablecoin money laundering remarks",
-      "link": "https://www.coindesk.com/business/2026/11/16/brazil-s-central-bank-faces-backlash-over-stablecoin-money-laundering-remarks"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1794819050000",
-      "timestamp": "08:50",
-      "source": "CoinTelegraph",
-      "title": "DBS, JPMorgan’s Kinexys launch 24/7 transfers of tokenized deposits",
-      "link": "https://cointelegraph.com/news/dbs-jpmorgans-kinexys-launch-tokenized-transfers?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1794817659000",
-      "timestamp": "08:27",
-      "source": "CoinTelegraph",
-      "title": "Harvard, Dartmouth keep Bitcoin ETF stakes steady as fund gains 42% in Q3",
-      "link": "https://cointelegraph.com/news/harvard-dartmouth-bitcoin-etf-ibit-up-q3?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1794806920000",
-      "timestamp": "05:28",
-      "source": "CoinTelegraph",
-      "title": "Aster CEO suspects foul play after token plunges 32% in minutes",
-      "link": "https://cointelegraph.com/markets/aster-ceo-suspects-foul-play-after-token-plunges-32-in-minutes?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1794804127000",
-      "timestamp": "04:42",
-      "source": "CoinTelegraph",
-      "title": "Asian chip stocks tumble ahead of Nvidia Q3 earnings",
-      "link": "https://cointelegraph.com/markets/asian-chip-stocks-tumble-ahead-of-nvidia-q3-earnings?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1794796387000",
-      "timestamp": "02:33",
-      "source": "CoinTelegraph",
-      "title": "Luxor CEO warns of AI ‘dark forest’ following Bitcoin miner hijack",
-      "link": "https://cointelegraph.com/news/luxor-ceo-warns-of-ai-dark-forest-after-bitcoin-miner-hijack?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1794817083000",
-      "timestamp": "08:18",
-      "source": "CoinDesk",
-      "title": "Vitalik Buterin flips to ‘total bull’ on a faster route to quantum-safe Ethereum",
-      "link": "https://www.coindesk.com/tech/2026/11/16/vitalik-buterin-flips-to-total-bull-on-a-faster-route-to-quantum-safe-ethereum"
-    },
-    {
-      "id": "rss-CoinDesk-1-1794815475000",
-      "timestamp": "07:51",
-      "source": "CoinDesk",
-      "title": "Bitcoin miners were hijacked and their BTC rewards redirected to an attacker",
-      "link": "https://www.coindesk.com/tech/2026/11/16/bitcoin-miners-were-hijacked-and-their-btc-rewards-redirected-to-an-attacker"
-    },
-    {
-      "id": "rss-CoinDesk-2-1794810462000",
-      "timestamp": "06:27",
-      "source": "CoinDesk",
-      "title": "Cardano holders vote down $5 million bid to buy warehouse copper",
-      "link": "https://www.coindesk.com/markets/2026/11/16/cardano-holders-vote-down-usd5-million-bid-to-buy-warehouse-copper"
-    },
-    {
-      "id": "rss-CoinDesk-3-1794808901000",
-      "timestamp": "06:01",
-      "source": "CoinDesk",
-      "title": "Trump administration to name Nvidia, OpenAI and several others as AI national champions",
-      "link": "https://www.coindesk.com/markets/2026/11/16/trump-administration-to-name-nvidia-openai-and-several-others-as-u-s-ai-national-champions"
     }
   ]
 }
