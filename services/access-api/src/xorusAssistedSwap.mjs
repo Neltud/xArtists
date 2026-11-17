@@ -206,10 +206,13 @@ export async function runAssistedSwap(body) {
   try {
     const rawB = await mcpCall('build_swap_tx', { tokenIn, tokenOut, amountIn, sender })
     transaction = rawB.transaction || null
+    if (!transaction || typeof transaction !== 'object' || Array.isArray(transaction)) {
+      throw new Error('Build returned no valid unsigned transaction')
+    }
     buildMinOutRaw = rawPositiveAmount(pickMinOutRaw(rawB))
     const quotedRaw = rawPositiveAmount(pickMinOutRaw(quoteRaw))
-    if (!buildMinOutRaw) throw new Error('Build returned no positive raw minOut')
-    if (quotedRaw && BigInt(buildMinOutRaw) < BigInt(quotedRaw)) {
+    if (!buildMinOutRaw || !quotedRaw) throw new Error('Build/quote missing positive raw minOut')
+    if (BigInt(buildMinOutRaw) < BigInt(quotedRaw)) {
       throw new Error('Built raw minOut below quoted raw minimum')
     }
     build = {
