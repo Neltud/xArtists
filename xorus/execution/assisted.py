@@ -5,6 +5,7 @@ Never signs. Never holds keys. Returns a signing link + simulation result.
 from __future__ import annotations
 
 from typing import Any, Optional
+from urllib.parse import urlsplit
 
 from xorus.execution import onedex_client as client
 from xorus.execution.policy import check_intent
@@ -33,6 +34,25 @@ def _extract_min_out(data: dict[str, Any]) -> tuple[Optional[str], Optional[str]
     return min_out, min_out_raw
 
 
+def _approved_signing_link(link: Optional[str]) -> bool:
+    """Reject non-wallet, non-HTTPS or userinfo-based redirect links."""
+    if not isinstance(link, str):
+        return False
+    try:
+        url = urlsplit(link)
+        return (
+            url.scheme == "https"
+            and url.hostname == "wallet.multiversx.com"
+            and url.port in (None, 443)
+            and url.username is None
+            and url.password is None
+            and url.path == "/hook/transaction"
+            and not url.fragment
+        )
+    except ValueError:
+        return False
+
+
 def run_assisted(intent: SwapIntent, *, skip_quote: bool = False) -> AssistedOutcome:
     """
     Full assisted path:
@@ -47,9 +67,13 @@ def run_assisted(intent: SwapIntent, *, skip_quote: bool = False) -> AssistedOut
             message=f"Policy rejected: {decision.reason}",
         )
 
+    # Quote cannot be skipped: no signing path without an inspected quote.
+    if skip_quote:
+        return AssistedOutcome(stage="blocked", intent=intent, message="Quote is mandatory")
+
     quote_result: Optional[QuoteResult] = None
 
-    # 2. Quote (recommended)
+    # 2. Quote (mandatory)
     if not skip_quote:
         try:
             raw_q = client.get_quote(
@@ -118,6 +142,15 @@ def run_assisted(intent: SwapIntent, *, skip_quote: bool = False) -> AssistedOut
             message="No transaction returned by build_swap_tx",
         )
 
+    # No signing if on-chain minimum cannot be proven from the build result.
+    if (not isinstance(build_result.min_out_raw, str)
+            or not build_result.min_out_raw.isdecimal()
+            or int(build_result.min_out_raw) <= 0):
+        return AssistedOutcome(
+            stage="blocked", intent=intent, quote=quote_result, build=build_result,
+            message="Build returned no verifiable positive minOutRaw",
+        )
+
     # 4. Simulate (mandatory)
     try:
         raw_s = client.simulate_swap_tx(
@@ -126,10 +159,8 @@ def run_assisted(intent: SwapIntent, *, skip_quote: bool = False) -> AssistedOut
         )
         status = str(raw_s.get("status") or "").lower()
         meets = raw_s.get("meetsMinOut")
-        if meets == "—":
-            meets_bool = None
-        else:
-            meets_bool = bool(meets) if meets is not None else None
+        # Never interpret strings like "false" as True.
+        meets_bool = meets if type(meets) is bool else None
 
         sim = SimulationResult(
             ok=status in ("success", "ok"),
@@ -147,7 +178,7 @@ def run_assisted(intent: SwapIntent, *, skip_quote: bool = False) -> AssistedOut
             message=f"Simulation failed: {e}",
         )
 
-    if not sim.ok or sim.meets_min_out is False:
+    if not sim.ok or sim.meets_min_out is not True:
         return AssistedOutcome(
             stage="simulate",
             intent=intent,
@@ -157,8 +188,14 @@ def run_assisted(intent: SwapIntent, *, skip_quote: bool = False) -> AssistedOut
             message="Simulation did not pass (status or minOut). Do not sign.",
         )
 
-    # 5. Ready for human signature
-    link = build_result.signing_link or "(no signingLink — use the unsigned transaction in a wallet)"
+    # 5. Ready for human signature only with the expected wallet URL.
+    if not _approved_signing_link(build_result.signing_link):
+        return AssistedOutcome(
+            stage="blocked", intent=intent, quote=quote_result,
+            build=build_result, simulation=sim,
+            message="Missing or unapproved signing link; do not sign",
+        )
+    link = build_result.signing_link
     return AssistedOutcome(
         stage="ready_to_sign",
         intent=intent,
