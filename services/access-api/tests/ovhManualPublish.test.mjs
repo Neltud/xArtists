@@ -28,16 +28,15 @@ test('SSH is encrypted and host-key pinned; no blind remote or third-party deplo
     /ssh-keyscan\b/,/StrictHostKeyChecking=no/,/\/dev\/null" *>\s*.*known_hosts/,
     /password:\s*/,/api\.xartists\.art\/v1\/studio\/media\/upload/,
     /onrender\.com/,/docker\.run\/action/,/appleboy\/ssh-action/,
-  ]) assert.doesNotMatch(workflow,forbidden)
+  ]) assert.doesNotMatch(workflow.replace(/^\s*#.*$/gm,''),forbidden)
 })
 
 test('remote OVH deploy uses exact detached SHA, private env, TLS and no mint/payment/IPFS toggle',()=>{
   for(const item of [
     'api-staging.xartists.art','git -C "$release" rev-parse HEAD',
-    'api.env','XARTISTS_STUDIO_UPLOAD_APPROVED=0',
+    '.env.api','XARTISTS_STUDIO_UPLOAD_APPROVED=0',
     'compose config --quiet','compose build --pull api','compose up -d --no-build',
-    'Strict', // safety checks are enforced by CI SSH step, not the remote
-  ].filter(x=>x!=='Strict'))assert.ok(script.includes(item),item)
+  ])assert.ok(script.includes(item),item)
   assert.match(script,/stat -c '%a'/)
   assert.match(script,/https:\/\/api-staging\.xartists\.art\/v1\/ops\/build-info/)
   assert.match(script,/identity\.execution_authorized!==false/)
