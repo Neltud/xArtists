@@ -1,0 +1,38 @@
+name: Neon free backend — fail-closed contract
+on:
+  pull_request:
+    paths:
+      - 'deploy/neon/**'
+      - 'deploy/free-hosting/**'
+      - 'services/access-api/tests/neonFreeReadOnly.test.mjs'
+      - '.github/workflows/neon-free-backend-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'deploy/neon/**'
+      - 'services/access-api/tests/neonFreeReadOnly.test.mjs'
+      - '.github/workflows/neon-free-backend-ci.yml'
+permissions:
+  contents: read
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Assert staging is not production Access API or authorized commerce
+        run: node --test services/access-api/tests/neonFreeReadOnly.test.mjs
+      - name: Verify standalone staging status handler; no secrets or deployment
+        run: |
+          test -s deploy/neon/readonly-api/index.mjs
+          test -s deploy/neon/README.md
+          node --input-type=module -e '
+            import {createReadOnlyHandler} from "./deploy/neon/readonly-api/index.mjs";
+            const r=await createReadOnlyHandler({env:{}}).fetch(new Request("https://localhost/health"));
+            if(r.status!==200 || (await r.json()).execution_authorized!==false) process.exit(1);
+          '
