@@ -51,30 +51,41 @@ else:
 
 Edit `policy.py`:
 
-- `ALLOWED_TOKENS` — **exact match only** (ticker or full identifier)
+- `ALLOWED_TOKENS`
 - `MAX_AMOUNT_IN`
 - `MAX_SLIPPAGE_BPS`
 - `DAILY_BUDGET_USD` (placeholder for later metering)
-
-Amounts must be finite numbers > 0 (NaN / Inf / ≤0 rejected).
 
 ## Safety contract
 
 - `executable=False` remains the global default in `xorus.safety`.
 - This package never signs and never broadcasts.
 - Receiver is enforced by OneDex (aggregator contract).
-- Simulation must pass **and** `meetsMinOut` must be explicitly `true` before a signing link is proposed.
+- Simulation must pass before a signing link is returned.
 - Autonomous mode is **not** implemented in this first drop.
-
-## Audit hardening (2026-11-17)
-
-- Strict token allowlist (no prefix matching).
-- Numeric amount hygiene (finite, > 0).
-- Frontend + backend: signing link only when `simOk === true`.
-- Frontend currently calls OneDex MCP directly (beta). A policy-aware backend proxy is the next step before production financial use.
 
 ## Next steps
 
-1. Backend proxy endpoint that applies `check_intent` then MCP (close client bypass).
-2. Wire into decision_agent / swarm as an optional execution path.
+1. Wire into decision_agent / swarm as an optional execution path.
+2. Front: display signingLink + costSummary + warnings.
 3. Later: autonomous path behind explicit flag + dedicated agent wallet + daily budget ledger.
+
+## Controls and residual blockers — Nov 17, 2026
+
+- Only exact token symbols are accepted in the beta input policy; names or
+  token-ID prefixes are **not** evidence of a verified on-chain asset.
+  Switch to verified full token identifiers before production approval.
+- Amounts use Python `Decimal` (finite, strictly positive, token-specific cap).
+- Quoted human-readable `minOut` must prove the requested slippage cap;
+  the built raw minimum must not worsen versus the quoted raw minimum.
+- `meetsMinOut` must be the actual JSON boolean `true`, not absent or a string.
+- The signing link must be HTTPS on `wallet.multiversx.com/hook/transaction`.
+- If any required proof is missing, return `blocked`; no signing URL is approved.
+- Tests: `python -m unittest tests.test_xorus_execution` (offline mocks only).
+- **Production NO-GO:** the React beta still calls OneDex directly and has
+  browser-side checks, not server-enforced policy. A server-owned `run_assisted`
+  API route, authenticated session/rate limits, contract/token-ID validation,
+  on-chain amount checks and real-wallet browser smoke tests are still required.
+- `DAILY_BUDGET_USD` is not metered. Autonomous mode stays disabled.
+- Neither OneDex nor xOrus signature-free simulation guarantees on-chain
+  execution, quoted price, or wallet safety. Review recipient/data and amounts.
