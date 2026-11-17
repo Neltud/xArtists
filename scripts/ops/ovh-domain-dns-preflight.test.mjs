@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { assessDomainDns, probeDomainDns, DOMAIN } from './ovh-domain-dns-preflight.mjs'
+import { assessDomainDns, probeDomainDns, isOvhMxPlanRoute, DOMAIN } from './ovh-domain-dns-preflight.mjs'
 
 const ok = records => ({ status: 'ok', records })
 const absent = () => ({ status: 'absent', records: [] })
@@ -9,7 +9,7 @@ const zone = {
   SOA: ok([{ nsname: 'dns1.ovh.net', hostmaster: 'tech.ovh.net' }]),
   A: ok(['192.0.2.4']),
   AAAA: absent(),
-  MX: ok([{ priority: 10, exchange: 'mx1.example.test' }]),
+  MX: ok([{ priority: 1, exchange: 'mx0.mail.ovh.net' },{ priority: 5, exchange: 'mx1.mail.ovh.net' }]),
   TXT: ok([['v=spf1 include:example.test -all'], ['site-verification=do-not-log']]),
   DMARC: ok([['v=DMARC1; p=reject; rua=mailto:private@example.test']]),
 }
@@ -29,6 +29,17 @@ test('all public DNS records are only a CANDIDATE: never proof of mail delivery 
   assert.equal(v.ovh_mysql_is_render_postgres, false)
   assert.equal(JSON.stringify(v).includes('do-not-log'), false)
   assert.equal(JSON.stringify(v).includes('private@example.test'), false)
+})
+test('stale mail.xartists.art MX is NOT a valid OVH MX Plan route, even with SPF and DMARC', () => {
+  const stale=assessDomainDns({...zone,MX:ok([{priority:10,exchange:'mail.xartists.art'}])})
+  assert.equal(stale.mx_observed,true)
+  assert.equal(stale.mx_ovh_mx_plan_route_candidate,false)
+  assert.equal(stale.mail_dns_candidate_only,false)
+  assert.equal(stale.issues.includes('mail_mx_not_ovh_mx_plan_targets'),true)
+  assert.equal(stale.email_delivery_and_reply_verified,false)
+  assert.equal(isOvhMxPlanRoute([{priority:10,exchange:'mx0.mail.ovh.net.'}]),true)
+  assert.equal(isOvhMxPlanRoute([{priority:1,exchange:'mx0.mail.ovh.net'},{priority:10,exchange:'mail.xartists.art'}]),false)
+  assert.equal(isOvhMxPlanRoute([{priority:0,exchange:'notmx0.mail.ovh.net'}]),false)
 })
 test('NXDOMAIN or empty zone is not a working domain or a working mailbox', () => {
   const z = Object.fromEntries(Object.keys(zone).map(x => [x, absent()]))
