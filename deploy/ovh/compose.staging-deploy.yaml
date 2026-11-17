@@ -1,0 +1,6 @@
+# Applied only by the manual staging publication workflow.
+# Host-supplied source identity; no migration or commercial gate changes.
+services:
+  api:
+    environment:
+      XARTISTS_SOURCE_SHA: ${XARTISTS_SOURCE_SHA:?Verified main SHA required}
