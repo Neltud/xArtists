@@ -1,21 +1,14 @@
-# LIA — RETIRED
+# LIA — RETIRED (2026-11-17)
 
-**Status: retired 2026-11-17.**
+**Do not use.** Ops path is xOrus only.
 
-LIA / Vellum is no longer an execution or ops path on xArtists.
+```bash
+PYTHONPATH=. python -m xorus.production_run
+```
 
-## Replacement
+- Package: `xorus/`
+- Plan: `docs/ops/LIA_PURGE_XORUS_BACKEND.md`
+- Vellum: `import lia.vellum` → ImportError
+- Front: `config/xorusConfig.ts` / `XorusPage` without LIA widgets
 
-| Old | New |
-|-----|-----|
-| `python -m lia.vellum.production_run` | `python -m xorus.production_run` |
-| `python -m lia.xorus` | `python -m xorus` |
-| LIA live trading | **forbidden** — paper xOrus only |
-
-See:
-
-- [`xorus/README.md`](xorus/README.md)
-- [`docs/ops/LIA_PURGE_XORUS_BACKEND.md`](docs/ops/LIA_PURGE_XORUS_BACKEND.md)
-- [`docs/XORUS_BACKEND_ENTRY.md`](docs/XORUS_BACKEND_ENTRY.md)
-
-Do not set `LIA_LIVE_TRADING=1`. Do not re-enable `lia/vellum` cycles.
+`LIA_LIVE_TRADING` is always false.
