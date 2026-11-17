@@ -7,6 +7,28 @@ import { useCallback, useState } from 'react'
 import { useI18n } from '../../i18n/I18nContext'
 
 const MCP = 'https://aggregator.onedex.app/ai/mcp'
+const TOKEN_MAX: Record<string, number> = {
+  EGLD: 2, WEGLD: 2, ONE: 50000, USDC: 500, USDT: 500, WETH: 0.5,
+}
+const ERD_ADDRESS = /^erd1[023456789acdefghjklmnpqrstuvwxyz]{58}$/
+
+function approvedSigningLink(value: string): boolean {
+  try {
+    const url = new URL(value)
+    return url.protocol === 'https:' && url.hostname === 'wallet.multiversx.com'
+      && (url.port === '' || url.port === '443')
+      && url.username === '' && url.password === ''
+      && url.pathname === '/hook/transaction' && url.hash === ''
+  } catch {
+    return false
+  }
+}
+
+function validInputAmount(amount: string, token: string): boolean {
+  if (!/^(?:[0-9]+)(?:\\.[0-9]+)?$/.test(amount)) return false
+  const parsed = Number(amount)
+  return Number.isFinite(parsed) && parsed > 0 && parsed <= (TOKEN_MAX[token] ?? 0)
+}
 
 type QuoteView = {
   quotedOut?: string
@@ -42,6 +64,7 @@ async function mcpCall(name: string, args: Record<string, unknown>) {
   const json = await res.json()
   if (json.error) throw new Error(json.error.message || 'RPC error')
   const result = json.result
+  if (result?.isError === true) throw new Error('OneDex returned a tool error')
   if (result?.structuredContent) return result.structuredContent
   const text = result?.content?.[0]?.text
   if (text) {
@@ -78,20 +101,37 @@ export default function XorusAssistedSwapPanel() {
   const [build, setBuild] = useState<BuildView | null>(null)
   const [simOk, setSimOk] = useState<boolean | null>(null)
 
+  const clearResults = () => {
+    setError(null)
+    setQuote(null)
+    setBuild(null)
+    setSimOk(null)
+  }
+
   const run = useCallback(async () => {
     setError(null)
     setQuote(null)
     setBuild(null)
     setSimOk(null)
-    if (!sender.startsWith('erd1') || sender.length < 62) {
-      setError(fr ? 'Adresse publique erd1… requise' : 'Public erd1… address required')
+    if (!ERD_ADDRESS.test(sender)) {
+      setError(fr ? 'Adresse publique erd1 invalide' : 'Invalid public erd1 address')
+      return
+    }
+    const tin = tokenIn.trim().toUpperCase()
+    const tout = tokenOut.trim().toUpperCase()
+    if (!(tin in TOKEN_MAX) || !(tout in TOKEN_MAX) || tin === tout) {
+      setError(fr ? 'Paire de tokens non autorisée' : 'Token pair not allowed')
+      return
+    }
+    if (!validInputAmount(amountIn, tin)) {
+      setError(fr ? 'Montant invalide ou supérieur au plafond' : 'Invalid amount or above the limit')
       return
     }
     setBusy(true)
     try {
       const q = await mcpCall('get_quote', {
-        tokenIn,
-        tokenOut,
+        tokenIn: tin,
+        tokenOut: tout,
         amountIn,
       })
       const qView: QuoteView = {
@@ -104,8 +144,8 @@ export default function XorusAssistedSwapPanel() {
       setQuote(qView)
 
       const b = await mcpCall('build_swap_tx', {
-        tokenIn,
-        tokenOut,
+        tokenIn: tin,
+        tokenOut: tout,
         amountIn,
         sender,
       })
@@ -115,22 +155,32 @@ export default function XorusAssistedSwapPanel() {
         minOut: pickMinOut(b),
         expiresAt: b.expiresAt ? String(b.expiresAt) : undefined,
       }
+      // Never publish any signature link until an exact tx is simulated.
+      if (!b.transaction || typeof b.transaction !== 'object') {
+        throw new Error(fr ? 'Transaction non signée manquante' : 'Missing unsigned transaction')
+      }
+      const rawMinOut =
+        (b.minOut && typeof b.minOut === 'object'
+          ? (b.minOut as { raw?: unknown }).raw
+          : undefined) || b.minOutRaw
+      if (typeof rawMinOut !== 'string' || !/^[0-9]+$/.test(rawMinOut) || !/[1-9]/.test(rawMinOut)) {
+        throw new Error(fr ? 'Minimum garanti non vérifiable' : 'Unverifiable guaranteed minimum')
+      }
       setBuild(bView)
 
       if (b.transaction) {
         const s = await mcpCall('simulate_swap_tx', {
           transaction: b.transaction,
-          minOut:
-            (b.minOut && typeof b.minOut === 'object'
-              ? (b.minOut as { raw?: string }).raw
-              : undefined) || b.minOutRaw,
+          minOut: rawMinOut,
         })
         const status = String(s.status || '').toLowerCase()
         const meets = s.meetsMinOut
-        const ok = status === 'success' || status === 'ok'
-        setSimOk(ok && meets !== false)
-      } else {
-        setSimOk(null)
+        const ok = (status === 'success' || status === 'ok') && meets === true
+        setSimOk(ok)
+        if (!ok) throw new Error(fr ? 'Simulation non validée : signature bloquée' : 'Simulation not verified: signing blocked')
+        if (!bView.signingLink || !approvedSigningLink(bView.signingLink)) {
+          throw new Error(fr ? 'Lien de signature OneDex non approuvé' : 'Unapproved OneDex signing link')
+        }
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e))
@@ -156,8 +206,8 @@ export default function XorusAssistedSwapPanel() {
         </h2>
         <p className="text-xs text-zinc-400 mt-1 max-w-2xl">
           {fr
-            ? 'xOrus appelle OneDex MCP pour le quote, la construction de la tx non signée et la simulation. Aucune clé privée ne quitte votre wallet. Vous signez via le lien fourni.'
-            : 'xOrus calls OneDex MCP for quote, unsigned tx build and simulation. No private key leaves your wallet. You sign via the provided link.'}
+            ? 'Bêta assistée : le navigateur appelle OneDex pour préparer et simuler une transaction non signée. Vérifiez impérativement les montants et le destinataire dans votre wallet ; la simulation ne garantit pas le résultat.'
+            : 'Assisted beta: your browser requests an unsigned transaction and simulation from OneDex. Verify amounts and recipient in your wallet; simulation does not guarantee execution.'}
         </p>
       </div>
 
@@ -167,7 +217,8 @@ export default function XorusAssistedSwapPanel() {
           <input
             className="w-full rounded border border-white/10 bg-black/50 px-2 py-1.5 text-sm text-white"
             value={tokenIn}
-            onChange={(e) => setTokenIn(e.target.value)}
+            disabled={busy}
+            onChange={(e) => { clearResults(); setTokenIn(e.target.value) }}
           />
         </label>
         <label className="text-xs text-zinc-400 space-y-1">
@@ -175,7 +226,8 @@ export default function XorusAssistedSwapPanel() {
           <input
             className="w-full rounded border border-white/10 bg-black/50 px-2 py-1.5 text-sm text-white"
             value={tokenOut}
-            onChange={(e) => setTokenOut(e.target.value)}
+            disabled={busy}
+            onChange={(e) => { clearResults(); setTokenOut(e.target.value) }}
           />
         </label>
         <label className="text-xs text-zinc-400 space-y-1">
@@ -183,7 +235,8 @@ export default function XorusAssistedSwapPanel() {
           <input
             className="w-full rounded border border-white/10 bg-black/50 px-2 py-1.5 text-sm text-white"
             value={amountIn}
-            onChange={(e) => setAmountIn(e.target.value)}
+            disabled={busy}
+            onChange={(e) => { clearResults(); setAmountIn(e.target.value) }}
           />
         </label>
         <label className="text-xs text-zinc-400 space-y-1 sm:col-span-2 lg:col-span-1">
@@ -191,7 +244,8 @@ export default function XorusAssistedSwapPanel() {
           <input
             className="w-full rounded border border-white/10 bg-black/50 px-2 py-1.5 text-sm text-white font-mono"
             value={sender}
-            onChange={(e) => setSender(e.target.value.trim())}
+            disabled={busy}
+            onChange={(e) => { clearResults(); setSender(e.target.value.trim()) }}
             placeholder="erd1…"
           />
         </label>
@@ -262,14 +316,14 @@ export default function XorusAssistedSwapPanel() {
             <p className={simOk ? 'text-emerald-400' : 'text-red-400'}>
               {fr
                 ? simOk
-                  ? 'Simulation OK — vous pouvez signer'
+                  ? 'Simulation favorable — vérifiez dans votre wallet'
                   : 'Simulation échouée — ne pas signer'
                 : simOk
-                  ? 'Simulation OK — safe to sign'
+                  ? 'Simulation passed — verify details in your wallet'
                   : 'Simulation failed — do not sign'}
             </p>
           )}
-          {build.signingLink && simOk !== false && (
+          {build.signingLink && simOk === true && !error && approvedSigningLink(build.signingLink) && (
             <a
               href={build.signingLink}
               target="_blank"
@@ -290,8 +344,8 @@ export default function XorusAssistedSwapPanel() {
 
       <p className="text-[11px] text-zinc-500">
         {fr
-          ? 'OneDex MCP · non-custodial · minOut on-chain · xOrus ne signe jamais. Mode autonome non activé.'
-          : 'OneDex MCP · non-custodial · on-chain minOut · xOrus never signs. Autonomous mode not enabled.'}
+          ? 'Bêta non auditée · contrôles navigateur non suffisants pour la production · signature toujours humaine · autonomie désactivée.'
+          : 'Unaudited beta · browser-side limits are not production controls · human signing only · autonomous mode disabled.'}
       </p>
     </section>
   )
