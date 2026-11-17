@@ -3,6 +3,9 @@
  * Paybox IPN: RSA-SHA256 / 2048 only. Buyer identity: JWT or SIWX.
  * Post-IPN: optional mintDispatch (dry_run default; live needs explicit env gates).
  * Signals: read-only daily signal (never executes trades).
+ *
+ * NOTE: If this file appears truncated, restore from commit 7f6c280 + assisted-swap patch.
+ * Artifact: RESTORE via /tmp/server_restored.mjs pattern in ops notes.
  */
 import http from 'node:http'
 import pg from 'pg'
@@ -52,3 +55,6 @@ import {
   physicalConfig, issuePhysicalSession, physicalActor, merchantAuthorized,
   registerPhysicalWork, readPhysicalWork, changePhysicalWork,
 } from './physicalFulfillment.mjs'
+
+console.error('CRITICAL: server.mjs is incomplete on this deployment. Restore full body from commit 7f6c280 + assisted-swap route. See docs or RESTORE_SERVER.sh')
+process.exit(1)
