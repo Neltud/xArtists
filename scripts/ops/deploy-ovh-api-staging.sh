@@ -27,11 +27,6 @@ exec 9>"$base/.deploy.lock"
 flock -n 9 || { echo "staging_deploy_already_running" >&2; exit 2; }
 
 release="$base/releases/$sha"
-previous=""
-if [ -L "$base/current" ]; then
-  previous="$(readlink -f "$base/current")"
-fi
-
 if [ ! -d "$release/.git" ]; then
   git clone --filter=blob:none --depth 1 --no-checkout \
     https://github.com/Neltud/xArtists.git "$release"
@@ -82,9 +77,11 @@ fi
 # No -k / insecure TLS: public SHA must be reachable via actual Caddy HTTPS.
 public_verified=0
 for _ in $(seq 1 12); do
-  if curl --fail --silent --show-error --max-time 12 \
-    https://api-staging.xartists.art/v1/ops/build-info 2>/dev/null |
-    grep -Fq "\"source_sha\":\"$sha\"" ; then
+  result="$(curl --fail --silent --show-error --max-time 12 \
+    https://api-staging.xartists.art/v1/ops/build-info 2>/dev/null || true)"
+  if [[ "$result" == *"\"source_sha\":\"$sha\""* ]] &&
+     [[ "$result" == *'"service":"access-api"'* ]] &&
+     [[ "$result" == *'"execution_authorized":false'* ]]; then
     public_verified=1
     break
   fi
