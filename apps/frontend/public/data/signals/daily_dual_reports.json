@@ -1,6 +1,6 @@
 {
   "schema": "xorus_dual_reports/v1",
-  "generated_at": "2026-11-17T12:55:02Z",
+  "generated_at": "2026-11-17T17:24:42Z",
   "mode": "paper_only",
   "executable": false,
   "live_trading": false,
@@ -8,9 +8,14 @@
   "sentinel_veto": true,
   "coverage": {
     "signals_defined": 120,
-    "signals_analyzed": 8,
+    "signals_analyzed": 7,
     "families_analyzed": 4,
-    "families": ["price", "risk", "volatility", "volume"],
+    "families": [
+      "price",
+      "risk",
+      "volatility",
+      "volume"
+    ],
     "independently_verified_signals": 0
   },
   "collection": {
@@ -18,26 +23,77 @@
     "instrument": "EGLDUSDT",
     "interval": "1h",
     "candles": 48,
-    "source_ts": "2026-11-17T12:59:59Z",
+    "source_ts": "2026-11-17T17:59:59Z",
     "ok": true,
-    "mx_economics_ok": false
+    "mx_economics_ok": true
   },
-  "decision": {"stance": "ABSTAIN", "reason": "paper_observation_only"},
-  "safety": {
-    "executable": false,
-    "live_trading": false,
-    "signing_authorized": false,
-    "trade_authorized": false,
-    "mint_authorized": false,
-    "requires_human_review": true
-  },
+  "scores": [
+    {
+      "id": "price.ret_1h",
+      "family": "price",
+      "status": "observed_unverified",
+      "reading": "positive",
+      "value": 0.706159,
+      "note": "1h close return %"
+    },
+    {
+      "id": "price.ret_4h",
+      "family": "price",
+      "status": "observed_unverified",
+      "reading": "negative",
+      "value": -1.345119,
+      "note": "4h close return %"
+    },
+    {
+      "id": "price.ret_24h",
+      "family": "price",
+      "status": "observed_unverified",
+      "reading": "negative",
+      "value": -1.155179,
+      "note": "~24h close return %"
+    },
+    {
+      "id": "price.range_pos",
+      "family": "price",
+      "status": "observed_unverified",
+      "reading": "balanced",
+      "value": 0.337838,
+      "note": "position in 14h range"
+    },
+    {
+      "id": "volume.spike_1h",
+      "family": "volume",
+      "status": "observed_unverified",
+      "reading": "balanced",
+      "value": 1.318435,
+      "note": "recent vol vs prior window"
+    },
+    {
+      "id": "volatility.atr_1h",
+      "family": "volatility",
+      "status": "observed_unverified",
+      "reading": "balanced",
+      "value": 1.059927,
+      "note": "ATR percent of last close (24h window)"
+    },
+    {
+      "id": "risk.drawdown",
+      "family": "risk",
+      "status": "observed_unverified",
+      "reading": "negative",
+      "value": -1.155179,
+      "note": "proxy: 24h return as soft drawdown hint"
+    }
+  ],
   "reports": {
     "external.grok_note": {
       "author": "grok",
       "channel": "external.grok_note",
       "mode": "paper_only",
       "method": "deterministic_paper_synthesis/v1",
-      "sha256": "f13356d7c5b88f2ec6b8339293b262ac1044bb8619ca382d1265c945df4ba390",
+      "weight_cap": null,
+      "text": "Paper brief (grok). Mode: observation only. No order, mint, or transfer.\nRegime: defensive. Instrument: EGLDUSDT 1h public tape.\nLast close observed: 2.5670 USDT (unverified provider observation).\nMultiversX economics price field present: 2.55 (context only).\nScored with public evidence only: price(4), risk(1), volatility(1), volume(1). Catalog remains 120 definitions; unverified signals stay silent.\n- price.ret_1h: positive (1h close return %)\n- price.ret_4h: negative (4h close return %)\n- price.ret_24h: negative (~24h close return %)\n- price.range_pos: balanced (position in 14h range)\n- volume.spike_1h: balanced (recent vol vs prior window)\n- volatility.atr_1h: balanced (ATR percent of last close (24h window))\n- risk.drawdown: negative (proxy: 24h return as soft drawdown hint)\nSentinel veto remains absolute. ChatGPT external weight <= 15%. Executable=false.",
+      "sha256": "88cc8d39b102a14772ecb27a761cd99d5b162428bc3ab7c400b21a53ceda0547",
       "llm_invoked": false
     },
     "external.chatgpt_brief": {
@@ -46,9 +102,22 @@
       "mode": "paper_only",
       "method": "deterministic_paper_synthesis/v1",
       "weight_cap": 0.15,
-      "sha256": "ea14a0f0fb0513a8f6c9d187d3501b9a75b2ce0b10127b0a010720c57c5b02a6",
+      "text": "Paper brief (chatgpt). Mode: observation only. No order, mint, or transfer.\nRegime: defensive. Instrument: EGLDUSDT 1h public tape.\nLast close observed: 2.5670 USDT (unverified provider observation).\nMultiversX economics price field present: 2.55 (context only).\nScored with public evidence only: price(4), risk(1), volatility(1), volume(1). Catalog remains 120 definitions; unverified signals stay silent.\n- price.ret_1h: positive (1h close return %)\n- price.ret_4h: negative (4h close return %)\n- price.ret_24h: negative (~24h close return %)\n- price.range_pos: balanced (position in 14h range)\n- volume.spike_1h: balanced (recent vol vs prior window)\n- volatility.atr_1h: balanced (ATR percent of last close (24h window))\n- risk.drawdown: negative (proxy: 24h return as soft drawdown hint)\nSentinel veto remains absolute. ChatGPT external weight <= 15%. Executable=false.",
+      "sha256": "37cbb5a89b6e552f9b3a758104334420cc9275311c62c7333f8522419212b8a9",
       "llm_invoked": false
     }
   },
-  "report_sha256": "f152686afbab024c8b4fee05fbc51f66af2704172d4a231d997d5d15033ab45d"
+  "decision": {
+    "stance": "ABSTAIN",
+    "reason": "paper_observation_only"
+  },
+  "safety": {
+    "executable": false,
+    "live_trading": false,
+    "signing_authorized": false,
+    "trade_authorized": false,
+    "mint_authorized": false,
+    "requires_human_review": true
+  },
+  "report_sha256": "a8391ccf00f726986d914b154f02da10055790a09fde27159cee410c850ca201"
 }
