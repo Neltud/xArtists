@@ -1,0 +1,39 @@
+name: xOrus assisted swap safety (offline)
+
+on:
+  pull_request:
+    paths:
+      - 'xorus/execution/**'
+      - 'tests/test_xorus_execution.py'
+      - 'apps/frontend/src/components/intelligence/XorusAssistedSwapPanel.tsx'
+      - '.github/workflows/xorus-assisted-swap-safety.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  assisted-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Offline fail-closed swap tests (no network calls)
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+          XORUS_LIVE_TRADING: 'false'
+        run: python3 -m unittest discover -s tests -p 'test_xorus_execution.py' -v
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: apps/frontend/package-lock.json
+      - name: Install frontend dependencies
+        working-directory: apps/frontend
+        run: npm ci --ignore-scripts
+      - name: Typecheck frontend
+        working-directory: apps/frontend
+        run: npm run typecheck
