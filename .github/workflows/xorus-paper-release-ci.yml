@@ -1,0 +1,36 @@
+name: xOrus paper-only frontend release regression
+
+on:
+  pull_request:
+    paths:
+      - 'apps/frontend/tests/intelligence-journey-reset.test.mjs'
+      - 'apps/frontend/tests/lia-public-first.test.mjs'
+      - 'apps/frontend/tests/release.test.mjs'
+      - 'apps/frontend/src/pages/XorusPage.tsx'
+      - 'apps/frontend/src/config/xorusConfig.ts'
+      - '.github/workflows/xorus-paper-release-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  paper-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: apps/frontend/package-lock.json
+      - name: Install frontend locked dependencies
+        working-directory: apps/frontend
+        run: npm ci --legacy-peer-deps
+      - name: Full frontend release regression
+        working-directory: apps/frontend
+        run: npm run test:release
+      - name: Typecheck
+        working-directory: apps/frontend
+        run: npm run typecheck
