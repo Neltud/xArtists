@@ -1,0 +1,33 @@
+name: Neon Free account pilot — verified token contract
+on:
+  pull_request:
+    paths:
+      - 'deploy/neon/account-pilot/**'
+      - 'services/access-api/tests/neonAccountPilot.test.mjs'
+      - '.github/workflows/neon-free-account-pilot-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'deploy/neon/account-pilot/**'
+      - 'services/access-api/tests/neonAccountPilot.test.mjs'
+      - '.github/workflows/neon-free-account-pilot-ci.yml'
+permissions:
+  contents: read
+jobs:
+  auth-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify cryptographic Neon Auth, private Studio and no writes
+        run: node --test services/access-api/tests/neonAccountPilot.test.mjs
+      - name: Verify bundle contains no DB or mail imports
+        run: |
+          node --check deploy/neon/account-pilot/index.mjs
+          node --check deploy/neon/account-pilot/neon-verifier.mjs
+          if grep -q 'accountRepository.mjs\|PINATA_JWT\|sendEmail\|Stripe' deploy/neon/account-pilot/index.mjs; then exit 1; fi
