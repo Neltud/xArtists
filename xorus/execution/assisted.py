@@ -162,6 +162,8 @@ def run_assisted(intent: SwapIntent, *, skip_quote: bool = False) -> AssistedOut
 
     # No signing if on-chain minimum cannot be proven from the build result.
     if (not isinstance(build_result.min_out_raw, str)
+            or not 1 <= len(build_result.min_out_raw) <= 80
+            or not build_result.min_out_raw.isascii()
             or not build_result.min_out_raw.isdecimal()
             or int(build_result.min_out_raw) <= 0):
         return AssistedOutcome(
@@ -169,7 +171,9 @@ def run_assisted(intent: SwapIntent, *, skip_quote: bool = False) -> AssistedOut
             message="Build returned no verifiable positive minOutRaw",
         )
 
-    if (quote_result and quote_result.min_out_raw is not None
+    if (quote_result and isinstance(quote_result.min_out_raw, str)
+            and 1 <= len(quote_result.min_out_raw) <= 80
+            and quote_result.min_out_raw.isascii()
             and quote_result.min_out_raw.isdecimal()
             and int(build_result.min_out_raw) < int(quote_result.min_out_raw)):
         return AssistedOutcome(
