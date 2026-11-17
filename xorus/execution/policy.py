@@ -32,7 +32,7 @@ DAILY_BUDGET_USD: float = 0.0
 
 # Public MultiversX addresses use bech32 (erd1 + 58 charset characters).
 # This is a syntax check, not checksum/on-chain ownership proof.
-_PUBLIC_ADDRESS = re.compile(r"erd1[023456789acdefghjklmnpqrstuvwxyz]{58}\\Z")
+_PUBLIC_ADDRESS = re.compile(r"erd1[023456789acdefghjklmnpqrstuvwxyz]{58}")
 
 
 def check_intent(intent: SwapIntent) -> PolicyDecision:
