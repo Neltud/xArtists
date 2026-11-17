@@ -4,6 +4,7 @@ Never signs. Never holds keys. Returns a signing link + simulation result.
 """
 from __future__ import annotations
 
+from decimal import Decimal, InvalidOperation
 from typing import Any, Optional
 from urllib.parse import urlsplit
 
@@ -103,6 +104,23 @@ def run_assisted(intent: SwapIntent, *, skip_quote: bool = False) -> AssistedOut
                 message=f"Quote failed: {e}",
             )
 
+    # Verify the effective minimum received against the user's slippage cap.
+    # A requested cap alone is not protection unless the returned quote proves it.
+    try:
+        quoted = Decimal(quote_result.quoted_out or "") if quote_result else Decimal("")
+        minimum = Decimal(quote_result.min_out or "") if quote_result else Decimal("")
+        cap = Decimal(10_000 - intent.max_slippage_bps) / Decimal(10_000)
+        valid_quote = (quoted.is_finite() and minimum.is_finite()
+                       and quoted > 0 and minimum > 0
+                       and minimum <= quoted and minimum >= quoted * cap)
+    except (InvalidOperation, ValueError, TypeError):
+        valid_quote = False
+    if not valid_quote:
+        return AssistedOutcome(
+            stage="blocked", intent=intent, quote=quote_result,
+            message="Quote minimum output is missing, invalid, or below slippage cap",
+        )
+
     # 3. Build unsigned tx
     try:
         raw_b = client.build_swap_tx(
@@ -149,6 +167,14 @@ def run_assisted(intent: SwapIntent, *, skip_quote: bool = False) -> AssistedOut
         return AssistedOutcome(
             stage="blocked", intent=intent, quote=quote_result, build=build_result,
             message="Build returned no verifiable positive minOutRaw",
+        )
+
+    if (quote_result and quote_result.min_out_raw is not None
+            and quote_result.min_out_raw.isdecimal()
+            and int(build_result.min_out_raw) < int(quote_result.min_out_raw)):
+        return AssistedOutcome(
+            stage="blocked", intent=intent, quote=quote_result, build=build_result,
+            message="Built transaction minOut fell below quoted minimum; re-quote",
         )
 
     # 4. Simulate (mandatory)
