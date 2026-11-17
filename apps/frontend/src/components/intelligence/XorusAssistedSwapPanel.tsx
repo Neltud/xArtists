@@ -142,6 +142,14 @@ export default function XorusAssistedSwapPanel() {
         warnings: Array.isArray(q.warnings) ? q.warnings.map(String) : [],
       }
       setQuote(qView)
+      // A default 1% slippage cap must be proven by the returned minimum.
+      const quoted = Number(qView.quotedOut)
+      const quotedMin = Number(qView.minOut)
+      if (!Number.isFinite(quoted) || !Number.isFinite(quotedMin)
+          || quoted <= 0 || quotedMin <= 0 || quotedMin > quoted
+          || quotedMin < quoted * 0.99) {
+        throw new Error(fr ? 'Devis sans minimum garanti conforme (1 %)' : 'Quote lacks a valid 1% minimum output')
+      }
 
       const b = await mcpCall('build_swap_tx', {
         tokenIn: tin,
@@ -165,6 +173,18 @@ export default function XorusAssistedSwapPanel() {
           : undefined) || b.minOutRaw
       if (typeof rawMinOut !== 'string' || !/^[0-9]+$/.test(rawMinOut) || !/[1-9]/.test(rawMinOut)) {
         throw new Error(fr ? 'Minimum garanti non vérifiable' : 'Unverifiable guaranteed minimum')
+      }
+      const quotedRaw =
+        (q.minOut && typeof q.minOut === 'object'
+          ? (q.minOut as { raw?: unknown }).raw
+          : undefined) || q.minOutRaw
+      if (typeof quotedRaw === 'string' && /^[0-9]+$/.test(quotedRaw)
+          && BigInt(rawMinOut) < BigInt(quotedRaw)) {
+        throw new Error(fr ? 'Minimum dégradé : nouveau devis requis' : 'Minimum worsened: request a fresh quote')
+      }
+      if (bView.expiresAt && (!Number.isFinite(Date.parse(bView.expiresAt))
+          || Date.parse(bView.expiresAt) <= Date.now())) {
+        throw new Error(fr ? 'Transaction expirée' : 'Transaction expired')
       }
       setBuild(bView)
 
