@@ -1,0 +1,72 @@
+# Operator-triggered staging-only OVH deploy. No Render, production DNS, migration or payment actions.
+name: Deploy Access API on own OVH — staging (manual)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: xartists-api-ovh-staging-publication
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: ovh-api-staging
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify deployment contract before opening SSH
+        run: |
+          node --test services/access-api/tests/ovhDeployment.test.mjs \
+            services/access-api/tests/ovhManualPublish.test.mjs
+      - name: Publish to the operator-controlled OVH host over pinned SSH
+        shell: bash
+        env:
+          OVH_SSH_HOST: ${{ vars.OVH_SSH_HOST }}
+          OVH_SSH_USER: ${{ vars.OVH_SSH_USER }}
+          OVH_SSH_PORT: ${{ vars.OVH_SSH_PORT }}
+          OVH_SSH_PRIVATE_KEY: ${{ secrets.OVH_SSH_PRIVATE_KEY }}
+          OVH_SSH_KNOWN_HOSTS: ${{ secrets.OVH_SSH_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          umask 077
+          [[ "$GITHUB_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$OVH_SSH_HOST" =~ ^[A-Za-z0-9][A-Za-z0-9.-]{1,252}$ ]] || {
+            echo "::error::OVH_SSH_HOST must be a trusted hostname or IPv4 address"
+            exit 2
+          }
+          [[ "$OVH_SSH_USER" =~ ^[a-z_][a-z0-9_-]{0,31}$ ]] || {
+            echo "::error::OVH_SSH_USER must be a dedicated unprivileged Linux user"
+            exit 2
+          }
+          port="${OVH_SSH_PORT:-22}"
+          [[ "$port" =~ ^[0-9]{1,5}$ ]] && (( 10#$port > 0 && 10#$port <= 65535 )) || {
+            echo "::error::OVH_SSH_PORT is invalid"
+            exit 2
+          }
+          if [[ -z "$OVH_SSH_PRIVATE_KEY" || -z "$OVH_SSH_KNOWN_HOSTS" ]]; then
+            echo "::error::Missing protected staging environment SSH key or pinned known_hosts"
+            exit 2
+          fi
+
+          key="$RUNNER_TEMP/xartists_ovh_staging_key"
+          hosts="$RUNNER_TEMP/xartists_ovh_staging_known_hosts"
+          cleanup() { rm -f "$key" "$hosts"; }
+          trap cleanup EXIT
+          printf '%s\n' "$OVH_SSH_PRIVATE_KEY" > "$key"
+          printf '%s\n' "$OVH_SSH_KNOWN_HOSTS" > "$hosts"
+          chmod 600 "$key" "$hosts"
+          # No ssh-keyscan trust-on-first-use, passwords, remote shell interpolation
+          # of nonvalidated fields, public secrets, or non-pinned host keys.
+          ssh -F /dev/null \
+            -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes \
+            -o "UserKnownHostsFile=$hosts" -o ConnectTimeout=15 \
+            -i "$key" -p "$port" "$OVH_SSH_USER@$OVH_SSH_HOST" \
+            "bash -se -- '$GITHUB_SHA'" \
+            < scripts/ops/deploy-ovh-api-staging.sh
