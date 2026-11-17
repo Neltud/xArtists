@@ -1,29 +1,51 @@
 {
-  "schema": "xartists_daily_signal/v1",
-  "generated_at": "2026-11-16T17:58:55.333257+00:00",
-  "date": "2026-11-16",
+  "schema": "xartists_daily_signal/v2",
+  "generated_at": "2026-11-17T12:55:02.793483+00:00",
+  "date": "2026-11-17",
   "regime": "neutral",
-  "confidence": 0.45,
-  "headline": "Observation macro — pas un conseil d'investissement",
-  "summary": "Signal éditorial du mécénat : volatilité surveillée, liquidité à préserver. Aucune exécution automatique. Le Machine (Guardian) reste le seul chemin d'ordre.",
+  "confidence": 0.48,
+  "headline": "xOrus paper · ABSTAIN (paper_observation_only) · 8/120 signaux scorés",
+  "summary": "Collecte publique EGLDUSDT 1h (last≈2.5950). Briefs duals: grok_note + chatgpt_brief (poids ChatGPT ≤ 15%). Aucune exécution automatique. Sentinel garde le veto.",
+  "decision": {
+    "stance": "ABSTAIN",
+    "reason": "paper_observation_only"
+  },
+  "coverage": {
+    "signals_defined": 120,
+    "signals_analyzed": 8,
+    "families_analyzed": 4,
+    "families": ["price", "risk", "volatility", "volume"],
+    "independently_verified_signals": 0
+  },
+  "external": {
+    "grok_note": {
+      "sha256": "f13356d7c5b88f2ec6b8339293b262ac1044bb8619ca382d1265c945df4ba390",
+      "llm_invoked": false,
+      "preview": "Paper brief (grok). Mode: observation only. No order, mint, or transfer. Regime: neutral. Instrument: EGLDUSDT 1h public tape."
+    },
+    "chatgpt_brief": {
+      "sha256": "ea14a0f0fb0513a8f6c9d187d3501b9a75b2ce0b10127b0a010720c57c5b02a6",
+      "llm_invoked": false,
+      "weight_cap": 0.15,
+      "preview": "Paper brief (chatgpt). Mode: observation only. No order, mint, or transfer. Regime: neutral. Instrument: EGLDUSDT 1h public tape."
+    }
+  },
   "macro": {
     "usd_liquidity": "watch",
     "risk_appetite": "mixed",
-    "notes": [
-      "Données à enrichir via API prix ops — placeholder honnête."
-    ]
+    "notes": ["Observation MultiversX / Binance publique uniquement.", "Pas d'attestation indépendante des prix."]
   },
   "crypto": {
     "egld": "neutral",
     "tro": "observe",
-    "notes": [
-      "Pas de promesse de rendement."
-    ]
+    "notes": ["Pas de promesse de rendement.", "Paper only."]
   },
   "patronage": {
     "rebalance_hint": "hold",
     "pulse_focus": "education_over_leverage"
   },
-  "disclaimer": "Contenu informatif / éducatif. Pas un conseil financier. Aucune TX n'est déclenchée par ce fichier.",
-  "source": "signals-worker"
+  "disclaimer": "Contenu informatif / éducatif. Pas un conseil financier. Aucune TX n'est déclenchée par ce fichier. ChatGPT ≤ 15% ; Sentinel veto.",
+  "source": "signals-worker/v2",
+  "dual_reports_ref": "data/signals/daily_dual_reports.json",
+  "report_sha256": "f152686afbab024c8b4fee05fbc51f66af2704172d4a231d997d5d15033ab45d"
 }

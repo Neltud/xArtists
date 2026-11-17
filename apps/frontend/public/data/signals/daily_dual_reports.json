@@ -1,0 +1,54 @@
+{
+  "schema": "xorus_dual_reports/v1",
+  "generated_at": "2026-11-17T12:55:02Z",
+  "mode": "paper_only",
+  "executable": false,
+  "live_trading": false,
+  "chatgpt_weight_cap": 0.15,
+  "sentinel_veto": true,
+  "coverage": {
+    "signals_defined": 120,
+    "signals_analyzed": 8,
+    "families_analyzed": 4,
+    "families": ["price", "risk", "volatility", "volume"],
+    "independently_verified_signals": 0
+  },
+  "collection": {
+    "provider": "binance_spot_public",
+    "instrument": "EGLDUSDT",
+    "interval": "1h",
+    "candles": 48,
+    "source_ts": "2026-11-17T12:59:59Z",
+    "ok": true,
+    "mx_economics_ok": false
+  },
+  "decision": {"stance": "ABSTAIN", "reason": "paper_observation_only"},
+  "safety": {
+    "executable": false,
+    "live_trading": false,
+    "signing_authorized": false,
+    "trade_authorized": false,
+    "mint_authorized": false,
+    "requires_human_review": true
+  },
+  "reports": {
+    "external.grok_note": {
+      "author": "grok",
+      "channel": "external.grok_note",
+      "mode": "paper_only",
+      "method": "deterministic_paper_synthesis/v1",
+      "sha256": "f13356d7c5b88f2ec6b8339293b262ac1044bb8619ca382d1265c945df4ba390",
+      "llm_invoked": false
+    },
+    "external.chatgpt_brief": {
+      "author": "chatgpt",
+      "channel": "external.chatgpt_brief",
+      "mode": "paper_only",
+      "method": "deterministic_paper_synthesis/v1",
+      "weight_cap": 0.15,
+      "sha256": "ea14a0f0fb0513a8f6c9d187d3501b9a75b2ce0b10127b0a010720c57c5b02a6",
+      "llm_invoked": false
+    }
+  },
+  "report_sha256": "f152686afbab024c8b4fee05fbc51f66af2704172d4a231d997d5d15033ab45d"
+}
