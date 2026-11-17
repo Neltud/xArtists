@@ -27,6 +27,16 @@ function hasValidMx(records) {
     typeof r.exchange === 'string' && /^[a-z0-9.-]{2,253}$/i.test(r.exchange) &&
     r.exchange !== '.')
 }
+// Project-specific provider check: xartists.art has an OVH MX Plan subscription.
+// MX syntax alone is NOT proof of delivery. A stale self-hosted MX is unsafe.
+const OVH_MX_PLAN = new Set(Array.from({length: 5}, (_, i) => `mx${i}.mail.ovh.net`))
+export function isOvhMxPlanRoute(records) {
+  return Array.isArray(records) && records.length > 0 && records.every(r =>
+    r && typeof r.exchange === 'string' &&
+    OVH_MX_PLAN.has(r.exchange.toLowerCase().replace(/\.$/, '')) &&
+    Number.isInteger(r.priority) && r.priority >= 0)
+}
+
 function status(records, kind) {
   const x = records?.[kind]
   if (!x || typeof x !== 'object' || !['ok', 'absent', 'error'].includes(x.status) ||
@@ -44,6 +54,7 @@ export function assessDomainDns(records) {
   const a = values.A.status === 'ok' && values.A.records.some(x => isIP(x) === 4)
   const aaaa = values.AAAA.status === 'ok' && values.AAAA.records.some(x => isIP(x) === 6)
   const mx = values.MX.status === 'ok' && hasValidMx(values.MX.records)
+  const ovhMx = mx && isOvhMxPlanRoute(values.MX.records)
   const spfs = values.TXT.status === 'ok' ?
     values.TXT.records.map(asText).filter(s => /^v=spf1(?:\s|$)/i.test(s.trim())) : []
   const dmarcs = values.DMARC.status === 'ok' ?
@@ -55,6 +66,7 @@ export function assessDomainDns(records) {
   if (!(ns && soa)) issues.push('dns_delegation_not_proven')
   if (!(a || aaaa)) issues.push('web_address_not_resolved')
   if (!mx) issues.push('mail_mx_not_validated')
+  if (mx && !ovhMx) issues.push('mail_mx_not_ovh_mx_plan_targets')
   if (!spf) issues.push('mail_spf_not_unique_or_missing')
   if (!dmarc) issues.push('mail_dmarc_not_unique_or_missing')
 
@@ -63,7 +75,8 @@ export function assessDomainDns(records) {
     mode: 'public_read_only',
     dns_delegation_observed: Boolean(ns && soa),
     website_address_observed: Boolean(a || aaaa),
-    mail_dns_candidate_only: Boolean(mx && spf && dmarc),
+    mail_dns_candidate_only: Boolean(mx && spf && dmarc && ovhMx),
+    mx_ovh_mx_plan_route_candidate: Boolean(ovhMx),
     mx_observed: Boolean(mx),
     spf_unique: spf,
     dmarc_unique: dmarc,

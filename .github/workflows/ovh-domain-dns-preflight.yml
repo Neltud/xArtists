@@ -13,6 +13,8 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/ovh-domain-dns-preflight.yml'
+      - 'scripts/ops/ovh-domain-dns-preflight.mjs'
+      - 'scripts/ops/ovh-domain-dns-preflight.test.mjs'
   workflow_dispatch:
 
 permissions:
