@@ -1,21 +1,91 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-17T18:10:19.745Z",
+  "updatedAt": "2026-11-18T02:44:17.974Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1794969857464",
+      "timestamp": "02:44",
+      "source": "EGLD",
+      "title": "Cotation publique · $2.57 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1794961003000",
+      "timestamp": "00:16",
+      "source": "CoinTelegraph",
+      "title": "Nvidia board rejects Huang comeback despite record $116B quarter",
+      "link": "https://cointelegraph.com/markets/nvidia-board-rejects-huang-comeback-amid-record-116b-quarter?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1794955071000",
+      "timestamp": "22:37",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1794954004000",
+      "timestamp": "22:20",
+      "source": "CoinTelegraph",
+      "title": "CFTC halts some Kalshi Trump mention markets over manipulation concerns",
+      "link": "https://cointelegraph.com/news/cftc-kalshi-trump-mention-markets-review?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1794952595000",
+      "timestamp": "21:56",
+      "source": "CoinTelegraph",
+      "title": "Maple Finance CEO targets up to $15B in assets by the end of 2027",
+      "link": "https://cointelegraph.com/news/maple-finance-15b-assets-target-2027?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1794945904000",
+      "timestamp": "20:05",
+      "source": "CoinTelegraph",
+      "title": "Eastern Europe crypto flows fall 7.9% as Ukraine draws $12B in stablecoins",
+      "link": "https://cointelegraph.com/news/eastern-europe-crypto-activity-decline-chainalysis?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1794937913000",
+      "timestamp": "17:51",
+      "source": "CoinTelegraph",
+      "title": "Lighter incident exposes risks beyond withdrawal controls",
+      "link": "https://cointelegraph.com/news/lighter-incident-exposes-risks-beyond-withdrawal-controls?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1794944757000",
+      "timestamp": "19:45",
+      "source": "CoinDesk",
+      "title": "Coinbase CEO says AI agents will account for '99.9%' of transactions within a decade",
+      "link": "https://www.coindesk.com/markets/2026/11/17/coinbase-ceo-says-ai-agents-will-account-for-99-9-of-transactions-within-a-decade"
+    },
+    {
+      "id": "rss-CoinDesk-1-1794942960000",
+      "timestamp": "19:16",
+      "source": "CoinDesk",
+      "title": "Predictions platform Kalshi complies with order to halt Trump mention contracts",
+      "link": "https://www.coindesk.com/policy/2026/11/17/predictions-platform-kalshi-complies-with-order-to-halt-trump-mention-contracts"
+    },
+    {
+      "id": "rss-CoinDesk-2-1794937360000",
+      "timestamp": "17:42",
+      "source": "CoinDesk",
+      "title": "Druckenmiller says he is short copper, warns of economic weakness in 2027",
+      "link": "https://www.coindesk.com/business/2026/11/17/druckenmiller-says-he-is-short-copper-warns-of-economic-weakness-in-2027"
+    },
+    {
+      "id": "rss-CoinDesk-3-1794934805000",
+      "timestamp": "17:00",
+      "source": "CoinDesk",
+      "title": "U.S. Fed Governor Waller pitches keeping central bank at the center of tokenization",
+      "link": "https://www.coindesk.com/policy/2026/11/17/u-s-fed-governor-waller-pitches-keeping-central-bank-at-the-center-of-tokenization"
+    },
     {
       "id": "egld-1794939019173",
       "timestamp": "18:10",
       "source": "EGLD",
       "title": "Cotation publique · $2.55 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1794937913000",
-      "timestamp": "17:51",
-      "source": "CoinTelegraph",
-      "title": "Lighter incident exposes risks beyond withdrawal controls",
-      "link": "https://cointelegraph.com/news/lighter-incident-exposes-risks-beyond-withdrawal-controls?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "rss-CoinTelegraph-1-1794937181000",
@@ -30,13 +100,6 @@
       "source": "CoinTelegraph",
       "title": "Bitcoin drops 2.5% as Nvidia stock risks new 5-month lows into Q3 earnings",
       "link": "https://cointelegraph.com/markets/bitcoin-drops-25-nvidia-stock-risks-new-5-month-low-q3-earnings?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1794927280000",
-      "timestamp": "14:54",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "rss-CoinTelegraph-4-1794926749000",
@@ -135,69 +198,6 @@
       "source": "CoinDesk",
       "title": "Bitcoin risks falling below $60,000 as Nvidia earnings threaten to deepen crypto sell-off",
       "link": "https://www.coindesk.com/markets/2026/11/16/bitcoin-risks-falling-below-usd60-000-as-nvidia-earnings-threaten-to-deepen-crypto-sell-off"
-    },
-    {
-      "id": "rss-CoinDesk-2-1794855259000",
-      "timestamp": "18:54",
-      "source": "CoinDesk",
-      "title": "U.S. Senate Democrats tell CFTC to back off its demand prediction markets defy bans",
-      "link": "https://www.coindesk.com/policy/2026/11/16/u-s-senate-democrats-tell-cftc-to-back-off-its-demand-prediction-markets-defy-bans"
-    },
-    {
-      "id": "rss-CoinDesk-3-1794847302000",
-      "timestamp": "16:41",
-      "source": "CoinDesk",
-      "title": "Lighter suspends all withdrawals after $10.4 million crypto exploit",
-      "link": "https://www.coindesk.com/tech/2026/11/16/lighter-suspends-all-withdrawals-after-usd10-4-million-crypto-exploit"
-    },
-    {
-      "id": "egld-1794865186660",
-      "timestamp": "21:39",
-      "source": "EGLD",
-      "title": "Cotation publique · $2.61 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1794861947000",
-      "timestamp": "20:45",
-      "source": "CoinTelegraph",
-      "title": "Bitmine edges toward 5% of ETH supply as treasuries report buys amid market slump",
-      "link": "https://cointelegraph.com/markets/bitmine-nears-5-eth-supply-treasuries-report-buys-amid-market-slump?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1794860282000",
-      "timestamp": "20:18",
-      "source": "CoinTelegraph",
-      "title": "Boris Johnson says UK must lead blockchain development despite crypto doubts",
-      "link": "https://cointelegraph.com/news/boris-johnson-uk-must-lead-blockchain-development-despite-crypto-doubts?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1794858978000",
-      "timestamp": "19:56",
-      "source": "CoinTelegraph",
-      "title": "Coinbase and Broadridge propose standard for tokenized stock disclosures",
-      "link": "https://cointelegraph.com/news/coinbase-broadridge-tokenized-stock-shareholder-notices?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1794852469000",
-      "timestamp": "18:07",
-      "source": "CoinTelegraph",
-      "title": "Nvidia turmoil tests Bitcoin miners’ AI funding plans",
-      "link": "https://cointelegraph.com/news/nvidia-turmoil-tests-bitcoin-miners-ai-funding-plans?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1794851353000",
-      "timestamp": "17:49",
-      "source": "CoinTelegraph",
-      "title": "Safe wallet reportedly loses $6.5M as Zodiac suspects key compromise",
-      "link": "https://cointelegraph.com/news/safe-wallet-reportedly-loses-millions-after-key-compromise?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1794846412000",
-      "timestamp": "16:26",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin price fails to hold $65K as US stocks drop further on AI nerves",
-      "link": "https://cointelegraph.com/markets/bitcoin-price-fails-to-hold-65k-us-stocks-drop-on-ai-nerves?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
