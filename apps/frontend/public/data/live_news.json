@@ -1,8 +1,85 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-18T02:44:17.974Z",
+  "updatedAt": "2026-11-18T11:10:45.155Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1795000244745",
+      "timestamp": "11:10",
+      "source": "EGLD",
+      "title": "Cotation publique · $2.60 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1794997987000",
+      "timestamp": "10:33",
+      "source": "CoinTelegraph",
+      "title": "Bitwise seeks Texas Stock Exchange listing for Zcash ETF",
+      "link": "https://cointelegraph.com/news/bitwise-zcash-etf-texas-stock-exchange-listing?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1794997880000",
+      "timestamp": "10:31",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin steadies after Nvidia’s earnings beat as $60K bids stand out",
+      "link": "https://cointelegraph.com/markets/bitcoin-60k-liquidity-stocks-gain-nvidia-1158b-earnings-beat?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1794993438000",
+      "timestamp": "09:17",
+      "source": "CoinTelegraph",
+      "title": "World Bank partners with Circle, Citi to explore stablecoins for payments",
+      "link": "https://cointelegraph.com/news/world-bank-circle-citi-explore-stablecoins-payments?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1794991276000",
+      "timestamp": "08:41",
+      "source": "CoinTelegraph",
+      "title": "SOL comes out of Breakpoint 7% higher as Solana exits beta",
+      "link": "https://cointelegraph.com/markets/solana-sol-gains-7-percent-breakpoint-beta-tokenization?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1794989363000",
+      "timestamp": "08:09",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin ETFs lose $240M as CryptoQuant flags bearish market phase",
+      "link": "https://cointelegraph.com/markets/bitcoin-etf-240-million-outflow-bearish-phase?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1794981600000",
+      "timestamp": "06:00",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1794987479000",
+      "timestamp": "07:37",
+      "source": "CoinDesk",
+      "title": "Google finds self-running AI hacking tool with Russian comments in its files",
+      "link": "https://www.coindesk.com/tech/2026/11/18/google-finds-self-running-ai-hacking-tool-with-russian-comments-in-its-files"
+    },
+    {
+      "id": "rss-CoinDesk-1-1794986868000",
+      "timestamp": "07:27",
+      "source": "CoinDesk",
+      "title": "Live updates: Bitcoin stuck near $65,000 as popular 'basis trade' returns dry up",
+      "link": "https://www.coindesk.com/business/2026/11/18/live-updates-bitcoin-stuck-near-usd65-000-as-popular-basis-trade-returns-dry-up"
+    },
+    {
+      "id": "rss-CoinDesk-2-1794979810000",
+      "timestamp": "05:30",
+      "source": "CoinDesk",
+      "title": "U.S. judge says Ethereum has ‘no terms of use,’ clears MIT brothers of $25 million fraud",
+      "link": "https://www.coindesk.com/policy/2026/11/18/u-s-judge-says-ethereum-has-no-terms-of-use-clears-mit-brothers-of-usd25-million-fraud"
+    },
+    {
+      "id": "rss-CoinDesk-3-1794976461000",
+      "timestamp": "04:34",
+      "source": "CoinDesk",
+      "title": "Bitcoin's 12% slide through key support looks scary, but history says give it 3 months.",
+      "link": "https://www.coindesk.com/markets/2026/11/18/bitcoin-s-rare-12-crash-through-its-200-week-average-has-a-bullish-track-record"
+    },
     {
       "id": "egld-1794969857464",
       "timestamp": "02:44",
@@ -16,13 +93,6 @@
       "source": "CoinTelegraph",
       "title": "Nvidia board rejects Huang comeback despite record $116B quarter",
       "link": "https://cointelegraph.com/markets/nvidia-board-rejects-huang-comeback-amid-record-116b-quarter?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1794955071000",
-      "timestamp": "22:37",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "rss-CoinTelegraph-2-1794954004000",
@@ -128,76 +198,6 @@
       "source": "CoinDesk",
       "title": "Decentralized exchange Grvt looks to makes commodity trading more predictable with stable funding perps",
       "link": "https://www.coindesk.com/markets/2026/11/17/decentralized-exchange-grvt-makes-commodity-trading-more-predictable-with-stable-funding-perps"
-    },
-    {
-      "id": "rss-CoinDesk-2-1794917813000",
-      "timestamp": "12:16",
-      "source": "CoinDesk",
-      "title": "Crypto's 'casino-chips' are disappearing, adding to pain from spot ETF outflows",
-      "link": "https://www.coindesk.com/daybook-us/2026/11/17/crypto-s-casino-chips-are-disappearing-adding-to-pain-from-spot-etf-outflows"
-    },
-    {
-      "id": "rss-CoinDesk-3-1794916855000",
-      "timestamp": "12:00",
-      "source": "CoinDesk",
-      "title": "Ex-OpenAI researcher fund dumps bitcoin miners, cuts IREN 94% after portfolio slump",
-      "link": "https://www.coindesk.com/business/2026/11/17/ex-openai-researcher-fund-dumps-bitcoin-miners-cuts-iren-94-after-portfolio-slump"
-    },
-    {
-      "id": "egld-1794897767902",
-      "timestamp": "06:42",
-      "source": "EGLD",
-      "title": "Cotation publique · $2.60 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1794887182000",
-      "timestamp": "03:46",
-      "source": "CoinTelegraph",
-      "title": "Trezor customer data exposed in 3rd partner breach this year",
-      "link": "https://cointelegraph.com/news/trezor-customer-data-exposed-in-3rd-partner-breach-this-year?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1794877325000",
-      "timestamp": "01:02",
-      "source": "CoinTelegraph",
-      "title": "Hackers inject credit card, crypto-stealing malware into 178 major websites",
-      "link": "https://cointelegraph.com/news/hackers-inject-malware-into-178-major-websites?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1794873041000",
-      "timestamp": "23:50",
-      "source": "CoinTelegraph",
-      "title": "Nvidia shares fall 4% as board reportedly rules out Huang return",
-      "link": "https://cointelegraph.com/news/nvidia-shares-fall-4-as-board-reportedly-rules-out-huang-return?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1794869697000",
-      "timestamp": "22:54",
-      "source": "CoinTelegraph",
-      "title": "Custodia Bank loses Supreme Court bid for direct Fed payment access",
-      "link": "https://cointelegraph.com/news/custodia-bank-loses-supreme-court-bid-for-direct-fed-payment-access?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1794869204000",
-      "timestamp": "22:46",
-      "source": "CoinTelegraph",
-      "title": "German lawmakers back crypto freezes outside criminal cases",
-      "link": "https://cointelegraph.com/news/german-lawmakers-back-crypto-freezes-outside-criminal-cases?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1794865864000",
-      "timestamp": "21:51",
-      "source": "CoinDesk",
-      "title": "Former Robinhood engineer pleads guilty to insider trading scheme on Hyperliquid",
-      "link": "https://www.coindesk.com/markets/2026/11/16/former-robinhood-engineer-pleads-guilty-to-insider-trading-scheme-on-hyperliquid"
-    },
-    {
-      "id": "rss-CoinDesk-1-1794861321000",
-      "timestamp": "20:35",
-      "source": "CoinDesk",
-      "title": "Bitcoin risks falling below $60,000 as Nvidia earnings threaten to deepen crypto sell-off",
-      "link": "https://www.coindesk.com/markets/2026/11/16/bitcoin-risks-falling-below-usd60-000-as-nvidia-earnings-threaten-to-deepen-crypto-sell-off"
     }
   ]
 }
