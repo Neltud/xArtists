@@ -1,8 +1,85 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-18T11:10:45.155Z",
+  "updatedAt": "2026-11-18T20:00:20.080Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1795032019713",
+      "timestamp": "20:00",
+      "source": "EGLD",
+      "title": "Cotation publique · $2.56 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1795026472000",
+      "timestamp": "18:27",
+      "source": "CoinTelegraph",
+      "title": "MARA prices $185M debt offering after $1.1B Bitcoin sale",
+      "link": "https://cointelegraph.com/markets/mara-long-ridge-debt-offering-bitcoin-sales?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1795021504000",
+      "timestamp": "17:05",
+      "source": "CoinTelegraph",
+      "title": "$25M Ethereum MEV acquittal tests criminal enforcement limits",
+      "link": "https://cointelegraph.com/news/25m-ethereum-mev-acquittal-tests-criminal-enforcement-limits?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1795021200000",
+      "timestamp": "17:00",
+      "source": "CoinTelegraph",
+      "title": "Polymarket US takes rapid-fire crypto trading format to oil, natural gas",
+      "link": "https://cointelegraph.com/news/polymarket-us-takes-rapid-fire-crypto-trading-format-oil-natural-gas?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1795019660000",
+      "timestamp": "16:34",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin, stocks wobble as Fed’s Waller talks of ‘shock’ 50-point rate hike",
+      "link": "https://cointelegraph.com/markets/bitcoin-stocks-wobble-waller-talks-shock-50-point-rate-hike?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1795010690000",
+      "timestamp": "14:04",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin Covenants Part 6: FE Covenants — Enforcing covenants through cryptographically restricted signing keys",
+      "link": "https://cointelegraph.com/research/bitcoin-covenants-part-6-fe-covenants-enforcing-covenants-through-cryptographically-restricted-signing-keys?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1795009357000",
+      "timestamp": "13:42",
+      "source": "CoinTelegraph",
+      "title": "CoinShares sells all treasury ETH, halves SOL holdings for buybacks",
+      "link": "https://cointelegraph.com/news/coinshares-sells-eth-treasury-holdings-halves-sol-share-buybacks?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1795006414000",
+      "timestamp": "12:53",
+      "source": "CoinDesk",
+      "title": "Bitcoin miner MARA raises $185 million in debt after selling $1 billion BTC to repay loans",
+      "link": "https://www.coindesk.com/markets/2026/11/18/bitcoin-miner-mara-raises-usd185-million-in-debt-after-selling-usd1-billion-btc-to-repay-loans"
+    },
+    {
+      "id": "rss-CoinDesk-1-1795005669000",
+      "timestamp": "12:41",
+      "source": "CoinDesk",
+      "title": "Bullish beats revenue estimates as institutional services offset sluggish spot crypto volumes",
+      "link": "https://www.coindesk.com/markets/2026/11/18/bullish-beats-revenue-estimates-as-institutional-services-offset-sluggish-spot-crypto-volumes"
+    },
+    {
+      "id": "rss-CoinDesk-2-1795004714000",
+      "timestamp": "12:25",
+      "source": "CoinDesk",
+      "title": "Circle turns to DBS as banks build rival digital payment systems across Asia",
+      "link": "https://www.coindesk.com/business/2026/11/18/circle-turns-to-dbs-as-banks-build-rival-digital-payment-systems-across-asia"
+    },
+    {
+      "id": "rss-CoinDesk-3-1795004100000",
+      "timestamp": "12:15",
+      "source": "CoinDesk",
+      "title": "Blaming Anthropic’s IPO for bitcoin’s slide is 'easy to believe,' but flawed, analysts say",
+      "link": "https://www.coindesk.com/daybook-us/2026/11/18/blaming-anthropic-s-ipo-for-bitcoin-s-slide-is-easy-to-believe-but-flawed-analysts-say"
+    },
     {
       "id": "egld-1795000244745",
       "timestamp": "11:10",
@@ -121,83 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Lighter incident exposes risks beyond withdrawal controls",
       "link": "https://cointelegraph.com/news/lighter-incident-exposes-risks-beyond-withdrawal-controls?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1794944757000",
-      "timestamp": "19:45",
-      "source": "CoinDesk",
-      "title": "Coinbase CEO says AI agents will account for '99.9%' of transactions within a decade",
-      "link": "https://www.coindesk.com/markets/2026/11/17/coinbase-ceo-says-ai-agents-will-account-for-99-9-of-transactions-within-a-decade"
-    },
-    {
-      "id": "rss-CoinDesk-1-1794942960000",
-      "timestamp": "19:16",
-      "source": "CoinDesk",
-      "title": "Predictions platform Kalshi complies with order to halt Trump mention contracts",
-      "link": "https://www.coindesk.com/policy/2026/11/17/predictions-platform-kalshi-complies-with-order-to-halt-trump-mention-contracts"
-    },
-    {
-      "id": "rss-CoinDesk-2-1794937360000",
-      "timestamp": "17:42",
-      "source": "CoinDesk",
-      "title": "Druckenmiller says he is short copper, warns of economic weakness in 2027",
-      "link": "https://www.coindesk.com/business/2026/11/17/druckenmiller-says-he-is-short-copper-warns-of-economic-weakness-in-2027"
-    },
-    {
-      "id": "rss-CoinDesk-3-1794934805000",
-      "timestamp": "17:00",
-      "source": "CoinDesk",
-      "title": "U.S. Fed Governor Waller pitches keeping central bank at the center of tokenization",
-      "link": "https://www.coindesk.com/policy/2026/11/17/u-s-fed-governor-waller-pitches-keeping-central-bank-at-the-center-of-tokenization"
-    },
-    {
-      "id": "egld-1794939019173",
-      "timestamp": "18:10",
-      "source": "EGLD",
-      "title": "Cotation publique · $2.55 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1794937181000",
-      "timestamp": "17:39",
-      "source": "CoinTelegraph",
-      "title": "Fed’s Waller cites Binance hack in warning over tokenized finance",
-      "link": "https://cointelegraph.com/news/feds-waller-cites-binance-hack-in-warning-over-tokenized-finance?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1794933583000",
-      "timestamp": "16:39",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin drops 2.5% as Nvidia stock risks new 5-month lows into Q3 earnings",
-      "link": "https://cointelegraph.com/markets/bitcoin-drops-25-nvidia-stock-risks-new-5-month-low-q3-earnings?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1794926749000",
-      "timestamp": "14:45",
-      "source": "CoinTelegraph",
-      "title": "Solana Foundation takes majority interest in crypto data firm CoinGecko",
-      "link": "https://cointelegraph.com/news/coingecko-solana-foundation-majority-stake?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1794922200000",
-      "timestamp": "13:30",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin to $1M by 2030? ‘Almost certainly not,’ says Dragonfly’s Qureshi",
-      "link": "https://cointelegraph.com/magazine/bitcoin-to-1m-by-2030-almost-certainly-not-says-dragonflys-qureshi?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1794920576000",
-      "timestamp": "13:02",
-      "source": "CoinDesk",
-      "title": "Ethereum's Glamsterdam upgrade risks breaking up to 15,000 automated apps",
-      "link": "https://www.coindesk.com/tech/2026/11/17/ethereum-s-glamsterdam-upgrade-risks-breaking-up-to-15-000-contracts"
-    },
-    {
-      "id": "rss-CoinDesk-1-1794920400000",
-      "timestamp": "13:00",
-      "source": "CoinDesk",
-      "title": "Decentralized exchange Grvt looks to makes commodity trading more predictable with stable funding perps",
-      "link": "https://www.coindesk.com/markets/2026/11/17/decentralized-exchange-grvt-makes-commodity-trading-more-predictable-with-stable-funding-perps"
     }
   ]
 }
