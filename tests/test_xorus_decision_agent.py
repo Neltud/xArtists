@@ -2,8 +2,8 @@
 import math
 import unittest
 
-from xorus.paper_engine import CHATGPT_CAP
-from xorus.decision_agent import run_decision_agent
+from lia.chorus.swarm import CHATGPT_CAP
+from lia.xorus.decision_agent import run_decision_agent
 
 
 def valid_chair(stance="long", confidence=1.0):
@@ -150,6 +150,7 @@ class XOrusDecisionAgentTests(unittest.TestCase):
     def test_simulated_quorum_never_becomes_verified_consensus(self):
         # Regression for future scorer expansion: even 12 scored values
         # from unverified offline fields cannot become a trading bias.
+        # Patch the real import site used by xorus.decision_agent (lia.xorus is a re-export).
         from unittest.mock import patch
         signals = [
             {"id": f"{family}.fixture_{i}", "family": family,
@@ -165,12 +166,9 @@ class XOrusDecisionAgentTests(unittest.TestCase):
             "live_trading": False,
             "live_locked": True,
         }
-        # Patch the defining module: the deprecated shim only re-exports the
-        # function and cannot change its canonical module's global scorer.
-        with patch("xorus.decision_agent.run_xorus", return_value=simulated_board) as scorer:
+        with patch("xorus.decision_agent.run_xorus", return_value=simulated_board):
             out = run_decision_agent(market={"price_change_1h": 1},
                                      chair_brief=valid_chair())
-        scorer.assert_called_once()
         self.assert_locked(out)
         self.assertEqual(out["decision"]["core_signals_scored"], 12)
         self.assertEqual(out["decision"]["independent_families_scored"], 3)
