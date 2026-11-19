@@ -3,6 +3,7 @@ name: xOrus Decision Agent (paper, offline, no deploy)
 on:
   pull_request:
     paths:
+      - 'xorus/**'
       - 'lia/xorus/decision_agent.py'
       - 'lia/xorus/analysis_report.py'
       - 'lia/xorus/analysis_cycle.py'
