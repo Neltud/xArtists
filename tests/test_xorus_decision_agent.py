@@ -150,6 +150,7 @@ class XOrusDecisionAgentTests(unittest.TestCase):
     def test_simulated_quorum_never_becomes_verified_consensus(self):
         # Regression for future scorer expansion: even 12 scored values
         # from unverified offline fields cannot become a trading bias.
+        # Patch the real import site used by xorus.decision_agent (lia.xorus is a re-export).
         from unittest.mock import patch
         signals = [
             {"id": f"{family}.fixture_{i}", "family": family,
@@ -165,7 +166,7 @@ class XOrusDecisionAgentTests(unittest.TestCase):
             "live_trading": False,
             "live_locked": True,
         }
-        with patch("lia.xorus.decision_agent.run_xorus", return_value=simulated_board):
+        with patch("xorus.decision_agent.run_xorus", return_value=simulated_board):
             out = run_decision_agent(market={"price_change_1h": 1},
                                      chair_brief=valid_chair())
         self.assert_locked(out)

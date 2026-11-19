@@ -3,6 +3,7 @@ name: xOrus Decision Agent (paper, offline, no deploy)
 on:
   pull_request:
     paths:
+      - 'xorus/**'
       - 'lia/xorus/decision_agent.py'
       - 'lia/xorus/analysis_report.py'
       - 'lia/xorus/analysis_cycle.py'
@@ -19,6 +20,8 @@ on:
       - 'lia/chorus/swarm.py'
       - 'lia/chorus/catalog.py'
       - 'tests/test_xorus_decision_agent.py'
+      - 'tests/test_xorus_alias.py'
+      - 'tests/test_xorus_preprod_gate.py'
       - 'tests/test_xorus_analysis_report.py'
       - 'tests/test_xorus_public_catalog_sync.py'
       - 'apps/frontend/public/data/xorus_signal_catalog.json'
@@ -52,6 +55,7 @@ jobs:
           python -m unittest discover -s tests -p 'test_xorus_analysis_cycle.py' -v
           python -m unittest discover -s tests -p 'test_chorus_paper_safety.py' -v
           python -m unittest discover -s tests -p 'test_xorus_alias.py' -v
+          python -m unittest discover -s tests -p 'test_xorus_preprod_gate.py' -v
           python -m unittest discover -s tests -p 'test_xorus_public_catalog_sync.py' -v
 
   xorus-server-contract:
