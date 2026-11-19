@@ -1,8 +1,85 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-18T20:00:20.080Z",
+  "updatedAt": "2026-11-19T02:17:42.326Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1795054661689",
+      "timestamp": "02:17",
+      "source": "EGLD",
+      "title": "Cotation publique · $2.54 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1795052733000",
+      "timestamp": "01:45",
+      "source": "CoinTelegraph",
+      "title": "Trump administration unveils new center to choke off scam payments",
+      "link": "https://cointelegraph.com/news/trump-administration-unveils-new-center-choke-off-scam-payments?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1795048549000",
+      "timestamp": "00:35",
+      "source": "CoinTelegraph",
+      "title": "Fed officials saw October rate hold as a ‘close call,’ minutes show",
+      "link": "https://cointelegraph.com/markets/fed-officials-saw-october-rate-hold-as-close-call-minutes-show?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1795039755000",
+      "timestamp": "22:09",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1795039055000",
+      "timestamp": "21:57",
+      "source": "CoinTelegraph",
+      "title": "Tether invokes The Big Short in swipe at S&P over USDT reserve risks",
+      "link": "https://cointelegraph.com/news/tether-usdt-sp-stability-assessment-reserve-risks?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1795036438000",
+      "timestamp": "21:13",
+      "source": "CoinTelegraph",
+      "title": "Ledger warns Berlin customers as hardware wallet tampering investigation expands",
+      "link": "https://cointelegraph.com/news/ledger-warns-berlin-customers-hardware-wallet-investigation?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1795033926000",
+      "timestamp": "20:32",
+      "source": "CoinTelegraph",
+      "title": "Bain Capital Crypto leads $110M Variational round at $1.5B valuation",
+      "link": "https://cointelegraph.com/news/variational-series-b-bain-capital-crypto?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1795022523000",
+      "timestamp": "17:22",
+      "source": "CoinDesk",
+      "title": "A $1.5 billion crypto startup is taking on Hyperliquid with a Wall Street playbook",
+      "link": "https://www.coindesk.com/business/2026/11/18/a-usd1-5-billion-crypto-startup-is-taking-on-hyperliquid-with-a-wall-street-playbook"
+    },
+    {
+      "id": "rss-CoinDesk-1-1795017774000",
+      "timestamp": "16:02",
+      "source": "CoinDesk",
+      "title": "Crypto Long & Short: Crypto exchanges shouldn’t double as the vault",
+      "link": "https://www.coindesk.com/coindesk-indices/2026/11/18/crypto-long-and-short-crypto-exchanges-shouldn-t-double-as-the-vault"
+    },
+    {
+      "id": "rss-CoinDesk-2-1795016318000",
+      "timestamp": "15:38",
+      "source": "CoinDesk",
+      "title": "German judge proposes dropping Movie2k case if operator hands over $2.56 billion in bitcoin",
+      "link": "https://www.coindesk.com/business/2026/11/18/german-judge-proposes-dropping-movie2k-case-if-operator-hands-over-usd2-56-billion-in-bitcoin"
+    },
+    {
+      "id": "rss-CoinDesk-3-1795015398000",
+      "timestamp": "15:23",
+      "source": "CoinDesk",
+      "title": "Hong Kong wants banks to use AI to catch crypto crime before money disappears",
+      "link": "https://www.coindesk.com/business/2026/11/18/hong-kong-wants-banks-to-use-ai-to-catch-crypto-crime-before-money-disappears"
+    },
     {
       "id": "egld-1795032019713",
       "timestamp": "20:00",
@@ -121,83 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Bitcoin ETFs lose $240M as CryptoQuant flags bearish market phase",
       "link": "https://cointelegraph.com/markets/bitcoin-etf-240-million-outflow-bearish-phase?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1794981600000",
-      "timestamp": "06:00",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1794987479000",
-      "timestamp": "07:37",
-      "source": "CoinDesk",
-      "title": "Google finds self-running AI hacking tool with Russian comments in its files",
-      "link": "https://www.coindesk.com/tech/2026/11/18/google-finds-self-running-ai-hacking-tool-with-russian-comments-in-its-files"
-    },
-    {
-      "id": "rss-CoinDesk-1-1794986868000",
-      "timestamp": "07:27",
-      "source": "CoinDesk",
-      "title": "Live updates: Bitcoin stuck near $65,000 as popular 'basis trade' returns dry up",
-      "link": "https://www.coindesk.com/business/2026/11/18/live-updates-bitcoin-stuck-near-usd65-000-as-popular-basis-trade-returns-dry-up"
-    },
-    {
-      "id": "rss-CoinDesk-2-1794979810000",
-      "timestamp": "05:30",
-      "source": "CoinDesk",
-      "title": "U.S. judge says Ethereum has ‘no terms of use,’ clears MIT brothers of $25 million fraud",
-      "link": "https://www.coindesk.com/policy/2026/11/18/u-s-judge-says-ethereum-has-no-terms-of-use-clears-mit-brothers-of-usd25-million-fraud"
-    },
-    {
-      "id": "rss-CoinDesk-3-1794976461000",
-      "timestamp": "04:34",
-      "source": "CoinDesk",
-      "title": "Bitcoin's 12% slide through key support looks scary, but history says give it 3 months.",
-      "link": "https://www.coindesk.com/markets/2026/11/18/bitcoin-s-rare-12-crash-through-its-200-week-average-has-a-bullish-track-record"
-    },
-    {
-      "id": "egld-1794969857464",
-      "timestamp": "02:44",
-      "source": "EGLD",
-      "title": "Cotation publique · $2.57 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1794961003000",
-      "timestamp": "00:16",
-      "source": "CoinTelegraph",
-      "title": "Nvidia board rejects Huang comeback despite record $116B quarter",
-      "link": "https://cointelegraph.com/markets/nvidia-board-rejects-huang-comeback-amid-record-116b-quarter?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1794954004000",
-      "timestamp": "22:20",
-      "source": "CoinTelegraph",
-      "title": "CFTC halts some Kalshi Trump mention markets over manipulation concerns",
-      "link": "https://cointelegraph.com/news/cftc-kalshi-trump-mention-markets-review?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1794952595000",
-      "timestamp": "21:56",
-      "source": "CoinTelegraph",
-      "title": "Maple Finance CEO targets up to $15B in assets by the end of 2027",
-      "link": "https://cointelegraph.com/news/maple-finance-15b-assets-target-2027?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1794945904000",
-      "timestamp": "20:05",
-      "source": "CoinTelegraph",
-      "title": "Eastern Europe crypto flows fall 7.9% as Ukraine draws $12B in stablecoins",
-      "link": "https://cointelegraph.com/news/eastern-europe-crypto-activity-decline-chainalysis?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1794937913000",
-      "timestamp": "17:51",
-      "source": "CoinTelegraph",
-      "title": "Lighter incident exposes risks beyond withdrawal controls",
-      "link": "https://cointelegraph.com/news/lighter-incident-exposes-risks-beyond-withdrawal-controls?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
