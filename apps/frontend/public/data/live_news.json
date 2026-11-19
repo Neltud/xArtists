@@ -1,8 +1,85 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-19T02:17:42.326Z",
+  "updatedAt": "2026-11-19T11:09:50.330Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1795086589787",
+      "timestamp": "11:09",
+      "source": "EGLD",
+      "title": "Cotation publique · $2.55 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1795084325000",
+      "timestamp": "10:32",
+      "source": "CoinTelegraph",
+      "title": "IOSCO warns quantum upgrades could slow blockchains, leave security gaps",
+      "link": "https://cointelegraph.com/news/iosco-quantum-blockchain-upgrades-security-risks?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1795078498000",
+      "timestamp": "08:54",
+      "source": "CoinTelegraph",
+      "title": "Singapore settles $77.5M tokenized bill sale with wholesale CBDC",
+      "link": "https://cointelegraph.com/news/mas-issues-77m-tokenized-bills-singapore-dollar-test-network?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1795076779000",
+      "timestamp": "08:26",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin ETF assets fall to three-month low as 2026 net outflows top $2.5B",
+      "link": "https://cointelegraph.com/markets/bitcoin-etf-assets-three-month-low-78-billion?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1795075477000",
+      "timestamp": "08:04",
+      "source": "CoinTelegraph",
+      "title": "BTCPay Server issues emergency update for 5 security flaws",
+      "link": "https://cointelegraph.com/news/btcpay-server-emergency-update-nginx-security-flaws?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1795074956000",
+      "timestamp": "07:55",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin retests $62K as Nasdaq futures rise ahead of Anthropic debut",
+      "link": "https://cointelegraph.com/markets/bitcoin-retests-62k-nasdaq-futures-anthropic-debut?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1795068000000",
+      "timestamp": "06:00",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin carry trades could beat Treasury bills in 2027, Sygnum predicts",
+      "link": "https://cointelegraph.com/markets/sygnum-bitcoin-carry-trades-2027?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1795069399000",
+      "timestamp": "06:23",
+      "source": "CoinDesk",
+      "title": "Fed's rate hike push may be a mistake. Here's why",
+      "link": "https://www.coindesk.com/markets/2026/11/19/fed-s-push-for-more-rate-hikes-leans-on-backward-looking-data-as-gas-prices-slide-analysts-argue"
+    },
+    {
+      "id": "rss-CoinDesk-1-1795066746000",
+      "timestamp": "05:39",
+      "source": "CoinDesk",
+      "title": "Ethereum block builders received the most in a $3.4 million vault hack, data shows",
+      "link": "https://www.coindesk.com/tech/2026/11/19/ethereum-block-builders-received-the-most-in-a-usd3-4-million-vault-hack-data-shows"
+    },
+    {
+      "id": "rss-CoinDesk-2-1795063570000",
+      "timestamp": "04:46",
+      "source": "CoinDesk",
+      "title": "Bitcoin miner that sold its last BTC warns it may run short of cash for $1.2 billion AI deal",
+      "link": "https://www.coindesk.com/markets/2026/11/19/bitcoin-miner-that-sold-its-last-btc-warns-it-may-run-short-of-cash-for-usd1-2-billion-ai-deal"
+    },
+    {
+      "id": "rss-CoinDesk-3-1795059648000",
+      "timestamp": "03:40",
+      "source": "CoinDesk",
+      "title": "CZ says tokenized Anthropic is coming to BNB Chain on IPO day",
+      "link": "https://www.coindesk.com/markets/2026/11/19/cz-says-tokenized-anthropic-is-coming-to-bnb-chain-on-ipo-day"
+    },
     {
       "id": "egld-1795054661689",
       "timestamp": "02:17",
@@ -121,83 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Bitcoin Covenants Part 6: FE Covenants — Enforcing covenants through cryptographically restricted signing keys",
       "link": "https://cointelegraph.com/research/bitcoin-covenants-part-6-fe-covenants-enforcing-covenants-through-cryptographically-restricted-signing-keys?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1795009357000",
-      "timestamp": "13:42",
-      "source": "CoinTelegraph",
-      "title": "CoinShares sells all treasury ETH, halves SOL holdings for buybacks",
-      "link": "https://cointelegraph.com/news/coinshares-sells-eth-treasury-holdings-halves-sol-share-buybacks?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1795006414000",
-      "timestamp": "12:53",
-      "source": "CoinDesk",
-      "title": "Bitcoin miner MARA raises $185 million in debt after selling $1 billion BTC to repay loans",
-      "link": "https://www.coindesk.com/markets/2026/11/18/bitcoin-miner-mara-raises-usd185-million-in-debt-after-selling-usd1-billion-btc-to-repay-loans"
-    },
-    {
-      "id": "rss-CoinDesk-1-1795005669000",
-      "timestamp": "12:41",
-      "source": "CoinDesk",
-      "title": "Bullish beats revenue estimates as institutional services offset sluggish spot crypto volumes",
-      "link": "https://www.coindesk.com/markets/2026/11/18/bullish-beats-revenue-estimates-as-institutional-services-offset-sluggish-spot-crypto-volumes"
-    },
-    {
-      "id": "rss-CoinDesk-2-1795004714000",
-      "timestamp": "12:25",
-      "source": "CoinDesk",
-      "title": "Circle turns to DBS as banks build rival digital payment systems across Asia",
-      "link": "https://www.coindesk.com/business/2026/11/18/circle-turns-to-dbs-as-banks-build-rival-digital-payment-systems-across-asia"
-    },
-    {
-      "id": "rss-CoinDesk-3-1795004100000",
-      "timestamp": "12:15",
-      "source": "CoinDesk",
-      "title": "Blaming Anthropic’s IPO for bitcoin’s slide is 'easy to believe,' but flawed, analysts say",
-      "link": "https://www.coindesk.com/daybook-us/2026/11/18/blaming-anthropic-s-ipo-for-bitcoin-s-slide-is-easy-to-believe-but-flawed-analysts-say"
-    },
-    {
-      "id": "egld-1795000244745",
-      "timestamp": "11:10",
-      "source": "EGLD",
-      "title": "Cotation publique · $2.60 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1794997987000",
-      "timestamp": "10:33",
-      "source": "CoinTelegraph",
-      "title": "Bitwise seeks Texas Stock Exchange listing for Zcash ETF",
-      "link": "https://cointelegraph.com/news/bitwise-zcash-etf-texas-stock-exchange-listing?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1794997880000",
-      "timestamp": "10:31",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin steadies after Nvidia’s earnings beat as $60K bids stand out",
-      "link": "https://cointelegraph.com/markets/bitcoin-60k-liquidity-stocks-gain-nvidia-1158b-earnings-beat?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1794993438000",
-      "timestamp": "09:17",
-      "source": "CoinTelegraph",
-      "title": "World Bank partners with Circle, Citi to explore stablecoins for payments",
-      "link": "https://cointelegraph.com/news/world-bank-circle-citi-explore-stablecoins-payments?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1794991276000",
-      "timestamp": "08:41",
-      "source": "CoinTelegraph",
-      "title": "SOL comes out of Breakpoint 7% higher as Solana exits beta",
-      "link": "https://cointelegraph.com/markets/solana-sol-gains-7-percent-breakpoint-beta-tokenization?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1794989363000",
-      "timestamp": "08:09",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin ETFs lose $240M as CryptoQuant flags bearish market phase",
-      "link": "https://cointelegraph.com/markets/bitcoin-etf-240-million-outflow-bearish-phase?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
