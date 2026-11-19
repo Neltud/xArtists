@@ -13,7 +13,8 @@ class XorusCompatibilityTest(unittest.TestCase):
     def test_xorus_is_paper_only_on_empty_input(self):
         board = run_xorus()
         self.assertEqual(board["engine"], "xorus")
-        self.assertEqual(board["legacy_engine"], "chorus")
+        self.assertEqual(board["legacy_engine"], "chorus_scorer")
+        self.assertIs(board["lia_retired"], True)
         self.assertEqual(board["crosscut"]["stance"], "ABSTAIN")
         self.assertEqual(board["crosscut"]["reason"], "thin_tape")
         self.assertFalse(board["crosscut"]["executable"])

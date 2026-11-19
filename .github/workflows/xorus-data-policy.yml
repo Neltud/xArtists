@@ -5,6 +5,7 @@ on:
       - 'xorus/**'
       - 'lia/xorus/**'
       - 'tests/test_xorus_data_rewards.py'
+      - 'tests/test_xorus_alias.py'
       - '.github/workflows/xorus-data-policy.yml'
   workflow_dispatch:
 permissions:

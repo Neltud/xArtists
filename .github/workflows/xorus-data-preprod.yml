@@ -1,8 +1,9 @@
-name: xOrus Data preproduction gates (offline, no deploy)
+name: xOrus retired LIA preproduction surface (offline, no deploy)
 
 on:
   pull_request:
     paths:
+      - 'xorus/**'
       - 'lia/xorus/preprod_gate.py'
       - 'lia/xorus/catalog.py'
       - 'lia/chorus/catalog.py'
@@ -22,9 +23,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Install signature verifier for offline test
-        run: python -m pip install 'cryptography>=44,<49'
-      - name: Verify xOrus catalog, signature and immutable NO-GO
+      - name: Verify retired gate, paper seal and provenance guards
         env:
           PYTHONPATH: ${{ github.workspace }}
           LIA_LIVE_TRADING: '0'
