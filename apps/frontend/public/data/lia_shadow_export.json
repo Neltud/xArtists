@@ -1,16 +1,12 @@
 {
   "schema": "lia_shadow_export/v1",
-  "ts": "2026-11-19T12:39:40Z",
+  "ts": "2026-11-19T22:01:34Z",
   "paper": true,
-  "fills": 176,
-  "shadow_pnl_usd": 8.0372,
-  "win_rate": 0.5966,
-  "equity_now_usd": 1008.0372,
+  "fills": 177,
+  "shadow_pnl_usd": 7.9722,
+  "win_rate": 0.5932,
+  "equity_now_usd": 1007.9722,
   "equity_curve": [
-    {
-      "ts": "2026-10-18T20:22:04Z",
-      "equity": 1002.6589
-    },
     {
       "ts": "2026-10-19T00:01:12Z",
       "equity": 1002.6429
@@ -486,19 +482,15 @@
     {
       "ts": "2026-11-19T12:39:40Z",
       "equity": 1008.0372
+    },
+    {
+      "ts": "2026-11-19T22:01:34Z",
+      "equity": 1007.9722
     }
   ],
   "day_index": 7,
   "sprint_status": "complete",
   "last_shadow": [
-    {
-      "id": "0a437ad6-445",
-      "side": "BUY",
-      "asset": "EGLD",
-      "strategy": "STRAT_YIELD_OPTIMIZER",
-      "pnl_usd": 0.231075,
-      "ts": "2026-11-17T00:04:49Z"
-    },
     {
       "id": "b8f7f48e-03f",
       "side": "BUY",
@@ -554,6 +546,14 @@
       "strategy": "STRAT_YIELD_OPTIMIZER",
       "pnl_usd": -0.090034,
       "ts": "2026-11-19T12:39:40Z"
+    },
+    {
+      "id": "6de587de-233",
+      "side": "BUY",
+      "asset": "EGLD",
+      "strategy": "STRAT_YIELD_OPTIMIZER",
+      "pnl_usd": -0.079088,
+      "ts": "2026-11-19T22:01:34Z"
     }
   ],
   "friction_model": {
