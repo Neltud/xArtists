@@ -1,8 +1,85 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-19T11:09:50.330Z",
+  "updatedAt": "2026-11-19T19:58:45.349Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1795118324818",
+      "timestamp": "19:58",
+      "source": "EGLD",
+      "title": "Cotation publique · $2.47 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1795112449000",
+      "timestamp": "18:20",
+      "source": "CoinTelegraph",
+      "title": "Ethereum’s Glamsterdam upgrade could slip to May 2027 over compatibility concerns",
+      "link": "https://cointelegraph.com/news/ethereum-glamsterdam-could-slip-to-may-2027?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1795111772000",
+      "timestamp": "18:09",
+      "source": "CoinTelegraph",
+      "title": "Why higher rates could slow Bitcoin buying at treasury firms",
+      "link": "https://cointelegraph.com/news/why-higher-rates-could-slow-bitcoin-buying-at-treasury-firms?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1795111610000",
+      "timestamp": "18:06",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin price ignores Anthropic debut as ANT share price dips below $100",
+      "link": "https://cointelegraph.com/markets/bitcoin-price-ignores-anthropic-debut-ant-share-price-dips-below-100?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1795104471000",
+      "timestamp": "16:07",
+      "source": "CoinTelegraph",
+      "title": "Anthropic shares open at $111.50, 34.3% above $83 IPO price",
+      "link": "https://cointelegraph.com/markets/anthropic-shares-expected-to-open-above-83-ipo-price?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1795096094000",
+      "timestamp": "13:48",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1795095000000",
+      "timestamp": "13:30",
+      "source": "CoinTelegraph",
+      "title": "Ethereum’s new DeFi security tool raises questions over censorship",
+      "link": "https://cointelegraph.com/magazine/ethereums-new-defi-security-tool-raises-questions-over-censorship?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1795093891000",
+      "timestamp": "13:11",
+      "source": "CoinDesk",
+      "title": "Crypto traders vs. Wall Street: OKX’s Anthropic markets put IPO pricing to the test",
+      "link": "https://www.coindesk.com/markets/2026/11/19/crypto-traders-vs-wall-street-okx-s-anthropic-markets-put-ipo-pricing-to-the-test"
+    },
+    {
+      "id": "rss-CoinDesk-1-1795092012000",
+      "timestamp": "12:40",
+      "source": "CoinDesk",
+      "title": "Trump Media wants to clear $884 million of debt without selling its bitcoin",
+      "link": "https://www.coindesk.com/markets/2026/11/19/trump-media-wants-to-clear-usd884-million-of-debt-without-selling-its-bitcoin"
+    },
+    {
+      "id": "rss-CoinDesk-2-1795090839000",
+      "timestamp": "12:20",
+      "source": "CoinDesk",
+      "title": "Bitcoin ETF outflows show waning crypto appetite ahead of Anthropic's Nasdaq debut",
+      "link": "https://www.coindesk.com/daybook-us/2026/11/19/bitcoin-etf-outflows-show-waning-crypto-appetite-ahead-of-anthropic-s-nasdaq-debut"
+    },
+    {
+      "id": "rss-CoinDesk-3-1795090086000",
+      "timestamp": "12:08",
+      "source": "CoinDesk",
+      "title": "Bitcoin holds above $63,750 but Fed rate-hike threats loom large",
+      "link": "https://www.coindesk.com/markets/2026/11/19/bitcoin-holds-above-usd63-750-but-fed-rate-hike-threats-loom-large"
+    },
     {
       "id": "egld-1795086589787",
       "timestamp": "11:09",
@@ -102,13 +179,6 @@
       "link": "https://cointelegraph.com/markets/fed-officials-saw-october-rate-hold-as-close-call-minutes-show?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-2-1795039755000",
-      "timestamp": "22:09",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
       "id": "rss-CoinTelegraph-3-1795039055000",
       "timestamp": "21:57",
       "source": "CoinTelegraph",
@@ -128,76 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Bain Capital Crypto leads $110M Variational round at $1.5B valuation",
       "link": "https://cointelegraph.com/news/variational-series-b-bain-capital-crypto?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1795022523000",
-      "timestamp": "17:22",
-      "source": "CoinDesk",
-      "title": "A $1.5 billion crypto startup is taking on Hyperliquid with a Wall Street playbook",
-      "link": "https://www.coindesk.com/business/2026/11/18/a-usd1-5-billion-crypto-startup-is-taking-on-hyperliquid-with-a-wall-street-playbook"
-    },
-    {
-      "id": "rss-CoinDesk-1-1795017774000",
-      "timestamp": "16:02",
-      "source": "CoinDesk",
-      "title": "Crypto Long & Short: Crypto exchanges shouldn’t double as the vault",
-      "link": "https://www.coindesk.com/coindesk-indices/2026/11/18/crypto-long-and-short-crypto-exchanges-shouldn-t-double-as-the-vault"
-    },
-    {
-      "id": "rss-CoinDesk-2-1795016318000",
-      "timestamp": "15:38",
-      "source": "CoinDesk",
-      "title": "German judge proposes dropping Movie2k case if operator hands over $2.56 billion in bitcoin",
-      "link": "https://www.coindesk.com/business/2026/11/18/german-judge-proposes-dropping-movie2k-case-if-operator-hands-over-usd2-56-billion-in-bitcoin"
-    },
-    {
-      "id": "rss-CoinDesk-3-1795015398000",
-      "timestamp": "15:23",
-      "source": "CoinDesk",
-      "title": "Hong Kong wants banks to use AI to catch crypto crime before money disappears",
-      "link": "https://www.coindesk.com/business/2026/11/18/hong-kong-wants-banks-to-use-ai-to-catch-crypto-crime-before-money-disappears"
-    },
-    {
-      "id": "egld-1795032019713",
-      "timestamp": "20:00",
-      "source": "EGLD",
-      "title": "Cotation publique · $2.56 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1795026472000",
-      "timestamp": "18:27",
-      "source": "CoinTelegraph",
-      "title": "MARA prices $185M debt offering after $1.1B Bitcoin sale",
-      "link": "https://cointelegraph.com/markets/mara-long-ridge-debt-offering-bitcoin-sales?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1795021504000",
-      "timestamp": "17:05",
-      "source": "CoinTelegraph",
-      "title": "$25M Ethereum MEV acquittal tests criminal enforcement limits",
-      "link": "https://cointelegraph.com/news/25m-ethereum-mev-acquittal-tests-criminal-enforcement-limits?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1795021200000",
-      "timestamp": "17:00",
-      "source": "CoinTelegraph",
-      "title": "Polymarket US takes rapid-fire crypto trading format to oil, natural gas",
-      "link": "https://cointelegraph.com/news/polymarket-us-takes-rapid-fire-crypto-trading-format-oil-natural-gas?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1795019660000",
-      "timestamp": "16:34",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin, stocks wobble as Fed’s Waller talks of ‘shock’ 50-point rate hike",
-      "link": "https://cointelegraph.com/markets/bitcoin-stocks-wobble-waller-talks-shock-50-point-rate-hike?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1795010690000",
-      "timestamp": "14:04",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin Covenants Part 6: FE Covenants — Enforcing covenants through cryptographically restricted signing keys",
-      "link": "https://cointelegraph.com/research/bitcoin-covenants-part-6-fe-covenants-enforcing-covenants-through-cryptographically-restricted-signing-keys?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
