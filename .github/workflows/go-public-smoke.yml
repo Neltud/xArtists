@@ -53,7 +53,7 @@ jobs:
           expected = os.environ['GITHUB_SHA']
           for attempt in range(20):
               try:
-                  with urlopen('https://api.xartists.art/v1/ops/build-info', timeout=10) as response:
+                  with urlopen('https://xartists-access-api.onrender.com/v1/ops/build-info', timeout=10) as response:
                       identity = json.loads(response.read(8192))
                   if (identity.get('ok') is True and identity.get('service') == 'access-api'
                       and identity.get('source_sha') == expected
@@ -66,7 +66,7 @@ jobs:
               except (URLError, TimeoutError, OSError, ValueError):
                   pass
               if attempt == 19:
-                  raise SystemExit('Self-managed API not deployed at the pushed SHA; API remains NO-GO')
+                  raise SystemExit('Published access-api runtime is not at the pushed SHA. Render is not redeployed by git; API code stays NO-GO until that runtime matches, with flags unchanged.')
               time.sleep(15)
           PY
       - name: Probe Pages and access-api
@@ -85,8 +85,10 @@ jobs:
             echo "$code  $url"
             if [ "$code" != "200" ]; then fail=1; fi
           }
+          # Published origin (Pages bundle + CSP). api.xartists.art has no DNS
+          # and is not a public GO. The Python probe records that cutover apart.
           BASE=https://xartists.art
-          API=https://api.xartists.art
+          API=https://xartists-access-api.onrender.com
 
           check "$BASE/"
           check "$BASE/packs/pulse/"
@@ -113,7 +115,7 @@ jobs:
                   h = json.load(f)
           except (json.JSONDecodeError, UnicodeError) as exc:
               raise SystemExit(
-                  'P0 WRONG API: /health is not valid JSON from the approved self-managed API.'
+                  'P0 WRONG API: /health is not valid JSON from the published access-api.'
               ) from exc
           with open('/tmp/lia_status.json', encoding='utf-8') as f:
               lia = json.load(f)

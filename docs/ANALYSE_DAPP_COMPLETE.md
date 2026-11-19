@@ -5,6 +5,8 @@ noIndex: true
 
 # Analyse DApp complète xArtists — 16 novembre 2026
 
+> **19 nov 2026, 12:25 UTC — la mesure fraîche prime.** Voir [`docs/ops/PROBE_PUBLIC_2026-11-19.md`](ops/PROBE_PUBLIC_2026-11-19.md). Pages `fdd07219` (17 nov 13:54 UTC), API Render toujours `8b6fae84`, `api.xartists.art` NXDOMAIN, studio 503, trading faux. Le verdict « vitrine live / commerce fermé » ne change pas. Les SHA du 16 nov dans ce fichier sont historiques.
+
 ## Verdict
 
 xArtists est une dApp **MultiversX mainnet** et une vitrine d'art. Ce n'est pas un fonds. Un pourboire n'est pas un investissement. Le wallet d'un visiteur n'est pas le wallet LIA Ops.

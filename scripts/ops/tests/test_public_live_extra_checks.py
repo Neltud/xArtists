@@ -116,6 +116,39 @@ class PublicLiveChecksTests(unittest.TestCase):
                 smoke.fetch_public("https://example.test", attempts=4)
             self.assertEqual(client.call_count, 1)
 
+    def test_smoke_targets_the_origin_shipped_in_pages(self):
+        self.assertEqual(smoke.API, "https://xartists-access-api.onrender.com")
+        self.assertEqual(smoke.PUBLISHED_API, smoke.API)
+        self.assertEqual(smoke.CUTOVER_API, "https://api.xartists.art")
+        self.assertNotEqual(smoke.API, smoke.CUTOVER_API)
+
+    def test_unresolved_cutover_does_not_fail_the_public_site(self):
+        with patch.object(
+            smoke,
+            "fetch_public",
+            side_effect=AssertionError(
+                "Public GET unavailable after 2 attempts: "
+                "https://api.xartists.art/health (URLError)"
+            ),
+        ):
+            smoke.observe_cutover()
+
+    def test_reachable_cutover_cannot_enable_checkout(self):
+        body = (
+            b'{"ok":true,"service":"access-api","orders_backend":"postgres",'
+            b'"paybox_checkout_enabled":true,"mint_dispatch_enabled":false,'
+            b'"mint_dry_run":true,"mint_live_enabled":false,"mint_micro_price":false,'
+            b'"lia_live_trading":"0","tro_solana_bridge":"off",'
+            b'"studio_media_upload":"off","physical_works":"off"}'
+        )
+        with patch.object(
+            smoke,
+            "fetch_public",
+            return_value=(200, {"content-type": "application/json"}, body),
+        ):
+            with self.assertRaises(AssertionError):
+                smoke.observe_cutover()
+
 
 if __name__ == "__main__":
     unittest.main()

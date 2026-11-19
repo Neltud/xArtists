@@ -1,5 +1,25 @@
 # ACTIVE_CONTEXT — xArtists / xOrus
 
+## Mesure publique — 19 novembre 2026 (~12:25 UTC)
+
+Sonde lecture seule. **Aucun** drapeau commerce, mint ou trading n'a été levé.
+
+| Surface | Observé |
+| --- | --- |
+| Pages | **0.139.0** · `fdd072190d0af7e7dbb7386b301b14ac218c9373` · `built_at=2026-11-17T13:54:38Z` · 140 routes · `lia_live_trading=false` |
+| Bundle live | appelle **uniquement** `https://xartists-access-api.onrender.com` (`api.xartists.art` absent du JS et du `connect-src`) |
+| API Render `/health` | HTTP 200 · SHA `8b6fae84e15084883d94e2121a7ab8f6219b7845` · `execution_authorized=false` · checkout / mint live / upload / enchères / xOrus privé **off** |
+| `api.xartists.art` | **NXDOMAIN** (DoH Google). Pas un GO. |
+| Studio store | HTTP **503** · postgres · tables absentes |
+| xOrus signal du jour | `observe` · confidence 0.4 · `execution=disabled` · fallback paper |
+| Smoke 6 h | était rouge **à cause du NXDOMAIN**, pas parce que le site ou Render étaient down. Le probe public suit maintenant l'origine réellement publiée. |
+
+Détail : [`docs/ops/PROBE_PUBLIC_2026-11-19.md`](docs/ops/PROBE_PUBLIC_2026-11-19.md).
+
+Le site public reste live. Le commerce ne l'est pas. Aligner le SHA Render sur `main` est un redéploiement Render, pas une autorisation.
+
+---
+
 ## Mise à jour opératoire — 17 novembre 2026 (~14:00 UTC)
 
 **LIA est retirée du chemin d'exécution.** Le backend paper canonique est le package top-level **`xorus/`**.

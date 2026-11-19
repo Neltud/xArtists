@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Read-only public xArtists release smoke: Pages, owned API CORS and locked commerce.
+"""Read-only public xArtists release smoke: Pages, published API CORS and locked commerce.
 
 Never sends a POST, wallet transaction, payment, signed message, or order write.
-Called by the 6h GO workflow AFTER the existing Pages/DB/LIA checks.
+The published API is the Render origin already in the live bundle. The custom
+domain api.xartists.art is observed separately and is not a GO by itself.
 """
 from __future__ import annotations
 
@@ -12,7 +13,13 @@ from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 PAGES = "https://xartists.art"
-API = "https://api.xartists.art"
+# Origin baked into the live Pages bundle and its connect-src CSP.
+# `api.xartists.art` is the named future cutover. It is NXDOMAIN and is not
+# called by the published frontend. Requiring it turned the 6h smoke red
+# while the real public API was healthy and fail-closed.
+PUBLISHED_API = "https://xartists-access-api.onrender.com"
+CUTOVER_API = "https://api.xartists.art"
+API = PUBLISHED_API
 TRANSIENT = {408, 429, 500, 502, 503, 504}
 
 
@@ -116,6 +123,34 @@ def check_frontend(origin: str, *, base_path: str = "") -> None:
     print(f"Frontend entrypoints 200: {origin} (not a browser-rendering assertion)")
 
 
+def observe_cutover() -> None:
+    """Record the custom-domain cutover without pretending it is the live API.
+
+    DNS/TLS absence is the known NO-GO and must not fail the public site.
+    A host that starts answering must still be the fail-closed access-api.
+    """
+    url = CUTOVER_API + "/health"
+    try:
+        status, headers, body = fetch_public(url, attempts=2)
+    except AssertionError as exc:
+        if str(exc).startswith("Public GET unavailable"):
+            print(
+                "CUTOVER NO-GO: api.xartists.art is not publicly reachable. "
+                "The live site calls Render only. No commerce flag was changed."
+            )
+            return
+        raise
+    require(status == 200, f"Cutover API not HTTP 200: {url}")
+    require("application/json" in headers.get("content-type", ""), f"Cutover API is not JSON: {url}")
+    try:
+        doc = json.loads(body.decode("utf-8"))
+    except (UnicodeError, json.JSONDecodeError) as exc:
+        raise AssertionError("Cutover host answered but is not the access-api") from exc
+    require(isinstance(doc, dict), "Cutover host answered but is not the access-api")
+    check_health(doc)
+    print("CUTOVER reachable and still fail-closed. source_sha=", doc.get("source_sha"))
+
+
 def main() -> None:
     check_frontend(PAGES)
     cors, bridge = get_json(API + "/v1/tro/bridge/status", origin=PAGES)
@@ -134,7 +169,8 @@ def main() -> None:
     require(db.get("ok") is True and db.get("backend") == "postgres" and
             db.get("table_ready") is True, "Public Postgres readiness failed")
 
-    print("GO READ-ONLY release check OK: Pages + self-managed API, exact CORS, Postgres and no commercial activation")
+    print("GO READ-ONLY release check OK: Pages + published Render API, exact CORS, Postgres and no commercial activation")
+    observe_cutover()
 
 
 if __name__ == "__main__":

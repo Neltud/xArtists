@@ -3,6 +3,10 @@ hidden: true
 noIndex: true
 ---
 
+# Suite logique — renvoi 19 novembre 2026
+
+La mesure qui compte est [`docs/ops/PROBE_PUBLIC_2026-11-19.md`](ops/PROBE_PUBLIC_2026-11-19.md). Le tableau du 16 nov ci-dessous est **historique**. Pages servies le 19 nov : `0.139.0` / `fdd07219` / trading faux. API publique réelle : Render `8b6fae84`, pas `api.xartists.art` (NXDOMAIN). Studio toujours 503. Commerce toujours NO-GO.
+
 # Suite logique — 16 novembre 2026
 
 Probe **2026-11-16T05:33Z**. Ce document est l'ordre d'exécution. Il ne lève aucun gate commercial. Appeler « go-live total » un site dont le trading, le mint et le fiat sont éteints reste interdit.
