@@ -1,14 +1,84 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-20T02:01:44.191Z",
+  "updatedAt": "2026-11-20T10:56:37.036Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1795140103677",
-      "timestamp": "02:01",
+      "id": "egld-1795172196614",
+      "timestamp": "10:56",
       "source": "EGLD",
       "title": "Cotation publique · $2.38 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1795170550000",
+      "timestamp": "10:29",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin nears repeat of chart pattern that preceded 2023’s $25K retest",
+      "link": "https://cointelegraph.com/markets/bitcoin-first-death-cross-repeat-2023-bottom-25k?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1795162722000",
+      "timestamp": "08:18",
+      "source": "CoinTelegraph",
+      "title": "BlackRock’s IBIT loses record $541M amid Anthropic market debut",
+      "link": "https://cointelegraph.com/markets/blackrock-ibit-record-single-day-outflow?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1795161814000",
+      "timestamp": "08:03",
+      "source": "CoinTelegraph",
+      "title": "SEC charges eight firms over fake crypto platforms tied to $37M fraud",
+      "link": "https://cointelegraph.com/news/sec-charges-eight-fake-crypto-platforms-37m-fraud?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1795155881000",
+      "timestamp": "06:24",
+      "source": "CoinTelegraph",
+      "title": "Anthropic’s $81B IPO draws half the net retail buying of SpaceX’s",
+      "link": "https://cointelegraph.com/markets/anthropic-ipo-spacex-retail-buying-first-day-gains?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1795154400000",
+      "timestamp": "06:00",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1795145602000",
+      "timestamp": "03:33",
+      "source": "CoinTelegraph",
+      "title": "Institutions pile back into US Bitcoin ETFs in Q3 after selling streak",
+      "link": "https://cointelegraph.com/markets/institutional-bitcoin-etf-holdings-clock-record-quarter-after-selling-streak?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1795161880000",
+      "timestamp": "08:04",
+      "source": "CoinDesk",
+      "title": "Wrapped Monero token plunges 99% as issuer-linked wallet sells $13.5 million",
+      "link": "https://www.coindesk.com/markets/2026/11/20/wrapped-monero-token-plunges-99-as-issuer-linked-wallet-sells-usd13-5-million"
+    },
+    {
+      "id": "rss-CoinDesk-1-1795155135000",
+      "timestamp": "06:12",
+      "source": "CoinDesk",
+      "title": "Here's what's crashing gold and likely weighing on bitcoin too",
+      "link": "https://www.coindesk.com/markets/2026/11/20/here-s-what-s-crashing-gold-and-likely-weighing-on-bitcoin-too"
+    },
+    {
+      "id": "rss-CoinDesk-2-1795154908000",
+      "timestamp": "06:08",
+      "source": "CoinDesk",
+      "title": "Anthropic shares may fall 5% at Friday’s open, crypto futures suggest",
+      "link": "https://www.coindesk.com/markets/2026/11/20/crypto-traders-have-anthropic-trading-below-its-first-nasdaq-close-on-hyperliquid"
+    },
+    {
+      "id": "rss-CoinDesk-3-1795152745000",
+      "timestamp": "05:32",
+      "source": "CoinDesk",
+      "title": "This Bitcoin miner sold 267 BTC to clear $22 million debt. It still may not survive",
+      "link": "https://www.coindesk.com/markets/2026/11/20/this-bitcoin-miner-sold-267-btc-to-clear-usd22-million-debt-it-still-may-not-survive"
     },
     {
       "id": "rss-CoinTelegraph-0-1795131842000",
@@ -23,13 +93,6 @@
       "source": "CoinTelegraph",
       "title": "Binance’s $6.5B freeze order, Hong Kong ‘suspicious’ of HYPE: Asia Express",
       "link": "https://cointelegraph.com/magazine/binances-65b-freeze-order-hong-kong-suspicious-of-hype-asia-express?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1795124540000",
-      "timestamp": "21:42",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "rss-CoinTelegraph-3-1795122102000",
@@ -135,69 +198,6 @@
       "source": "CoinDesk",
       "title": "Trump Media wants to clear $884 million of debt without selling its bitcoin",
       "link": "https://www.coindesk.com/markets/2026/11/19/trump-media-wants-to-clear-usd884-million-of-debt-without-selling-its-bitcoin"
-    },
-    {
-      "id": "rss-CoinDesk-2-1795090839000",
-      "timestamp": "12:20",
-      "source": "CoinDesk",
-      "title": "Bitcoin ETF outflows show waning crypto appetite ahead of Anthropic's Nasdaq debut",
-      "link": "https://www.coindesk.com/daybook-us/2026/11/19/bitcoin-etf-outflows-show-waning-crypto-appetite-ahead-of-anthropic-s-nasdaq-debut"
-    },
-    {
-      "id": "rss-CoinDesk-3-1795090086000",
-      "timestamp": "12:08",
-      "source": "CoinDesk",
-      "title": "Bitcoin holds above $63,750 but Fed rate-hike threats loom large",
-      "link": "https://www.coindesk.com/markets/2026/11/19/bitcoin-holds-above-usd63-750-but-fed-rate-hike-threats-loom-large"
-    },
-    {
-      "id": "egld-1795086589787",
-      "timestamp": "11:09",
-      "source": "EGLD",
-      "title": "Cotation publique · $2.55 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1795084325000",
-      "timestamp": "10:32",
-      "source": "CoinTelegraph",
-      "title": "IOSCO warns quantum upgrades could slow blockchains, leave security gaps",
-      "link": "https://cointelegraph.com/news/iosco-quantum-blockchain-upgrades-security-risks?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1795078498000",
-      "timestamp": "08:54",
-      "source": "CoinTelegraph",
-      "title": "Singapore settles $77.5M tokenized bill sale with wholesale CBDC",
-      "link": "https://cointelegraph.com/news/mas-issues-77m-tokenized-bills-singapore-dollar-test-network?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1795076779000",
-      "timestamp": "08:26",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin ETF assets fall to three-month low as 2026 net outflows top $2.5B",
-      "link": "https://cointelegraph.com/markets/bitcoin-etf-assets-three-month-low-78-billion?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1795075477000",
-      "timestamp": "08:04",
-      "source": "CoinTelegraph",
-      "title": "BTCPay Server issues emergency update for 5 security flaws",
-      "link": "https://cointelegraph.com/news/btcpay-server-emergency-update-nginx-security-flaws?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1795074956000",
-      "timestamp": "07:55",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin retests $62K as Nasdaq futures rise ahead of Anthropic debut",
-      "link": "https://cointelegraph.com/markets/bitcoin-retests-62k-nasdaq-futures-anthropic-debut?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1795068000000",
-      "timestamp": "06:00",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin carry trades could beat Treasury bills in 2027, Sygnum predicts",
-      "link": "https://cointelegraph.com/markets/sygnum-bitcoin-carry-trades-2027?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
