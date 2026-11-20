@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-20T16:50:14Z",
+  "updated": "2026-11-20T23:50:03Z",
   "paper": true,
   "legs": [
     {
@@ -6968,6 +6968,45 @@
       "fee_egld": 0.0008,
       "fee_usd_est": 0.001816,
       "pnl_usd_friction": -0.032804,
+      "friction_model": "gas_0.0008_egld+slip_liquidity"
+    },
+    {
+      "id": "2a30c9af-9cc",
+      "ts": "2026-11-20T23:50:03Z",
+      "ok": true,
+      "paper": true,
+      "side": "BUY",
+      "asset": "USDC",
+      "amount": 9.21,
+      "size": 9.21,
+      "strategy": "STRAT_YIELD_OPTIMIZER",
+      "liquidity": 0.65,
+      "pnl_usd": 0.085582,
+      "gate": {
+        "decision": "BUY",
+        "confidence": 0.5371,
+        "size_usd": 9.21,
+        "source": "shadow_sprint",
+        "level": 1,
+        "strategy": "STRAT_YIELD_OPTIMIZER",
+        "allow_size": true
+      },
+      "decision_proof": {
+        "decision_id": "6ca2d7ef-b01e-42",
+        "action_name": "BUY",
+        "reason": "sideways_liquid|sent=0.003|vol=0.350|STRAT_YIELD_OPTIMIZER",
+        "paper": true
+      },
+      "verification": "PaperOnly",
+      "scan": {
+        "egld_usd": 2.31,
+        "sentiment": 0.0026,
+        "volatility": 0.35
+      },
+      "slippage_pct": 2.5,
+      "fee_egld": 0.0008,
+      "fee_usd_est": 0.001848,
+      "pnl_usd_friction": 0.08352,
       "friction_model": "gas_0.0008_egld+slip_liquidity"
     }
   ],
