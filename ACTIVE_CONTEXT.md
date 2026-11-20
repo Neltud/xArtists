@@ -6,16 +6,16 @@ Sonde lecture seule. **Aucun** drapeau commerce, mint ou trading n'a été levé
 
 | Surface | Observé |
 | --- | --- |
-| Pages | **0.139.0** · `fdd07219` · construit le 17 nov · `lia_live_trading=false` · 140 routes |
+| Pages | **0.139.0** · SHA servi **`9610b56`** · construit `2026-11-20T18:57:55Z` · `lia_live_trading=false` · 140 routes |
 | API Render `/health` | HTTP 200 · SHA `8b6fae84` · `execution` non autorisée · checkout / mint live / upload / enchères **off** |
 | `api.xartists.art` | **NXDOMAIN**. L'API publique reste Render. |
 | DNS apex + MX | A GitHub Pages ; MX `mail.xartists.art` (DNS seulement, pas une preuve de boîte) |
 | Studio store | HTTP **503** · postgres · schéma absent |
-| Blocage Pages | deploy du 19 nov rouge : 6 tests release encore calés sur le bootstrap LIA live. Corrigés pour le mode paper. |
+| Blocage Pages | levé. Run [44797583538](https://github.com/Neltud/xArtists/actions/runs/44797583538) vert. Le numéro de release reste 0.139.0 tant que la PR release-please n'est pas mergée. |
 
 Détail : [`docs/ops/PROBE_PUBLIC_2026-11-20.md`](docs/ops/PROBE_PUBLIC_2026-11-20.md).
 
-Le site public reste live sur le build du 17 nov jusqu'au prochain déploiement Pages vert. Le commerce ne l'est pas.
+Le site public sert `9610b56`. Le commerce ne l'est pas.
 
 ---
 

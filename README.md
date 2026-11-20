@@ -17,7 +17,7 @@ Les identifiants historiques `/lia` et `lia/` restent en compatibilité pendant 
 
 ## État confirmé au 20 novembre 2026
 
-Sonde `2026-11-20T18:54Z`. Le site public servi est encore le build **0.139.0** (`fdd07219`, 17 nov) parce que le déploiement Pages du 19 nov a échoué sur six tests qui exigeaient encore le bootstrap LIA live. Ces tests suivent maintenant le retrait paper-only. Détail : [sonde du 20 nov](docs/ops/PROBE_PUBLIC_2026-11-20.md). Aucun gate commerce n'est levé par cette correction.
+Sonde `2026-11-20T18:58Z`. GitHub Pages sert le SHA **`9610b56`** (workflow [44797583538](https://github.com/Neltud/xArtists/actions/runs/44797583538)), version manifeste encore **0.139.0**, `lia_live_trading=false`. Le déploiement du 19 nov était rouge : six tests exigeaient encore le bootstrap LIA live. Ils suivent maintenant le retrait paper-only. Détail : [sonde du 20 nov](docs/ops/PROBE_PUBLIC_2026-11-20.md). Aucun gate commerce n'est levé.
 
 ## État confirmé au 19 novembre 2026
 

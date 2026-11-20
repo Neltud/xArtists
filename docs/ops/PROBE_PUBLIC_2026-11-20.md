@@ -14,4 +14,5 @@ Lecture seule. Aucun drapeau commerce, mint ou trading n'a été modifié.
 
 `main` était **63 commits** devant le SHA servi. Le workflow Pages du 19 nov (`518cbb7`, run `44530069139`) a échoué : 6 tests `test:release` attendaient encore le bootstrap live LIA (0,001 EGLD, plafonds USD, ESDT éligibles) alors que `liaConfig` est paper-only depuis le 17 nov. Les commits suivants portaient `[skip ci]` et n'ont pas relancé le déploiement.
 
-Correctif : les tests attestent désormais le retrait (aucun actif éligible, preflight refusé, bureau xOrus paper). Le commerce reste NO-GO.
+Correctif poussé : [`9610b56`](https://github.com/Neltud/xArtists/commit/9610b56a94ef40c54dccfdb0261a5e313052c70e). Déploiement Pages [44797583538](https://github.com/Neltud/xArtists/actions/runs/44797583538) vert à 18:58 UTC. `build-info.json` sert ce SHA, `release_version` reste **0.139.0** (manifeste release-please non bumpé), `lia_live_trading=false`, 140 routes. L'API Render n'a pas bougé (`8b6fae84`) et ses gates commerce restent fermés.
+
