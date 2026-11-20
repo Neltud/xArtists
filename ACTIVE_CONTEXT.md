@@ -1,6 +1,26 @@
 # ACTIVE_CONTEXT — xArtists / xOrus
 
+## Mesure publique — 20 novembre 2026 (~18:54 UTC)
+
+Sonde lecture seule. **Aucun** drapeau commerce, mint ou trading n'a été levé.
+
+| Surface | Observé |
+| --- | --- |
+| Pages | **0.139.0** · `fdd07219` · construit le 17 nov · `lia_live_trading=false` · 140 routes |
+| API Render `/health` | HTTP 200 · SHA `8b6fae84` · `execution` non autorisée · checkout / mint live / upload / enchères **off** |
+| `api.xartists.art` | **NXDOMAIN**. L'API publique reste Render. |
+| DNS apex + MX | A GitHub Pages ; MX `mail.xartists.art` (DNS seulement, pas une preuve de boîte) |
+| Studio store | HTTP **503** · postgres · schéma absent |
+| Blocage Pages | deploy du 19 nov rouge : 6 tests release encore calés sur le bootstrap LIA live. Corrigés pour le mode paper. |
+
+Détail : [`docs/ops/PROBE_PUBLIC_2026-11-20.md`](docs/ops/PROBE_PUBLIC_2026-11-20.md).
+
+Le site public reste live sur le build du 17 nov jusqu'au prochain déploiement Pages vert. Le commerce ne l'est pas.
+
+---
+
 ## Mesure publique — 19 novembre 2026 (~12:25 UTC)
+
 
 Sonde lecture seule. **Aucun** drapeau commerce, mint ou trading n'a été levé.
 

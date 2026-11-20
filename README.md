@@ -15,6 +15,10 @@ xArtists est une dApp d'art et de création : découverte sans wallet, œuvres p
 
 Les identifiants historiques `/lia` et `lia/` restent en compatibilité pendant la migration vers **xOrus**. L'archive Vellum/Chorus n'est plus un moteur autorisé à lancer des transactions. Le vote externe ChatGPT est au plus de 15 % ; Sentinel garde son veto.
 
+## État confirmé au 20 novembre 2026
+
+Sonde `2026-11-20T18:54Z`. Le site public servi est encore le build **0.139.0** (`fdd07219`, 17 nov) parce que le déploiement Pages du 19 nov a échoué sur six tests qui exigeaient encore le bootstrap LIA live. Ces tests suivent maintenant le retrait paper-only. Détail : [sonde du 20 nov](docs/ops/PROBE_PUBLIC_2026-11-20.md). Aucun gate commerce n'est levé par cette correction.
+
 ## État confirmé au 19 novembre 2026
 
 Sonde `2026-11-19T12:25Z`. Cette section ne lève aucun gate. La lecture fraîche de [build-info.json](https://xartists.art/build-info.json) et de [health](https://xartists-access-api.onrender.com/health) prime sur les versions imprimées plus bas. Détail : [sonde du 19 nov](docs/ops/PROBE_PUBLIC_2026-11-19.md).

@@ -42,31 +42,42 @@ test('museum retries failed images; only exhausted failures show a card; disposa
   loadMuseumTexture({ load() { assert.fail() } }, 'https://example.com/a.jpg', () => assert.fail(), () => assert.fail(), () => true)
 })
 
-test('live flag only prepares the explicit 0.001 EGLD bootstrap; other intents never become transfers', () => {
+test('legacy live env cannot re-enable a retired bootstrap transfer', () => {
   const config = loadSource('src/config/liaConfig.ts', env)
+  const xorus = loadSource('src/config/xorusConfig.ts', env)
   const { buildTxFromIntent, prepareIntentTx } = loadSource('src/lia/buildIntentTx.ts', env)
-  assert.equal(config.LIA_MODE, 'live_user_sign')
-  const draft = buildTxFromIntent(bootstrap)
-  assert.equal(draft.value, '1000000000000000')
-  assert.equal(draft.data, 'receiveAndSplit')
-  assert.equal(draft.chainID, '1')
-  for (const amount of [-1, 0, NaN, Infinity, 0.0011, 1e-30]) assert.equal(prepareIntentTx({ ...bootstrap, amount }).ok, false)
-  for (const item of [{ action: 'BUY' }, { strategy: 'ANY' }, { assetId: 'USDC-c76f1f' }]) assert.equal(prepareIntentTx({ ...bootstrap, ...item }).ok, false)
-  assert.equal(loadSource('src/config/liaConfig.ts').LIA_LIVE_TRADING, false)
+  assert.equal(config.LIA_MODE, 'paper')
+  assert.equal(config.LIA_LIVE_TRADING, false)
+  assert.equal(xorus.XORUS_LIVE_TRADING, false)
+  assert.throws(() => buildTxFromIntent(bootstrap), /Montant bootstrap invalide/)
+  assert.equal(prepareIntentTx(bootstrap).ok, false)
+  for (const item of [
+    { amount: 0 }, { amount: 0.0011 }, { action: 'BUY' },
+    { strategy: 'ANY' }, { assetId: 'USDC-c76f1f' },
+  ]) assert.equal(prepareIntentTx({ ...bootstrap, ...item }).ok, false)
 })
 
-test('USD ceilings reject unknown prices, invalid amounts and daily overflow', () => {
-  const { assertLiveRisk } = loadSource('src/lia/buildIntentTx.ts')
-  assert.doesNotThrow(() => assertLiveRisk({ usdNotional: 15, dailySpentUsd: 25 }))
-  for (const usdNotional of [0, -1, 15.01, NaN, Infinity]) assert.throws(() => assertLiveRisk({ usdNotional, dailySpentUsd: 0 }))
-  for (const dailySpentUsd of [-1, NaN, Infinity, 26]) assert.throws(() => assertLiveRisk({ usdNotional: 15, dailySpentUsd }))
+test('legacy USD risk ceilings stay at zero while trading is retired', () => {
+  const { assertLiveRisk } = loadSource('src/lia/buildIntentTx.ts', env)
+  for (const values of [
+    { usdNotional: 0.03, dailySpentUsd: 0 },
+    { usdNotional: 15, dailySpentUsd: 25 },
+    { usdNotional: 0, dailySpentUsd: 0 },
+    { usdNotional: NaN, dailySpentUsd: 0 },
+    { usdNotional: Infinity, dailySpentUsd: 0 },
+    { usdNotional: 1, dailySpentUsd: Infinity },
+  ]) assert.throws(() => assertLiveRisk(values))
 })
 
-test('ESDT eligibility requires fungible metadata and decimals, not an unchecked wildcard', () => {
-  const { isSupportedTradingAsset } = loadSource('src/config/liaConfig.ts')
-  assert(isSupportedTradingAsset({ identifier: 'EGLD' }))
-  for (const identifier of ['USDC-c76f1f', 'TRO-94c925', 'OTHER-123abc']) assert(isSupportedTradingAsset({ identifier, type: 'FungibleESDT', decimals: 6 }))
-  for (const metadata of [{}, { type: 'NonFungibleESDT', decimals: 0 }, { type: 'FungibleESDT', decimals: 19 }]) assert.equal(isSupportedTradingAsset({ identifier: 'OTHER-123abc', ...metadata }), false)
+test('no EGLD or ESDT is eligible for autonomous LIA trading after retirement', () => {
+  const { isSupportedTradingAsset, LIA_GUARDS } = loadSource('src/config/liaConfig.ts', env)
+  assert.deepEqual(LIA_GUARDS.allowlist, [])
+  for (const metadata of [
+    { identifier: 'EGLD' },
+    { identifier: 'USDC-c76f1f', type: 'FungibleESDT', decimals: 6 },
+    { identifier: 'TRO-94c925', type: 'FungibleESDT', decimals: 18 },
+    { identifier: 'OTHER-123abc', type: 'FungibleESDT', decimals: 6 },
+  ]) assert.equal(isSupportedTradingAsset(metadata), false)
 })
 
 test('a successful hash must match sender, receiver, amount and encoded endpoint', () => {
@@ -89,27 +100,25 @@ test('one confirmed hash cannot be assigned to two journal entries or re-opened 
   assert.equal(journal.markAwaitingSignature('one'), null)
 })
 
-test('preflight fails closed on a changed contract, unavailable price or unreconciled budget', async () => {
+test('legacy preflight denies even apparently valid sources after trading retirement', async () => {
   const { MAINNET_CODEHASH } = loadSource('src/config/contracts.ts')
-  const { preflightLiveDraft } = loadSource('src/lia/livePreflight.ts')
-  const { buildTxFromIntent } = loadSource('src/lia/buildIntentTx.ts')
-  const draft = buildTxFromIntent(bootstrap)
+  const { preflightLiveDraft } = loadSource('src/lia/livePreflight.ts', env)
+  const { buildBootstrapLiveTx } = loadSource('src/lia/buildIntentTx.ts', env)
+  const draft = buildBootstrapLiveTx()
   const prior = globalThis.fetch
-  const mock = (price = 30, codeHash = MAINNET_CODEHASH.treasury_splitter) => {
-    globalThis.fetch = async url => ({ ok: true, json: async () => String(url).endsWith('/economics') ? { price } : { codeHash } })
-  }
   try {
-    mock()
-    assert.equal((await preflightLiveDraft(draft, [])).usdNotional, 0.03)
-    mock(30, 'changed')
-    await assert.rejects(preflightLiveDraft(draft, []))
-    mock(NaN)
-    await assert.rejects(preflightLiveDraft(draft, []))
-    mock()
-    await assert.rejects(preflightLiveDraft(draft, [{ status: 'pending', updatedAt: Date.now() }]))
+    globalThis.fetch = async url => ({
+      ok: true,
+      json: async () => String(url).endsWith('/economics')
+        ? { price: 30 }
+        : { codeHash: MAINNET_CODEHASH.treasury_splitter },
+    })
+    await assert.rejects(preflightLiveDraft(draft, []), /Montant USD non vérifié/)
     globalThis.fetch = async () => { throw new Error('offline') }
     await assert.rejects(preflightLiveDraft(draft, []))
-  } finally { globalThis.fetch = prior }
+  } finally {
+    globalThis.fetch = prior
+  }
 })
 
 test('MoonPay never falls back to unsigned URLs or changes the requested wallet', async () => {
