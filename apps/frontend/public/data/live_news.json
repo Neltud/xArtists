@@ -1,35 +1,91 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-21T01:58:24.539Z",
+  "updatedAt": "2026-11-21T10:40:37.431Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1795226304063",
-      "timestamp": "01:58",
+      "id": "egld-1795257636937",
+      "timestamp": "10:40",
       "source": "EGLD",
-      "title": "Cotation publique · $2.30 (API MultiversX economics)",
+      "title": "Cotation publique · $2.23 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
-      "id": "rss-CoinTelegraph-0-1795203447000",
+      "id": "rss-CoinTelegraph-0-1795254536000",
+      "timestamp": "09:48",
+      "source": "CoinTelegraph",
+      "title": "ECB seeks industry partners for tokenized deposits, securities experiments",
+      "link": "https://cointelegraph.com/news/ecb-tokenized-deposits-securities-experiments-appia?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1795247507000",
+      "timestamp": "07:51",
+      "source": "CoinTelegraph",
+      "title": "US lawmakers propose up to 30% rewards for prediction market whistleblowers",
+      "link": "https://cointelegraph.com/news/us-prediction-market-whistleblower-rewards-30-percent?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1795239635000",
+      "timestamp": "05:40",
+      "source": "CoinTelegraph",
+      "title": "Hong Kong pushes to bring crypto custodians, advisers under licensing rules",
+      "link": "https://cointelegraph.com/news/hong-kong-crypto-custody-advisory-licensing-bill?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1795203447000",
       "timestamp": "19:37",
       "source": "CoinTelegraph",
       "title": "Wrapped Monero token crashes 99.8% amid suspected $13.5M exploit",
       "link": "https://cointelegraph.com/news/wrapped-monero-token-crashes-998-amid-suspected-135m-exploit?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-1-1795199830000",
+      "id": "rss-CoinTelegraph-4-1795199830000",
       "timestamp": "18:37",
       "source": "CoinTelegraph",
       "title": "Sky Protocol sees $2 billion in stablecoin withdrawals, disputes illicit fund claims",
       "link": "https://cointelegraph.com/news/sky-protocol-sees-2b-in-stablecoin-withdrawals-disputes-illicit-fund-claims?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-2-1795193751000",
+      "id": "rss-CoinTelegraph-5-1795193751000",
       "timestamp": "16:55",
       "source": "CoinTelegraph",
       "title": "Bitcoin falls below $60K for first time since July amid broader market selloff",
       "link": "https://cointelegraph.com/markets/bitcoin-falls-below-60k-for-first-time-since-july-amid-broader-market-selloff?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1795241802000",
+      "timestamp": "06:16",
+      "source": "CoinDesk",
+      "title": "Bitcoin nodes could be stalled by repeating one ID 50,000 times. AI found the bug",
+      "link": "https://www.coindesk.com/markets/2026/11/21/bitcoin-nodes-could-be-stalled-by-repeating-one-id-50-000-times-ai-found-the-bug"
+    },
+    {
+      "id": "rss-CoinDesk-1-1795240759000",
+      "timestamp": "05:59",
+      "source": "CoinDesk",
+      "title": "XRP falls 10% as long bets unwind and ETF assets slip below $1 billion",
+      "link": "https://www.coindesk.com/markets/2026/11/21/xrp-falls-10-as-long-bets-unwind-and-etf-assets-slip-below-usd1-billion"
+    },
+    {
+      "id": "rss-CoinDesk-2-1795234207000",
+      "timestamp": "04:10",
+      "source": "CoinDesk",
+      "title": "Bitcoin tanks below $57,000 for the first time in two years, and its not alone",
+      "link": "https://www.coindesk.com/markets/2026/11/21/bitcoin-tanks-below-usd57-000-for-the-first-time-in-two-years-and-its-not-alone"
+    },
+    {
+      "id": "rss-CoinDesk-3-1795215074000",
+      "timestamp": "22:51",
+      "source": "CoinDesk",
+      "title": "Kalshi races to get ahead of New York order that could shut down exchange",
+      "link": "https://www.coindesk.com/policy/2026/11/20/kalshi-races-to-get-ahead-of-new-york-order-that-could-shut-down-exchange"
+    },
+    {
+      "id": "egld-1795226304063",
+      "timestamp": "01:58",
+      "source": "EGLD",
+      "title": "Cotation publique · $2.30 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
     },
     {
       "id": "rss-CoinTelegraph-3-1795190122000",
@@ -142,62 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Anthropic’s $81B IPO draws half the net retail buying of SpaceX’s",
       "link": "https://cointelegraph.com/markets/anthropic-ipo-spacex-retail-buying-first-day-gains?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1795145602000",
-      "timestamp": "03:33",
-      "source": "CoinTelegraph",
-      "title": "Institutions pile back into US Bitcoin ETFs in Q3 after selling streak",
-      "link": "https://cointelegraph.com/markets/institutional-bitcoin-etf-holdings-clock-record-quarter-after-selling-streak?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1795161880000",
-      "timestamp": "08:04",
-      "source": "CoinDesk",
-      "title": "Wrapped Monero token plunges 99% as issuer-linked wallet sells $13.5 million",
-      "link": "https://www.coindesk.com/markets/2026/11/20/wrapped-monero-token-plunges-99-as-issuer-linked-wallet-sells-usd13-5-million"
-    },
-    {
-      "id": "rss-CoinDesk-1-1795155135000",
-      "timestamp": "06:12",
-      "source": "CoinDesk",
-      "title": "Here's what's crashing gold and likely weighing on bitcoin too",
-      "link": "https://www.coindesk.com/markets/2026/11/20/here-s-what-s-crashing-gold-and-likely-weighing-on-bitcoin-too"
-    },
-    {
-      "id": "rss-CoinDesk-2-1795154908000",
-      "timestamp": "06:08",
-      "source": "CoinDesk",
-      "title": "Anthropic shares may fall 5% at Friday’s open, crypto futures suggest",
-      "link": "https://www.coindesk.com/markets/2026/11/20/crypto-traders-have-anthropic-trading-below-its-first-nasdaq-close-on-hyperliquid"
-    },
-    {
-      "id": "rss-CoinDesk-3-1795152745000",
-      "timestamp": "05:32",
-      "source": "CoinDesk",
-      "title": "This Bitcoin miner sold 267 BTC to clear $22 million debt. It still may not survive",
-      "link": "https://www.coindesk.com/markets/2026/11/20/this-bitcoin-miner-sold-267-btc-to-clear-usd22-million-debt-it-still-may-not-survive"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1795131842000",
-      "timestamp": "23:44",
-      "source": "CoinTelegraph",
-      "title": "Ledger CTO Charles Guillemet to leave after nine years at company",
-      "link": "https://cointelegraph.com/news/ledger-cto-charles-guillemet-to-leave-after-nine-years-at-company?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1795127118000",
-      "timestamp": "22:25",
-      "source": "CoinTelegraph",
-      "title": "Binance’s $6.5B freeze order, Hong Kong ‘suspicious’ of HYPE: Asia Express",
-      "link": "https://cointelegraph.com/magazine/binances-65b-freeze-order-hong-kong-suspicious-of-hype-asia-express?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1795122102000",
-      "timestamp": "21:01",
-      "source": "CoinTelegraph",
-      "title": "MoonPay seeks US bank charter for stablecoin, custody services",
-      "link": "https://cointelegraph.com/news/moonpay-seeks-us-bank-charter-for-stablecoin-custody-services?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
