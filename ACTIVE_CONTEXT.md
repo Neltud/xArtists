@@ -1,5 +1,18 @@
 # ACTIVE_CONTEXT — xArtists / xOrus
 
+## Passerelle plateformes — 21 novembre 2026 (16:34 UTC)
+
+`xorushub` est déployé sur **Neon Free**, dans `xartists-access-sandbox` uniquement. Une seule organisation logique `xartists` ; aucun compte fournisseur ni wallet fusionné. Source runtime `825292a7ef2e397d98d9cfdf34065dc99f11ac72` ; [PR #625](https://github.com/Neltud/xArtists/pull/625).
+
+- [Health HTTPS](https://br-steep-sun-bab7l93p-xorushub.compute.c-8.eu-central-1.aws.neon.tech/health) et registre `/v1/xorus/platforms` répondent 200. Cette fonction n'est pas `access-api`.
+- Livraison native Neon prouvée à **16:34:00 UTC** ; reçu persistant à 16:34:01 UTC. Quatre endpoints **techniques** atteints : Bitcoin, Solana, Polymarket, Kraken. Aucun prix ou signal de marché collecté.
+- Trigger `xorus-hub-hourly` actif, cron final `17 * * * *` UTC ; intervalle d'une minute utilisé uniquement pour vérifier la première livraison, puis rétabli à l'horaire final.
+- Plans de compatibilité EVM / Solana / Bitcoin / MultiversX disponibles. **Zéro wallet lié**, signatures externes non implémentées ici, MetaWin manuel (API publique officielle d'automatisation non vérifiée).
+- `ABSTAIN`, inférence IA non configurée, exécution / paris / transferts / signatures **non implémentés**. Une région serveur ne prouve pas l'éligibilité géographique de l'utilisateur.
+- 15 tests ciblés verts ; six checks GitHub verts sur le commit source. Lectures opérateur authentifiées 200 ; appels sans authentification et faux trigger client 401 ; route de pari 503.
+
+Preuve complète et limites : [`deploy/neon/xorus-hub/deployment-receipt-20261121.json`](deploy/neon/xorus-hub/deployment-receipt-20261121.json). Les observations Pages/API ci-dessous sont celles du 20 novembre, pas une nouvelle sonde du 21.
+
 ## Mesure publique — 20 novembre 2026 (~18:54 UTC)
 
 Sonde lecture seule. **Aucun** drapeau commerce, mint ou trading n'a été levé.

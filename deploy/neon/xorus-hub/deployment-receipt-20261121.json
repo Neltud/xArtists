@@ -1,0 +1,208 @@
+{
+  "schema_version": 1,
+  "recorded_on": "2026-11-21",
+  "service": "xorus-platform-hub",
+  "organization_id": "xartists",
+  "provider_account_merge_performed": false,
+  "source_sha": "825292a7ef2e397d98d9cfdf34065dc99f11ac72",
+  "source_tree_sha": "262fc9fc98dd40f6f81dc0653a56a56d7474845d",
+  "archive_sha256": "eaa08557ff1275e9092fa8a1d6f7f555ab6ff8aad019a5e2e46573bd5fc3d415",
+  "function_url": "https://br-steep-sun-bab7l93p-xorushub.compute.c-8.eu-central-1.aws.neon.tech/",
+  "neon": {
+    "plan_observed": "free",
+    "organization_id": "org-crimson-thunder-31766993",
+    "project_id": "orange-dust-23862418",
+    "project_name": "xartists-access-sandbox",
+    "branch_id": "br-steep-sun-bab7l93p",
+    "database_name": "xartists_access",
+    "function_slug": "xorushub",
+    "deployment_id": 1,
+    "status": "completed"
+  },
+  "scheduler": {
+    "type": "schedule",
+    "trigger_id": "trigger-c82a5a3f-ea43-4b80-ae5d-78798d1ee5c2",
+    "function_slug": "xorushub",
+    "name": "xorus-hub-hourly",
+    "function_path": "/v1/xorus/cron",
+    "schedule": {
+      "cron": "17 * * * *"
+    },
+    "enabled": true,
+    "version": 8856053,
+    "next_run_at": "2026-11-21T17:17:00.000000Z",
+    "inherited": false,
+    "verification_schedule": "* * * * *",
+    "final_schedule": "17 * * * *",
+    "native_delivery_proven": true,
+    "first_persisted_at": "2026-11-21T16:34:01.609Z",
+    "verification_method": "First receipt existed before any authenticated manual probe; forged client x-neon header returned 401."
+  },
+  "snapshot": {
+    "mode": "read_only",
+    "probes": [
+      {
+        "kind": "technical_health",
+        "reason": "technical_response_valid",
+        "status": "reachable",
+        "endpoint": "https://mempool.space/api/blocks/tip/height",
+        "platform": "bitcoin",
+        "checked_at": "2026-11-21T16:34:00.827Z",
+        "executable": false,
+        "latency_ms": 583,
+        "http_status": 200,
+        "trade_connection_verified": false,
+        "independently_verified_market_signals": 0
+      },
+      {
+        "kind": "technical_health",
+        "reason": "technical_response_valid",
+        "status": "reachable",
+        "endpoint": "https://api.mainnet.solana.com",
+        "platform": "solana",
+        "checked_at": "2026-11-21T16:34:00.830Z",
+        "executable": false,
+        "latency_ms": 772,
+        "http_status": 200,
+        "trade_connection_verified": false,
+        "independently_verified_market_signals": 0
+      },
+      {
+        "kind": "technical_health",
+        "reason": "technical_response_valid",
+        "status": "reachable",
+        "endpoint": "https://clob.polymarket.com/time",
+        "platform": "polymarket",
+        "checked_at": "2026-11-21T16:34:00.831Z",
+        "executable": false,
+        "latency_ms": 95,
+        "http_status": 200,
+        "trade_connection_verified": false,
+        "independently_verified_market_signals": 0
+      },
+      {
+        "kind": "technical_health",
+        "reason": "technical_response_valid",
+        "status": "reachable",
+        "endpoint": "https://api.kraken.com/0/public/Time",
+        "platform": "kraken",
+        "checked_at": "2026-11-21T16:34:00.832Z",
+        "executable": false,
+        "latency_ms": 165,
+        "http_status": 200,
+        "trade_connection_verified": false,
+        "independently_verified_market_signals": 0
+      }
+    ],
+    "stance": "ABSTAIN",
+    "service": "xorus-platform-hub",
+    "checked_at": "2026-11-21T16:34:01.602Z",
+    "confidence": null,
+    "executable": false,
+    "source_sha": "825292a7ef2e397d98d9cfdf34065dc99f11ac72",
+    "environment": "sandbox",
+    "scheduled_at": "2026-11-21T16:00:00.000Z",
+    "rights_status": "no_market_data_used_or_commercially_licensed",
+    "linked_wallets": 0,
+    "custody_enabled": false,
+    "organization_id": "xartists",
+    "trading_enabled": false,
+    "payment_authorized": false,
+    "signing_authorized": false,
+    "execution_authorized": false,
+    "production_access_api": false,
+    "model_inference_configured": false,
+    "region_is_not_user_eligibility": true,
+    "independently_verified_market_signals": 0
+  },
+  "checks": {
+    "targeted_node_tests": {
+      "passed": 15,
+      "failed": 0
+    },
+    "public_https": [
+      {
+        "path": "/health",
+        "method": "GET",
+        "http_status": 200
+      },
+      {
+        "path": "/v1/xorus/platforms",
+        "method": "GET",
+        "http_status": 200
+      },
+      {
+        "path": "/v1/xorus/snapshot",
+        "method": "GET",
+        "http_status": 401
+      },
+      {
+        "path": "/v1/xorus/probe",
+        "method": "POST",
+        "http_status": 401
+      },
+      {
+        "path": "/v1/xorus/bet",
+        "method": "POST",
+        "http_status": 503
+      },
+      {
+        "path": "/v1/xorus/wallet-route",
+        "method": "POST",
+        "http_status": 200
+      },
+      {
+        "path": "/v1/xorus/cron",
+        "method": "POST",
+        "http_status": 401
+      },
+      {
+        "path": "/health",
+        "method": "GET",
+        "http_status": 403
+      }
+    ],
+    "authenticated_snapshot_http": [
+      200,
+      200
+    ],
+    "concurrent_manual_duplicates_skipped": true,
+    "source_ci": [
+      {
+        "name": "isolated-hub",
+        "status": "success"
+      },
+      {
+        "name": "python-regression",
+        "status": "success"
+      },
+      {
+        "name": "build",
+        "status": "success"
+      },
+      {
+        "name": "review",
+        "status": "success"
+      },
+      {
+        "name": "contract",
+        "status": "success"
+      },
+      {
+        "name": "Published Pages health (not this PR's frontend)",
+        "status": "success"
+      }
+    ]
+  },
+  "limits": {
+    "execution_implemented": false,
+    "model_configured": false,
+    "wallets_linked": 0,
+    "production_access_api": false,
+    "paid_plan_enabled": false,
+    "free_tier_unlimited": false,
+    "network_or_venue_fees_included": false,
+    "metawin_automation_verified": false
+  }
+}
+
