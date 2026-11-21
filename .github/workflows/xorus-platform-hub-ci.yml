@@ -1,0 +1,38 @@
+name: xOrus unified platform hub — isolated read-only service
+
+on:
+  pull_request:
+    paths:
+      - 'deploy/neon/xorus-hub/**'
+      - 'scripts/ops/package-xorus-hub.py'
+      - '.github/workflows/xorus-platform-hub-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'deploy/neon/xorus-hub/**'
+      - 'scripts/ops/package-xorus-hub.py'
+      - '.github/workflows/xorus-platform-hub-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  isolated-hub:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: deploy/neon/xorus-hub/package-lock.json
+      - name: Install runtime dependencies without lifecycle scripts
+        working-directory: deploy/neon/xorus-hub
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Verify routes, provenance, isolation, stale data and refusal of execution
+        working-directory: deploy/neon/xorus-hub
+        run: npm test
+      - name: Validate deployment archive
+        run: python3 scripts/ops/package-xorus-hub.py
