@@ -1,0 +1,32 @@
+name: xOrus assisted proxy disabled smoke — offline
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/ops/probe-xorus-assisted-disabled.mjs'
+      - 'tests/probe-xorus-assisted-disabled.test.mjs'
+      - 'docs/ops/XORUS_ASSISTED_PROXY_PUBLIC_SMOKE.md'
+      - '.github/workflows/xorus-assisted-public-smoke-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke-safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Node syntax checks
+        run: |
+          node --check scripts/ops/probe-xorus-assisted-disabled.mjs
+          node --check scripts/ops/probe-free-api-candidate.mjs
+      - name: Offline mock HTTP route and origin gating
+        run: |
+          node --test tests/probe-xorus-assisted-disabled.test.mjs tests/probe-free-api-candidate.test.mjs
+      - name: No public POST and no deploy
+        run: echo 'Offline only. No DNS, secret, production switch or real wallet.'
