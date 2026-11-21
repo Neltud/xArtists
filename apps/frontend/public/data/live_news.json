@@ -1,8 +1,85 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-20T19:38:19.903Z",
+  "updatedAt": "2026-11-21T01:58:24.539Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1795226304063",
+      "timestamp": "01:58",
+      "source": "EGLD",
+      "title": "Cotation publique · $2.30 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1795203447000",
+      "timestamp": "19:37",
+      "source": "CoinTelegraph",
+      "title": "Wrapped Monero token crashes 99.8% amid suspected $13.5M exploit",
+      "link": "https://cointelegraph.com/news/wrapped-monero-token-crashes-998-amid-suspected-135m-exploit?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1795199830000",
+      "timestamp": "18:37",
+      "source": "CoinTelegraph",
+      "title": "Sky Protocol sees $2 billion in stablecoin withdrawals, disputes illicit fund claims",
+      "link": "https://cointelegraph.com/news/sky-protocol-sees-2b-in-stablecoin-withdrawals-disputes-illicit-fund-claims?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1795193751000",
+      "timestamp": "16:55",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin falls below $60K for first time since July amid broader market selloff",
+      "link": "https://cointelegraph.com/markets/bitcoin-falls-below-60k-for-first-time-since-july-amid-broader-market-selloff?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1795190122000",
+      "timestamp": "15:55",
+      "source": "CoinTelegraph",
+      "title": "US Senate advances prediction market restrictions with DEATH BETS Act",
+      "link": "https://cointelegraph.com/news/us-senate-advances-prediction-market-restrictions-with-death-bets-act?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1795189926000",
+      "timestamp": "15:52",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin price drops to $60K as Anthropic drops to $87 in tech sell-off",
+      "link": "https://cointelegraph.com/markets/bitcoin-hits-new-20-week-low-anthropic-drops-87-tech-sell-off?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1795188750000",
+      "timestamp": "15:32",
+      "source": "CoinTelegraph",
+      "title": "DBS bets it can lose the deposit and keep the client",
+      "link": "https://cointelegraph.com/news/dbs-bets-it-can-lose-the-deposit-and-keep-the-client?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1795198432000",
+      "timestamp": "18:13",
+      "source": "CoinDesk",
+      "title": "Bitcoin plunges below $59,000 as rush to cash puts new bear market lows back in play",
+      "link": "https://www.coindesk.com/markets/2026/11/20/bitcoin-plunges-below-usd59-000-as-rush-to-cash-puts-new-bear-market-lows-back-in-play"
+    },
+    {
+      "id": "rss-CoinDesk-1-1795186470000",
+      "timestamp": "14:54",
+      "source": "CoinDesk",
+      "title": "Former Point72 head of proprietary research says AI could turn data into a new asset class for Wall Street",
+      "link": "https://www.coindesk.com/markets/2026/11/20/former-point72-head-of-proprietary-research-says-ai-could-turn-data-into-a-new-asset-class-for-wall-street"
+    },
+    {
+      "id": "rss-CoinDesk-2-1795185510000",
+      "timestamp": "14:38",
+      "source": "CoinDesk",
+      "title": "Hong Kong moves to extend crypto licensing rules to brokers, advisers and custodians",
+      "link": "https://www.coindesk.com/policy/2026/11/20/hong-kong-moves-to-extend-crypto-licensing-rules-to-brokers-advisers-and-custodians"
+    },
+    {
+      "id": "rss-CoinDesk-3-1795184757000",
+      "timestamp": "14:25",
+      "source": "CoinDesk",
+      "title": "U.S. Senate passes bill to ban prediction market bets on war and death",
+      "link": "https://www.coindesk.com/policy/2026/11/20/u-s-senated-passes-bill-to-ban-prediction-market-best-on-war-and-death"
+    },
     {
       "id": "egld-1795203499572",
       "timestamp": "19:38",
@@ -11,60 +88,11 @@
       "link": "https://explorer.multiversx.com/"
     },
     {
-      "id": "rss-CoinTelegraph-0-1795199830000",
-      "timestamp": "18:37",
-      "source": "CoinTelegraph",
-      "title": "Sky Protocol sees $2 billion in stablecoin withdrawals, disputes illicit fund claims",
-      "link": "https://cointelegraph.com/news/sky-protocol-sees-2b-in-stablecoin-withdrawals-disputes-illicit-fund-claims?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1795193751000",
-      "timestamp": "16:55",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin falls below $60K for first time since July amid broader market selloff",
-      "link": "https://cointelegraph.com/markets/bitcoin-falls-below-60k-for-first-time-since-july-amid-broader-market-selloff?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1795190122000",
-      "timestamp": "15:55",
-      "source": "CoinTelegraph",
-      "title": "US Senate advances prediction market restrictions with DEATH BETS Act",
-      "link": "https://cointelegraph.com/news/us-senate-advances-prediction-market-restrictions-with-death-bets-act?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1795189926000",
-      "timestamp": "15:52",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin price drops to $60K as Anthropic drops to $87 in tech sell-off",
-      "link": "https://cointelegraph.com/markets/bitcoin-hits-new-20-week-low-anthropic-drops-87-tech-sell-off?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1795188750000",
-      "timestamp": "15:32",
-      "source": "CoinTelegraph",
-      "title": "DBS bets it can lose the deposit and keep the client",
-      "link": "https://cointelegraph.com/news/dbs-bets-it-can-lose-the-deposit-and-keep-the-client?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
       "id": "rss-CoinTelegraph-5-1795181398000",
       "timestamp": "13:29",
       "source": "CoinTelegraph",
       "title": "Here’s what happened in crypto today",
       "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1795185510000",
-      "timestamp": "14:38",
-      "source": "CoinDesk",
-      "title": "Hong Kong moves to extend crypto licensing rules to brokers, advisers and custodians",
-      "link": "https://www.coindesk.com/policy/2026/11/20/hong-kong-moves-to-extend-crypto-licensing-rules-to-brokers-advisers-and-custodians"
-    },
-    {
-      "id": "rss-CoinDesk-1-1795184757000",
-      "timestamp": "14:25",
-      "source": "CoinDesk",
-      "title": "U.S. Senate passes bill to ban prediction market bets on war and death",
-      "link": "https://www.coindesk.com/policy/2026/11/20/u-s-senated-passes-bill-to-ban-prediction-market-best-on-war-and-death"
     },
     {
       "id": "rss-CoinDesk-2-1795181733000",
@@ -170,34 +198,6 @@
       "source": "CoinTelegraph",
       "title": "MoonPay seeks US bank charter for stablecoin, custody services",
       "link": "https://cointelegraph.com/news/moonpay-seeks-us-bank-charter-for-stablecoin-custody-services?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1795120404000",
-      "timestamp": "20:33",
-      "source": "CoinTelegraph",
-      "title": "Hyperliquid Anthropic futures priced within 1% of Nasdaq opening price",
-      "link": "https://cointelegraph.com/markets/hyperliquid-anthropic-futures-nasdaq-opening-price?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1795118794000",
-      "timestamp": "20:06",
-      "source": "CoinTelegraph",
-      "title": "Trump’s SEC nominee Johnson backs formal rulemaking for tokenized stock trading",
-      "link": "https://cointelegraph.com/news/sec-nominees-johnson-levine-tokenized-stocks?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1795118022000",
-      "timestamp": "19:53",
-      "source": "CoinDesk",
-      "title": "Sky's USDS stablecoin shrinks 35% as $1.5 billion exits reserves after illicit-finance report",
-      "link": "https://www.coindesk.com/business/2026/11/19/sky-s-usds-stablecoin-shrinks-35-as-usd1-5-billion-exits-reserves-after-illicit-finance-report"
-    },
-    {
-      "id": "rss-CoinDesk-1-1795112156000",
-      "timestamp": "18:15",
-      "source": "CoinDesk",
-      "title": "Trump's Democratic SEC pick suggests tokenization policy deserves full rule process",
-      "link": "https://www.coindesk.com/policy/2026/11/19/trump-s-democratic-sec-pick-suggests-tokenization-policy-deserves-full-rule-process"
     }
   ]
 }
