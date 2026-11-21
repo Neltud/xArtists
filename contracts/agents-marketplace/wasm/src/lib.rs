@@ -8,11 +8,15 @@ multiversx_sc_wasm_adapter::endpoints! {
     (
         init => init
         upgrade => upgrade
+        setPackCollection => set_pack_collection
+        setPackPrice => set_pack_price
         setPaused => set_paused
         setFeeBps => set_fee_bps
         transferOwnership => transfer_ownership
         acceptOwnership => accept_ownership
         claimFees => claim_fees
+        buyPack => buy_pack
+        mintGenesisPulse005 => mint_genesis_pulse_005
         listAgentAction => list_agent_action
         buyAgentAction => buy_agent_action
         cancelListing => cancel_listing
@@ -23,6 +27,8 @@ multiversx_sc_wasm_adapter::endpoints! {
         getOwner => get_owner_view
         getPendingOwner => get_pending_owner
         isPaused => is_paused
+        getPackCollection => get_pack_collection
+        getPackPrice => get_pack_price
     )
 }
 
