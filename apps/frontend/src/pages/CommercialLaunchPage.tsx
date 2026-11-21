@@ -13,12 +13,20 @@ import { COMMUNITY_CONTACTS } from '../config/communityLinks'
 
 const COPY = {
   fr: {
-    kicker: 'xArtists · Offres en préparation',
-    title: 'Explorer l’art. Choisir des services simples.',
-    lead: 'Deux univers bien séparés : des abonnements aux services xArtists en euros, sans wallet ni NFT, et des œuvres numériques Genesis à découvrir sur MultiversX.',
+    kicker: 'xArtists · Expositions et services',
+    title: 'Une exposition Web pour vos œuvres.',
+    lead: 'Préparez une exposition avec vos images et vos textes, puis téléchargez une page à partager. Artiste, galerie ou vendeur : présentez votre projet pour un accompagnement sur devis.',
     signal: 'Catalogue de présentation · aucune commande ni paiement accepté sur cette page',
     warning: 'Ces montants sont des objectifs, pas des devis exécutables. Aucun abonnement ni achat NFT n’est ouvert. Politique Genesis : devis EUR/EGLD au moment de la signature, TTL prévu 180 secondes, base EUR non encore définie.',
     servicesTitle: 'Analyses xArtists — sans wallet',
+    exhibitionTitle: 'Votre exposition, prête à emporter',
+    exhibitionLead: 'Une vitrine Web adaptée au mobile, avec jusqu’à 16 œuvres, leurs titres, artistes et cartels. Le fichier HTML intègre les images locales et s’ouvre sans compte ni connexion Internet.',
+    exhibitionPrice: 'Accompagnement ponctuel · sur devis',
+    exhibitionScope: 'Composition de l’exposition et mise en forme de la présentation. Le périmètre, le tarif et le délai sont à convenir avant toute commande. La demande publique n’engage aucun paiement.',
+    exhibitionSelf: 'L’éditeur est accessible librement si vous souhaitez préparer le fichier vous-même.',
+    exhibitionCreate: 'Créer mon exposition',
+    exhibitionExample: 'Voir un exemple de fichier',
+    exhibitionEnquiry: 'Présenter mon projet pour un devis',
     servicesLead: 'Trois niveaux de prix mensuels en euros prévus via Stripe Nelsonprods, sans wallet et sans NFT. Les analyses existent comme trois domaines de recherche distincts : aucune correspondance niveau → rapport n’est encore certifiée.',
     level: 'Niveau',
     perMonth: 'TTC / mois',
@@ -62,12 +70,20 @@ const COPY = {
     docs: 'Documentation et conditions',
   },
   en: {
-    kicker: 'xArtists · Offers in preparation',
-    title: 'Explore art. Discover simple services.',
-    lead: 'Two distinct paths: xArtists service subscriptions in euros without a wallet or NFTs, and Genesis digital artworks to explore on MultiversX.',
+    kicker: 'xArtists · Exhibitions and services',
+    title: 'A web exhibition for your artwork.',
+    lead: 'Arrange your images and texts, then download a page you can share. Artists, galleries and sellers can introduce their project to discuss a bespoke service quote.',
     signal: 'Discovery catalogue · no orders or payments are accepted on this page',
     warning: 'These are price targets, not executable quotes. No subscriptions or NFTs are for sale. Genesis policy: fresh EUR/EGLD quote at signing, planned 180-second TTL; EUR base price not yet established.',
     servicesTitle: 'xArtists analysis — no wallet needed',
+    exhibitionTitle: 'Your exhibition, ready to take away',
+    exhibitionLead: 'A mobile-friendly showcase with up to 16 artworks, titles, artists and captions. The HTML file includes local images and opens without an account or an Internet connection.',
+    exhibitionPrice: 'One-off creative service · quote on request',
+    exhibitionScope: 'Exhibition composition and presentation layout. Scope, price and delivery date must be agreed before any order. A public enquiry does not authorize a payment.',
+    exhibitionSelf: 'The editor is freely accessible if you prefer to prepare the file yourself.',
+    exhibitionCreate: 'Create my exhibition',
+    exhibitionExample: 'View an example file',
+    exhibitionEnquiry: 'Introduce my project for a quote',
     servicesLead: 'Three planned EUR monthly price tiers, without a wallet or NFTs. Analysis covers three separate research tracks; tier-to-report benefits are not yet certified',
     level: 'Tier',
     perMonth: 'incl. VAT / month',
@@ -130,11 +146,26 @@ export default function CommercialLaunchPage() {
         <p className="mt-5 max-w-3xl text-base leading-7 text-zinc-700 dark:text-zinc-300">{c.lead}</p>
         <p role="status" className="xa-offers-status mt-6 max-w-3xl rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-950 dark:border-amber-700 dark:bg-amber-950/30 dark:text-amber-100">{c.signal}</p>
         <div className="xa-offers-actions mt-7 flex flex-wrap gap-3">
+          <a className="inline-flex min-h-[44px] items-center rounded-full bg-amber-500 px-5 py-3 text-sm font-semibold text-zinc-950" href="#creative-exhibition">{c.exhibitionTitle}</a>
           <a className="inline-flex min-h-[44px] items-center rounded-full bg-zinc-900 px-5 py-3 text-sm font-semibold text-white hover:bg-zinc-700 dark:bg-white dark:text-zinc-950" href="#commercial-services">{c.servicesTitle}</a>
           <a className="inline-flex min-h-[44px] items-center rounded-full border border-zinc-300 px-5 py-3 text-sm font-semibold dark:border-zinc-600" href="#commercial-genesis">{c.genesisTitle}</a>
           <Link className="inline-flex min-h-[44px] items-center rounded-full border border-zinc-300 px-5 py-3 text-sm font-semibold dark:border-zinc-600" to="/museum">{c.museum}</Link>
         </div>
       </header>
+
+      <section id="creative-exhibition" aria-labelledby="creative-exhibition-title" className="xa-offers-section scroll-mt-24 rounded-3xl border border-zinc-300 bg-white p-5 dark:border-zinc-600 dark:bg-zinc-900 sm:p-9">
+        <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">{c.exhibitionPrice}</p>
+        <h2 id="creative-exhibition-title" className="mt-3 font-serif text-3xl">{c.exhibitionTitle}</h2>
+        <p className="mt-4 max-w-3xl text-base leading-7">{c.exhibitionLead}</p>
+        <p className="mt-3 max-w-3xl text-sm leading-7 text-zinc-600 dark:text-zinc-300">{c.exhibitionScope}</p>
+        <div className="mt-6 flex flex-wrap gap-3">
+          <Link to="/create/gallery" className="xa-button primary">{c.exhibitionCreate}</Link>
+          <a className="xa-button secondary" href="/examples/exposition-autonome.html" target="_blank" rel="noopener noreferrer">{c.exhibitionExample}</a>
+          <a className="xa-button secondary" href={PUBLIC_INTAKE_URL+'&title=%5BExposition%20Web%5D%20Demande%20de%20devis'} target="_blank" rel="noopener noreferrer">{c.exhibitionEnquiry}</a>
+        </div>
+        <p className="mt-4 text-sm text-zinc-600 dark:text-zinc-300">{c.exhibitionSelf}</p>
+        <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">{c.publicNote}</p>
+      </section>
 
       <section id="commercial-services" aria-labelledby="services-heading" className="xa-offers-section scroll-mt-24">
         <p className="text-xs font-semibold uppercase tracking-widest text-zinc-600 dark:text-zinc-400">Stripe · EUR</p>

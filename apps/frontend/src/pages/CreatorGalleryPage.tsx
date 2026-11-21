@@ -4,6 +4,7 @@ import MuseumHall from '../components/museum/MuseumHall'
 import {builtinBlueprintForMuseum} from '../lib/builtinBlueprints'
 import {useWallet} from '../context/WalletContext'
 import {useUserAccount} from '../hooks/useUserAccount'
+import {buildShareableGallery,shareableGalleryFileName} from '../lib/shareableGallery.mjs'
 import {addArtworkToDraft,galleryFrames,inspectLocalGalleryImage,readGalleryDraftFile,loadGalleryDraft,saveGalleryDraft,
   validateGalleryDraft,MAX_ART,newGalleryDraft,
   type GalleryDraft,type GalleryRole,type GalleryKind} from '../lib/creatorGalleryDraft.mjs'
@@ -26,8 +27,11 @@ export default function CreatorGalleryPage(){
   const [selectedImage,setSelectedImage]=useState<{file:File;sourceSha256:string;localFileName:string}|null>(null)
   const [checkingImage,setCheckingImage]=useState(false)
   const [importingDraft,setImportingDraft]=useState(false)
+  const [exportingPage,setExportingPage]=useState(false)
+  const [includeImages,setIncludeImages]=useState(false)
   const [previews,setPreviews]=useState<Record<string,string>>({})
   const previewsRef=useRef<Record<string,string>>({})
+  const localFilesRef=useRef<Record<string,File>>({})
   const draftRef=useRef(draft)
   const fileInputRef=useRef<HTMLInputElement|null>(null)
   const selectionRevision=useRef(0)
@@ -50,6 +54,7 @@ export default function CreatorGalleryPage(){
     const url=URL.createObjectURL(file)
     const old=previewsRef.current[id]
     previewsRef.current={...previewsRef.current,[id]:url}
+    localFilesRef.current={...localFilesRef.current,[id]:file}
     setPreviews(previewsRef.current)
     if(old)URL.revokeObjectURL(old)
   }
@@ -57,6 +62,9 @@ export default function CreatorGalleryPage(){
     const old=previewsRef.current[id]
     const next={...previewsRef.current}
     delete next[id]
+    const nextFiles={...localFilesRef.current}
+    delete nextFiles[id]
+    localFilesRef.current=nextFiles
     previewsRef.current=next
     setPreviews(next)
     if(old)URL.revokeObjectURL(old)
@@ -64,6 +72,8 @@ export default function CreatorGalleryPage(){
   const clearPreviews=()=>{
     const prior=Object.values(previewsRef.current)
     previewsRef.current={}
+    localFilesRef.current={}
+    setIncludeImages(false)
     setPreviews({})
     for(const url of prior)URL.revokeObjectURL(url)
   }
@@ -167,6 +177,27 @@ export default function CreatorGalleryPage(){
     a.href=url;a.download='xartists-exposition-brouillon.json';a.click()
     URL.revokeObjectURL(url)
     setNotice('Brouillon exporté, non publié.')
+  }
+  const exportPage=async()=>{
+    setExportingPage(true)
+    const current=validateGalleryDraft(draftRef.current)
+    const files={...localFilesRef.current}
+    try{
+      const html=await buildShareableGallery(current,files,{includeImages})
+      const url=URL.createObjectURL(new Blob([html],{type:'text/html;charset=utf-8'}))
+      const a=document.createElement('a')
+      a.href=url;a.download=shareableGalleryFileName(current?.name||'')
+      document.body.appendChild(a);a.click();a.remove()
+      setTimeout(()=>URL.revokeObjectURL(url),1000)
+      setNotice('Exposition HTML téléchargée avec les images. Ouvrez le fichier pour la visiter ; partagez ce fichier ou hébergez-le sur le site de votre choix.')
+    }catch(error){
+      const code=error instanceof Error?error.message:''
+      setNotice(code==='gallery_export_too_large'
+        ?'Images trop lourdes : réduisez leur poids pour rester sous 20 Mio au total.'
+        :code==='gallery_image_changed'
+          ?'Une image ne correspond plus au brouillon. Réassociez le fichier d’origine.'
+          :'Pour exporter, ajoutez au moins une œuvre depuis votre appareil et réassociez chaque image locale après rechargement. Confirmez leur inclusion dans le fichier.')
+    }finally{setExportingPage(false)}
   }
   const field=(key:keyof Entry,value:string)=>setForm(v=>({...v,[key]:value}))
   return <main className="mx-auto max-w-6xl px-3 pb-20 pt-6 space-y-6"
@@ -300,6 +331,22 @@ export default function CreatorGalleryPage(){
         </div>
         <div className="rounded-xl border p-4 space-y-3">
           <h2 className="text-lg font-semibold">4. Préparer la publication</h2>
+          <section className="rounded-xl border border-[color:var(--xa-border)] bg-[color:var(--xa-panel)] p-3 space-y-3" aria-labelledby="gallery-shareable-title">
+            <h3 id="gallery-shareable-title" className="font-semibold">Une exposition Web à partager</h3>
+            <p className="text-sm">Téléchargez une page HTML autonome avec vos images, titres et cartels.
+              Elle s’ouvre sans compte, sans wallet et sans connexion Internet. Jusqu’à 16 œuvres et 20 Mio d’images au total.
+              Utilisez des images ajoutées depuis votre appareil ; réassociez-les après rechargement.</p>
+            <label className="flex items-start gap-2 text-sm">
+              <input type="checkbox" checked={includeImages} onChange={e=>setIncludeImages(e.target.checked)}/>
+              J’inclus mes images et mes textes dans le fichier à partager. Je dispose des droits de présentation.
+            </label>
+            <button type="button" className="xa-button primary"
+              disabled={exportingPage||!includeImages||!draft.works.length} onClick={()=>void exportPage()}>
+              {exportingPage?'Préparation du fichier…':'Télécharger mon exposition HTML'}
+            </button>
+            <p className="text-xs">Le fichier téléchargé contient les images. Partagez-le seulement avec les personnes voulues.
+              Aucun envoi au serveur ni publication automatique.</p>
+          </section>
           <p className="text-sm">
             Le texte et les empreintes du brouillon sont sauvegardés dans ce navigateur,
             pas les photos locales. Après actualisation, réassociez le même fichier.
