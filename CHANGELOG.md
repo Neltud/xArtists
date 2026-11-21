@@ -1,5 +1,81 @@
 # Changelog — xArtists
 
+## [0.140.0](https://github.com/Neltud/xArtists/compare/v0.139.0...v0.140.0) (2026-11-21)
+
+
+### Features
+
+* **access-api:** wire POST/GET /v1/xorus/assisted-swap proxy route ([9004ddb](https://github.com/Neltud/xArtists/commit/9004ddbbcc7bf9f6d568a6a8a3aed2e1e8c32421))
+* **front:** AssistedSwapPanel uses access-api proxy only (no browser MCP) ([7f6c280](https://github.com/Neltud/xArtists/commit/7f6c280f27f6dbdd95f8717d421c815efdb9fb26))
+* **host:** free Neon API staging preserving OVH mail ([#610](https://github.com/Neltud/xArtists/issues/610)) ([07d7574](https://github.com/Neltud/xArtists/commit/07d7574da70d3ddd49b6c64d128e154aed1539cf))
+* **museum:** Drive random NFT preview distributor beneath 3D museum ([#602](https://github.com/Neltud/xArtists/issues/602)) ([6b49f29](https://github.com/Neltud/xArtists/commit/6b49f298ec0c2ce802217b31b0e63366bf05d299))
+* **neon:** verified Neon Auth pilot under Free quotas ([#616](https://github.com/Neltud/xArtists/issues/616)) ([e2a39d4](https://github.com/Neltud/xArtists/commit/e2a39d406b67e16dea220e0b2d08548bbd26a36f))
+* **public:** parcours visiteurs, galerie 3D portable et vente NFT préparée ([#590](https://github.com/Neltud/xArtists/issues/590)) ([6497351](https://github.com/Neltud/xArtists/commit/6497351f73bcf941ca98468d2243c84810bc7287))
+* **studio:** self-hosted Kubo IPFS and own-domain GO smoke ([#607](https://github.com/Neltud/xArtists/issues/607)) ([8a3cc31](https://github.com/Neltud/xArtists/commit/8a3cc31f09211f72909901aa00c6389f88fb3f52))
+* **xorus:** 1b complete — data_feed + decision_agent full zlib inline (zero lia imports) ([253f461](https://github.com/Neltud/xArtists/commit/253f461d8c3c09b1c5b7e1cab65cc28b6b4b7091))
+* **xorus:** 1b inline analysis_cycle (zlib, zero lia import) ([b50967b](https://github.com/Neltud/xArtists/commit/b50967b0af4025e46e1f693fcba41bf00f84124b))
+* **xorus:** add execution layer — OneDex MCP assisted flow (policy + client + human-in-the-loop) ([cd993d4](https://github.com/Neltud/xArtists/commit/cd993d46b9283497735a4221a65097a1a0b402e8))
+* **xorus:** add unified read-only platform hub on Neon Free ([825292a](https://github.com/Neltud/xArtists/commit/825292a7ef2e397d98d9cfdf34065dc99f11ac72))
+* **xorus:** assisted OneDex panel on XorusPage — quote, costSummary, warnings, signingLink (human sign only) ([02dd0c0](https://github.com/Neltud/xArtists/commit/02dd0c0ff939af7b0b31c828eff879be92156695))
+* **xorus:** assisted-swap backend proxy module + front uses proxy only ([4082861](https://github.com/Neltud/xArtists/commit/4082861fa134d2d93e6de0ca7d24b7c40581b9ae))
+* **xorus:** complete execution layer — onedex_client + assisted flow + README ([7584db4](https://github.com/Neltud/xArtists/commit/7584db464cd5e0ae8a2c41b212339af8c91c40c1))
+* **xorus:** daily dual reports (Grok + ChatGPT) with public tape census (paper only) ([34dd1fc](https://github.com/Neltud/xArtists/commit/34dd1fcd8a560bb1f5a1e0c503ffd54fed8cd5c6))
+* **xorus:** mount AssistedSwapPanel on XorusPage (human-in-the-loop OneDex) ([1c85466](https://github.com/Neltud/xArtists/commit/1c854665ef0f220f8572198a090e39751a8bdd5b))
+* **xorus:** phase 1b complete — full inline analysis_cycle/report, data_feed, decision_agent, preprod_gate (zlib, zero lia imports) ([489dad1](https://github.com/Neltud/xArtists/commit/489dad12730d8d888e11e945b103e0d099fb2e36))
+* **xorus:** phase 1b full inline — analysis_cycle/report, data_feed, decision_agent, preprod_gate, paper_engine (zlib, zero lia imports) ([5159aaa](https://github.com/Neltud/xArtists/commit/5159aaaa2154d5d8565f806899585aa48fec8920))
+* **xorus:** phase1 core — catalog + swarm LIA-free (paper_engine follows) ([a0ef364](https://github.com/Neltud/xArtists/commit/a0ef364bafc6ed9ff8edeef094f416b1ff8ba639))
+* **xorus:** phase1b — inline paper_engine LIA-free (zlib-inlined scorer, zero lia imports) ([35f9043](https://github.com/Neltud/xArtists/commit/35f90435394ed45dc813ba17e53cdf9fbb3eab65))
+* **xorus:** phase1b inline analysis_report (LIA-free zlib) ([df5516b](https://github.com/Neltud/xArtists/commit/df5516bdb5a755f5dff7297b4a63135c6e605ff7))
+* **xorus:** phase1b inline decision_agent (LIA-free) ([359f0a1](https://github.com/Neltud/xArtists/commit/359f0a160d44515fb395ffd93bd8660f566030c4))
+* **xorus:** phase2 front — XorusPage without LIA UI; live flags forced false ([0e54b1b](https://github.com/Neltud/xArtists/commit/0e54b1bfa78bc584be9bfd7ef83964978f29eca2))
+* **xorus:** replace placeholder daily worker with dual Grok/ChatGPT paper reports ([06e034c](https://github.com/Neltud/xArtists/commit/06e034cc2e94ef72804b0a4ca0198c90b66339b2))
+* **xorus:** top-level paper backend skeleton; LIA retirement path (no live flags) ([be26ce2](https://github.com/Neltud/xArtists/commit/be26ce262e812fdef96535b98e7394b9b71c73db))
+* **xorus:** unified free platform hub and native hourly monitoring ([#625](https://github.com/Neltud/xArtists/issues/625)) ([d5f1140](https://github.com/Neltud/xArtists/commit/d5f1140eefb46a54f13bc999a028d375161d5e3b))
+* **xorus:** unified organization, wallet routing and free hourly platform probes ([d5f1140](https://github.com/Neltud/xArtists/commit/d5f1140eefb46a54f13bc999a028d375161d5e3b))
+
+
+### Bug Fixes
+
+* **access-api:** CRITICAL restore server.mjs from pre-truncation + assisted-swap route ([70d453b](https://github.com/Neltud/xArtists/commit/70d453bcbd61911eedd1fe1743f20a3df71e6447))
+* **access-api:** restore complete server and gate assisted OneDex route ([f05fc9c](https://github.com/Neltud/xArtists/commit/f05fc9c2b3d9f83c205b2b1f8f2bbfc08dcaf475))
+* **access-api:** restore full server.mjs with assisted-swap route ([abe3688](https://github.com/Neltud/xArtists/commit/abe36889c504d62778ccbab933c7dff72509cd89))
+* **front:** AssistedSwapPanel — strict sim gate + client policy mirror (audit) ([9397b42](https://github.com/Neltud/xArtists/commit/9397b42dfa6e198198dcabd9d22feace764302d3))
+* **i18n:** restore visible mobile language switching ([aa64780](https://github.com/Neltud/xArtists/commit/aa6478004190f088d11ad755f805120e5737eb13))
+* **mail:** reject stale self-hosted MX for OVH MX Plan ([#615](https://github.com/Neltud/xArtists/issues/615)) ([5011db4](https://github.com/Neltud/xArtists/commit/5011db4c041bd362b389e43b4a1d05a59062a592))
+* **mobile:** remove EN badge from public header ([5bf8316](https://github.com/Neltud/xArtists/commit/5bf83162852840b6331f42ce1f59db4224e79a2c))
+* **nft:** isolate Drive originals from marketplace and prepare private IPFS archive ([7b280cc](https://github.com/Neltud/xArtists/commit/7b280ccf29765ec7660451559d8a1b453fb79d4a))
+* **ops:** disable obsolete OVH SSH deploy, no VPS present ([#614](https://github.com/Neltud/xArtists/issues/614)) ([a32870b](https://github.com/Neltud/xArtists/commit/a32870bc49f806edf36515b2e17ac63eb96534b4))
+* **ops:** self-managed API and verified Studio media readiness ([#606](https://github.com/Neltud/xArtists/issues/606)) ([75f0bb4](https://github.com/Neltud/xArtists/commit/75f0bb454ca964e4d73619e992e23610df176875))
+* **p0:** validate Studio quota index table and fail-closed probes ([#594](https://github.com/Neltud/xArtists/issues/594)) ([7d313ea](https://github.com/Neltud/xArtists/commit/7d313eac760fab8770f10f5982ad9f53f9aa2fe6))
+* **smoke:** probe the published Render API, not the unresolved cutover ([e2a9fdd](https://github.com/Neltud/xArtists/commit/e2a9fdde62ad03c0d94ed554f6fd19b11d61fd29))
+* **ux:** direct media upload and remove retired protocol screen ([#605](https://github.com/Neltud/xArtists/issues/605)) ([008c0a9](https://github.com/Neltud/xArtists/commit/008c0a92e0c481cf05a3ba2b2402ccc6cb7758ec))
+* **xorus:** complete 1b analysis_cycle full zlib inline (was truncated) ([5850965](https://github.com/Neltud/xArtists/commit/5850965b8230c02c2d621f462a1a2b1e67688e68))
+* **xorus:** harden OneDex assisted policy + signing-link gate (audit) ([b61cb65](https://github.com/Neltud/xArtists/commit/b61cb654142215f80250e3086f6944d22396113c))
+* **xorus:** paper_engine bridge + phase1 analysis entrypoints (LIA-free API surface) ([b87a2a3](https://github.com/Neltud/xArtists/commit/b87a2a3a0b210ad3cde9ee25fa9ac9b08baa77ba))
+* **xorus:** phase1b break circular imports — restore lia.xorus.swarm/preprod + note ([3bf1c95](https://github.com/Neltud/xArtists/commit/3bf1c957b985269fee9489ae0dafc6043ed7799e))
+* **xorus:** restore readable paper analysis modules and align retired test contracts ([#623](https://github.com/Neltud/xArtists/issues/623)) ([518cbb7](https://github.com/Neltud/xArtists/commit/518cbb7cdcd265dd99407b1b76cc7aa4f9b9c6e0))
+
+
+### Refactoring
+
+* **xorus:** phase1b shims — lia.xorus.* re-exports xorus.* only ([272e0c6](https://github.com/Neltud/xArtists/commit/272e0c6f603a99de8cdc00b972b456d855be2d0e))
+
+
+### Documentation
+
+* **ops:** ACTIVE_CONTEXT — LIA retired, xorus/ package is canonical paper backend ([fdd0721](https://github.com/Neltud/xArtists/commit/fdd072190d0af7e7dbb7386b301b14ac218c9373))
+* **ops:** audit dApp 15 nov + runbook déblocage Studio Postgres (004–006) ([#595](https://github.com/Neltud/xArtists/issues/595)) ([e56520a](https://github.com/Neltud/xArtists/commit/e56520aa8613364047957f1b1e12b36fc85f2544))
+* **ops:** backlog triage 2026-11-17 — PRs/issues ranked, no financial unlock ([237454b](https://github.com/Neltud/xArtists/commit/237454be0d8dadf510e310a2d774443598edf0ec))
+* **ops:** CRITICAL — restore access-api server.mjs (truncated during assisted-swap wiring) ([8f2ac3a](https://github.com/Neltud/xArtists/commit/8f2ac3aa74782e4c555aad27fe2db628be8c4416))
+* **ops:** probe 16 nov 05:33Z — Pages 5bf83162 live, API still 8b6fae84, commerce stays closed ([7bff1bb](https://github.com/Neltud/xArtists/commit/7bff1bb832a9f73e58a2bdf25e6b33a4229fbafb))
+* **ops:** reconcile handoff with merged Studio fix and unverified live probes ([fdb653f](https://github.com/Neltud/xArtists/commit/fdb653f9a37f5b3a1ad7e4225f717306f796718e))
+* **ops:** record access-api source restored; preserve deployment and swap NO-GO gates ([e44e8c9](https://github.com/Neltud/xArtists/commit/e44e8c9fdda52ed70170f1a1e32640be30a215f9))
+* **ops:** record deployed xOrus hub and proven native hourly scheduling ([24b5fea](https://github.com/Neltud/xArtists/commit/24b5feaae7a8e4f662c72b2a3d68c80c75fa84b1))
+* **ops:** sprint runbook P0 host	o mail	o deps	o xOrus PR	o wallet (no financial unlock) ([d7c2782](https://github.com/Neltud/xArtists/commit/d7c27829f471f69ad1f21f808e389a23437c8f77))
+* **status:** probe 15 nov — Pages 0.139.0, API en retard, commerce fermé ([0bf7904](https://github.com/Neltud/xArtists/commit/0bf79045af380aace30f531dc5366fd14c413dc2))
+* **status:** record Pages SHA 9610b56 after the paper-only deploy ([c621b36](https://github.com/Neltud/xArtists/commit/c621b36d1e66e66c1350d6b7e8b5fd42c2ce3ef5))
+* **status:** refresh live probe table to 2026-11-19 (Pages fdd07219, Render API, NXDOMAIN cutover) ([f56c97e](https://github.com/Neltud/xArtists/commit/f56c97e11f9a34e1ab8275da33a536bfc6c7a5dd))
+
 ## [0.139.0](https://github.com/Neltud/xArtists/compare/v0.138.0...v0.139.0) (2026-11-14)
 
 
