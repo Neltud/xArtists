@@ -15,41 +15,41 @@ xArtists est une dApp d'art et de création : découverte sans wallet, œuvres p
 
 Les identifiants historiques `/lia` et `lia/` restent en compatibilité pendant la migration vers **xOrus**. L'archive Vellum/Chorus n'est plus un moteur autorisé à lancer des transactions. Le vote externe ChatGPT est au plus de 15 % ; Sentinel garde son veto.
 
+## État confirmé au 22 novembre 2026
+
+Sonde `2026-11-22T05:33Z`. Pages **0.139.0** / `d5f1140e` / `lia_live_trading=false` au moment de la lecture. Le correctif de titre xOrus (outils avancés repliés) est sur `main` et suit le prochain build Pages. API Render toujours `8b6fae84`. Studio **503**. xOrus **ABSTAIN** (`thin_tape`). Hub Neon en lecture sandbox, pas une autorisation d'exécution. Détail : [sonde du 22 nov](docs/ops/PROBE_PUBLIC_2026-11-22.md). Aucun gate commerce n'est levé.
+
 ## État confirmé au 20 novembre 2026
 
-Sonde `2026-11-20T18:58Z`. GitHub Pages sert le SHA **`9610b56`** (workflow [44797583538](https://github.com/Neltud/xArtists/actions/runs/44797583538)), version manifeste encore **0.139.0**, `lia_live_trading=false`. Le déploiement du 19 nov était rouge : six tests exigeaient encore le bootstrap LIA live. Ils suivent maintenant le retrait paper-only. Détail : [sonde du 20 nov](docs/ops/PROBE_PUBLIC_2026-11-20.md). Aucun gate commerce n'est levé.
+Sonde `2026-11-20T18:58Z`. GitHub Pages servait le SHA **`9610b56`**. Détail : [sonde du 20 nov](docs/ops/PROBE_PUBLIC_2026-11-20.md). Aucun gate commerce n'avait été levé.
 
 ## État confirmé au 19 novembre 2026
 
-Sonde `2026-11-19T12:25Z`. Cette section ne lève aucun gate. La lecture fraîche de [build-info.json](https://xartists.art/build-info.json) et de [health](https://xartists-access-api.onrender.com/health) prime sur les versions imprimées plus bas. Détail : [sonde du 19 nov](docs/ops/PROBE_PUBLIC_2026-11-19.md).
+Sonde `2026-11-19T12:25Z`. La lecture fraîche de [build-info.json](https://xartists.art/build-info.json) et de [health](https://xartists-access-api.onrender.com/health) prime sur les versions imprimées plus bas. Détail : [sonde du 19 nov](docs/ops/PROBE_PUBLIC_2026-11-19.md).
 
-- **GitHub Pages** : version **0.139.0**, SHA `fdd072190d0af7e7dbb7386b301b14ac218c9373`, construit le 17 novembre 2026 à 13:54 UTC, `lia_live_trading=false`, **140** routes. Le bundle appelle Render, pas `api.xartists.art`.
-- **API Render** : `ok=true`, SHA **`8b6fae84e15084883d94e2121a7ab8f6219b7845`** (toujours le runtime du 14 novembre). L'API est **en retard** sur les Pages. L'aligner ne doit changer aucun drapeau. Un push git ne redéploie pas Render. `api.xartists.art` est **NXDOMAIN** : ce n'est pas l'API publique.
-- **Marketplace** : préparation du listing de ses propres NFT. **Un listing utilisateur signé sur cette version et son dépôt confirmé en escrow restent à prouver** ([issue #428](https://github.com/Neltud/xArtists/issues/428)). Achat, enchères et packs ont des gates distincts, tous fermés côté API (`auction_enabled=false`).
-- **Creator Studio** : parcours de préparation. Le diagnostic public retourne **HTTP 503** (`backend=postgres`, `table_ready=false`, `schema_ready=false`, `model_schema_ready=false`). Le corps public ne nomme pas la migration manquante. Le premier mint d'une sculpture sur le parcours complet n'est pas confirmé.
-- **IPFS / GLB** : upload **OFF** (`studio_media_upload=off`). `mint_live_enabled=false`, `mint_dry_run=true`. `mint_oidc_pull_enabled=true` est un bras de lecture, pas un mint public. Migrations 004–006 non certifiées sur la base réelle.
-- **Paiements** : Stripe et MoonPay off. PayBox est **configuré** (`paybox_mode=prod`) et le **checkout est désactivé**. Le mode prod n'est pas un encaissement.
-- **Comptes** : exploration sans wallet ≠ compte email (`walletless_account_session_enabled=false`) ≠ wallet signataire. xPortal / Reown : preuve QR toujours ouverte ([issue #506](https://github.com/Neltud/xArtists/issues/506)).
-- **xOrus** : paper, décision **ABSTAIN** (`thin_tape`) au 16 nov 05:33 UTC. Analyse privée `xorus_private_analysis_enabled=false` ([issue #548](https://github.com/Neltud/xArtists/issues/548)).
+- **API Render** : `ok=true`, SHA **`8b6fae84e15084883d94e2121a7ab8f6219b7845`** (runtime du 14 novembre, toujours en retard au 22 nov). Un push git ne redéploie pas Render. `api.xartists.art` est **NXDOMAIN**.
+- **Marketplace** : préparation du listing. Cycle signé non prouvé ([issue #428](https://github.com/Neltud/xArtists/issues/428)). Enchères fermées.
+- **Creator Studio** : HTTP **503**, schéma absent. Upload off. Mint dry-run. `mint_oidc_pull_enabled=true` est une lecture, pas un mint public.
+- **Paiements** : Stripe et MoonPay off. PayBox configuré (`paybox_mode=prod`) et checkout **désactivé**.
+- **Comptes / wallet** : exploration sans wallet ≠ compte email ≠ signataire. Preuve QR xPortal ouverte ([issue #506](https://github.com/Neltud/xArtists/issues/506)).
+- **xOrus** : paper, **ABSTAIN** (`thin_tape`). Analyse privée off ([issue #548](https://github.com/Neltud/xArtists/issues/548)).
 
-Le site public est donc **live**. Le commerce ne l'est pas. Les deux phrases sont vraies en même temps.
+Le site public est **live**. Le commerce ne l'est pas. Les deux phrases sont vraies en même temps.
 
 ## Google Drive et originaux de collection
 
-Le dossier de galerie xArtists a été inventorié le **11 novembre 2026** : **291 PNG**, ainsi que **4 MP4** dans son dossier vidéo historique. Il s'agit d'un **inventaire privé de fichiers, pas de 295 NFT**. Les fichiers, IDs Drive, droits de chaque artiste, empreintes SHA-256 et CIDs ne sont **pas publiés** dans le repo. Ne jamais rendre une archive privée publique par simple changement d'URL de partage.
+Inventaire privé du **11 novembre 2026** : **291 PNG** et **4 MP4**. Ce n'est pas un catalogue de 295 NFT. Pas d'URL de partage publique. Parcours : droits, empreinte, IPFS consenti, CID relu, signature artiste, Explorer.
 
-Parcours autorisé : choisir les œuvres et attester les droits → contrôler les octets originaux et les empreintes → publier sur IPFS via un compte artiste authentifié → vérifier les CIDs → signer le mint → confirmer sur Explorer. L'import manuel fonctionne dès qu'un artiste télécharge une copie depuis Drive puis la sélectionne dans Studio ; **aucune synchronisation OAuth Drive→IPFS sans consentement n'est revendiquée**.
-
-Voir [staging Drive privé](docs/ops/DRIVE_NFT_PRIVATE_STAGING_2026-11-11.md), [guide créateur/vente/Drive](docs/presentation/creer-vendre-nft-ipfs-drive.md) et [runbook backend IPFS](docs/ops/BACKEND_IPFS_ACTIVATION_2026-11-11.md).
+Voir [staging Drive privé](docs/ops/DRIVE_NFT_PRIVATE_STAGING_2026-11-11.md).
 
 ## Plugins et services
 
-- [**xRights**](https://xartists.art/create/world-rights/) : atelier de licences de contenus sociaux, édition/export de dossiers locaux. Le **ZIP premium n'est pas publié** : téléchargement payant / exemption propriétaire exigent une licence et un entitlement vérifiés sur le serveur. Connexion YouTube en lecture seule soumise à OAuth et disponibilité backend ; autres plateformes en préparation manuelle. [Code](packages/xa-world-rights/README.md).
-- [**NFT Factory / Distributeurs**](https://xartists.art/create/nft-factory/) : plans de collection et distributeur **paper** ; aucune génération, distribution, vente ou mint automatique autorisé. [Spécification](docs/NFT_FACTORY_DISTRIBUTORS_PAPER_TO_LIVE.md).
-- **xOrus Agent** : [connecteur de données en préparation](packages/xorus-agent/README.md), pas un endpoint MCP public actif, ni un plugin de trading.
-- [**GitBook officiel**](https://xartists.gitbook.io/xartists/) : édition liée au dossier `docs/` par Git Sync GitHub. [Guides plugins](docs/presentation/plugins-xartists.md).
+- [**xRights**](https://xartists.art/create/world-rights/) : licences locales. ZIP premium non publié.
+- [**NFT Factory**](https://xartists.art/create/nft-factory/) : plans paper. Aucune génération ni vente automatique.
+- **xOrus Agent** : connecteur en préparation, pas un plugin de trading.
+- [**GitBook**](https://xartists.gitbook.io/xartists/) lié à `docs/`.
 
-## Développement et vérification
+## Développement
 
 ```bash
 cd apps/frontend
@@ -61,6 +61,6 @@ npm run typecheck
 npm run build
 ```
 
-Le frontend est React/Vite/TypeScript ; l'API séparée vit dans `services/access-api`. Le déploiement public est géré par [`.github/workflows/static.yml`](.github/workflows/static.yml). Le futur backend parallèle **OVH** (image API autonome et Caddy HTTPS) est préparé dans [deploy/ovh](deploy/ovh/README.md) ; **aucun serveur OVH n'a encore été migré ou basculé**. Le statut technique et les priorités courantes sont dans [ACTIVE_CONTEXT.md](ACTIVE_CONTEXT.md). Un build vert ne prouve ni déploiement ni paiement. Aucun script de documentation ne doit activer trading, PayBox, Stripe ou upload IPFS.
+Frontend React/Vite. API : `services/access-api`. Pages : [`.github/workflows/static.yml`](.github/workflows/static.yml). Statut : [ACTIVE_CONTEXT.md](ACTIVE_CONTEXT.md). Un build vert ne prouve ni déploiement ni paiement.
 
-**Sécurité :** jamais de seed, PEM, JWT Pinata, jetons Google, secrets PSP ou clé de portefeuille dans les issues, commits ou captures d'écran. Toute action NFT, mint, vente ou dépense exige une vérification et une signature personnelle. [Issues](https://github.com/Neltud/xArtists/issues) · [Licence et conditions](LICENSE) · [Gates de lancement](docs/security/launch-gates.md).
+**Sécurité :** jamais de seed, PEM, JWT ou secret PSP dans un commit. Toute vente ou mint exige une signature personnelle. [Issues](https://github.com/Neltud/xArtists/issues) · [Gates](docs/security/launch-gates.md).
