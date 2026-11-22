@@ -39,6 +39,24 @@ Les réponses externes sont des données non fiables : URLs fixes, redirections 
 
 ## Plateformes et wallets
 
+### Politique de risque de référence
+
+`GET /v1/xorus/risk-policy` décrit un **pilote générique plafonné à 100 USD**, sans lecture de compte, attribution de fonds ou modification des grants PayBox. Ce profil n'est ni un dépôt demandé ni une autorisation de trading. Le capital dédié et les soldes n'étant pas vérifiés, `actual_capital_allocation` et `live_budget_cents` restent à **zéro**.
+
+| Affectation | Plafond de capital de référence | Arrêt pertes sur 24 h glissantes | Arrêt pertes cumulées du pilote |
+| --- | --- | --- | --- |
+| MultiversX mainnet | 40 USD | 1 USD | 2,50 USD |
+| Solana mainnet | 40 USD | 1 USD | 2,50 USD |
+| Autres réseaux PayBox | 0 USD au démarrage | 0 USD | 0 USD |
+| Réserve hors trading | 20 USD | Sans ordre | Sans ordre |
+| Ensemble du pilote | 100 USD maximum, réserve comprise | 2 USD | 5 USD |
+
+Si le capital dédié vérifié est inférieur à 100 USD, tous les plafonds diminuent proportionnellement, en centimes entiers ; l'arrondi restant va en réserve. Sans capital identifié, l'allocation calculée est nulle. Plafond par ordre : 5 % du capital de référence, soit 5 USD à 100 USD ; une position ouverte au plus par réseau, deux et 10 USD de notionnel au total. Spot uniquement, sans levier ; slippage plafond 50 bps (0,5 %), quote âgée de 30 secondes au plus, réserve de gas obligatoire et abstention si le coût est inconnu. Aucun bridge, dépôt automatique, martingale, augmentation automatique de budget ou allowance illimitée.
+
+L'univers demandé comprend les tokens effectivement compatibles avec PayBox et les tokens MultiversX. La présence dans le catalogue PayBox ne démontre pas qu'une paire est échangeable. Chaque actif doit être résolu par chaîne et adresse de contrat/mint exacte, ou identifiant natif/ESDT ; les preuves de grant, route d'entrée et de sortie, liquidité, valorisation et simulation restent nécessaires. MultiversX utilise un signer utilisateur séparé : il ne devient pas un réseau PayBox par cette politique.
+
+Les seuils incluent pertes réalisées, pertes latentes et frais ; les profits ne rechargent pas l'enveloppe de pertes. Le seuil cumulé ne se réarme pas automatiquement. **Un seuil d'arrêt des nouvelles entrées ne garantit pas une perte maximale absolue.** Ce service ne dispose encore ni du registre atomique de risque live ni de l'adaptateur de signature : la politique décrit les règles à implémenter avant toute exécution. Elle ne remplace pas les limites plus strictes d'un ancien adaptateur. Toutes les routes financières restent bloquées.
+
 | Cible | Nature | État de cette tranche |
 | --- | --- | --- |
 | Bitcoin | Réseau ; BTC est un actif, pas une plateforme d'exchange | Hauteur de chaîne utilisée uniquement pour valider la réponse technique |

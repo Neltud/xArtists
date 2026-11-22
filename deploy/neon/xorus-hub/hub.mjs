@@ -2,6 +2,7 @@ import { randomUUID, timingSafeEqual } from 'node:crypto'
 import { ORGANIZATION, platformRegistry, walletRoutePlan } from './registry.mjs'
 import { boundedText, probePlatforms } from './probes.mjs'
 import { agentManifest, runNetworkAgents, CYCLE_MS, CYCLE_CRON, RECEIPT_MAX_AGE_MS } from './network-agents.mjs'
+import { riskPolicy } from './risk-policy.mjs'
 
 const ORIGINS = new Set(['https://xartists.art', 'https://www.xartists.art'])
 const SAFETY = Object.freeze({ mode: 'read_only', execution_authorized: false,
@@ -105,8 +106,9 @@ export function createHub({ env = process.env, store = null, parseTrigger = null
       if (path === '/' || path === '/health') return reply(request, 200, { ok: true, ...source, ...SAFETY,
         store_target_confirmed: correctTarget, probe_schedule: CYCLE_CRON,
         schedule_state: 'query_provider_trigger_for_actual_state', linked_wallets: 0,
-        endpoints: ['/v1/xorus/platforms', '/v1/xorus/agents', '/v1/xorus/agents/reports', '/v1/xorus/snapshot', '/v1/xorus/wallet-route'] })
+        endpoints: ['/v1/xorus/platforms', '/v1/xorus/agents', '/v1/xorus/agents/reports', '/v1/xorus/risk-policy', '/v1/xorus/snapshot', '/v1/xorus/wallet-route'] })
       if (path === '/v1/xorus/platforms') return reply(request, 200, { ok: true, ...platformRegistry() })
+      if (path === '/v1/xorus/risk-policy') return reply(request, 200, { ok: true, ...source, ...riskPolicy() })
       if (path === '/v1/xorus/agents') return reply(request, 200, { ok: true, ...source, ...agentManifest() })
       if (path === '/v1/xorus/snapshot' || path === '/v1/xorus/agents/reports') {
         if (!isOperator(request, env)) return reply(request, 401, { ok: false, error: 'operator_required' })

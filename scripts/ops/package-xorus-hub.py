@@ -6,7 +6,7 @@ import zipfile
 
 root = Path(__file__).resolve().parents[2]
 source = root / 'deploy/neon/xorus-hub'
-modules = ['index.mjs', 'hub.mjs', 'registry.mjs', 'probes.mjs', 'postgres.mjs', 'network-agents.mjs', 'package.json']
+modules = ['index.mjs', 'hub.mjs', 'registry.mjs', 'probes.mjs', 'postgres.mjs', 'network-agents.mjs', 'risk-policy.mjs', 'package.json']
 changed = subprocess.check_output(['git', 'status', '--porcelain', '--untracked-files=normal', '--',
                                    'deploy/neon/xorus-hub', 'scripts/ops/package-xorus-hub.py'], cwd=root, text=True)
 if changed.strip():
