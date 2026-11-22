@@ -1,0 +1,264 @@
+{
+  "schema_version": 1,
+  "verified_at": "2026-11-22T11:37:43.007Z",
+  "service": "xorus-platform-hub",
+  "source_sha": "af8e5674db20e06fce476b1b08b7dc1eae3a8e04",
+  "pull_request": 628,
+  "neon": {
+    "project_id": "orange-dust-23862418",
+    "branch_id": "br-steep-sun-bab7l93p",
+    "function_slug": "xorushub",
+    "deployment_id": 3,
+    "status": "completed",
+    "plan_observed": "free",
+    "existing_environment_reused": true
+  },
+  "policy_url": "https://br-steep-sun-bab7l93p-xorushub.compute.c-8.eu-central-1.aws.neon.tech/v1/xorus/risk-policy",
+  "archive_sha256": "e0e1b259066cd0dd244380bf2d1a577db25ad6423cc283f4ccd273b755cced9e",
+  "policy": {
+    "ok": true,
+    "service": "xorus-platform-hub",
+    "organization_id": "xartists",
+    "environment": "sandbox",
+    "production_access_api": false,
+    "source_sha": "af8e5674db20e06fce476b1b08b7dc1eae3a8e04",
+    "schema_version": 1,
+    "policy_id": "xorus-conservative-pilot-v1",
+    "status": "reference_policy_execution_disabled",
+    "currency": "USD",
+    "execution_authorized": false,
+    "signing_authorized": false,
+    "live_budget_cents": 0,
+    "model_inference_configured": false,
+    "live_risk_ledger_implemented": false,
+    "account_balances_verified": false,
+    "dedicated_capital_verified": false,
+    "paybox_grants_verified": false,
+    "provider_grants_modified": false,
+    "asset_universe": {
+      "requested_scope": "all_provider_compatible_tokens_plus_multiversx",
+      "paybox": {
+        "families": [
+          "solana",
+          "evm"
+        ],
+        "source": "https://docs.paybox.sh/reference/mcp-tools",
+        "catalog_membership_proves_swap_support": false,
+        "exact_chain_contract_or_mint_required": true,
+        "supported_route_required": true
+      },
+      "multiversx": {
+        "network_id": "1",
+        "signer": "separate_user_wallet",
+        "exact_native_or_esdt_identifier_required": true
+      },
+      "eligible_for_execution_in_this_service": false,
+      "new_assets_must_pass": [
+        "exact_identity",
+        "wallet_grant",
+        "liquidity_and_exit_route",
+        "fresh_quote_and_usd_valuation",
+        "transaction_simulation",
+        "fee_and_risk_ledger"
+      ]
+    },
+    "reference_pilot": {
+      "currency": "USD",
+      "mode": "reference_only",
+      "reference_capital_provided": true,
+      "reference_capital_cents": 10000,
+      "maximum_reference_capital_cents": 10000,
+      "live_budget_cents": 0,
+      "execution_authorized": false,
+      "networks": {
+        "multiversx": {
+          "capital_ceiling_cents": 4000,
+          "max_order_cents": 500,
+          "max_open_positions": 1,
+          "loss_stop_rolling_24h_cents": 100,
+          "loss_stop_pilot_cents": 250
+        },
+        "solana": {
+          "capital_ceiling_cents": 4000,
+          "max_order_cents": 500,
+          "max_open_positions": 1,
+          "loss_stop_rolling_24h_cents": 100,
+          "loss_stop_pilot_cents": 250
+        }
+      },
+      "other_paybox_networks": {
+        "capital_ceiling_cents": 0,
+        "max_order_cents": 0
+      },
+      "reserve_cents": 2000,
+      "global": {
+        "max_open_positions": 2,
+        "max_open_notional_cents": 1000,
+        "loss_stop_rolling_24h_cents": 200,
+        "loss_stop_pilot_cents": 500
+      }
+    },
+    "actual_capital_allocation": {
+      "currency": "USD",
+      "mode": "reference_only",
+      "reference_capital_provided": false,
+      "reference_capital_cents": 0,
+      "maximum_reference_capital_cents": 10000,
+      "live_budget_cents": 0,
+      "execution_authorized": false,
+      "networks": {
+        "multiversx": {
+          "capital_ceiling_cents": 0,
+          "max_order_cents": 0,
+          "max_open_positions": 1,
+          "loss_stop_rolling_24h_cents": 0,
+          "loss_stop_pilot_cents": 0
+        },
+        "solana": {
+          "capital_ceiling_cents": 0,
+          "max_order_cents": 0,
+          "max_open_positions": 1,
+          "loss_stop_rolling_24h_cents": 0,
+          "loss_stop_pilot_cents": 0
+        }
+      },
+      "other_paybox_networks": {
+        "capital_ceiling_cents": 0,
+        "max_order_cents": 0
+      },
+      "reserve_cents": 0,
+      "global": {
+        "max_open_positions": 2,
+        "max_open_notional_cents": 0,
+        "loss_stop_rolling_24h_cents": 0,
+        "loss_stop_pilot_cents": 0
+      }
+    },
+    "trading_constraints": {
+      "spot_only": true,
+      "leverage_max": 1,
+      "max_slippage_bps": 50,
+      "max_quote_age_seconds": 30,
+      "unpriced_asset_action": "ABSTAIN",
+      "max_open_positions_per_network": 1,
+      "unlimited_allowances_allowed": false,
+      "automatic_deposits_allowed": false,
+      "automatic_bridges_allowed": false,
+      "martingale_allowed": false,
+      "automatic_budget_increase_allowed": false,
+      "native_gas_reserve_required": true,
+      "unknown_costs_action": "ABSTAIN"
+    },
+    "loss_accounting": {
+      "window": "rolling_24h",
+      "includes": [
+        "realized_losses",
+        "unrealized_losses",
+        "network_fees",
+        "platform_fees"
+      ],
+      "profits_refill_loss_allowance": false,
+      "pilot_stop_resets_automatically": false,
+      "threshold_action": "halt_new_entries",
+      "permitted_exit": "separately_authorized_risk_reducing_exit",
+      "stop_threshold_is_guaranteed_maximum_loss": false,
+      "enforcement": "not_implemented_for_live_execution"
+    },
+    "readiness_requires": [
+      "dedicated_capital_and_balances_verified",
+      "provider_wallet_grants_verified",
+      "exact_asset_and_venue_support_verified",
+      "persistent_atomic_risk_ledger",
+      "reviewed_signing_adapter",
+      "authorized_transaction_and_fee_limits"
+    ],
+    "limits": {
+      "policy_is_provider_approval": false,
+      "policy_is_deposit_instruction": false,
+      "policy_overrides_existing_stricter_limits": false,
+      "funds_moved": false
+    }
+  },
+  "checks": {
+    "targeted_tests": {
+      "passed": 31,
+      "failed": 0
+    },
+    "public_http": [
+      {
+        "path": "/v1/xorus/risk-policy",
+        "method": "GET",
+        "http_status": 200
+      },
+      {
+        "path": "/v1/xorus/execute",
+        "method": "POST",
+        "http_status": 503
+      },
+      {
+        "path": "/v1/xorus/agents/reports",
+        "method": "GET",
+        "http_status": 401
+      }
+    ],
+    "ci": [
+      {
+        "name": "contract",
+        "status": "success",
+        "url": "https://github.com/Neltud/xArtists/actions/runs/45018069887/job/137194602714"
+      },
+      {
+        "name": "build",
+        "status": "success",
+        "url": "https://github.com/Neltud/xArtists/actions/runs/45018069921/job/137194602568"
+      },
+      {
+        "name": "isolated-hub",
+        "status": "success",
+        "url": "https://github.com/Neltud/xArtists/actions/runs/45018069919/job/137194602313"
+      },
+      {
+        "name": "python-regression",
+        "status": "success",
+        "url": "https://github.com/Neltud/xArtists/actions/runs/45018069875/job/137194602301"
+      },
+      {
+        "name": "review",
+        "status": "success",
+        "url": "https://github.com/Neltud/xArtists/actions/runs/45018069916/job/137194602247"
+      },
+      {
+        "name": "Published Pages health (not this PR's frontend)",
+        "status": "success",
+        "url": "https://github.com/Neltud/xArtists/actions/runs/45018069907/job/137194602238"
+      }
+    ]
+  },
+  "scheduler": {
+    "type": "schedule",
+    "trigger_id": "trigger-c82a5a3f-ea43-4b80-ae5d-78798d1ee5c2",
+    "function_slug": "xorushub",
+    "name": "xorus-hub-cycle",
+    "function_path": "/v1/xorus/cron",
+    "schedule": {
+      "cron": "*/15 * * * *"
+    },
+    "enabled": true,
+    "version": 8907174,
+    "next_run_at": "2026-11-22T11:45:00.000000Z",
+    "inherited": false
+  },
+  "provider_effects": {
+    "paybox_credentials_read": false,
+    "paybox_grants_modified": false,
+    "transactions_requested": false,
+    "funds_moved": false
+  },
+  "limitations": [
+    "Reference policy only; no live risk ledger implemented.",
+    "Dedicated capital, wallet balances and provider grants remain unverified.",
+    "Actual capital allocation and live budget are zero.",
+    "Loss stops halt future entries; they do not guarantee an absolute maximum loss.",
+    "Existing stricter adapter limits are not overridden."
+  ]
+}
