@@ -16,6 +16,7 @@ import RceStrip from '../components/RceStrip'
 import Pack3DCockpit from '../components/packs/Pack3DCockpit'
 import { XORUS_BADGE, XORUS_LIVE_TRADING } from '../config/xorusConfig'
 import XorusAssistedSwapPanel from '../components/intelligence/XorusAssistedSwapPanel'
+import PaperTradingPanel from '../components/intelligence/PaperTradingPanel'
 
 void xaLocalize
 
@@ -59,6 +60,8 @@ export default function XorusPage() {
       </header>
 
       <IntelligencePath />
+
+      <PaperTradingPanel />
 
       <section aria-label="xOrus decision">
         <XorusDecisionDesk />

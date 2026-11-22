@@ -28,6 +28,7 @@ export function riskPolicy() {
     status: 'reference_policy_execution_disabled', currency: 'USD',
     execution_authorized: false, signing_authorized: false, live_budget_cents: 0,
     model_inference_configured: false, live_risk_ledger_implemented: false,
+    paper_risk_ledger_implemented: true, paper_ledger_scope: 'operator_virtual_pilot_only',
     account_balances_verified: false, dedicated_capital_verified: false,
     paybox_grants_verified: false, provider_grants_modified: false,
     asset_universe: { requested_scope: 'all_provider_compatible_tokens_plus_multiversx',

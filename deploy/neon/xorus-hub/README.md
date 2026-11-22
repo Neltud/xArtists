@@ -39,6 +39,26 @@ Les réponses externes sont des données non fiables : URLs fixes, redirections 
 
 ## Plateformes et wallets
 
+### Terminal bêta et journal de simulation
+
+La page [xOrus](https://xartists.art/intelligence/xorus/?lang=fr) permet une opération complète **en simulation locale** : entrée virtuelle, valeur manuelle, clôture et conservation du journal sur l'appareil. Les frais et résultats sont fictifs, les identifiants ne sont pas vérifiés sur la chaîne et aucun prix de marché n'est inventé. Aucun wallet, quote fournisseur, signature ou ordre réel n'est demandé. La réinitialisation proposée par l'interface efface uniquement ce journal local ; ce stockage n'est jamais une preuve de risque pour l'exécution réelle.
+
+Le même moteur déterministe alimente un **journal PostgreSQL opérateur distinct**, avec 100 USD virtuels et la répartition du profil ci-dessous. Il ne synchronise pas les journaux anonymes du navigateur et ne crée pas de compte financier utilisateur.
+
+| Endpoint | Accès et effet |
+| --- | --- |
+| `GET /v1/xorus/paper` | Manifeste public, sans accès DB |
+| `GET /v1/xorus/paper/account` | Token opérateur serveur, lecture du pilote virtuel ; pas de création implicite |
+| `POST /v1/xorus/paper/commands` | Token opérateur ; commandes strictes `propose`, `mark`, `close` ; corps JSON limité à 4 KiB |
+
+Chaque commande exige une clé d'idempotence UUID et une référence manuelle de moins de 30 secondes (`reference_at_ms`). `propose` précise réseau, identifiants exacts, notionnel/frais en centimes USD et slippage en bps ; `mark` et `close` ciblent un identifiant de simulation ouvert. Une clé rejouée avec le même corps ne débite rien ; un corps différent donne un conflit. Aucun champ de clé, seed, wallet, RPC, bridge ou levier n'est accepté.
+
+Les commandes serveur s'exécutent dans une transaction avec `SELECT FOR UPDATE` et garde de révision : deux isolates ne peuvent pas réserver simultanément une deuxième position sur le même réseau. Les pertes réalisées, pertes latentes et frais sont comptés sans compensation par les gains réalisés. Une halte quotidienne est conservée au moins 24 heures après son déclenchement ; une halte cumulée ne se réarme pas. Une clôture de simulation reste possible sous halte. La capacité de 500 événements / 200 propositions conserve de la place pour clôturer les positions ouvertes ; aucun historique d'idempotence n'est purgé silencieusement.
+
+Appliquer uniquement `paper-schema.sql` à la base sandbox nominative avant le déploiement. La nouvelle table `xorus_paper_pilots` refuse les budgets live non nuls, les flags de signature/exécution actifs et les révisions incohérentes, y compris les champs absents. L'API ne reçoit jamais l'état du navigateur à persister. Aucune table de comptes, Studio, commerce ou wallet existante n'est modifiée. Le pool existant est réutilisé ; aucun nouveau service ni planificateur.
+
+Ce journal **paper** ne remplace pas le futur registre de risque live, les vrais quotes/simulations de transactions et l'adaptateur de signature. `live_risk_ledger_implemented=false`, allocation réelle et budget live restent à zéro. Pour désactiver cette tranche, restaurer le bundle du commit `af8e5674db20e06fce476b1b08b7dc1eae3a8e04` sans remplacer les variables ; laisser la table intacte conserve les preuves. Ne pas réinitialiser le journal opérateur pour contourner une halte.
+
 ### Politique de risque de référence
 
 `GET /v1/xorus/risk-policy` décrit un **pilote générique plafonné à 100 USD**, sans lecture de compte, attribution de fonds ou modification des grants PayBox. Ce profil n'est ni un dépôt demandé ni une autorisation de trading. Le capital dédié et les soldes n'étant pas vérifiés, `actual_capital_allocation` et `live_budget_cents` restent à **zéro**.
