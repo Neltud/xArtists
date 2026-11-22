@@ -23,6 +23,7 @@ body:
     attributes:
       label: "Type de demande / Area of interest"
       options:
+        - "Exposition Web partageable / Shareable web exhibition"
         - "Présentation pack Pulse / Pulse introduction"
         - "Présentation pack Yield / Yield introduction"
         - "Présentation pack Sentinel / Sentinel introduction"
