@@ -1,5 +1,16 @@
 # ACTIVE_CONTEXT — xArtists / xOrus
 
+## Agents et exposition publiés — 22 novembre 2026 (11:04 UTC)
+
+- **Deux agents d'observation mainnet réellement exécutés**, sur la fonction Neon Free `xorushub`, déploiement 2, source runtime `5f4dda14a9e18b517d89991224752fd71fc5538a`. [PR #627](https://github.com/Neltud/xArtists/pull/627) fusionnée, six contrôles CI verts, 25 tests du service réussis.
+- Reçu du premier cycle natif persisté à **11:04:03 UTC** : MultiversX metachain `41725895`, identité `1`, âge du bloc 1,08 s, collecte 262 ms ; Solana slot **finalisé** `472517319`, identité genesis mainnet vérifiée, âge du bloc 0,61 s, collecte 2 794 ms. Les deux statuts sont `observed`. Ces mesures datées ne préjugent pas des prochains cycles.
+- Trigger existant réutilisé et renommé `xorus-hub-cycle`, actif, cron final **`*/15 * * * *` UTC**. Vérification initiale à la minute puis cadence finale restaurée. Le minimum de 14 minutes peut ignorer le premier créneau de 11:15 après la vérification de 11:04 ; ensuite cadence au quart d'heure. Aucun second ordonnanceur ni abonnement payant créé.
+- Manifeste public `/v1/xorus/agents` : 200, sans accès DB. Rapports `/v1/xorus/agents/reports` : authentification opérateur, 401 sans token ; preuve persistée relue via SQL sur la seule base sandbox autorisée. Réponses périmées explicites ; aucun ancien résultat réutilisé lors d'une panne.
+- **Observation déterministe, pas d'inférence IA**. Zéro wallet lié par ce service ; aucune signature, ordre, swap, pari ou transfert. Les routes d'exécution répondent toujours 503. Aucun flag finance levé et aucune modification du connecteur xPortal existant.
+- [PR #626](https://github.com/Neltud/xArtists/pull/626) fusionnée après 17 contrôles verts ; Pages `58d30cce` vérifié en HTTPS. [Éditeur](https://xartists.art/create/gallery), [exemple HTML autonome](https://xartists.art/examples/exposition-autonome.html) (200, image embarquée) et [service sur devis](https://xartists.art/offres) publiés. Aucun tarif, encaissement ou revenu réalisé annoncé.
+
+Preuve complète et limites : [`deploy/neon/xorus-hub/deployment-receipt-20261122.json`](deploy/neon/xorus-hub/deployment-receipt-20261122.json). Désactivation / retour arrière : [`deploy/neon/xorus-hub/README.md`](deploy/neon/xorus-hub/README.md#désactivation-et-retour-arrière).
+
 ## Mesure publique — 22 novembre 2026 (05:33 UTC)
 
 Sonde lecture seule. **Aucun** drapeau commerce, mint ou trading n'a été levé. Détail : [`docs/ops/PROBE_PUBLIC_2026-11-22.md`](docs/ops/PROBE_PUBLIC_2026-11-22.md).

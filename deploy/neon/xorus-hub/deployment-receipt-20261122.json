@@ -1,0 +1,277 @@
+{
+  "schema_version": 2,
+  "recorded_on": "2026-11-22",
+  "service": "xorus-platform-hub",
+  "organization_id": "xartists",
+  "provider_account_merge_performed": false,
+  "source_sha": "5f4dda14a9e18b517d89991224752fd71fc5538a",
+  "archive_sha256": "bd5781cca0a68da0f1b9eaa028c069be38ec02d07ecd94c08230c848a7fe637a",
+  "source_tree_sha": "f897db02ac8939e0482236724ed1cb6be8e9fdf7",
+  "function_url": "https://br-steep-sun-bab7l93p-xorushub.compute.c-8.eu-central-1.aws.neon.tech/",
+  "neon": {
+    "plan_observed": "free",
+    "organization_id": "org-crimson-thunder-31766993",
+    "project_id": "orange-dust-23862418",
+    "project_name": "xartists-access-sandbox",
+    "branch_id": "br-steep-sun-bab7l93p",
+    "database_name": "xartists_access",
+    "function_slug": "xorushub",
+    "deployment_id": 2,
+    "status": "completed",
+    "existing_environment_reused": true
+  },
+  "scheduler": {
+    "type": "schedule",
+    "trigger_id": "trigger-c82a5a3f-ea43-4b80-ae5d-78798d1ee5c2",
+    "function_slug": "xorushub",
+    "name": "xorus-hub-cycle",
+    "function_path": "/v1/xorus/cron",
+    "schedule": {
+      "cron": "*/15 * * * *"
+    },
+    "enabled": true,
+    "version": 8907174,
+    "next_run_at": "2026-11-22T11:15:00.000000Z",
+    "inherited": false,
+    "verification_schedule": "* * * * *",
+    "final_schedule": "*/15 * * * *",
+    "native_delivery_proven": true,
+    "first_persisted_at": "2026-11-22T11:04:03.646Z",
+    "verification_method": "The new receipt was persisted after a native scheduled trigger. No authenticated production manual probe was called. A client-forged native trigger header returned 401.",
+    "bootstrap_cooldown": "The off-cadence verification at 11:04 UTC can skip the 11:15 trigger under the 14-minute minimum; regular admitted cycles then occur each quarter-hour."
+  },
+  "snapshot": {
+    "mode": "read_only",
+    "probes": [
+      {
+        "kind": "technical_health",
+        "reason": "technical_response_valid",
+        "status": "reachable",
+        "endpoint": "https://mempool.space/api/blocks/tip/height",
+        "platform": "bitcoin",
+        "checked_at": "2026-11-22T11:04:00.807Z",
+        "executable": false,
+        "latency_ms": 477,
+        "http_status": 200,
+        "trade_connection_verified": false,
+        "independently_verified_market_signals": 0
+      },
+      {
+        "kind": "technical_health",
+        "reason": "technical_response_valid",
+        "status": "reachable",
+        "endpoint": "https://api.mainnet.solana.com",
+        "platform": "solana",
+        "checked_at": "2026-11-22T11:04:00.811Z",
+        "executable": false,
+        "latency_ms": 156,
+        "http_status": 200,
+        "trade_connection_verified": false,
+        "independently_verified_market_signals": 0
+      },
+      {
+        "kind": "technical_health",
+        "reason": "technical_response_valid",
+        "status": "reachable",
+        "endpoint": "https://clob.polymarket.com/time",
+        "platform": "polymarket",
+        "checked_at": "2026-11-22T11:04:00.812Z",
+        "executable": false,
+        "latency_ms": 154,
+        "http_status": 200,
+        "trade_connection_verified": false,
+        "independently_verified_market_signals": 0
+      },
+      {
+        "kind": "technical_health",
+        "reason": "technical_response_valid",
+        "status": "reachable",
+        "endpoint": "https://api.kraken.com/0/public/Time",
+        "platform": "kraken",
+        "checked_at": "2026-11-22T11:04:00.813Z",
+        "executable": false,
+        "latency_ms": 156,
+        "http_status": 200,
+        "trade_connection_verified": false,
+        "independently_verified_market_signals": 0
+      }
+    ],
+    "stance": "ABSTAIN",
+    "service": "xorus-platform-hub",
+    "checked_at": "2026-11-22T11:04:03.609Z",
+    "confidence": null,
+    "executable": false,
+    "source_sha": "5f4dda14a9e18b517d89991224752fd71fc5538a",
+    "environment": "sandbox",
+    "scheduled_at": "2026-11-22T11:00:00.000Z",
+    "rights_status": "no_market_data_used_or_commercially_licensed",
+    "linked_wallets": 0,
+    "network_agents": [
+      {
+        "kind": "network_observation",
+        "reason": "recent_metachain_observed",
+        "stance": "ABSTAIN",
+        "status": "observed",
+        "network": "multiversx",
+        "agent_id": "multiversx-network-observer",
+        "endpoint": "https://gateway.multiversx.com",
+        "checked_at": "2026-11-22T11:04:01.075Z",
+        "executable": false,
+        "network_id": "1",
+        "duration_ms": 262,
+        "observations": {
+          "epoch": 2301,
+          "nonce": 41725895,
+          "scope": "metachain_only",
+          "regular_shards": 3,
+          "finality_gap_blocks": 0,
+          "highest_final_nonce": 41725895,
+          "configured_round_duration_ms": 600
+        },
+        "implementation": "deterministic_rules_v1",
+        "source_data_at": "2026-11-22T11:04:00.000Z",
+        "block_age_seconds": 1.08,
+        "identity_verified": true,
+        "signing_authorized": false,
+        "execution_authorized": false,
+        "max_block_age_seconds": 120,
+        "model_inference_configured": false,
+        "independently_verified_market_signals": 0
+      },
+      {
+        "kind": "network_observation",
+        "reason": "recent_finalized_slot_observed",
+        "stance": "ABSTAIN",
+        "status": "observed",
+        "network": "solana",
+        "agent_id": "solana-network-observer",
+        "endpoint": "https://api.mainnet.solana.com",
+        "checked_at": "2026-11-22T11:04:03.609Z",
+        "executable": false,
+        "network_id": "5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpKuc147dw2N9d",
+        "duration_ms": 2794,
+        "observations": {
+          "epoch": 1093,
+          "commitment": "finalized",
+          "slot_index": 341319,
+          "block_height": 450531206,
+          "absolute_slot": 472517319,
+          "slots_in_epoch": 432000,
+          "sample_period_seconds": 60,
+          "performance_sample_slot": 472517223,
+          "transactions_per_second": 1041.93,
+          "sampled_slot_duration_ms": 218.98,
+          "non_vote_transactions_per_second": 1041.93
+        },
+        "implementation": "deterministic_rules_v1",
+        "source_data_at": "2026-11-22T11:04:03.000Z",
+        "block_age_seconds": 0.61,
+        "identity_verified": true,
+        "signing_authorized": false,
+        "execution_authorized": false,
+        "max_block_age_seconds": 120,
+        "model_inference_configured": false,
+        "independently_verified_market_signals": 0
+      }
+    ],
+    "custody_enabled": false,
+    "organization_id": "xartists",
+    "trading_enabled": false,
+    "payment_authorized": false,
+    "signing_authorized": false,
+    "execution_authorized": false,
+    "production_access_api": false,
+    "model_inference_configured": false,
+    "region_is_not_user_eligibility": true,
+    "independently_verified_market_signals": 0
+  },
+  "checks": {
+    "targeted_node_tests": {
+      "passed": 25,
+      "failed": 0
+    },
+    "public_https": [
+      {
+        "path": "/health",
+        "method": "GET",
+        "http_status": 200
+      },
+      {
+        "path": "/v1/xorus/agents",
+        "method": "GET",
+        "http_status": 200
+      },
+      {
+        "path": "/v1/xorus/agents/reports",
+        "method": "GET",
+        "http_status": 401
+      },
+      {
+        "path": "/v1/xorus/execute",
+        "method": "POST",
+        "http_status": 503
+      },
+      {
+        "path": "/v1/xorus/cron",
+        "method": "POST",
+        "http_status": 401,
+        "spoofed_trigger_header": true
+      }
+    ],
+    "positive_operator_auth": "Not repeated against this deployment; existing server token preserved, native schedule and SQL readback verified.",
+    "source_ci": [
+      {
+        "name": "isolated-hub",
+        "status": "success",
+        "url": "https://github.com/Neltud/xArtists/actions/runs/45015241867/job/137186038802"
+      },
+      {
+        "name": "python-regression",
+        "status": "success",
+        "url": "https://github.com/Neltud/xArtists/actions/runs/45015241847/job/137186038731"
+      },
+      {
+        "name": "Published Pages health (not this PR's frontend)",
+        "status": "success",
+        "url": "https://github.com/Neltud/xArtists/actions/runs/45015241888/job/137186038679"
+      },
+      {
+        "name": "review",
+        "status": "success",
+        "url": "https://github.com/Neltud/xArtists/actions/runs/45015241829/job/137186038669"
+      },
+      {
+        "name": "build",
+        "status": "success",
+        "url": "https://github.com/Neltud/xArtists/actions/runs/45015241866/job/137186038530"
+      },
+      {
+        "name": "contract",
+        "status": "success",
+        "url": "https://github.com/Neltud/xArtists/actions/runs/45015241837/job/137186038520"
+      }
+    ]
+  },
+  "related_publication": {
+    "pull_request": 626,
+    "merge_sha": "58d30ccef7b1843c0fa06e90f6db4f4595ea8a31",
+    "editor": "https://xartists.art/create/gallery",
+    "example": "https://xartists.art/examples/exposition-autonome.html",
+    "offer": "https://xartists.art/offres",
+    "verified_example_http_status": 200,
+    "example_bytes": 229333,
+    "self_contained_local_image": true,
+    "financial_checkout_enabled": false
+  },
+  "limits": {
+    "implementation": "deterministic_network_observers",
+    "model_configured": false,
+    "execution_implemented": false,
+    "wallets_linked": 0,
+    "production_access_api": false,
+    "paid_plan_enabled": false,
+    "free_tier_unlimited": false,
+    "network_or_venue_fees_included": false,
+    "metawin_automation_verified": false
+  }
+}
