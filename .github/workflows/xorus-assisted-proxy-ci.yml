@@ -1,0 +1,38 @@
+name: xOrus assisted proxy — P0 restoration and safety
+
+on:
+  pull_request:
+    paths:
+      - 'services/access-api/src/server.mjs'
+      - 'services/access-api/src/xorusAssistedSwap.mjs'
+      - 'services/access-api/tests/xorusAssistedSwap.test.mjs'
+      - 'services/access-api/tests/serverRestoration.test.mjs'
+      - 'apps/frontend/src/components/intelligence/XorusAssistedSwapPanel.tsx'
+      - '.github/workflows/xorus-assisted-proxy-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  proxy-offline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax checks — complete server and proxy
+        run: |
+          node --check services/access-api/src/server.mjs
+          node --check services/access-api/src/xorusAssistedSwap.mjs
+      - name: Offline proxy / server restoration regressions
+        run: |
+          node --test services/access-api/tests/xorusAssistedSwap.test.mjs services/access-api/tests/serverRestoration.test.mjs
+      - name: Install frontend dependencies
+        working-directory: apps/frontend
+        run: npm ci --ignore-scripts --legacy-peer-deps
+      - name: Typecheck assisted panel and frontend
+        working-directory: apps/frontend
+        run: npm run typecheck
