@@ -1,5 +1,16 @@
 # ACTIVE_CONTEXT — xArtists / xOrus
 
+## Terminal paper publié — 22 novembre 2026 (18:35 UTC)
+
+- [PR #630](https://github.com/Neltud/xArtists/pull/630) fusionnée après **16 contrôles CI verts**, dont le nouveau parcours mobile complet. **41 tests service**, **525 tests frontend**, TypeScript, build et audit des 140 routes réussis.
+- [Bêta xOrus](https://xartists.art/intelligence/xorus/?lang=fr) publiée par Pages au commit `57ab0ebc1786603b12e0e9e74d59e6592c05e688` ; terminal **en simulation locale**, 100 USD virtuels, entrée / valeur manuelle / clôture / journal conservé sur l'appareil. Ouverture de 5 USD puis clôture à valeur identique et rechargement vérifiés sur le site public ; résultat **fictif** -0,02 USD de frais, aucun argent engagé.
+- Fonction Neon `xorushub` déploiement **4**, runtime source `e580388b53d65da6f10f86bab37527215f5072f3`. Nouveau journal PostgreSQL **opérateur virtuel**, séparé des journaux anonymes locaux : transaction, verrou de ligne, garde de révision, idempotence, limites de positions, pertes/frais et haltes. Aucun registre de risque live implémenté.
+- Nouvelle table sandbox `xorus_paper_pilots` uniquement. Vérification SQL nominative : deux écritures concurrentes → une acceptée, une refusée ; clôture persistée à révision 2 ; états avec exécution active ou flag absent refusés. Cette ligne `verification-paper-e580388b53d6` est une preuve de simulation et ne finance pas le pilote opérateur. Aucun compte, wallet, Studio ou commerce existant modifié.
+- Manifeste public `/v1/xorus/paper` : 200. Compte et commandes sans token : 401. Token serveur existant conservé ; auth HTTP positive non répétée sur ce déploiement. Interfaces testées positivement en tests isolés, SQL et contraintes vérifiés via Neon. Ordres réels toujours 503, budget live zéro, aucune signature ni inférence IA.
+- Planificateur existant conservé à quinze minutes. La prochaine tranche d'exécution requiert les vrais quotes/valuations, un registre live et un adaptateur de signature autorisé ; la simulation n'est pas une preuve de trading réel ni de profit.
+
+Preuve complète : [`deploy/neon/xorus-hub/paper-terminal-receipt-20261122.json`](deploy/neon/xorus-hub/paper-terminal-receipt-20261122.json). Désactivation : restaurer le bundle `af8e5674db20e06fce476b1b08b7dc1eae3a8e04` sans remplacer les variables ; garder le journal pour l'audit.
+
 ## Politique de risque préparée — 22 novembre 2026
 
 - [PR #628](https://github.com/Neltud/xArtists/pull/628) fusionnée après six contrôles verts ; **31 tests** réussis. Fonction `xorushub` mise à jour, déploiement **3**, source runtime `af8e5674db20e06fce476b1b08b7dc1eae3a8e04`, Neon Free inchangé.

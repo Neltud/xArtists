@@ -1,0 +1,257 @@
+{
+  "schema_version": 1,
+  "verified_at": "2026-11-22T18:38:59.238Z",
+  "pull_request": 630,
+  "source_sha": "e580388b53d65da6f10f86bab37527215f5072f3",
+  "merge_sha": "57ab0ebc1786603b12e0e9e74d59e6592c05e688",
+  "archive": {
+    "bytes": 214211,
+    "encoded_length": 285616,
+    "sha256": "94ca3d0d9573fe76657a24e5b7363bb3f3fa0131ec435fb3e04c6b9b29825297"
+  },
+  "neon": {
+    "project_id": "orange-dust-23862418",
+    "branch_id": "br-steep-sun-bab7l93p",
+    "database_name": "xartists_access",
+    "function_slug": "xorushub",
+    "deployment_id": 4,
+    "status": "completed",
+    "existing_environment_reused": true,
+    "new_table": "public.xorus_paper_pilots"
+  },
+  "public_site": {
+    "schema_version": 1,
+    "renderer": "sites-v3",
+    "release_version": "0.139.0",
+    "version_source": ".release-please-manifest.json",
+    "source_sha": "57ab0ebc1786603b12e0e9e74d59e6592c05e688",
+    "presentation_source_sha": "8a607c8831234fe738a091a5a4caf325811c1b5b",
+    "base_url": "/",
+    "lia_live_trading": false,
+    "public_route_count": 140,
+    "built_at": "2026-11-22T18:35:44.978Z",
+    "workflow_run_url": "https://github.com/Neltud/xArtists/actions/runs/45055902491"
+  },
+  "checks": {
+    "service_tests": {
+      "passed": 41,
+      "failed": 0
+    },
+    "frontend_release_tests": {
+      "passed": 525,
+      "failed": 0
+    },
+    "typescript": "passed",
+    "vite_build": "passed",
+    "route_audit": {
+      "routes": 140,
+      "unresolved": 0
+    },
+    "ci": [
+      {
+        "name": "python-regression",
+        "status": "success",
+        "url": "https://github.com/Neltud/xArtists/actions/runs/45055346961/job/137309241576"
+      },
+      {
+        "name": "validate",
+        "status": "success",
+        "url": "https://github.com/Neltud/xArtists/actions/runs/45055346847/job/137309241277"
+      },
+      {
+        "name": "xorus-server-contract",
+        "status": "success",
+        "url": "https://github.com/Neltud/xArtists/actions/runs/45055346851/job/137309241193"
+      },
+      {
+        "name": "Build and verify Pages artifact (no deploy)",
+        "status": "success",
+        "url": "https://github.com/Neltud/xArtists/actions/runs/45055346849/job/137309241183"
+      },
+      {
+        "name": "Published Pages health (not this PR's frontend)",
+        "status": "success",
+        "url": "https://github.com/Neltud/xArtists/actions/runs/45055346760/job/137309241082"
+      },
+      {
+        "name": "release-stamp",
+        "status": "success",
+        "url": "https://github.com/Neltud/xArtists/actions/runs/45055346849/job/137309241059"
+      },
+      {
+        "name": "isolated-hub",
+        "status": "success",
+        "url": "https://github.com/Neltud/xArtists/actions/runs/45055346865/job/137309241022"
+      },
+      {
+        "name": "ux-local",
+        "status": "success",
+        "url": "https://github.com/Neltud/xArtists/actions/runs/45055346868/job/137309240985"
+      },
+      {
+        "name": "xorus-decision",
+        "status": "success",
+        "url": "https://github.com/Neltud/xArtists/actions/runs/45055346851/job/137309240920"
+      },
+      {
+        "name": "lia-public",
+        "status": "success",
+        "url": "https://github.com/Neltud/xArtists/actions/runs/45055346776/job/137309240875"
+      },
+      {
+        "name": "contract",
+        "status": "success",
+        "url": "https://github.com/Neltud/xArtists/actions/runs/45055346772/job/137309240820"
+      },
+      {
+        "name": "build",
+        "status": "success",
+        "url": "https://github.com/Neltud/xArtists/actions/runs/45055346726/job/137309240778"
+      },
+      {
+        "name": "typescript-audit",
+        "status": "success",
+        "url": "https://github.com/Neltud/xArtists/actions/runs/45055346728/job/137309240738"
+      },
+      {
+        "name": "paper-release",
+        "status": "success",
+        "url": "https://github.com/Neltud/xArtists/actions/runs/45055346721/job/137309240702"
+      },
+      {
+        "name": "frontend-safety",
+        "status": "success",
+        "url": "https://github.com/Neltud/xArtists/actions/runs/45055346723/job/137309240666"
+      },
+      {
+        "name": "review",
+        "status": "success",
+        "url": "https://github.com/Neltud/xArtists/actions/runs/45055346778/job/137309240659"
+      }
+    ],
+    "public_http": [
+      {
+        "path": "/health",
+        "method": "GET",
+        "http_status": 200,
+        "source_sha": "e580388b53d65da6f10f86bab37527215f5072f3",
+        "execution_authorized": false,
+        "error": null
+      },
+      {
+        "path": "/v1/xorus/paper",
+        "method": "GET",
+        "http_status": 200,
+        "source_sha": "e580388b53d65da6f10f86bab37527215f5072f3",
+        "execution_authorized": false,
+        "error": null
+      },
+      {
+        "path": "/v1/xorus/paper/account",
+        "method": "GET",
+        "http_status": 401,
+        "source_sha": null,
+        "execution_authorized": null,
+        "error": "operator_required"
+      },
+      {
+        "path": "/v1/xorus/paper/commands",
+        "method": "POST",
+        "http_status": 401,
+        "source_sha": null,
+        "execution_authorized": null,
+        "error": "operator_required"
+      },
+      {
+        "path": "/v1/xorus/execute",
+        "method": "POST",
+        "http_status": 503,
+        "source_sha": null,
+        "execution_authorized": false,
+        "error": "execution_not_implemented"
+      }
+    ],
+    "native_sql": {
+      "verification_pilot_id": "verification-paper-e580388b53d6",
+      "concurrent_revision_updates": [
+        0,
+        1
+      ],
+      "guards_rejected_live_and_missing_flags": true,
+      "final_row": {
+        "pilot_id": "verification-paper-e580388b53d6",
+        "revision": 2,
+        "execution_authorized": "false",
+        "live_budget_cents": "0",
+        "status": "closed_simulation"
+      },
+      "paper_accounting": {
+        "networks": {
+          "multiversx": {
+            "loss_24h_cents": 0,
+            "loss_pilot_cents": 0,
+            "open_notional_cents": 0,
+            "open_positions": 0
+          },
+          "solana": {
+            "loss_24h_cents": 112,
+            "loss_pilot_cents": 112,
+            "open_notional_cents": 0,
+            "open_positions": 0
+          }
+        },
+        "global": {
+          "loss_24h_cents": 112,
+          "loss_pilot_cents": 112,
+          "open_notional_cents": 0,
+          "open_positions": 0
+        },
+        "paper_net_pnl_cents": -112
+      },
+      "operator_default_pilot_initialized": false,
+      "operator_http_positive_auth": "Not repeated against this deployment; original server token retained. Positive route behavior unit-tested; actual SQL migration, revision race, constraints and readback verified."
+    },
+    "live_browser": {
+      "url": "https://xartists.art/intelligence/xorus/?lang=fr",
+      "entry_simulated": true,
+      "close_simulated": true,
+      "closed_state_survived_reload": true,
+      "notional_cents": 500,
+      "entry_fee_cents": 1,
+      "exit_fee_cents": 1,
+      "exit_value_cents": 500,
+      "hypothetical_net_pnl_cents": -2,
+      "real_money_pnl": null,
+      "wallet_connected": false,
+      "signature_requested": false
+    },
+    "local_browser_cli": "Unavailable under executor browser download/socket restrictions; CI browser scenario and live cloud browser verified instead."
+  },
+  "scheduler": {
+    "type": "schedule",
+    "trigger_id": "trigger-c82a5a3f-ea43-4b80-ae5d-78798d1ee5c2",
+    "function_slug": "xorushub",
+    "name": "xorus-hub-cycle",
+    "function_path": "/v1/xorus/cron",
+    "schedule": {
+      "cron": "*/15 * * * *"
+    },
+    "enabled": true,
+    "version": 8907174,
+    "next_run_at": "2026-11-22T18:45:00.000000Z",
+    "inherited": false
+  },
+  "limits": {
+    "browser_journal": "local_device_only_resettable",
+    "server_journal": "separate_operator_virtual_pilot",
+    "market_quotes_verified": false,
+    "token_existence_verified": false,
+    "model_inference_configured": false,
+    "live_risk_ledger_implemented": false,
+    "live_budget_cents": 0,
+    "execution_authorized": false,
+    "signing_authorized": false,
+    "funds_moved": false,
+    "paid_plan_upgrade": false
+  }
+}
