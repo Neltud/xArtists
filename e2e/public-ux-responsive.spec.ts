@@ -790,6 +790,34 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
   })
 
 
+  test('xOrus paper terminal persists simulations and applies caps without wallet or order requests',async({page})=>{
+    await page.setViewportSize({width:390,height:844})
+    await visit(page,'/intelligence/xorus/?lang=fr')
+    await page.evaluate(()=>localStorage.removeItem('xartists-xorus-paper-ledger-v1'))
+    await page.reload()
+    const terminal=page.getByTestId('xorus-paper-terminal')
+    await expect(terminal).toContainText('100 USD virtuels')
+    const requests:string[]=[]
+    page.on('request',r=>{if(/\/v1\/xorus\/(execute|orders|swap|sign)|walletconnect|reown/.test(r.url()))requests.push(r.url())})
+    await terminal.getByRole('button',{name:'Simuler une entrée',exact:true}).click()
+    await expect(terminal).toContainText('Entrée virtuelle : 5.00 USD')
+    await terminal.getByRole('button',{name:'Simuler une entrée',exact:true}).click()
+    await expect(terminal.getByRole('alert')).toContainText('déjà ouverte sur ce réseau')
+    await page.reload()
+    await expect(terminal).toContainText('Entrée virtuelle : 5.00 USD')
+    await terminal.getByLabel('Valeur fictive actuelle (USD)').fill('3.99')
+    await terminal.getByRole('button',{name:'Simuler la valeur',exact:true}).click()
+    await expect(terminal.getByRole('status')).toContainText('seuil d’arrêt')
+    await terminal.getByRole('button',{name:'Clôturer la simulation',exact:true}).click()
+    await expect(terminal).toContainText('Simulation clôturée · résultat fictif : -1.03 USD')
+    await terminal.getByRole('button',{name:'Simuler une entrée',exact:true}).click()
+    await expect(terminal.getByRole('alert')).toContainText('Seuil de pertes sur 24 h atteint')
+    expect(requests).toEqual([])
+    const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)
+    expect(overflow).toBeLessThanOrEqual(12)
+    await page.screenshot({animations:'disabled',path:'artifacts/ux-mobile/xorus-paper-terminal-390.png'})
+  })
+
   test('Intelligence is readable on mobile: understand, agents, one local experiment',async({page})=>{
     await page.setViewportSize({width:390,height:844})
     await page.emulateMedia({reducedMotion:'reduce'})

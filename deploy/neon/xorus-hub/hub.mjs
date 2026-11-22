@@ -38,7 +38,7 @@ function isOperator(request, env) {
 }
 
 export function createHub({ env = process.env, store = null, parseTrigger = null,
-  fetchImpl = fetch, clock = Date.now, sourceSha = null } = {}) {
+  fetchImpl = fetch, clock = Date.now, sourceSha = null, paperStore = null } = {}) {
   const candidateSha = sourceSha ?? env.XARTISTS_SOURCE_SHA
   const sha = /^[0-9a-f]{40}$/.test(candidateSha || '') ? candidateSha : null
   const source = { service: 'xorus-platform-hub', organization_id: ORGANIZATION,
@@ -100,13 +100,44 @@ export function createHub({ env = process.env, store = null, parseTrigger = null
         try { return reply(request, 200, await cycle(new Date(Math.floor(clock() / CYCLE_MS) * CYCLE_MS).toISOString(), randomUUID())) }
         catch { return reply(request, 503, { ok: false, error: 'probe_cycle_unavailable', ...SAFETY }) }
       }
+      if (path === '/v1/xorus/paper') {
+        if (!['GET', 'HEAD'].includes(request.method)) return reply(request, 405, { ok: false, error: 'method_not_allowed' })
+        return reply(request, 200, { ok: true, ...source, ...SAFETY,
+          paper_ledger_implemented: true, live_risk_ledger_implemented: false,
+          authentication: 'server_operator_token', users: 'one_operator_virtual_pilot',
+          valuation: 'manual_hypothetical_reference',
+          endpoints: ['/v1/xorus/paper/account', '/v1/xorus/paper/commands'] })
+      }
+      if (path === '/v1/xorus/paper/account' || path === '/v1/xorus/paper/commands') {
+        if (!isOperator(request, env)) return reply(request, 401, { ok: false, error: 'operator_required' })
+        if (!correctTarget || !paperStore) return reply(request, 503, { ok: false, error: 'paper_store_not_configured' })
+        if (path.endsWith('/account')) {
+          if (!['GET', 'HEAD'].includes(request.method)) return reply(request, 405, { ok: false, error: 'method_not_allowed' })
+          try { return reply(request, 200, { ok: true, ...source, ...SAFETY, ...await paperStore.read() }) }
+          catch { return reply(request, 503, { ok: false, error: 'paper_store_unavailable', ...SAFETY }) }
+        }
+        if (request.method !== 'POST') {
+          const denied = reply(request, 405, { ok: false, error: 'method_not_allowed' })
+          denied.headers.set('allow', 'POST, OPTIONS')
+          return denied
+        }
+        if (!(request.headers.get('content-type') || '').startsWith('application/json'))
+          return reply(request, 415, { ok: false, error: 'application_json_required' })
+        let input
+        try { input = JSON.parse(await boundedText(new Response(request.body), 4096)) }
+        catch { return reply(request, 400, { ok: false, error: 'invalid_or_oversize_paper_command' }) }
+        try {
+          const result = await paperStore.command(input)
+          return reply(request, result.ok ? 200 : 409, { ...source, ...SAFETY, ...result })
+        } catch { return reply(request, 503, { ok: false, error: 'paper_store_unavailable', ...SAFETY }) }
+      }
       if (['/v1/xorus/orders', '/v1/xorus/swap', '/v1/xorus/bet', '/v1/xorus/execute', '/v1/xorus/sign'].includes(path))
         return reply(request, 503, { ok: false, error: 'execution_not_implemented', ...SAFETY })
       if (!['GET', 'HEAD'].includes(request.method)) return reply(request, 405, { ok: false, error: 'method_not_allowed' })
       if (path === '/' || path === '/health') return reply(request, 200, { ok: true, ...source, ...SAFETY,
         store_target_confirmed: correctTarget, probe_schedule: CYCLE_CRON,
         schedule_state: 'query_provider_trigger_for_actual_state', linked_wallets: 0,
-        endpoints: ['/v1/xorus/platforms', '/v1/xorus/agents', '/v1/xorus/agents/reports', '/v1/xorus/risk-policy', '/v1/xorus/snapshot', '/v1/xorus/wallet-route'] })
+        endpoints: ['/v1/xorus/platforms', '/v1/xorus/agents', '/v1/xorus/agents/reports', '/v1/xorus/risk-policy', '/v1/xorus/paper', '/v1/xorus/snapshot', '/v1/xorus/wallet-route'] })
       if (path === '/v1/xorus/platforms') return reply(request, 200, { ok: true, ...platformRegistry() })
       if (path === '/v1/xorus/risk-policy') return reply(request, 200, { ok: true, ...source, ...riskPolicy() })
       if (path === '/v1/xorus/agents') return reply(request, 200, { ok: true, ...source, ...agentManifest() })
