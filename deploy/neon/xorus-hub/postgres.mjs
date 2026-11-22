@@ -10,8 +10,10 @@ export function createPostgresStore(pool) {
         ON CONFLICT (organization_id) DO UPDATE
         SET claim_id = EXCLUDED.claim_id, lease_until = EXCLUDED.lease_until
         WHERE (xorus_platform_hub_state.lease_until IS NULL OR xorus_platform_hub_state.lease_until < now())
-          AND (xorus_platform_hub_state.last_slot IS NULL OR xorus_platform_hub_state.last_slot < $3::timestamptz)
-          AND (xorus_platform_hub_state.checked_at IS NULL OR xorus_platform_hub_state.checked_at < now() - interval '55 minutes')
+          AND (NOT COALESCE(xorus_platform_hub_state.snapshot ? 'network_agents', false) OR (
+            (xorus_platform_hub_state.last_slot IS NULL OR xorus_platform_hub_state.last_slot < $3::timestamptz)
+            AND (xorus_platform_hub_state.checked_at IS NULL OR xorus_platform_hub_state.checked_at < now() - interval '14 minutes')
+          ))
         RETURNING organization_id`, [ORGANIZATION, claimId, slot])
       return result.rowCount === 1
     },

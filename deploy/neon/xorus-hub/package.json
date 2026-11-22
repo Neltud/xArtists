@@ -4,6 +4,6 @@
   "private": true,
   "type": "module",
   "engines": { "node": ">=24" },
-  "scripts": { "test": "node --test hub.test.mjs" },
+  "scripts": { "test": "node --test *.test.mjs" },
   "dependencies": { "@neon/functions": "0.11.0", "pg": "8.23.1" }
 }
