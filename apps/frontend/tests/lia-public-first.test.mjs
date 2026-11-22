@@ -36,7 +36,11 @@ test('public status differentiates source age, checking time and simulated perfo
 test('xOrus public page is paper-first with assisted swap separated from autonomous trading', () => {
   const page = source('pages/XorusPage.tsx')
   assert.match(page, /XORUS_LIVE_TRADING/)
-  assert.match(page, /Bureau de décision xOrus/)
+  assert.match(page, /xOrus, l’intelligence expliquée simplement/)
+  assert.match(page, /useState\(false\)/)
+  assert.match(page, /aria-expanded=\{showAdvanced\}/)
+  assert.match(page, /showAdvanced &&/)
+  assert.match(page, /Aucun ordre n’est envoyé depuis cette page/)
   assert.match(page, /<XorusDecisionDesk\s*\/>/)
   assert.match(page, /<XorusAssistedSwapPanel\s*\/>/)
   assert.match(page, /showArchive &&/)
