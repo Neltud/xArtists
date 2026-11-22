@@ -1,56 +1,56 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-22T00:58:05.218Z",
+  "updatedAt": "2026-11-22T10:44:59.061Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1795309084671",
-      "timestamp": "00:58",
+      "id": "egld-1795344298630",
+      "timestamp": "10:44",
       "source": "EGLD",
-      "title": "Cotation publique · $2.28 (API MultiversX economics)",
+      "title": "Cotation publique · $2.33 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
-      "id": "rss-CoinTelegraph-0-1795259932000",
+      "id": "rss-CoinTelegraph-0-1795339986000",
+      "timestamp": "09:33",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin briefly drops to $17K on Kraken, exchange upholds trades",
+      "link": "https://cointelegraph.com/news/bitcoin-17k-kraken-canadian-dollar-market-trades-stand?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1795332245000",
+      "timestamp": "07:24",
+      "source": "CoinTelegraph",
+      "title": "South Korean exchanges halt CYBER transfers amid suspected bridge exploit",
+      "link": "https://cointelegraph.com/news/upbit-bithumb-suspend-cyber-transfers-bridge-exploit?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1795325323000",
+      "timestamp": "05:28",
+      "source": "CoinTelegraph",
+      "title": "Chainflip confirms $12M hack, offers attacker 10% bounty",
+      "link": "https://cointelegraph.com/news/chainflip-12m-crypto-hack-10-percent-bounty?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1795259932000",
       "timestamp": "11:18",
       "source": "CoinTelegraph",
       "title": "Here’s what happened in crypto today",
       "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-1-1795254536000",
+      "id": "rss-CoinTelegraph-4-1795254536000",
       "timestamp": "09:48",
       "source": "CoinTelegraph",
       "title": "ECB seeks industry partners for tokenized deposits, securities experiments",
       "link": "https://cointelegraph.com/news/ecb-tokenized-deposits-securities-experiments-appia?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-2-1795247507000",
+      "id": "rss-CoinTelegraph-5-1795247507000",
       "timestamp": "07:51",
       "source": "CoinTelegraph",
       "title": "US lawmakers propose up to 30% rewards for prediction market whistleblowers",
       "link": "https://cointelegraph.com/news/us-prediction-market-whistleblower-rewards-30-percent?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1795239635000",
-      "timestamp": "05:40",
-      "source": "CoinTelegraph",
-      "title": "Hong Kong pushes to bring crypto custodians, advisers under licensing rules",
-      "link": "https://cointelegraph.com/news/hong-kong-crypto-custody-advisory-licensing-bill?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1795203447000",
-      "timestamp": "19:37",
-      "source": "CoinTelegraph",
-      "title": "Wrapped Monero token crashes 99.8% amid suspected $13.5M exploit",
-      "link": "https://cointelegraph.com/news/wrapped-monero-token-crashes-998-amid-suspected-135m-exploit?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1795199830000",
-      "timestamp": "18:37",
-      "source": "CoinTelegraph",
-      "title": "Sky Protocol sees $2 billion in stablecoin withdrawals, disputes illicit fund claims",
-      "link": "https://cointelegraph.com/news/sky-protocol-sees-2b-in-stablecoin-withdrawals-disputes-illicit-fund-claims?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "rss-CoinDesk-0-1795283400000",
@@ -79,6 +79,34 @@
       "source": "CoinDesk",
       "title": "Bitcoin nodes could be stalled by repeating one ID 50,000 times. AI found the bug",
       "link": "https://www.coindesk.com/markets/2026/11/21/bitcoin-nodes-could-be-stalled-by-repeating-one-id-50-000-times-ai-found-the-bug"
+    },
+    {
+      "id": "egld-1795309084671",
+      "timestamp": "00:58",
+      "source": "EGLD",
+      "title": "Cotation publique · $2.28 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1795239635000",
+      "timestamp": "05:40",
+      "source": "CoinTelegraph",
+      "title": "Hong Kong pushes to bring crypto custodians, advisers under licensing rules",
+      "link": "https://cointelegraph.com/news/hong-kong-crypto-custody-advisory-licensing-bill?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1795203447000",
+      "timestamp": "19:37",
+      "source": "CoinTelegraph",
+      "title": "Wrapped Monero token crashes 99.8% amid suspected $13.5M exploit",
+      "link": "https://cointelegraph.com/news/wrapped-monero-token-crashes-998-amid-suspected-135m-exploit?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1795199830000",
+      "timestamp": "18:37",
+      "source": "CoinTelegraph",
+      "title": "Sky Protocol sees $2 billion in stablecoin withdrawals, disputes illicit fund claims",
+      "link": "https://cointelegraph.com/news/sky-protocol-sees-2b-in-stablecoin-withdrawals-disputes-illicit-fund-claims?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "egld-1795286615787",
@@ -170,34 +198,6 @@
       "source": "CoinDesk",
       "title": "Hong Kong moves to extend crypto licensing rules to brokers, advisers and custodians",
       "link": "https://www.coindesk.com/policy/2026/11/20/hong-kong-moves-to-extend-crypto-licensing-rules-to-brokers-advisers-and-custodians"
-    },
-    {
-      "id": "rss-CoinDesk-3-1795184757000",
-      "timestamp": "14:25",
-      "source": "CoinDesk",
-      "title": "U.S. Senate passes bill to ban prediction market bets on war and death",
-      "link": "https://www.coindesk.com/policy/2026/11/20/u-s-senated-passes-bill-to-ban-prediction-market-best-on-war-and-death"
-    },
-    {
-      "id": "egld-1795203499572",
-      "timestamp": "19:38",
-      "source": "EGLD",
-      "title": "Cotation publique · $2.26 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinDesk-2-1795181733000",
-      "timestamp": "13:35",
-      "source": "CoinDesk",
-      "title": "Live news: Bitcoin hovers just above $61,000 as Anthropic slides after Nasdaq debut",
-      "link": "https://www.coindesk.com/tech/2026/11/20/live-news-bitcoin-hovers-just-above-usd61-000-as-anthropic-slides-13-after-nasdaq-debut"
-    },
-    {
-      "id": "rss-CoinDesk-3-1795181422000",
-      "timestamp": "13:30",
-      "source": "CoinDesk",
-      "title": "Bitcoin bots pounced within seconds when researchers exposed their wallet keys",
-      "link": "https://www.coindesk.com/tech/2026/11/20/bitcoin-bots-pounced-within-seconds-when-researchers-exposed-their-keys"
     }
   ]
 }
