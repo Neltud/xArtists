@@ -3,6 +3,7 @@ import { attachDatabasePool } from '@neon/functions'
 import { parseTriggerDelivery } from '@neon/functions/triggers'
 import { createHub } from './hub.mjs'
 import { createPostgresStore } from './postgres.mjs'
+import { PACKAGED_SOURCE_SHA } from './build-meta.mjs'
 
 let store = null
 if (process.env.DATABASE_URL && process.env.NEON_BRANCH_ID === 'br-steep-sun-bab7l93p' &&
@@ -13,4 +14,4 @@ if (process.env.DATABASE_URL && process.env.NEON_BRANCH_ID === 'br-steep-sun-bab
   attachDatabasePool(pool)
   store = createPostgresStore(pool)
 }
-export default createHub({ store, parseTrigger: parseTriggerDelivery })
+export default createHub({ store, parseTrigger: parseTriggerDelivery, sourceSha: PACKAGED_SOURCE_SHA })

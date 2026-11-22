@@ -73,6 +73,7 @@ test('health and registry do no external or database work and never enable execu
   assert.equal(health.stance, 'ABSTAIN')
   assert.equal(health.model_inference_configured, false)
   assert.equal((await call(hub, '/v1/xorus/platforms')).status, 200)
+  assert.equal((await call(hub, '/v1/xorus/agents')).status, 200)
   const head = await call(hub, '/health', { method: 'HEAD' })
   assert.equal(await head.text(), '')
 })
@@ -120,6 +121,9 @@ test('single cycle stores only technical receipts; duplicate work is skipped', a
   for (const upstream of ['950000', '400000000', 'unixtime']) assert.equal(text.includes(upstream), false)
   assert.equal((await (await call(hub, '/v1/xorus/probe', { method: 'POST', headers: auth })).json()).skipped, true)
   assert.equal((await call(hub, '/v1/xorus/snapshot', { headers: auth })).status, 200)
+  const reports = await (await call(hub, '/v1/xorus/agents/reports', { headers: auth })).json()
+  assert.equal(reports.agents.length, 2)
+  assert.ok(reports.agents.every(r => r.status === 'unavailable' && r.executable === false))
 })
 
 test('wrong sandbox and missing stores cannot probe or return a ready snapshot', async () => {
@@ -131,7 +135,7 @@ test('wrong sandbox and missing stores cannot probe or return a ready snapshot',
 })
 
 test('missing, expired and future receipts never report fresh data', async () => {
-  for (const snapshot of [null, { checked_at: 'invalid' }, { checked_at: new Date(NOW - 5_400_001).toISOString() }, { checked_at: new Date(NOW + 1).toISOString() }]) {
+  for (const snapshot of [null, { checked_at: 'invalid' }, { checked_at: new Date(NOW - 1_800_001).toISOString() }, { checked_at: new Date(NOW + 1).toISOString() }]) {
     const hub = make({ store: { read: async () => snapshot } })
     assert.equal((await call(hub, '/v1/xorus/snapshot', { headers: auth })).status, 503)
   }
@@ -187,8 +191,26 @@ test('database admission and lease loss use atomic parameterized queries', async
   const store = createPostgresStore({ query: async (sql, values) => { queries.push({ sql, values }); return { rowCount: 0, rows: [] } } })
   assert.equal(await store.claim('2026-11-21T18:00:00Z', 'inv-1'), false)
   assert.match(queries[0].sql, /ON CONFLICT/)
-  assert.match(queries[0].sql, /55 minutes/)
+  assert.match(queries[0].sql, /14 minutes/)
   assert.deepEqual(queries[0].values, ['xartists', 'inv-1', '2026-11-21T18:00:00Z'])
   await assert.rejects(() => store.finish('2026-11-21T18:00:00Z', 'inv-1', {}), /probe_lease_lost/)
   assert.equal(await store.read(), null)
+})
+
+test('packaged provenance overrides the legacy environment without changing operator credentials', async () => {
+  const hub = make({ sourceSha: '2'.repeat(40) })
+  assert.equal((await (await call(hub, '/health')).json()).source_sha, '2'.repeat(40))
+  assert.equal((await call(hub, '/v1/xorus/probe', { method: 'POST', headers: auth })).status, 200)
+  const report = await (await call(hub, '/v1/xorus/agents/reports', { headers: auth })).json()
+  assert.equal(report.receipt_source_sha, '2'.repeat(40))
+})
+
+test('agent reports require operator auth and an actual fresh agent receipt', async () => {
+  const fail = () => assert.fail('unauthenticated reader reached SQL')
+  assert.equal((await call(make({ store: { read: fail } }), '/v1/xorus/agents/reports')).status, 401)
+  for (const snapshot of [{ checked_at: new Date(NOW).toISOString() },
+    { checked_at: new Date(NOW - 1_800_001).toISOString(), network_agents: [{ status: 'observed' }, { status: 'observed' }] }]) {
+    const hub = make({ store: { read: async () => snapshot } })
+    assert.equal((await call(hub, '/v1/xorus/agents/reports', { headers: auth })).status, 503)
+  }
 })
