@@ -1,49 +1,84 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-22T10:44:59.061Z",
+  "updatedAt": "2026-11-22T19:04:38.482Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1795344298630",
-      "timestamp": "10:44",
+      "id": "egld-1795374278110",
+      "timestamp": "19:04",
       "source": "EGLD",
       "title": "Cotation publique · $2.33 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
-      "id": "rss-CoinTelegraph-0-1795339986000",
+      "id": "rss-CoinTelegraph-0-1795357800000",
+      "timestamp": "14:30",
+      "source": "CoinTelegraph",
+      "title": "The future of onchain FX could start with users, not institutional liquidity",
+      "link": "https://cointelegraph.com/opinion/future-onchain-fx-could-start-with-users-not-institutional-liquidity?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1795346727000",
+      "timestamp": "11:25",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1795339986000",
       "timestamp": "09:33",
       "source": "CoinTelegraph",
       "title": "Bitcoin briefly drops to $17K on Kraken, exchange upholds trades",
       "link": "https://cointelegraph.com/news/bitcoin-17k-kraken-canadian-dollar-market-trades-stand?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-1-1795332245000",
+      "id": "rss-CoinTelegraph-3-1795332245000",
       "timestamp": "07:24",
       "source": "CoinTelegraph",
       "title": "South Korean exchanges halt CYBER transfers amid suspected bridge exploit",
       "link": "https://cointelegraph.com/news/upbit-bithumb-suspend-cyber-transfers-bridge-exploit?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-2-1795325323000",
+      "id": "rss-CoinTelegraph-4-1795325323000",
       "timestamp": "05:28",
       "source": "CoinTelegraph",
       "title": "Chainflip confirms $12M hack, offers attacker 10% bounty",
       "link": "https://cointelegraph.com/news/chainflip-12m-crypto-hack-10-percent-bounty?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-3-1795259932000",
-      "timestamp": "11:18",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1795254536000",
+      "id": "rss-CoinTelegraph-5-1795254536000",
       "timestamp": "09:48",
       "source": "CoinTelegraph",
       "title": "ECB seeks industry partners for tokenized deposits, securities experiments",
       "link": "https://cointelegraph.com/news/ecb-tokenized-deposits-securities-experiments-appia?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1795356000000",
+      "timestamp": "14:00",
+      "source": "CoinDesk",
+      "title": "Bitcoin's quantum security challenge extends to bridges, custodians and millions of coins",
+      "link": "https://www.coindesk.com/tech/2026/11/22/bitcoin-s-quantum-security-challenge-extends-to-bridges-custodians-and-millions-of-coins"
+    },
+    {
+      "id": "rss-CoinDesk-1-1795283400000",
+      "timestamp": "17:50",
+      "source": "CoinDesk",
+      "title": "Bitcoin rebounds above $60,000 after $1.8 billion crypto liquidation wave",
+      "link": "https://www.coindesk.com/markets/2026/11/21/bitcoin-bounces-9-from-two-year-low-to-retake-usd60-000-as-traders-eye-monday-s-stock-open"
+    },
+    {
+      "id": "rss-CoinDesk-2-1795279260000",
+      "timestamp": "16:41",
+      "source": "CoinDesk",
+      "title": "Cross-chain protocol Chainflip's FLIP tanks 30% after suspected $4.86 million vault drain",
+      "link": "https://www.coindesk.com/business/2026/11/21/cross-chain-protocol-chainflip-s-flip-tanks-30-after-suspected-usd4-86-million-vault-drain"
+    },
+    {
+      "id": "rss-CoinDesk-3-1795264200000",
+      "timestamp": "12:30",
+      "source": "CoinDesk",
+      "title": "Ether treasury firm BTCS warns SEC its $54 million Aave loan could be liquidated",
+      "link": "https://www.coindesk.com/markets/2026/11/21/ether-treasury-firm-btcs-warns-sec-its-usd54-million-aave-loan-could-be-liquidated"
     },
     {
       "id": "rss-CoinTelegraph-5-1795247507000",
@@ -51,27 +86,6 @@
       "source": "CoinTelegraph",
       "title": "US lawmakers propose up to 30% rewards for prediction market whistleblowers",
       "link": "https://cointelegraph.com/news/us-prediction-market-whistleblower-rewards-30-percent?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1795283400000",
-      "timestamp": "17:50",
-      "source": "CoinDesk",
-      "title": "Bitcoin rebounds above $60,000 after $1.8 billion crypto liquidation wave",
-      "link": "https://www.coindesk.com/markets/2026/11/21/bitcoin-bounces-9-from-two-year-low-to-retake-usd60-000-as-traders-eye-monday-s-stock-open"
-    },
-    {
-      "id": "rss-CoinDesk-1-1795279260000",
-      "timestamp": "16:41",
-      "source": "CoinDesk",
-      "title": "Cross-chain protocol Chainflip's FLIP tanks 30% after suspected $4.86 million vault drain",
-      "link": "https://www.coindesk.com/business/2026/11/21/cross-chain-protocol-chainflip-s-flip-tanks-30-after-suspected-usd4-86-million-vault-drain"
-    },
-    {
-      "id": "rss-CoinDesk-2-1795264200000",
-      "timestamp": "12:30",
-      "source": "CoinDesk",
-      "title": "Ether treasury firm BTCS warns SEC its $54 million Aave loan could be liquidated",
-      "link": "https://www.coindesk.com/markets/2026/11/21/ether-treasury-firm-btcs-warns-sec-its-usd54-million-aave-loan-could-be-liquidated"
     },
     {
       "id": "rss-CoinDesk-3-1795241802000",
@@ -184,20 +198,6 @@
       "source": "CoinDesk",
       "title": "Bitcoin plunges below $59,000 as rush to cash puts new bear market lows back in play",
       "link": "https://www.coindesk.com/markets/2026/11/20/bitcoin-plunges-below-usd59-000-as-rush-to-cash-puts-new-bear-market-lows-back-in-play"
-    },
-    {
-      "id": "rss-CoinDesk-1-1795186470000",
-      "timestamp": "14:54",
-      "source": "CoinDesk",
-      "title": "Former Point72 head of proprietary research says AI could turn data into a new asset class for Wall Street",
-      "link": "https://www.coindesk.com/markets/2026/11/20/former-point72-head-of-proprietary-research-says-ai-could-turn-data-into-a-new-asset-class-for-wall-street"
-    },
-    {
-      "id": "rss-CoinDesk-2-1795185510000",
-      "timestamp": "14:38",
-      "source": "CoinDesk",
-      "title": "Hong Kong moves to extend crypto licensing rules to brokers, advisers and custodians",
-      "link": "https://www.coindesk.com/policy/2026/11/20/hong-kong-moves-to-extend-crypto-licensing-rules-to-brokers-advisers-and-custodians"
     }
   ]
 }
