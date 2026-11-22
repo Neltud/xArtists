@@ -1,16 +1,12 @@
 {
   "schema": "lia_shadow_export/v1",
-  "ts": "2026-11-22T17:41:37Z",
+  "ts": "2026-11-22T23:26:35Z",
   "paper": true,
-  "fills": 186,
-  "shadow_pnl_usd": 8.1653,
-  "win_rate": 0.5914,
-  "equity_now_usd": 1008.1653,
+  "fills": 187,
+  "shadow_pnl_usd": 8.269,
+  "win_rate": 0.5936,
+  "equity_now_usd": 1008.269,
   "equity_curve": [
-    {
-      "ts": "2026-10-21T04:02:38Z",
-      "equity": 1003.3828
-    },
     {
       "ts": "2026-10-21T11:27:57Z",
       "equity": 1003.3242
@@ -486,19 +482,15 @@
     {
       "ts": "2026-11-22T17:41:37Z",
       "equity": 1008.1653
+    },
+    {
+      "ts": "2026-11-22T23:26:35Z",
+      "equity": 1008.269
     }
   ],
   "day_index": 7,
   "sprint_status": "complete",
   "last_shadow": [
-    {
-      "id": "1e00a20a-4da",
-      "side": "BUY",
-      "asset": "USDC",
-      "strategy": "STRAT_YIELD_OPTIMIZER",
-      "pnl_usd": -0.046988,
-      "ts": "2026-11-20T16:50:14Z"
-    },
     {
       "id": "2a30c9af-9cc",
       "side": "BUY",
@@ -554,6 +546,14 @@
       "strategy": "STRAT_YIELD_OPTIMIZER",
       "pnl_usd": 0.07115,
       "ts": "2026-11-22T17:41:37Z"
+    },
+    {
+      "id": "7f0c1a68-b7e",
+      "side": "BUY",
+      "asset": "TRO",
+      "strategy": "STRAT_YIELD_OPTIMIZER",
+      "pnl_usd": 0.089577,
+      "ts": "2026-11-22T23:26:35Z"
     }
   ],
   "friction_model": {
