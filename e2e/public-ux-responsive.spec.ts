@@ -464,25 +464,27 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
     }
   })
 
-  test('CSS orbital art stays optional, stops for reduced motion and does not obstruct mobile', async ({ page }) => {
+  test('home personal entry is useful on desktop and mobile without a decorative scene or wallet prompt', async ({ page }) => {
     await page.setViewportSize({width:1440,height:900})
-    await visit(page,'/')
-    await expect(page.locator('.xa-orbital-stage')).toBeVisible()
-    await expect(page.locator('.xa-orbital-panel')).toHaveCount(3)
-    await expect(page.locator('.xa-orbital-stage canvas')).toHaveCount(0)
+    await visit(page,'/?lang=fr')
+    await expect(page.locator('.xa-orbital-stage')).toHaveCount(0)
+    await expect(page.locator('.xa-first-hero canvas')).toHaveCount(0)
+    await expect(page.locator('.xa-home-personal')).toBeVisible()
     await page.emulateMedia({reducedMotion:'reduce'})
-    const animation=await page.locator('.xa-orbital-axis').evaluate(node=>getComputedStyle(node).animationName)
-    expect(animation).toBe('none')
     await page.setViewportSize({width:390,height:844})
-    await expect(page.locator('.xa-orbital-stage')).toBeHidden()
+    await expect(page.locator('.xa-home-personal')).toBeVisible()
     await expect(page.locator('.xa-mobile-dock')).toBeVisible()
+    await page.locator('.xa-home-personal').click()
+    await expect(page).toHaveURL(/\/workspace\/wallet/)
+    await expect(page.locator('.xa-wallet-connect')).toBeVisible()
+    await expect(page.locator('[role="dialog"]')).toHaveCount(0)
   })
 
   test('phone screenshots: compact connected-wallet header always exposes menu and music via dialog', async ({ page }) => {
     await page.addInitScript(() => localStorage.setItem('xartists_wallet', JSON.stringify({connected:true,address:'erd1'+'q'.repeat(58),method:'paste_readonly'})))
     for (const width of [360, 390, 430]) {
       await page.setViewportSize({ width, height: 844 })
-      await visit(page, '/auction/')
+      await visit(page, '/auction/?lang=fr')
       const header = page.locator('.xa-header-inner')
       await expect(header).toBeVisible()
       const menu = page.locator('.xa-mobile-trigger')
