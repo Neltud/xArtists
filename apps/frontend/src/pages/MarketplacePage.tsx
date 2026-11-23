@@ -153,18 +153,18 @@ export default function MarketplacePage(){
       <div className="xa-market-depth-content"><MarketplaceDiscoveryGrid
       listings={items} sourceReady={sourceReady} loading={loading} query={query} sort={sort}
       onQuery={setQuery} onSort={setSort} onRefresh={()=>void refresh()}
-    />}
+    />
 
-    {selected==='art'&&<section id="xa-market-sell" className="space-y-3 rounded-2xl border border-white/10 p-3 sm:p-5" aria-label="Vendre mes NFT">
+    <section id="xa-market-sell" className="space-y-3 rounded-2xl border border-white/10 p-3 sm:p-5" aria-label="Vendre mes NFT">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div><h2 className="text-lg font-semibold">Vendre mes NFT</h2>
           <p className="text-sm text-zinc-400">Connecte un wallet signataire, choisis un NFT détenu et son prix EGLD. Les fonds et le NFT ne bougent qu'après signature et confirmation blockchain.</p></div>
         <Link to="/portfolio" className="btn-secondary text-sm">Mon portefeuille</Link>
       </div>
       <MyOwnedNftsPanel />
-    </section>}
+    </section>
 
-    {selected==='art'&&<details className="xa-market-tech"
+    <details className="xa-market-tech"
       onToggle={e=>setShowTech(e.currentTarget.open)}>
       <summary>{c('marketGridTechTitle')}</summary>
       {showTech&&<div><LiaAndEscrowNfts /><ExistingNftReadiness /></div>}
