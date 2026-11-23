@@ -1,0 +1,321 @@
+/* xArtists visual direction #2: compact violet art rail and dark wallet cockpit.
+ * Deliberately scoped to .xa-ref-v2, so legacy transaction surfaces and
+ * authorization/availability behavior are never modified by presentation.
+ */
+.xa-ref-v2 {
+  --xa-ref-purple: #7929e8;
+  --xa-ref-violet: #9b50ff;
+}
+.xa-ref-v2 .xa-primary-rail { display: none; }
+.xa-ref-v2 .xa-search-prompt { display: none; }
+.xa-ref-v2 .xa-cockpit-title-row,
+.xa-ref-v2 .xa-cockpit-overview-grid,
+.xa-ref-v2 .xa-cockpit-connection-actions,
+.xa-ref-v2 .xa-cockpit-action-row { min-width: 0; }
+.xa-ref-v2 .xa-rail-navigation a:focus-visible,
+.xa-ref-v2 .xa-rail-utility a:focus-visible { outline: 2px solid #caa1ff; outline-offset: 3px; }
+
+/* Desktop: a real rail instead of another horizontal menu. */
+@media (min-width: 1024px) {
+  .xa-ref-v2 { padding-inline-start: 252px; }
+  .xa-ref-v2 .xa-primary-rail {
+    display: flex;
+    position: fixed;
+    z-index: 81;
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: 252px;
+    padding: 28px 12px 20px;
+    flex-direction: column;
+    color: #f9f4ff;
+    background: linear-gradient(165deg,#0e0916 10%,#190d28 80%,#150b1e);
+    border-inline-end: 1px solid #76518e4a;
+  }
+  .xa-ref-v2 .xa-rail-brand { padding: 0 12px 32px; }
+  .xa-ref-v2 .xa-rail-brand .xa-logo { color: #fff; }
+  .xa-ref-v2 .xa-rail-brand .xa-logo > svg { color: #9b50ff; }
+  .xa-ref-v2 .xa-rail-brand .xa-logo > span { font-size: 25px; }
+  .xa-ref-v2 .xa-rail-navigation,
+  .xa-ref-v2 .xa-rail-utility { display: flex; flex-direction: column; gap: 7px; }
+  .xa-ref-v2 .xa-rail-navigation a,
+  .xa-ref-v2 .xa-rail-utility a {
+    display: flex; gap: 16px; align-items: center;
+    min-height: 56px; padding: 13px 17px; border-radius: 7px;
+    font-size: 14px; font-weight: 600; transition: background .18s ease, color .18s ease;
+  }
+  .xa-ref-v2 .xa-rail-navigation a:hover,
+  .xa-ref-v2 .xa-rail-utility a:hover { background: #8f51c328; }
+  .xa-ref-v2 .xa-rail-navigation a.active {
+    background: linear-gradient(100deg,#5d1bd1,#832dff); color: #fff;
+  }
+  .xa-ref-v2 .xa-rail-navigation a:nth-child(5) {
+    margin-top: 22px; padding-top: 24px; border-top: 1px solid #76518e4a; border-radius: 0 0 7px 7px;
+  }
+  .xa-ref-v2 .xa-rail-navigation a > svg,
+  .xa-ref-v2 .xa-rail-utility a > svg { flex: none; }
+  .xa-ref-v2 .xa-rail-utility { margin-top: auto; padding-top: 17px; border-top: 1px solid #76518e4a; }
+  .xa-ref-v2 .xa-rail-utility a { font-weight: 500; min-height: 46px; }
+  .xa-ref-v2 .xa-header { height: 86px; }
+  .xa-ref-v2 .xa-header-inner { width: 100%; max-width: none; padding: 0 30px; gap: 20px; }
+  .xa-ref-v2 .xa-header-inner > .xa-logo,
+  .xa-ref-v2 .xa-desktop-nav { display: none; }
+  .xa-ref-v2 .xa-header-actions { margin-inline-start: auto; gap: 18px; }
+  .xa-ref-v2 .xa-search-trigger {
+    display: flex; min-width: 260px; width: min(420px,34vw);
+    padding: 0 16px; height: 46px; border: 1px solid var(--xa-border-strong);
+    border-radius: 9px; justify-content: flex-start; gap: 13px;
+    color: var(--xa-text-secondary); background: transparent;
+  }
+  .xa-ref-v2 .xa-search-trigger .xa-search-prompt {
+    display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    font-size: 13px; text-align: start; flex: 1;
+  }
+  .xa-ref-v2 .xa-search-trigger kbd { margin-inline-start: auto; }
+  .xa-ref-v2 .xa-header .xa-connect { min-height: 46px; padding: 0 19px; border-radius: 8px; }
+
+  /* Light compact rail mirrors the gallery and studio mockups. */
+  .xa-ref-v2[data-area="art"], .xa-ref-v2[data-area="studio"] { padding-inline-start: 94px; }
+  .xa-ref-v2[data-area="art"] .xa-primary-rail,
+  .xa-ref-v2[data-area="studio"] .xa-primary-rail {
+    width: 94px; padding: 102px 10px 18px;
+    background: linear-gradient(180deg,#250e3b,#451664 70%,#2b123e);
+  }
+  .xa-ref-v2[data-area="art"] .xa-rail-brand,
+  .xa-ref-v2[data-area="studio"] .xa-rail-brand { display: none; }
+  .xa-ref-v2[data-area="art"] .xa-header-inner > .xa-logo,
+  .xa-ref-v2[data-area="studio"] .xa-header-inner > .xa-logo { display: inline-flex; }
+  .xa-ref-v2[data-area="art"] .xa-rail-navigation,
+  .xa-ref-v2[data-area="studio"] .xa-rail-navigation { gap: 14px; }
+  .xa-ref-v2[data-area="art"] .xa-rail-navigation a,
+  .xa-ref-v2[data-area="studio"] .xa-rail-navigation a {
+    min-height: 76px; gap: 8px; flex-direction: column; justify-content: center;
+    padding: 10px 2px; font-size: 11px; line-height: 1.25; text-align: center;
+  }
+  .xa-ref-v2[data-area="art"] .xa-rail-navigation a:nth-child(5),
+  .xa-ref-v2[data-area="studio"] .xa-rail-navigation a:nth-child(5) {
+    border-top: 1px solid #b587e455; margin-top: 12px; padding-top: 22px;
+  }
+  .xa-ref-v2[data-area="art"] .xa-rail-utility a,
+  .xa-ref-v2[data-area="studio"] .xa-rail-utility a {
+    min-height: 54px; display: flex; flex-direction: column;
+    gap: 5px; padding: 7px 0; font-size: 10px; text-align: center;
+  }
+}
+
+/* Wallet is the approved dark cockpit, regardless of the light art canvas.
+ * Never fake account state: all metrics are rendered by the existing hooks.
+ */
+.xa-ref-v2[data-area="wallet"] {
+  --xa-bg: #0d0915; --xa-bg-elevated: #160e20; --xa-panel: #160f21;
+  --xa-panel2: #21132e; --xa-surface: #170e23; --xa-surface-hover: #21132e;
+  --xa-text: #f7f2ff; --xa-muted: #bcb0cd; --xa-dim: #9e91ac;
+  --xa-text-secondary: #bcb0cd; --xa-text-muted: #9e91ac;
+  --xa-border: #a381c130; --xa-border-strong: #9b83b34f;
+  --xa-accent: #9545ff; --xa-accent-ink: #fff;
+  background: var(--xa-bg); color: var(--xa-text);
+}
+.xa-ref-v2[data-area="wallet"] .xa-header,
+.xa-ref-v2[data-area="wallet"] .xa-footer,
+.xa-ref-v2[data-area="wallet"] main {
+  background: var(--xa-bg); color: var(--xa-text);
+}
+.xa-ref-v2[data-area="wallet"] .xa-header { border-color: var(--xa-border); }
+.xa-ref-v2[data-area="wallet"] .xa-theme-toggle { background: #1c1427; border-color: var(--xa-border); color: #f3e8ff; }
+.xa-ref-v2[data-area="wallet"] .xa-connect {
+  background: linear-gradient(120deg,#6124c9,#832ee8); color: #fff;
+}
+.xa-ref-v2[data-area="wallet"] .xa-search-trigger { color: #bdb0cb; }
+
+/* The wallet route already owns local navigation: avoid two sidebars and a breadcrumb wall. */
+.xa-ref-v2[data-area="wallet"] .xa-module-page {
+  width: calc(100% - 56px); max-width: 1600px; padding-top: 24px; padding-bottom: 80px;
+}
+.xa-ref-v2[data-area="wallet"] .xa-module-page > .xa-breadcrumb { display: none; }
+.xa-ref-v2[data-area="wallet"] .xa-module-layout { display: block; }
+.xa-ref-v2[data-area="wallet"] .xa-module-sidebar { display: none; }
+.xa-ref-v2[data-area="wallet"] .xa-module-content,
+.xa-ref-v2[data-area="wallet"] .xa-module-body { width: 100%; max-width: none; padding: 0; }
+.xa-ref-v2[data-area="wallet"] .xa-wallet-workspace { max-width: none; margin: 0; padding-bottom: 0; }
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-title-row {
+  display: flex; justify-content: space-between; align-items: center; gap: 20px;
+  padding: 4px 0 24px; margin-bottom: 24px; border-bottom: 1px solid var(--xa-border);
+}
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-title-row h1 {
+  color: #fff; font-size: clamp(27px,3.2vw,36px); line-height: 1.1;
+  letter-spacing: -.045em; font-weight: 750; margin: 0;
+}
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-network {
+  display: flex; align-items: center; gap: 12px; border: 1px solid var(--xa-border-strong);
+  border-radius: 9px; min-height: 46px; padding: 0 18px; font-weight: 600;
+  color: #fff; font-size: 14px;
+}
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-network-symbol { color: #21d6c5; font-size: 24px; }
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-overview-grid {
+  display: grid; grid-template-columns: minmax(0,1.9fr) minmax(260px,.95fr);
+  gap: 26px; align-items: stretch;
+}
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-main-column { min-width: 0; }
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-hero {
+  display: flex; flex-direction: column; align-items: flex-start;
+  min-height: 274px; padding: 30px 34px;
+  border-radius: 9px; border: 1px solid #6d31931f;
+  background: radial-gradient(circle at 12% 0,#452063 0,transparent 55%),linear-gradient(120deg,#251034,#2b103e 65%,#220e35);
+}
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-hero > svg { color: #ac66fc; flex: none; margin-bottom: 15px; }
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-hero h2 {
+  margin: 0; font-size: clamp(22px,2.4vw,34px);
+  font-weight: 740; line-height: 1.12; letter-spacing: -.035em; color: #fff;
+}
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-hero > p { margin: 10px 0 22px; color: #e4d7f0; font-size: 16px; }
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-hero .xa-button.primary {
+  min-height: 52px; padding: 0 28px; border-radius: 8px;
+  background: linear-gradient(110deg,#6e22ed,#8430fd); color: #fff; font-size: 14px;
+}
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-connection { width: 100%; min-width: 0; }
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-connection .xa-wallet-address {
+  font-size: 13px; color: #fff; margin: 8px 0; max-width: 100%;
+}
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-connection small { display: block; color: #c7b2d7; }
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-connection-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-connection-actions .xa-button { min-height: 38px; padding: 0 14px; }
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-metrics {
+  display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); min-height: 82px;
+  align-items: center; margin-top: 16px; padding-bottom: 14px;
+  border-bottom: 1px solid var(--xa-border);
+}
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-metrics > div,
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-metrics > button {
+  min-width: 0; display: flex; flex-direction: column; align-items: flex-start;
+  justify-content: center; gap: 8px; border: 0; border-inline-end: 1px solid var(--xa-border);
+  padding: 0 25px; background: transparent; text-align: start; color: #fff;
+}
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-metrics > :first-child { padding-inline-start: 18px; }
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-metrics > :last-child { border-inline-end: 0; }
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-metrics span { font-size: 14px; font-weight: 700; }
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-metrics strong {
+  font-variant-numeric: tabular-nums; color: #fff; font-size: 17px;
+}
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-metrics button:hover strong { color: #ae70ff; }
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-ai {
+  min-width: 0; padding-inline-start: 26px; border-inline-start: 1px solid var(--xa-border);
+}
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-ai h2 {
+  color: #fff; font-size: clamp(21px,2.2vw,29px);
+  font-weight: 710; margin: 8px 0; letter-spacing: -.03em;
+}
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-ai-caption {
+  color: var(--xa-muted); font-size: 12px; line-height: 1.5; margin: 0 0 12px;
+}
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-agent {
+  display: flex; min-height: 87px; align-items: center;
+  gap: 15px; padding: 15px 0; border-bottom: 1px solid var(--xa-border);
+}
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-agent-icon {
+  height: 47px; width: 47px; display: grid; place-items: center; flex: none;
+  background: #2b123f; color: #ad65ff; border-radius: 8px;
+}
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-agent-text { min-width: 0; flex: 1; }
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-agent-text strong { display: block; font-size: 16px; color: #fff; }
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-agent-text small { display: block; color: #c6bbd0; font-size: 12px; padding-top: 4px; }
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-agent > svg { flex: none; color: #c5a3df; }
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-agent:hover .xa-cockpit-agent-text strong,
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-agent:hover > svg { color: #c083ff; }
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-access-link {
+  display: flex; gap: 8px; align-items: center; justify-content: flex-start;
+  color: #bd92ff; padding: 12px 0; font-size: 13px;
+}
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-tabs-block { margin-top: 18px; }
+.xa-ref-v2[data-area="wallet"] .xa-wallet-views {
+  margin-bottom: 0; gap: 18px; border-bottom: 1px solid var(--xa-border);
+}
+.xa-ref-v2[data-area="wallet"] .xa-wallet-views > button {
+  color: #d2c4de; font-size: 15px; min-height: 56px; padding: 12px 18px;
+  border-bottom-width: 3px;
+}
+.xa-ref-v2[data-area="wallet"] .xa-wallet-views > button[aria-current="page"] {
+  color: #b36cff; border-color: #a453fd; font-weight: 700;
+}
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-notice {
+  display: flex; align-items: center; gap: 14px; min-height: 82px;
+  color: #e9dff2; padding: 24px 18px; border-bottom: 1px solid var(--xa-border);
+  font-size: 14px; line-height: 1.6;
+}
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-notice > svg { flex: none; }
+.xa-ref-v2[data-area="wallet"] .xa-wallet-toolbar { min-height: 70px; border-bottom: 1px solid var(--xa-border); }
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-action-row {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 24px; padding: 22px 2px; border-bottom: 1px solid var(--xa-border);
+}
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-action-row > p {
+  font-size: 13px; color: #c8b9d5; line-height: 1.6; max-width: 600px;
+}
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-action-row > div { display: flex; flex-wrap: wrap; gap: 9px; }
+.xa-ref-v2[data-area="wallet"] .xa-wallet-assets { padding-top: 20px; }
+.xa-ref-v2[data-area="wallet"] .xa-wallet-card {
+  background: #190f26; border: 1px solid var(--xa-border); border-radius: 10px;
+}
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-discover { margin-top: 26px; }
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-discover .xa-artwork-section h2 {
+  font-size: 27px; font-weight: 720; letter-spacing: -.035em; color: #fff;
+}
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-discover .xa-artwork-grid {
+  display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 22px;
+}
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-discover .xa-artwork-card {
+  min-width: 0; border-radius: 8px; overflow: hidden;
+}
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-discover .xa-artwork-image {
+  aspect-ratio: 1.52; height: auto; border-radius: 7px; overflow: hidden;
+  background: #24172d;
+}
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-discover .xa-artwork-image img {
+  width: 100%; height: 100%; object-fit: cover;
+}
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-discover .xa-artwork-caption h3 {
+  color: #fff; font-size: 17px; font-weight: 700; margin-top: 10px;
+}
+.xa-ref-v2[data-area="wallet"] .xa-cockpit-discover .xa-artwork-caption small { color: #c9b9d4; }
+
+@media(max-width: 1320px) {
+  .xa-ref-v2[data-area="wallet"] .xa-cockpit-overview-grid {
+    grid-template-columns: minmax(0,1.65fr) minmax(260px,1fr);
+    gap: 18px;
+  }
+  .xa-ref-v2[data-area="wallet"] .xa-cockpit-ai { padding-inline-start: 18px; }
+}
+@media(max-width: 1160px) {
+  .xa-ref-v2[data-area="wallet"] .xa-cockpit-overview-grid { grid-template-columns: 1fr; }
+  .xa-ref-v2[data-area="wallet"] .xa-cockpit-ai { padding-inline-start: 0; border-inline-start: 0; padding-top: 15px; }
+  .xa-ref-v2[data-area="wallet"] .xa-cockpit-ai > h2 { margin-top: 4px; }
+  .xa-ref-v2[data-area="wallet"] .xa-cockpit-agent { min-height: 70px; }
+}
+@media(max-width:1023px) {
+  .xa-ref-v2 .xa-primary-rail { display: none; }
+  .xa-ref-v2 .xa-search-prompt { display: none; }
+  .xa-ref-v2[data-area="wallet"] .xa-module-page { width: calc(100% - 32px); }
+  .xa-ref-v2[data-area="wallet"] .xa-cockpit-title-row { padding-top: 8px; }
+}
+@media(max-width:720px) {
+  .xa-ref-v2[data-area="wallet"] .xa-module-page { width: calc(100% - 28px); padding-top: 18px; }
+  .xa-ref-v2[data-area="wallet"] .xa-cockpit-title-row { flex-wrap: wrap; gap: 12px; }
+  .xa-ref-v2[data-area="wallet"] .xa-cockpit-network { min-height: 42px; font-size: 12px; }
+  .xa-ref-v2[data-area="wallet"] .xa-cockpit-hero { min-height: 230px; padding: 24px; }
+  .xa-ref-v2[data-area="wallet"] .xa-cockpit-hero h2 { font-size: 27px; }
+  .xa-ref-v2[data-area="wallet"] .xa-cockpit-hero > p { font-size: 14px; }
+  .xa-ref-v2[data-area="wallet"] .xa-cockpit-metrics > div,
+  .xa-ref-v2[data-area="wallet"] .xa-cockpit-metrics > button { padding: 0 10px; }
+  .xa-ref-v2[data-area="wallet"] .xa-cockpit-metrics > :first-child { padding-inline-start: 4px; }
+  .xa-ref-v2[data-area="wallet"] .xa-cockpit-metrics span { font-size: 12px; }
+  .xa-ref-v2[data-area="wallet"] .xa-cockpit-metrics strong { font-size: 15px; }
+  .xa-ref-v2[data-area="wallet"] .xa-cockpit-action-row { flex-direction: column; align-items: flex-start; }
+  .xa-ref-v2[data-area="wallet"] .xa-cockpit-discover .xa-artwork-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .xa-ref-v2[data-area="wallet"] .xa-cockpit-discover .xa-artwork-caption h3 { font-size: 13px; }
+  .xa-ref-v2[data-area="wallet"] .xa-wallet-views { gap: 2px; }
+  .xa-ref-v2[data-area="wallet"] .xa-wallet-views > button { font-size: 13px; padding-inline: 12px; }
+}
+@media(max-width:480px) {
+  .xa-ref-v2[data-area="wallet"] .xa-cockpit-discover .xa-artwork-grid { grid-template-columns: 1fr; }
+}
+@media(prefers-reduced-motion:reduce){
+ .xa-ref-v2 .xa-rail-navigation a,.xa-ref-v2 .xa-rail-utility a{transition:none}
+}
