@@ -150,11 +150,11 @@ export default function MarketplacePage(){
       onQuery={setQuery} onSort={setSort} onRefresh={()=>void refresh()}
     />
 
-    <section id="xa-market-sell" className="space-y-3 rounded-2xl border border-white/10 p-3 sm:p-5" aria-label="Vendre mes NFT">
+    <section id="xa-market-sell" className="space-y-3 rounded-2xl border border-white/10 p-3 sm:p-5" aria-label={c('simpleMarketSellTitle')}>
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <div><h2 className="text-lg font-semibold">Vendre mes NFT</h2>
-          <p className="text-sm text-zinc-400">Connecte un wallet signataire, choisis un NFT détenu et son prix EGLD. Les fonds et le NFT ne bougent qu'après signature et confirmation blockchain.</p></div>
-        <Link to="/portfolio" className="btn-secondary text-sm">Mon portefeuille</Link>
+        <div><h2 className="text-lg font-semibold">{c('simpleMarketSellTitle')}</h2>
+          <p className="text-sm text-zinc-400">{c('simpleMarketSellDesc')}</p></div>
+        <Link to="/portfolio" className="btn-secondary text-sm">{c('navWallet')}</Link>
       </div>
       <MyOwnedNftsPanel />
     </section>
