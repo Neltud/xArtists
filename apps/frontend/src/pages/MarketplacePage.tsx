@@ -11,6 +11,7 @@ import ArtpriceOfficialPanel from '../components/market/ArtpriceOfficialPanel'
 import ExistingNftReadiness from '../components/market/ExistingNftReadiness'
 import LiaAndEscrowNfts from '../components/market/LiaAndEscrowNfts'
 import MarketplaceDiscoveryGrid from '../components/market/MarketplaceDiscoveryGrid'
+import FeaturedArtGallery from '../components/market/FeaturedArtGallery'
 import MainnetJourney from '../components/MainnetJourney'
 import MyOwnedNftsPanel from '../components/MyOwnedNftsPanel'
 import {useMarketplaceReadiness} from '../hooks/useMarketplaceReadiness'
@@ -115,6 +116,8 @@ export default function MarketplacePage(){
     </header>}
 
 
+
+    {selected==='art'&&<FeaturedArtGallery/>}
 
     <section className="xa-marketplace-categories" id="xa-market-categories" aria-labelledby="xa-market-categories-title">
       <div className="xa-marketplace-categories__heading">
