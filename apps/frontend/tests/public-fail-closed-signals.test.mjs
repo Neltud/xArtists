@@ -53,7 +53,7 @@ test('light loads before React and keeps the dark-mode choice', () => {
   assert.match(page, /<html lang="fr" data-theme="light">/)
   assert.match(page, /localStorage\.getItem\("xa-theme"\) === "dark" \? "dark" : "light"/)
   assert.match(page, /Prevent a light\/dark flash/)
-  assert.match(page, /html\[data-theme="dark"\] body \{ background: #10120f/)
+  assert.match(page, /html\[data-theme="dark"\] body \{ background: #141019/)
   assert.match(state, /classList\.toggle\('dark',theme==='dark'\)/)
   assert.match(state, /xa-theme-ready/)
   assert.match(css, /html\[data-theme="light"\] \.xa-first-hero/)

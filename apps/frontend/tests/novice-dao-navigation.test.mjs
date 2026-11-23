@@ -1,3 +1,4 @@
+import {architecture as a,catalogue,navigation as n} from './architecture-catalogue.mjs'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
@@ -16,32 +17,24 @@ const [pages, shell, modules, core, dao, daoPage, locales, styles] = await Promi
   source('../src/experience/experience.css'),
 ])
 
-test('Novice home presents four understandable journeys and no mandatory wallet', () => {
-  const home = pages.slice(pages.indexOf('export function Home()'), pages.indexOf('export function GroupPage'))
-  for (const id of ['visit','exhibit','create','market']) assert.match(home, new RegExp("id:'"+id+"'"))
-  for (const dest of ["'/museum'","'/create/gallery'","'/studio'","'/marketplace'"]) assert.ok(home.includes(dest))
-  assert.match(home, /to="\/dao" className="xa-first-context-link"/)
-  assert.match(home, /welcomeIntro/)
-  assert.match(home, /welcomeNoBridge/)
-  assert.match(home, /welcomeEuros/)
-  assert.match(home, /<details className="xa-first-details">/)
-  assert.doesNotMatch(home, /requestOpenConnect|sendTransaction|MintLive|CheckoutModal/)
-  assert.doesNotMatch(home, /NetworkStrip|HomeHeroSculpture|LIA_CHAIN_PRIORITY/)
+test('Home presents task spaces and an optional personal entry',()=>{
+  const home=pages.slice(pages.indexOf('export function Home()'),pages.indexOf('export function GroupPage'))
+  assert.match(home,/PRIMARY_AREAS.map/)
+  assert.equal(a.PRIMARY_AREAS.length,4)
+  assert.match(home,/to="\/wallet"/)
+  assert.match(home,/contextualModules\(modules,'studio'\)/)
+  assert.doesNotMatch(home,/requestOpenConnect|sendTransaction|MintLive|CheckoutModal/)
+  assert.doesNotMatch(home,/NetworkStrip|HomeHeroSculpture|LIA_CHAIN_PRIORITY/)
 })
 
-test('DAO stays reachable from home and advanced navigation without occupying primary nav', () => {
-  assert.match(modules, /module\('dao','\/finance\/governance',\['\/dao'\]/)
-  assert.doesNotMatch(core, /^\s+'dao',/m)
-  assert.match(shell, /\['lia','\/intelligence\/xorus',c\('lia'\)\]/)
-  assert.match(shell, /to="\/dao" onClick=\{closeMobile\}/)
-  assert.match(shell, /to="\/dao">\{c\('dao'\)\}/)
-  assert.match(shell, /to:'\/intelligence\/xorus',label:'lia'/)
-  assert.match(shell, /to:'\/museum',label:'explore'/)
-  assert.match(pages, /const list=modules\.filter\(m=>/)
-  assert.match(pages, /group==='all'\|\|m\.group===group/)
-  assert.match(pages, /matchesModuleSearch\(q,/)
-  assert.match(shell, /const results=useMemo\(\(\)=>modules\.filter\(m=>isSoftLaunchVisible\(m,lab\)&&matchesModuleSearch\(q,/)
-  assert.doesNotMatch(shell.slice(shell.indexOf('export function Search'), shell.indexOf('function Header')), /isCoreModule\(m\)/)
+test('Governance and token share the participation area with DeFi kept secondary',()=>{
+  assert.equal(a.areaFor('dao'),'ecosystem')
+  assert.equal(a.areaFor('tro'),'ecosystem')
+  assert.equal(a.PRIMARY_AREAS.find(x=>x.id==='ecosystem').to,'/finance')
+  assert.equal(a.isNavigationVisible('dao'),true)
+  assert.equal(a.isNavigationVisible('staking'),false)
+  assert.match(shell,/PRIMARY_AREAS.map/)
+  assert.match(pages,/matchesModuleSearch\(q,/)
 })
 
 test('DAO votes cannot be mistaken for official votes', () => {
@@ -57,7 +50,7 @@ test('DAO votes cannot be mistaken for official votes', () => {
 })
 
 test('Homepage displays truthful independent chain & fiat states', () => {
-  for (const name of ['welcomeMx','welcomeOpenSea','welcomeEuros','welcomeNoBridge','welcomeToolsLead']) {
+  for (const name of ['welcomeMx','welcomeOpenSea','welcomeEuros','welcomeNoBridge']) {
     assert.match(pages, new RegExp(name))
     assert.match(locales, new RegExp(name+": \\["))
   }
@@ -68,7 +61,7 @@ test('Homepage displays truthful independent chain & fiat states', () => {
 
 test('Responsive entry uses semantic sections, landmark links, and reduced-motion support', () => {
   assert.match(pages, /aria-labelledby="xa-first-what"/)
-  assert.match(pages, /aria-labelledby="xa-first-networks"/)
+  assert.match(pages, /aria-labelledby="xa-home-workflow-title"/)
   assert.match(pages, /<details className="xa-first-details">/)
   assert.match(styles, /\.xa-first-tiles\{display:grid/)
   assert.match(styles, /@media\(max-width:490px\)/)

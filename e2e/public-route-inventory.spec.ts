@@ -91,7 +91,7 @@ test('mobile dock links navigate to the five public destinations', async ({ page
   const canonical: Record<string, string> = {
     '/': '/', '/museum': '/explore/museum', '/marketplace': '/explore/market',
     '/auction': '/explore/auction', '/studio': '/create/studio',
-    '/intelligence/xorus': '/intelligence/xorus',
+    '/intelligence/xorus': '/intelligence/xorus', '/finance':'/finance', '/wallet':'/workspace/wallet',
   }
   for (const href of hrefs) {
     const path = new URL(href, page.url()).pathname.slice(BASE.length).replace(/\/$/, '') || '/'
@@ -116,7 +116,8 @@ test('directory search narrows modules and recovers from an empty result', async
   await expect(page.locator('.xa-directory-page .xa-module-card').first()).toBeVisible()
   await input.fill('musee')
   await expect(page.locator('.xa-directory-page .xa-module-card')).toHaveCount(1)
-  await expect(page.locator('.xa-directory-page .xa-module-card').first()).toContainText('Musée immersif')
+  await expect(page.locator('.xa-directory-page .xa-module-card').first()).toContainText('Expositions')
+  await page.locator('.xa-directory-options > summary').click()
   await page.getByRole('button', { name: 'En préparation', exact: true }).click()
   await expect(page.locator('.xa-directory-page .xa-module-card')).toHaveCount(0)
   await expect(page.locator('.xa-directory-reset')).toBeVisible()
@@ -125,10 +126,10 @@ test('directory search narrows modules and recovers from an empty result', async
   await expect(input).toHaveValue('')
   await expect(page.locator('.xa-directory-page .xa-module-card').first()).toBeVisible()
   await page.goto(BASE + '/directory/?lang=es')
-  await input.fill('catalogo')
-  await expect(page.locator('.xa-directory-page .xa-module-card')).toHaveCount(0)
+  await input.fill('catalogo rwa')
+  await expect(page.locator('.xa-directory-page .xa-module-card')).toHaveCount(1)
   await page.goto(BASE + '/directory/?lang=es&lab=1')
-  await input.fill('catalogo')
+  await input.fill('catalogo rwa')
   await expect(page.locator('.xa-directory-page .xa-module-card')).toHaveCount(1)
   await expect(page.locator('.xa-directory-page .xa-module-card').first()).toContainText('Catálogo RWA')
 })

@@ -1,69 +1,49 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import {readFileSync} from 'node:fs'
-import {transform} from 'esbuild'
+import {architecture as a,catalogue,navigation as n} from './architecture-catalogue.mjs'
 
-const nav=readFileSync(new URL('../src/experience/navigation.ts',import.meta.url),'utf8')
-const shell=readFileSync(new URL('../src/experience/Shell.tsx',import.meta.url),'utf8')
-const css=readFileSync(new URL('../src/experience/beginner-navigation.css',import.meta.url),'utf8')
-const compiled=await transform(nav,{loader:'ts',format:'esm',target:'es2022'})
-const {currentPrimarySection,matchesDockRoute}=await import(
-  'data:text/javascript;base64,'+Buffer.from(compiled.code).toString('base64'))
-
-test('primary menu highlights the correct section across canonical paths and aliases',()=>{
-  for(const p of ['/museum','/explore/museum','/explore/maison','/gallery'])
-    assert.equal(currentPrimarySection(p),'explore',p)
-  for(const p of ['/studio','/create/studio','/nft-factory','/create/world-rights','/digital-twin'])
-    assert.equal(currentPrimarySection(p),'create',p)
-  for(const p of ['/marketplace','/market','/auction','/explore/auction','/rwa','/explore/rwa','/explore/market'])
-    assert.equal(currentPrimarySection(p),'market',p)
-  for(const p of ['/dao','/finance/governance/'])
-    assert.equal(currentPrimarySection(p),'dao',p)
-  for(const p of ['/guide','/roadmap','/feuille-de-route'])
-    assert.equal(currentPrimarySection(p),'guide',p)
-  for(const p of ['/xorus','/lia','/agents','/intelligence/lia','/intelligence/xorus'])
-    assert.equal(currentPrimarySection(p),'lia',p)
-  for(const p of ['/','/workspace/wallet','/finance/trading'])
-    assert.equal(currentPrimarySection(p),null,p)
+test('every module has one editorial owner and every old route resolves to it',()=>{
+ assert.equal(catalogue.length,44)
+ assert.deepEqual(Object.keys(a.MODULE_PLACEMENT).sort(),catalogue.map(m=>m.id).sort())
+ for(const m of catalogue)for(const path of [m.path,...m.aliases]){
+  assert.equal(n.currentPrimarySection(path,catalogue),a.areaFor(m.id),path)
+  assert.equal(n.currentPrimarySection(path+'/?lang=fr#details',catalogue),a.areaFor(m.id),path)
+ }
 })
-
-test('dock route families never let root or route prefixes shadow other pages',()=>{
-  assert.equal(matchesDockRoute('/', ['/']),true)
-  assert.equal(matchesDockRoute('/studio',['/']),false)
-  assert.equal(matchesDockRoute('/create/studio/', ['/create/studio']),true)
-  assert.equal(matchesDockRoute('/create/studio/preview',['/create/studio']),true)
-  assert.equal(matchesDockRoute('/studio-malicious',['/studio']),false)
-  assert.equal(matchesDockRoute('/finance/governance-votes',['/finance/governance']),false)
-  assert.equal(matchesDockRoute('/marketplace?tab=opensea',['/marketplace']),true)
+test('four task areas and the personal utility share desktop and mobile hierarchy',()=>{
+ assert.deepEqual(a.PRIMARY_AREAS.map(x=>x.id),['art','studio','intelligence','ecosystem'])
+ assert.deepEqual(a.MOBILE_AREAS.map(x=>x.id),['art','studio','intelligence','ecosystem','wallet'])
+ for(const area of a.MOBILE_AREAS)assert.equal(n.currentPrimarySection(area.to,catalogue),area.id)
 })
-
-test('mobile dock is discovery-first while auction and DAO remain discoverable',()=>{
-  const match=shell.match(/const MOBILE_DESTINATIONS = \[([\s\S]*?)\] as const/)
-  assert.ok(match)
-  const to=[...match[1].matchAll(/to:'([^']+)'/g)].map(x=>x[1])
-  assert.deepEqual(to,['/','/museum','/studio','/marketplace','/intelligence/xorus'])
-  assert.match(shell,/matchesDockRoute\(location\.pathname,item\.paths\)/)
-  for(const p of ['/auction','/rwa','/dao','/nft-factory','/create/world-rights','/wallet','/portfolio','/directory']){
-    assert.ok(shell.includes('to="'+p+'" onClick={closeMobile}'),p)
-  }
-  assert.match(shell,/xa-mobile-advanced/)
+test('cross-cutting access, logs and token functions are assigned by meaning, not old folder',()=>{
+ assert.equal(a.areaFor('packs'),'intelligence')
+ assert.equal(a.areaFor('payments'),'intelligence')
+ assert.equal(a.areaFor('history'),'operations')
+ assert.equal(a.areaFor('status'),'help')
+ assert.equal(a.areaFor('dao'),a.areaFor('tro'))
+ assert.equal(a.areaFor('portfolio'),a.areaFor('wallet'))
 })
-
-test('search starts with six curated paths and caps results, with escape to full directory',()=>{
-  assert.match(shell,/\.slice\(0,q\.trim\(\)\?12:6\)/)
-  assert.match(shell,/\['museum','studio','market','lia','agents','account','guide'\]/)
-  assert.match(shell,/className="xa-search-all"/)
-  assert.match(shell,/role="combobox"/)
-  assert.match(shell,/role="listbox"/)
-  assert.match(shell,/setSelected\(i=>Math\.min\(i\+1,Math\.max\(0,results\.length-1\)\)\)/)
+test('advanced, roadmap, operator and merged entries stay out of default navigation',()=>{
+ for(const id of ['auction','trading','command','history','portfolio','simulation','entities'])assert.equal(a.isNavigationVisible(id),false,id)
+ for(const id of ['auction','trading','command','history'])assert.equal(a.isNavigationVisible(id,true),true,id)
+ for(const id of ['portfolio','simulation','entities','sale'])assert.equal(a.isNavigationVisible(id,true),false,id)
+ assert.equal(a.isNavigationVisible('unknown',true),false)
+ assert.deepEqual(a.contextualModules(catalogue,'studio').map(x=>x.id),['studio','gallery-builder','nft-factory','world-rights'])
+ assert.deepEqual(a.contextualModules(catalogue,'lia').map(x=>x.id),['lia','agents','packs','lab'])
 })
-
-test('navigation keeps default light and alternate dark mode with accessible focus targets',()=>{
-  assert.match(shell,/className="xa-icon-button xa-theme-toggle"/)
-  assert.match(shell,/primarySection===id/)
-  assert.match(shell,/aria-current=\{primarySection===id\?'page':undefined\}/)
-  assert.match(css,/\.xa-search-all:focus-visible/)
-  assert.match(css,/var\(--xa-accent\)/)
-  assert.match(css,/prefers-reduced-motion/)
-  assert.doesNotMatch(shell+css,/mint_live_enabled\s*=\s*true|VITE_LIA_LIVE_TRADING\s*=\s*1/)
+test('alias and nested-route selection never mistakes a substring for a section',()=>{
+ for(const path of ['/packs/pulse','/intelligence/agents/yield'])assert.equal(n.currentPrimarySection(path,catalogue),'intelligence')
+ assert.equal(n.currentPrimarySection('/explore/artwork/ART-abcdef-01',catalogue),'art')
+ for(const path of ['/','/wallet-malicious','/finance/governance-votes'])assert.equal(n.currentPrimarySection(path,catalogue),null)
+ assert.equal(n.matchesDockRoute('/studio-malicious',['/studio']),false)
+ assert.equal(n.matchesDockRoute('/studio',['/']),false)
+ assert.equal(n.matchesDockRoute('/marketplace?tab=opensea',['/marketplace']),true)
+})
+test('merged experiences retain one destination and search priority follows the task hierarchy',()=>{
+ assert.equal(a.MODULE_PLACEMENT.portfolio.mergedInto,'wallet')
+ assert.equal(a.MODULE_PLACEMENT.simulation.mergedInto,'lab')
+ assert.equal(a.MODULE_PLACEMENT.entities.mergedInto,'lab')
+ const defaultSearch=catalogue.filter(m=>a.isNavigationVisible(m.id)).sort((x,y)=>a.navigationRank(x.id)-a.navigationRank(y.id))
+ assert.equal(defaultSearch[0].id,'wallet')
+ assert.ok(defaultSearch.findIndex(x=>x.id==='market')<defaultSearch.findIndex(x=>x.id==='tro'))
 })

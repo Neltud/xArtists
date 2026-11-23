@@ -12,9 +12,9 @@ test('public lazy routes show an accessible loading state rather than a blank pa
   assert.match(pages,/function Loader\(\)/)
   assert.match(pages,/className="xa-loading" role="status"/)
 })
-test('homepage section has a unique tools heading and matching aria-labelledby',()=>{
-  assert.match(pages,/aria-labelledby="xa-first-tools-title"/)
-  assert.match(pages,/<h2 id="xa-first-tools-title">/)
-  assert.equal([...pages.matchAll(/id="xa-first-tools-title"/g)].length,1)
+test('homepage creator section has a unique heading and matching aria-labelledby',()=>{
+  assert.match(pages,/aria-labelledby="xa-home-workflow-title"/)
+  assert.match(pages,/<h2 id="xa-home-workflow-title">/)
+  assert.equal([...pages.matchAll(/id="xa-home-workflow-title"/g)].length,1)
   assert.doesNotMatch(pages,/id="xa-first-tools"/)
 })

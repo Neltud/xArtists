@@ -16,14 +16,13 @@ test('a single understandable journey connects xOrus, Agents and Lab',()=>{
   for(const path of ['/intelligence/xorus','/intelligence/agents','/intelligence/lab'])
     assert.ok(nav.includes("path: '"+path+"'"),path)
   assert.match(nav,/aria-current=\{selected\?'page':undefined\}/)
-  for(const page of [agents,lab,xorus])assert.match(page,/<IntelligencePath\s*\/>/)
+  for(const page of [agents,lab,xorus])assert.doesNotMatch(page,/<IntelligencePath\s*\/>/)
   assert.match(css,/\.xa-intelligence-path/)
   assert.match(css,/@media\(max-width:760px\)/)
   assert.match(routes,/import '\.\.\/pages\/lab-page\.css'/)
   assert.match(directory,/isSoftLaunchVisible\(m,lab\)/)
-  assert.match(directory,/showIntelligenceAdvanced/)
-  assert.match(directory,/group==='intelligence'/)
-  assert.match(directory,/<IntelligencePath advanced=\{showIntelligenceAdvanced\|\|lab\}\/>/)
+  assert.match(directory,/contextualModules\(modules,m.id\)/)
+  assert.match(directory,/areaFor\(m.id\)/)
 
 })
 
@@ -64,7 +63,7 @@ test('educational simulation never invents a live stream or executes actions',()
 })
 
 test('xOrus offers the new paper desk and keeps legacy consoles archived',()=>{
-  assert.match(xorus,/<IntelligencePath\s*\/>/)
+  assert.doesNotMatch(xorus,/<IntelligencePath\s*\/>/)
   assert.match(xorus,/<XorusDecisionDesk\s*\/>/)
   assert.match(xorus,/<XorusAssistedSwapPanel\s*\/>/)
   assert.match(xorus,/XORUS_LIVE_TRADING/)

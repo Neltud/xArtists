@@ -1,3 +1,4 @@
+import {architecture as a,catalogue,navigation as n} from './architecture-catalogue.mjs'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
@@ -5,25 +6,13 @@ import { readFileSync } from 'node:fs'
 const src = path => readFileSync(new URL('../src/' + path, import.meta.url), 'utf8')
 const docs = path => readFileSync(new URL('../../../docs/' + path, import.meta.url), 'utf8')
 
-test('Art-first hierarchy prioritizes museum, auction, RWA and Studio', () => {
-  const modules = src('experience/modules.ts')
-  const core = src('experience/softLaunch.ts')
-  const nav = src('experience/Shell.tsx')
-  const ids = ['museum','auction','rwa','market']
-  const indexes = ids.map(id => modules.indexOf("module('" + id + "'"))
-  assert.ok(indexes.every(i => i >= 0))
-  assert.deepEqual([...indexes].sort((a,b) => a-b), indexes)
-  // Auction and RWA remain routed, but are not soft-launch starting surfaces.
-  assert.doesNotMatch(core, /^\s+'auction',/m)
-  assert.doesNotMatch(core, /^\s+'rwa',/m)
-  // Desktop now surfaces Marketplace before Auctions; RWA remains discoverable
-  // in the mobile menu and Explore. Do not assert the superseded desktop nav.
-  const links = ["/explore/museum',c('explore')","/create/studio',c('create')","/explore/market',c('market')","/intelligence/xorus',c('lia')","/guide',c('help')"]
-  const navIndexes = links.map(link => nav.indexOf(link))
-  assert.ok(navIndexes.every(i => i >= 0), 'explore, create, market, xOrus and beginner help must be direct desktop destinations')
-  assert.deepEqual([...navIndexes].sort((a,b) => a-b), navIndexes)
-  assert.match(nav, /to="\/rwa"/)
-  assert.match(nav, /to="\/auction" onClick=\{closeMobile\}/)
+test('Art discovery leads with marketplace and contextual exhibitions and provenance',()=>{
+  assert.equal(a.PRIMARY_AREAS[0].id,'art')
+  assert.equal(a.PRIMARY_AREAS[0].to,'/marketplace')
+  assert.deepEqual(a.contextualModules(catalogue,'market').map(x=>x.id),['market','museum','maison','rwa'])
+  assert.equal(a.isNavigationVisible('auction'),false)
+  assert.equal(a.isNavigationVisible('auction',true),true)
+  assert.equal(n.currentPrimarySection('/rwa',catalogue),'art')
 })
 
 test('Maison is a real public route and GitBook page, not a placeholder', () => {

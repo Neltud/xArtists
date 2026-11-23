@@ -4,9 +4,8 @@
  * on fresh on-chain codehash / reconciled contract status.
  */
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, Navigate, useSearchParams } from 'react-router-dom'
 import RwaPhysicalPanel from '../components/market/RwaPhysicalPanel'
-import DigitalPacksPanel from '../components/market/DigitalPacksPanel'
 import OpenSeaCollectionPanel from '../components/market/OpenSeaCollectionPanel'
 import ArtpriceOfficialPanel from '../components/market/ArtpriceOfficialPanel'
 import ExistingNftReadiness from '../components/market/ExistingNftReadiness'
@@ -27,7 +26,6 @@ type Listing={
 const SHELVES:{id:Shelf;name:string;summary:string}[]=[
   {id:'art',name:'marketShelfArtName',summary:'marketShelfArtSummary'},
   {id:'rwa',name:'marketShelfRwaName',summary:'marketShelfRwaSummary'},
-  {id:'packs',name:'marketShelfPacksName',summary:'marketShelfPacksSummary'},
   {id:'opensea',name:'marketShelfOpenSeaName',summary:'marketShelfOpenSeaSummary'},
 ]
 function priceEgld(l:Listing):number|null{
@@ -50,6 +48,7 @@ export default function MarketplacePage(){
   const [loading,setLoading]=useState(false)
   const [sourceReady,setSourceReady]=useState(false)
   const [showTech,setShowTech]=useState(false)
+  const [showMarketData,setShowMarketData]=useState(false)
   const [query,setQuery]=useState('')
   const [sort,setSort]=useState<'recent'|'price_asc'|'price_desc'>('recent')
 
@@ -86,6 +85,8 @@ export default function MarketplacePage(){
     else v.set('tab',next)
     setParams(v)
   }
+  // Preserve bookmarked pack links, but place agent products in their own space.
+  if(selected==='packs')return <Navigate replace to={{pathname:'/intelligence/agents',search:params.toString()?'?'+params.toString():''}}/>
   return <div className={"xa-page xa-marketplace animate-fade-in space-y-6 pb-24 max-w-6xl mx-auto"+(selected==='art'?" xa-marketplace--art":"")}>
     {selected!=='art'&&<header className="xa-marketplace-hero">
       <div className="xa-marketplace-hero__copy">
@@ -166,7 +167,7 @@ export default function MarketplacePage(){
 
     {selected==='opensea'&&<OpenSeaCollectionPanel />}
 
-    {(selected==='art'||selected==='rwa')&&<ArtpriceOfficialPanel />}
+    {(selected==='art'||selected==='rwa')&&<details className="xa-market-tech" onToggle={e=>setShowMarketData(e.currentTarget.open)}><summary>{c('analytics')}</summary><Link className="xa-text-link" to="/explore/analytics">{c('analytics')} →</Link>{showMarketData&&<ArtpriceOfficialPanel/>}</details>}
 
     {selected==='rwa'&&<section className="space-y-4" aria-label="Œuvres physiques">
       <div>
@@ -195,16 +196,6 @@ export default function MarketplacePage(){
       </Link>
     </section>}
 
-    {selected==='packs'&&<section className="space-y-4" aria-label="Packs IA">
-      <div>
-        <h2 className="text-lg font-semibold text-white">Packs IA · accès distincts de l’art</h2>
-        <p className="text-xs text-zinc-400 mt-1">
-          Pulse, Yield et Sentinel ne sont pas des tableaux, et leurs droits d’accès ne sont pas
-          transférés par un NFT d’artiste.
-        </p>
-      </div>
-      <DigitalPacksPanel />
-    </section>}
 
     <MainnetJourney current="market" />
 
@@ -214,7 +205,7 @@ export default function MarketplacePage(){
       <Link to="/rwa" className="hover:text-cyan-200">Provenance RWA</Link>
       <Link to="/museum" className="hover:text-cyan-200">Musée</Link>
       <Link to="/auction" className="hover:text-cyan-200">Enchères</Link>
-      <Link to="/agents" className="hover:text-cyan-200">Agents IA</Link>
+      <Link to="/agents" className="hover:text-cyan-200" title={c('marketShelfPacksSummary')}>{c('marketShelfPacksName')}</Link>
       <span className="text-zinc-600">xArtists · Aucun achat sans contrôle wallet/contrat</span>
     </footer>
   </div>

@@ -1,25 +1,10 @@
-import { test } from 'node:test'
+import {test} from 'node:test'
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
-
-const read = name => readFileSync(new URL('../src/experience/' + name, import.meta.url), 'utf8')
-
-test('homepage retains a direct xOrus route as a disclosed advanced link without adding primary CTAs', () => {
-  const page = read('Pages.tsx')
-  const hero = page.slice(page.indexOf('export function Home()'), page.indexOf('export function GroupPage'))
-  assert.match(hero, /to="\/xorus" className="xa-first-context-link"/)
-  assert.match(hero, /id:'market',to:'\/marketplace'/)
-  assert.match(hero, /<Link to="\/auction" className="xa-text-link">/)
-  assert.doesNotMatch(hero, /to="\/app" className="xa-first-context-link"/)
-  assert.equal((hero.match(/className="xa-button primary"/g) || []).length, 1)
+import {architecture as a,catalogue,navigation as n} from './architecture-catalogue.mjs'
+test('agents are a task area and owned access joins the same contextual navigation',()=>{
+ assert.equal(a.PRIMARY_AREAS.find(x=>x.id==='intelligence').to,'/intelligence/xorus')
+ assert.deepEqual(a.contextualModules(catalogue,'agents').map(x=>x.id),['lia','agents','packs','lab'])
 })
-
-test('mobile menu promotes xOrus as the fifth fixed dock entry', () => {
-  const shell = read('Shell.tsx')
-  assert.match(shell, /to="\/xorus" onClick=\{closeMobile\}/)
-  assert.match(shell, /to="\/museum" onClick=\{closeMobile\}/)
-  const dock = shell.slice(shell.indexOf('const MOBILE_DESTINATIONS ='), shell.indexOf('function MobileDock()'))
-  for (const to of ["/museum","/studio","/marketplace","/intelligence/xorus"]) {
-    assert.ok(dock.includes("to:'" + to + "'"), 'missing dock path ' + to)
-  }
+test('all historical LIA, agent and access links select the same task area',()=>{
+ for(const path of ['/xorus','/lia','/intelligence/lia','/agents','/packs','/my-packs','/salles','/workspace/agents'])assert.equal(n.currentPrimarySection(path,catalogue),'intelligence',path)
 })

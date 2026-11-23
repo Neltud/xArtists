@@ -1,25 +1,25 @@
 /**
- * xArtists — Graphite · Chrome · Acid green
- * Validated direction: #10120f ground, #cdf58b accent, editorial spacing.
+ * xArtists — Violet · Neutral surfaces
+ * Shared light/dark palette for the shell and legacy application components.
  */
 
 :root {
-  /* Surfaces — graphite */
-  --xa-bg: #10120f;
-  --xa-bg-elevated: #161914;
-  --xa-surface: #1a1d18;
-  --xa-surface-hover: #22261f;
-  --xa-border: rgba(205, 245, 139, 0.1);
-  --xa-border-strong: rgba(205, 245, 139, 0.22);
+  /* Surfaces — dark mode */
+  --xa-bg: #141019;
+  --xa-bg-elevated: #1a1421;
+  --xa-surface: #1d1725;
+  --xa-surface-hover: #292033;
+  --xa-border: rgba(206, 182, 241, 0.16);
+  --xa-border-strong: rgba(206, 182, 241, 0.28);
 
   /* Text */
-  --xa-text: #f2f5ee;
-  --xa-text-secondary: #a8b09c;
-  --xa-text-muted: #6e7668;
+  --xa-text: #f5efff;
+  --xa-text-secondary: #b9accb;
+  --xa-text-muted: #a395b6;
 
-  /* Accent — acid green */
-  --xa-accent: #cdf58b;
-  --xa-accent-soft: rgba(205, 245, 139, 0.12);
+  /* Accent — violet */
+  --xa-accent: #c6a2fa;
+  --xa-accent-soft: rgba(198, 162, 250, 0.12);
   --xa-chrome: #c8ccc4;
   --xa-violet: #8b5cf6;
   --xa-violet-soft: rgba(139, 92, 246, 0.12);
@@ -164,7 +164,7 @@
   font-size: var(--xa-text-sm);
   font-weight: 600;
   background: var(--xa-accent);
-  color: #10120f;
+  color: #141019;
   border: none;
   cursor: pointer;
   transition: opacity var(--xa-duration) var(--xa-ease);
@@ -270,17 +270,22 @@
 
 /* Public light-first tokens: legacy dark tokens remain available by explicit choice. */
 :root, html[data-theme="light"] {
-  --xa-bg: #fafaf8;
+  --xa-bg: #faf9fd;
+  --xa-panel: #ffffff;
+  --xa-panel2: #f1edf9;
+  --xa-muted: #62586f;
+  --xa-dim: #746a80;
+  --xa-accent-ink: #ffffff;
   --xa-bg-elevated: #ffffff;
   --xa-surface: #ffffff;
-  --xa-surface-hover: #f4f6f0;
-  --xa-border: rgba(26, 40, 28, 0.11);
-  --xa-border-strong: rgba(26, 40, 28, 0.22);
-  --xa-text: #202920;
-  --xa-text-secondary: #47564c;
-  --xa-text-muted: #657367;
-  --xa-accent: #41691d;
-  --xa-accent-soft: rgba(65, 105, 29, 0.09);
+  --xa-surface-hover: #f1edf9;
+  --xa-border: rgba(70, 43, 104, 0.13);
+  --xa-border-strong: rgba(70, 43, 104, 0.25);
+  --xa-text: #241b36;
+  --xa-text-secondary: #62586f;
+  --xa-text-muted: #746a80;
+  --xa-accent: #7138c8;
+  --xa-accent-soft: rgba(113, 56, 200, 0.09);
   --xa-chrome: #5c6864;
   --xa-violet: #6853a3;
   --xa-violet-soft: rgba(104, 83, 163, 0.08);
@@ -292,17 +297,22 @@
   color-scheme: light;
 }
 html[data-theme="dark"] {
-  --xa-bg: #10120f;
-  --xa-bg-elevated: #161914;
-  --xa-surface: #1a1d18;
-  --xa-surface-hover: #22261f;
-  --xa-border: rgba(205, 245, 139, 0.1);
-  --xa-border-strong: rgba(205, 245, 139, 0.22);
-  --xa-text: #f2f5ee;
-  --xa-text-secondary: #a8b09c;
-  --xa-text-muted: #949d8e;
-  --xa-accent: #cdf58b;
-  --xa-accent-soft: rgba(205, 245, 139, 0.12);
+  --xa-bg: #141019;
+  --xa-panel: #1d1725;
+  --xa-panel2: #292033;
+  --xa-muted: #b9accb;
+  --xa-dim: #a395b6;
+  --xa-accent-ink: #241333;
+  --xa-bg-elevated: #1a1421;
+  --xa-surface: #1d1725;
+  --xa-surface-hover: #292033;
+  --xa-border: rgba(206, 182, 241, 0.16);
+  --xa-border-strong: rgba(206, 182, 241, 0.28);
+  --xa-text: #f5efff;
+  --xa-text-secondary: #b9accb;
+  --xa-text-muted: #a395b6;
+  --xa-accent: #c6a2fa;
+  --xa-accent-soft: rgba(198, 162, 250, 0.12);
   --xa-chrome: #c8ccc4;
   --xa-violet: #8b5cf6;
   --xa-violet-soft: rgba(139, 92, 246, 0.12);

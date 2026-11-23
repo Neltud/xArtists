@@ -1,3 +1,4 @@
+import {architecture as a,catalogue,navigation as n} from './architecture-catalogue.mjs'
 import { readFileSync } from 'node:fs'
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
@@ -14,19 +15,12 @@ const icons = read('src/experience/Icon.tsx')
 const availability = read('scripts/publicAvailability.mjs')
 const deploy = read('../../.github/workflows/static.yml')
 
-test('mobile dock has five visitor-first destinations; auctions remain in the menu', () => {
-  const match = shell.match(/const MOBILE_DESTINATIONS = \[([\s\S]*?)\] as const/)
-  assert.ok(match, 'must have explicit, testable dock destination registry')
-  const destinations = [...match[1].matchAll(/to:'([^']+)'/g)].map(m=>m[1])
-  assert.deepEqual(destinations, ['/', '/museum', '/studio', '/marketplace', '/intelligence/xorus'])
-  assert.match(shell, /<Link to="\/museum" onClick=\{closeMobile\}>/)
-  assert.match(shell, /<Link to="\/dao" onClick=\{closeMobile\}>/)
-  assert.match(shell, /aria-current=\{active\?'page':undefined\}/)
-  assert.match(shell, /'\/explore\/museum'/)
-  assert.match(shell, /'\/explore\/market'/)
-  assert.match(shell, /'\/explore\/auction'/)
-  assert.match(shell, /'\/create\/studio'/)
-  assert.match(shell, /aria-label=\{c\(item.label\)\}/)
+test('mobile dock includes personal assets and selects related art routes',()=>{
+  assert.equal(a.MOBILE_AREAS.length,5)
+  assert.equal(a.MOBILE_AREAS.at(-1).id,'wallet')
+  assert.match(shell,/MOBILE_AREAS.map/)
+  assert.match(shell,/aria-current=\{active\?'page':undefined\}/)
+  for(const path of ['/auction','/museum','/marketplace'])assert.equal(n.currentPrimarySection(path,catalogue),'art')
 })
 
 test('mobile one-row layout reserves safe-area and content space', () => {
@@ -36,17 +30,15 @@ test('mobile one-row layout reserves safe-area and content space', () => {
   assert.match(css, /\.xa-mobile-dock>a>span\{[^\}]*-webkit-line-clamp:2/)
 })
 
-test('Marketplace and Auctions always reachable through real module routes, menus and hero', () => {
-  assert.match(modules, /module\('market','\/explore\/market',\['\/market','\/marketplace'/)
-  assert.match(modules, /module\('auction','\/explore\/auction',\['\/auction','\/encheres'/)
-  assert.match(shell, /<Link to="\/marketplace" onClick=\{closeMobile\}>/)
-  assert.match(shell, /<Link to="\/auction" onClick=\{closeMobile\}>/)
-  assert.match(home, /id:'market',to:'\/marketplace'/)
-  assert.match(home, /<Link to="\/auction" className="xa-text-link">/)
-  assert.match(market, /<Link to="\/auction"/)
-  assert.match(auction, /<Link to="\/marketplace"/)
-  assert.match(icons, /gavel:/)
-  assert.match(availability, /for \(const route of routes\.filter/)
+test('Marketplace and Auctions remain routed and linked through art context',()=>{
+  assert.ok(catalogue.some(x=>x.id==='market'&&x.aliases.includes('/marketplace')))
+  assert.ok(catalogue.some(x=>x.id==='auction'&&x.aliases.includes('/auction')))
+  assert.match(shell,/contextualModules\(modules/)
+  assert.match(home,/PRIMARY_AREAS.map/)
+  assert.match(market,/<Link to="\/auction"/)
+  assert.match(auction,/<Link to="\/marketplace"/)
+  assert.match(icons,/gavel:/)
+  assert.match(availability,/for \(const route of routes\.filter/)
 })
 
 test('static deployment prepares and verifies actual public market and auction URLs', () => {
