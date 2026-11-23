@@ -1,8 +1,85 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-23T01:24:51.905Z",
+  "updatedAt": "2026-11-23T11:50:31.332Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1795434630794",
+      "timestamp": "11:50",
+      "source": "EGLD",
+      "title": "Cotation publique · $2.32 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1795432857000",
+      "timestamp": "11:20",
+      "source": "CoinTelegraph",
+      "title": "BTC price gains 12% from $55K: Three things to know in Bitcoin this week",
+      "link": "https://cointelegraph.com/markets/btc-price-stock-futures-rebound-three-things-know-bitcoin-this-week?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1795424744000",
+      "timestamp": "09:05",
+      "source": "CoinTelegraph",
+      "title": "‘MoldyRoost’ ads can steal crypto wallet recovery phrases from iPhones",
+      "link": "https://cointelegraph.com/news/moldyroost-malware-drain-iphone-wallets-one-tap?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1795421332000",
+      "timestamp": "08:08",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin ETFs shed $1.8B in third-largest weekly outflow",
+      "link": "https://cointelegraph.com/markets/bitcoin-etfs-third-largest-weekly-outflows-1-8-billion?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1795413600000",
+      "timestamp": "06:00",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1795405040000",
+      "timestamp": "03:37",
+      "source": "CoinTelegraph",
+      "title": "Trump renews call for Nvidia to rehire Jensen Huang as CEO",
+      "link": "https://cointelegraph.com/news/trump-renews-call-for-nvidia-to-rehire-jensen-huang-as-ceo?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1795402059000",
+      "timestamp": "02:47",
+      "source": "CoinTelegraph",
+      "title": "Billionaire Bill Ackman warns Fed will make a rate ‘mistake’ in December",
+      "link": "https://cointelegraph.com/markets/billionaire-bill-ackman-warns-fed-rate-hikes-could-trigger-recession?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1795419930000",
+      "timestamp": "07:45",
+      "source": "CoinDesk",
+      "title": "Crypto thieves are using online ads to infect iPhones with a single tap, research finds",
+      "link": "https://www.coindesk.com/tech/2026/11/23/moldyroost-malvertizing-campaign-uses-one-tap-iphone-hacks-to-hunt-crypto-wallet-keys-research-shows"
+    },
+    {
+      "id": "rss-CoinDesk-1-1795418325000",
+      "timestamp": "07:18",
+      "source": "CoinDesk",
+      "title": "This Swedish bitcoin treasury firm lost 30 BTC trading part of its own stack",
+      "link": "https://www.coindesk.com/markets/2026/11/23/this-swedish-bitcoin-treasury-firm-lost-30-btc-trading-part-of-its-own-stack"
+    },
+    {
+      "id": "rss-CoinDesk-2-1795414545000",
+      "timestamp": "06:15",
+      "source": "CoinDesk",
+      "title": "Cardano holders are turning down a $4 million request for running its flagship event",
+      "link": "https://www.coindesk.com/markets/2026/11/23/cardano-holders-are-turning-down-a-usd4-million-request-for-running-its-flagship-event"
+    },
+    {
+      "id": "rss-CoinDesk-3-1795412542000",
+      "timestamp": "05:42",
+      "source": "CoinDesk",
+      "title": "Bitcoin sold for $17,000 on Kraken's Canadian dollar market, and the trades stand",
+      "link": "https://www.coindesk.com/markets/2026/11/23/bitcoin-sold-for-usd17-000-on-kraken-s-canadian-dollar-market-and-the-trades-stand"
+    },
     {
       "id": "egld-1795397091372",
       "timestamp": "01:24",
@@ -30,13 +107,6 @@
       "source": "CoinTelegraph",
       "title": "The future of onchain FX could start with users, not institutional liquidity",
       "link": "https://cointelegraph.com/opinion/future-onchain-fx-could-start-with-users-not-institutional-liquidity?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1795346727000",
-      "timestamp": "11:25",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "rss-CoinTelegraph-4-1795339986000",
@@ -127,76 +197,6 @@
       "timestamp": "00:58",
       "source": "EGLD",
       "title": "Cotation publique · $2.28 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1795239635000",
-      "timestamp": "05:40",
-      "source": "CoinTelegraph",
-      "title": "Hong Kong pushes to bring crypto custodians, advisers under licensing rules",
-      "link": "https://cointelegraph.com/news/hong-kong-crypto-custody-advisory-licensing-bill?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1795203447000",
-      "timestamp": "19:37",
-      "source": "CoinTelegraph",
-      "title": "Wrapped Monero token crashes 99.8% amid suspected $13.5M exploit",
-      "link": "https://cointelegraph.com/news/wrapped-monero-token-crashes-998-amid-suspected-135m-exploit?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1795199830000",
-      "timestamp": "18:37",
-      "source": "CoinTelegraph",
-      "title": "Sky Protocol sees $2 billion in stablecoin withdrawals, disputes illicit fund claims",
-      "link": "https://cointelegraph.com/news/sky-protocol-sees-2b-in-stablecoin-withdrawals-disputes-illicit-fund-claims?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "egld-1795286615787",
-      "timestamp": "18:43",
-      "source": "EGLD",
-      "title": "Cotation publique · $2.31 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinDesk-2-1795240759000",
-      "timestamp": "05:59",
-      "source": "CoinDesk",
-      "title": "XRP falls 10% as long bets unwind and ETF assets slip below $1 billion",
-      "link": "https://www.coindesk.com/markets/2026/11/21/xrp-falls-10-as-long-bets-unwind-and-etf-assets-slip-below-usd1-billion"
-    },
-    {
-      "id": "rss-CoinDesk-3-1795234207000",
-      "timestamp": "04:10",
-      "source": "CoinDesk",
-      "title": "Bitcoin tanks below $57,000 for the first time in two years, and its not alone",
-      "link": "https://www.coindesk.com/markets/2026/11/21/bitcoin-tanks-below-usd57-000-for-the-first-time-in-two-years-and-its-not-alone"
-    },
-    {
-      "id": "egld-1795257636937",
-      "timestamp": "10:40",
-      "source": "EGLD",
-      "title": "Cotation publique · $2.23 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1795193751000",
-      "timestamp": "16:55",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin falls below $60K for first time since July amid broader market selloff",
-      "link": "https://cointelegraph.com/markets/bitcoin-falls-below-60k-for-first-time-since-july-amid-broader-market-selloff?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-3-1795215074000",
-      "timestamp": "22:51",
-      "source": "CoinDesk",
-      "title": "Kalshi races to get ahead of New York order that could shut down exchange",
-      "link": "https://www.coindesk.com/policy/2026/11/20/kalshi-races-to-get-ahead-of-new-york-order-that-could-shut-down-exchange"
-    },
-    {
-      "id": "egld-1795226304063",
-      "timestamp": "01:58",
-      "source": "EGLD",
-      "title": "Cotation publique · $2.30 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     }
   ]
