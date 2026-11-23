@@ -91,9 +91,19 @@
     min-height: 76px; gap: 8px; flex-direction: column; justify-content: center;
     padding: 10px 2px; font-size: 11px; line-height: 1.25; text-align: center;
   }
+  /* Compact art rail follows the two light reference screens: Art, Studio,
+     Agents, Wallet, then participation. Full dark rail stays wallet-first. */
+  .xa-ref-v2[data-area="art"] .xa-rail-navigation a:nth-child(1),
+  .xa-ref-v2[data-area="studio"] .xa-rail-navigation a:nth-child(1){order:4}
+  .xa-ref-v2[data-area="art"] .xa-rail-navigation a:nth-child(2),
+  .xa-ref-v2[data-area="studio"] .xa-rail-navigation a:nth-child(2){order:1}
+  .xa-ref-v2[data-area="art"] .xa-rail-navigation a:nth-child(3),
+  .xa-ref-v2[data-area="studio"] .xa-rail-navigation a:nth-child(3){order:2}
+  .xa-ref-v2[data-area="art"] .xa-rail-navigation a:nth-child(4),
+  .xa-ref-v2[data-area="studio"] .xa-rail-navigation a:nth-child(4){order:3}
   .xa-ref-v2[data-area="art"] .xa-rail-navigation a:nth-child(5),
   .xa-ref-v2[data-area="studio"] .xa-rail-navigation a:nth-child(5) {
-    border-top: 1px solid #b587e455; margin-top: 12px; padding-top: 22px;
+    order:5;border-top: 1px solid #b587e455; margin-top: 12px; padding-top: 22px;
   }
   .xa-ref-v2[data-area="art"] .xa-rail-utility a,
   .xa-ref-v2[data-area="studio"] .xa-rail-utility a {
