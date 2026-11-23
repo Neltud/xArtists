@@ -1,7 +1,6 @@
 import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /** Packs Agents — Genesis limited · œuvres série Tuduri. */
 import { useEffect, useRef, useState } from 'react'
-import IntelligencePath from '../components/intelligence/IntelligencePath'
 import XorusAgentEvidence from '../components/intelligence/XorusAgentEvidence'
 import { useI18n } from '../i18n/I18nContext'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -39,7 +38,6 @@ export default function Agents() {
 
   return (
     <div className="xa-page xa-agents-discovery animate-fade-in mx-auto max-w-4xl space-y-8 px-4 pb-28 pt-6 sm:px-7">
-      <IntelligencePath />
       <header className="xa-intelligence-hero">
         <p className="xa-intelligence-eyebrow">{fr ? '02 · Qui fait quoi ?' : '02 · Who does what?'}</p>
         <h1>{fr ? 'Les agents xOrus, simplement' : 'xOrus agents, made clear'}</h1>

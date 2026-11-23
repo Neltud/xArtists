@@ -37,6 +37,8 @@ Le wallet accompagne les parcours. Il ne bloque pas l'entrée dans le catalogue.
 | History dans Mon espace | Anciens journaux IA dans Exploitation | Ce fichier ne contient pas les transactions du wallet de l'utilisateur |
 | Paiements locaux présentés dans le compte | Intentions locales parmi les outils avancés IA | Il s'agit de traces de préparation sur l'appareil, jamais d'un relevé bancaire ou d'une preuve de paiement |
 
+L’ancien parcours IA indépendant est retiré des pages : elles utilisent la même navigation contextuelle, y compris Mes accès, au lieu d’afficher deux menus concurrents.
+
 Les titres appartiennent aux pages ; la coque apporte le contexte et la navigation. Les états de disponibilité restent visibles dans les cartes et près du fil d'Ariane. Les contrôles précis de transaction restent dans leur parcours. Les informations techniques de marché et la navigation de preuve mainnet sont disponibles par divulgation progressive.
 
 ## Direction visuelle

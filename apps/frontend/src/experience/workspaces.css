@@ -1,5 +1,6 @@
 /* Shared task hierarchy: global areas, contextual tools, then optional detail. */
 :root{--xa-accent-soft:color-mix(in srgb,var(--xa-accent) 11%,var(--xa-panel));--xa-text-secondary:var(--xa-muted);--xa-surface:var(--xa-panel);--xa-surface-hover:var(--xa-panel2);--xa-bg-elevated:var(--xa-panel)}
+.xa-marketplace-categories__grid{grid-template-columns:repeat(3,minmax(0,1fr))}
 .xa-header-inner{gap:24px}.xa-desktop-nav{gap:24px}.xa-desktop-nav a{white-space:nowrap;font-weight:600}.xa-connect{min-height:44px}.xa-connect[aria-current=page]{box-shadow:0 0 0 3px var(--xa-accent-soft)}
 .xa-preferences-panel>a{display:flex;min-height:44px;align-items:center;padding:10px 12px}.xa-footer-links{gap:24px}
 .xa-workspace-home{padding-top:32px}.xa-workspace-home .xa-first-hero{min-height:300px;grid-template-columns:minmax(0,1fr) 250px;padding:36px 40px;background:var(--xa-panel)}

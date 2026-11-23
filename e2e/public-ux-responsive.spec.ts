@@ -825,12 +825,13 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
     await page.setViewportSize({width:390,height:844})
     await page.emulateMedia({reducedMotion:'reduce'})
     await visit(page,'/intelligence/xorus/?lang=fr')
-    const journey=page.getByRole('navigation',{name:'Parcours Intelligence xOrus'})
-    await expect(journey.getByRole('link')).toHaveCount(2)
-    // The full xOrus → Agents → Lab path is an explicit advanced opt-in.
-    await visit(page,'/intelligence/xorus/?lang=fr&lab=1')
-    await expect(page.getByRole('navigation',{name:'Parcours Intelligence xOrus'}).getByRole('link')).toHaveCount(3)
-    await visit(page,'/intelligence/xorus/?lang=fr')
+    await expect(page.locator('.xa-intelligence-path')).toHaveCount(0)
+    await page.locator('.xa-sidebar-toggle').click()
+    const journey=page.locator('#xa-context-navigation')
+    for(const path of ['/intelligence/xorus','/intelligence/agents','/workspace/agents','/intelligence/lab']){
+      await expect(journey.locator('a[href="'+path+'"]')).toBeVisible()
+    }
+    await page.locator('.xa-sidebar-toggle').click()
     await expect(page.getByRole('heading',{name:'xOrus, l’intelligence expliquée simplement'})).toBeVisible()
     await expect(page.getByRole('button',{name:'Afficher les outils avancés'})).toHaveAttribute('aria-expanded','false')
     await expect(page.locator('#xorus-paybox-wallet')).toHaveCount(0)

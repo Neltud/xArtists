@@ -7,7 +7,6 @@ import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phra
  */
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import IntelligencePath from '../components/intelligence/IntelligencePath'
 import XorusDecisionDesk from '../components/intelligence/XorusDecisionDesk'
 import { useI18n } from '../i18n/I18nContext'
 import DailySignalWidget from '../components/DailySignalWidget'
@@ -59,7 +58,6 @@ export default function XorusPage() {
         </button>
       </header>
 
-      <IntelligencePath />
 
       <PaperTradingPanel />
 

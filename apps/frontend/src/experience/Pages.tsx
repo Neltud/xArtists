@@ -1,6 +1,6 @@
-import {Suspense,useCallback,useEffect,useMemo,useState} from 'react'
-import {Link,useLocation,useParams,useSearchParams} from 'react-router-dom'
-import {modules,groups,type Group,type Module} from './modules'
+import {Suspense,useCallback,useEffect,useState} from 'react'
+import {Link,useParams,useSearchParams} from 'react-router-dom'
+import {modules,type Group,type Module} from './modules'
 import {isSoftLaunchVisible,showLabModules} from './softLaunch'
 import { publicStage, PUBLIC_STAGE_ORDER, type PublicStage } from './publicReadiness'
 import {AREAS,PRIMARY_AREAS,MOBILE_AREAS,MODULE_PLACEMENT,areaFor,areaDefinition,moduleLabel,navigationRank,contextualModules,type AreaId} from './informationArchitecture'
@@ -27,7 +27,7 @@ export function Home(){
  const c=useCopy()
  return <div className="xa-container xa-first-visit xa-workspace-home">
   <section className="xa-first-hero" aria-labelledby="xa-first-title"><div>
-   <p className="xa-eyebrow">xArtists · Art × Web3 × IA</p>
+   <p className="xa-eyebrow">xArtists · Art × Web3</p>
    <h1 id="xa-first-title">{c('navHomeTitle')}</h1>
    <p className="xa-first-lead">{c('navHomeIntro')}</p>
    <div className="xa-first-actions"><Link className="xa-button primary" to="/marketplace">{c('welcomeExplore')}<Icon name="arrow" size={17}/></Link><Link className="xa-button secondary" to="/studio">{c('welcomeCreate')}<Icon name="create" size={17}/></Link></div>

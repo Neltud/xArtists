@@ -1,7 +1,6 @@
 import { lazy, Suspense } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useI18n } from '../i18n/I18nContext'
-import IntelligencePath from '../components/intelligence/IntelligencePath'
 
 const Analysis = lazy(() => import('../components/intelligence/XorusDecisionDesk'))
 const Simulation = lazy(() => import('./SimulationLab'))
@@ -21,7 +20,6 @@ export default function LabPage() {
     setParams(updated)
   }
   return <div className="xa-intelligence-layout">
-    <IntelligencePath />
     <section className="xa-lab !p-0">
       <header className="xa-intelligence-hero">
         <p className="xa-intelligence-eyebrow">{fr ? '03 · Analyser et expérimenter' : '03 · Analyze and explore'}</p>
