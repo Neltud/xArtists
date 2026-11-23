@@ -159,26 +159,26 @@ html[data-theme="dark"] .xa-truth-card { background: #181b17; }
 }
 
 /* Light editorial homepage: whitespace, clear hierarchy, calm paper surfaces. */
-html[data-theme="light"] .xa-first-visit { color: #202920; }
+html[data-theme="light"] .xa-first-visit { color: var(--xa-text); }
 html[data-theme="light"] .xa-first-hero {
   background: #ffffff;
-  border-color: rgba(26,40,28,.09);
-  box-shadow: 0 20px 60px rgba(26,40,28,.035);
+  border-color: var(--xa-border);
+  box-shadow: 0 20px 60px rgba(70,43,104,.035);
 }
 html[data-theme="light"] .xa-first-tile,
 html[data-theme="light"] .xa-home-roadmap,
 html[data-theme="light"] .xa-first-network {
   background: #fff;
-  border-color: rgba(26,40,28,.10);
-  box-shadow: 0 4px 22px rgba(26,40,28,.025);
+  border-color: var(--xa-border);
+  box-shadow: 0 4px 22px rgba(70,43,104,.025);
 }
 html[data-theme="light"] .xa-first-tile:hover {
-  border-color: rgba(65,105,29,.4);
-  box-shadow: 0 9px 27px rgba(26,40,28,.065);
+  border-color: var(--xa-accent);
+  box-shadow: 0 9px 27px rgba(70,43,104,.065);
 }
 html[data-theme="light"] .xa-first-lead,
 html[data-theme="light"] .xa-first-tile-desc {
-  color: #566458;
+  color: var(--xa-muted);
 }
 @media (min-width: 900px) {
   .xa-first-visit { padding-top: clamp(42px,5vw,72px); }

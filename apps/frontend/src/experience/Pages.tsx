@@ -30,7 +30,7 @@ export function Home(){
    <p className="xa-eyebrow">xArtists · Art × Web3</p>
    <h1 id="xa-first-title">{c('navHomeTitle')}</h1>
    <p className="xa-first-lead">{c('navHomeIntro')}</p>
-   <div className="xa-first-actions"><Link className="xa-button primary" to="/marketplace">{c('welcomeExplore')}<Icon name="arrow" size={17}/></Link><Link className="xa-button secondary" to="/studio">{c('welcomeCreate')}<Icon name="create" size={17}/></Link></div>
+   <div className="xa-first-actions"><Link className="xa-button primary" to="/marketplace">{c('welcomeExplore')}<Icon name="arrow" size={17}/></Link><Link className="xa-button secondary" to="/studio">{c('navStudio')}<Icon name="create" size={17}/></Link></div>
    <p className="xa-first-privacy">{c('optional')}</p>
   </div><Link to="/wallet" className="xa-home-personal"><Icon name="wallet" size={30}/><strong>{c('navWallet')}</strong><span>{c('navWalletDesc')}</span><span className="xa-text-link">{c('open')}<Icon name="arrow" size={17}/></span></Link></section>
   <section className="xa-first-journeys" aria-labelledby="xa-first-what"><div className="xa-first-heading"><h2 id="xa-first-what">{c('navHomeChoose')}</h2><Link to="/guide" className="xa-text-link">{c('help')}<Icon name="arrow" size={16}/></Link></div>

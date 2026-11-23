@@ -14,8 +14,8 @@ test('light is default before React mounts, with a persisted dark choice', () =>
   assert.match(state, /stored\('xa-theme'\)==='dark'\?'dark':'light'/)
   assert.match(state, /classList.toggle\('dark',theme==='dark'\)/)
   assert.match(shell, /xa-theme-toggle/)
-  assert.match(css, /html\[data-theme=dark\]/)
-  assert.match(css, /color-scheme:light/)
+  assert.match(read('../src/styles/soul-tokens.css'), /html\[data-theme="dark"\]/)
+  assert.match(read('../src/styles/soul-tokens.css'), /color-scheme: light/)
 })
 
 test('pack hologram is a static, sourced-status placeholder, not fake live telemetry', () => {
