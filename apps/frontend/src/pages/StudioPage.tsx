@@ -9,6 +9,7 @@ import { requestOpenConnect } from '../lib/walletEvents'
 import { canListOwnedNft, canBuyAgent } from '../config/scStatus'
 import PhysicalNftCertifier from '../components/PhysicalNftCertifier'
 import CreatorMediaUpload from '../components/CreatorMediaUpload'
+import StudioVisualWorkspace,{readStudioDraft} from '../components/studio/StudioVisualWorkspace'
 import ArtworkTurntableLab from '../components/ArtworkTurntableLab'
 import MainnetJourney from '../components/MainnetJourney'
 import { useToast } from '../components/ui/Toast'
@@ -28,7 +29,7 @@ export default function StudioPage() {
   const [picked, setPicked] = useState<string | null>(null)
   const [name, setName] = useState('Atelier')
   const [ticker, setTicker] = useState('ATELIER')
-  const [nftName, setNftName] = useState('Oeuvre 1')
+  const [nftName, setNftName] = useState(() => readStudioDraft().title)
   const [nftMediaUri, setNftMediaUri] = useState('')
   const [pinnedMedia, setPinnedMedia] = useState<{mediaUri:string;metadataUri:string;attributes:string;title:string}|null>(null)
   const [tokenIdInput, setTokenIdInput] = useState('')
@@ -121,10 +122,12 @@ export default function StudioPage() {
   }
 
   return (
-    <div className="xa-creator-studio animate-fade-in mx-auto max-w-3xl space-y-8 px-4 pb-28 pt-6 sm:px-7">
+    <div className="xa-creator-studio xa-creator-studio-v2 animate-fade-in mx-auto max-w-3xl space-y-8 px-4 pb-28 pt-6 sm:px-7">
+      <StudioVisualWorkspace title={nftName} onTitle={setNftName}/>
+      <div className="xa-studio-technical">
       <header className="space-y-1">
         <p className="section-label">{xaRender("Création")}</p>
-        <h1 className="section-title display text-2xl">{xaRender(sculptureMode ? "Créer le NFT de ma sculpture" : "Creator Studio")}</h1>
+        <h2 className="section-title display text-2xl">{xaRender(sculptureMode ? "Créer le NFT de ma sculpture" : "Creator Studio")}</h2>
         <p className="text-sm leading-7 text-[color:var(--xa-text-secondary)]">
           {xaRender("Ajoute une image, une vidéo ou une musique depuis ton appareil. La publication et la création NFT demandent ensuite des vérifications et une signature. ")}</p>
       </header>
@@ -345,6 +348,7 @@ export default function StudioPage() {
           Comparer les offres et leur disponibilité
         </Link>
       </section>
+      </div>
     </div>
   )
 }
