@@ -37,7 +37,7 @@ function mediaKind(file:File):Kind|null{
  if(file.type.startsWith('audio/'))return 'audio'
  return null
 }
-export default function StudioVisualWorkspace({title,onTitle}:{title:string;onTitle:(value:string)=>void}){
+export default function StudioVisualWorkspace({title,onTitle,onAdvanced}:{title:string;onTitle:(value:string)=>void;onAdvanced:()=>void}){
  const c=useCopy()
  const fileInput=useRef<HTMLInputElement>(null)
  const sequence=useRef(0)
@@ -159,7 +159,7 @@ export default function StudioVisualWorkspace({title,onTitle}:{title:string;onTi
      <button type="button" className="xa-button primary" disabled>{c('studioPublish')}</button>
      <small role="note">{c('studioPublishUnavailable')}</small>
      <Link to="/create/gallery" className="xa-button secondary">{c('studioPrepareExhibition')}</Link>
-     <a href="#xa-studio-mint" className="xa-visual-studio-advanced-link">{c('studioAdvancedMint')}</a>
+     <a href="#xa-studio-mint" onClick={onAdvanced} className="xa-visual-studio-advanced-link">{c('simpleStudioAdvancedLink')}</a>
     </div>
    </aside>
   </div>
