@@ -31,7 +31,7 @@ export default function FeaturedArtGallery(){
       onError={e=>{e.currentTarget.style.display='none'}} />
     </a>
     <div className="xa-featured-work-caption">
-     <div><h3>{art.title}</h3><p>{c('editorialSaleUnverified')}</p></div>
+     <div><h3>{art.title}</h3></div>
      <a href={'https://explorer.multiversx.com/nfts/'+art.id} target="_blank" rel="noopener noreferrer">
       {c('editorialViewOnExplorer')} <span aria-hidden="true">↗</span>
      </a>
