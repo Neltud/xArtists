@@ -94,6 +94,6 @@ export default function WalletPage(){
     </div>:<WalletAssets account={account} section={selection==='tokens'?'tokens':selection==='nft'?'nfts':'all'} />}
    </>}
   </div>
-  <div className="xa-cockpit-discover"><ArtworkGrid/></div>
+  <div className="xa-cockpit-discover"><ArtworkGrid limit={3}/></div>
  </div>
 }
