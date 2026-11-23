@@ -1,0 +1,97 @@
+/* Approved xArtists art gallery reference #1: paper, images and violet actions.
+   This is editorial discovery from a dated catalogue, not a listing engine. */
+.xa-ref-v2[data-area="art"] {
+  --xa-bg: #fbfafd; --xa-panel:#fff; --xa-panel2:#f3eefb;
+  --xa-text:#28133d; --xa-muted:#776783; --xa-dim:#92849d;
+  --xa-text-secondary:#776783; --xa-text-muted:#92849d;
+  --xa-border:#e3d9e9; --xa-border-strong:#d2c2df;
+  --xa-accent:#7731ce; --xa-accent-ink:#fff;
+  background:var(--xa-bg); color:var(--xa-text);
+}
+.xa-ref-v2[data-area="art"] > main,
+.xa-ref-v2[data-area="art"] .xa-header {background:var(--xa-bg);color:var(--xa-text)}
+.xa-ref-v2[data-area="art"] .xa-module-page[data-module="market"] {
+  width:calc(100% - 60px); max-width:1600px; padding-top:0;
+}
+.xa-ref-v2[data-area="art"] .xa-module-page[data-module="market"] > .xa-breadcrumb,
+.xa-ref-v2[data-area="art"] .xa-module-page[data-module="market"] .xa-module-sidebar {display:none}
+.xa-ref-v2[data-area="art"] .xa-module-page[data-module="market"] .xa-module-layout {display:block}
+.xa-ref-v2[data-area="art"] .xa-module-page[data-module="market"] .xa-module-content,
+.xa-ref-v2[data-area="art"] .xa-module-page[data-module="market"] .xa-module-body {max-width:none;width:100%;padding:0}
+.xa-ref-v2[data-area="art"] .xa-marketplace {max-width:none !important;width:100%;margin:0;color:var(--xa-text)}
+.xa-featured-gallery {max-width:100%;color:var(--xa-text);margin:12px 0 34px}
+.xa-featured-gallery-header {display:flex;align-items:end;gap:clamp(22px,5vw,64px);padding-bottom:24px}
+.xa-ref-v2 .xa-module-body .xa-featured-gallery-header h2 {
+  font-family:Georgia, 'Times New Roman',serif !important;
+  font-size:clamp(50px,6.1vw,91px) !important;
+  letter-spacing:-.058em !important;
+  line-height:1.06 !important;
+  font-weight:500 !important;
+  margin:0 !important; color:#2a103d !important;
+}
+.xa-featured-tabs {display:flex;align-items:center;gap:34px;font-size:clamp(15px,1.7vw,22px);padding-bottom:8px}
+.xa-featured-tabs a,.xa-featured-tab-current {display:inline-flex;align-items:center;min-height:48px;white-space:nowrap}
+.xa-featured-tabs a {color:#4f405d}
+.xa-featured-tabs a:hover {color:var(--xa-accent)}
+.xa-featured-tab-current {color:var(--xa-accent);font-weight:750;position:relative}
+.xa-featured-tab-current:after {content:'';height:3px;position:absolute;inset-inline:0;bottom:-2px;background:var(--xa-accent)}
+.xa-featured-gallery-grid {
+  display:grid;grid-template-columns:minmax(0,1.73fr) minmax(260px,1fr);
+  grid-template-rows:repeat(2,minmax(0,1fr));gap:20px 24px;
+}
+.xa-featured-work {display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden}
+.xa-featured-work-0 {grid-row:1/span 2}
+.xa-featured-work-image {display:block;position:relative;overflow:hidden;flex:1;min-height:160px;background:linear-gradient(135deg,#ded8e7,#c1a4d3)}
+.xa-featured-work-0 .xa-featured-work-image {min-height:560px}
+.xa-featured-work-1 .xa-featured-work-image,.xa-featured-work-2 .xa-featured-work-image{min-height:218px}
+.xa-featured-work-image img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .24s ease}
+.xa-featured-work-image:hover img{transform:scale(1.016)}
+.xa-featured-work-placeholder{position:absolute;inset:0;display:flex;justify-content:center;align-items:center;font-size:24px;letter-spacing:-.05em;color:#9b89a4}
+.xa-featured-work-caption {display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0 1px}
+.xa-featured-work-caption h3{font-size:clamp(16px,1.7vw,23px);letter-spacing:-.032em;line-height:1.2;font-weight:750;color:#29113c;margin:0}
+.xa-featured-work-caption p{margin:5px 0 0;color:#6c5d7b;font-size:13px}
+.xa-featured-work-caption>a {
+  display:inline-flex;justify-content:center;align-items:center;
+  gap:10px;min-height:42px;padding:0 16px;border-radius:7px;
+  color:#fff;background:#7432cb;font-weight:650;font-size:13px;white-space:nowrap;
+}
+.xa-featured-work-caption>a:hover{background:#6024b4}
+.xa-featured-gallery-disclaimer {font-size:11px;color:#777086;line-height:1.5;margin:15px 0 0}
+.xa-ref-v2[data-area="art"] .xa-marketplace-categories{
+  padding:18px 0;border-top:1px solid var(--xa-border);margin:24px 0 0}
+.xa-ref-v2[data-area="art"] .xa-marketplace-categories__heading{display:none}
+.xa-ref-v2[data-area="art"] .xa-marketplace-category{min-height:54px;border-radius:8px}
+.xa-ref-v2[data-area="art"] .xa-market-grid{margin:24px 0 0}
+.xa-ref-v2[data-area="art"] .xa-market-grid__heading h1{color:var(--xa-text)!important}
+.xa-ref-v2[data-area="art"] .xa-marketplace-status {color:#59466a}
+
+/* The app can be globally dark while the gallery stays a bright editorial surface. */
+html[data-theme="dark"] .xa-ref-v2[data-area="art"] .xa-header,
+html[data-theme="dark"] .xa-ref-v2[data-area="art"] main {background:#fbfafd;color:#28133d}
+html[data-theme="dark"] .xa-ref-v2[data-area="art"] .xa-module-page[data-module="market"] .xa-marketplace {color:#28133d}
+@media(max-width:1250px) {
+  .xa-featured-gallery-grid{gap:18px}
+  .xa-featured-work-0 .xa-featured-work-image{min-height:490px}
+  .xa-featured-work-1 .xa-featured-work-image,.xa-featured-work-2 .xa-featured-work-image{min-height:180px}
+  .xa-featured-work-caption>a{padding:0 10px;font-size:12px}
+}
+@media(max-width:1023px) {
+  .xa-ref-v2[data-area="art"] .xa-module-page[data-module="market"] {width:calc(100% - 32px)}
+}
+@media(max-width:720px) {
+  .xa-featured-gallery-header{align-items:flex-start;flex-direction:column;gap:8px}
+  .xa-ref-v2 .xa-module-body .xa-featured-gallery-header h2{font-size:clamp(42px,11vw,63px)!important}
+  .xa-featured-tabs{font-size:17px;gap:24px;padding-bottom:5px}
+  .xa-featured-gallery-grid{grid-template-columns:1fr;grid-template-rows:auto;gap:22px}
+  .xa-featured-work-0{grid-row:auto}
+  .xa-featured-work-0 .xa-featured-work-image{min-height:0;aspect-ratio:1.17}
+  .xa-featured-work-1 .xa-featured-work-image,.xa-featured-work-2 .xa-featured-work-image{min-height:0;aspect-ratio:1.65}
+  .xa-featured-work-caption>a{min-height:42px}
+  .xa-featured-gallery{margin-top:10px}
+}
+@media(max-width:400px){
+  .xa-ref-v2[data-area="art"] .xa-module-page[data-module="market"] {width:calc(100% - 24px)}
+  .xa-featured-work-caption{flex-wrap:wrap}
+  .xa-featured-work-caption>a{width:100%}
+}
+@media(prefers-reduced-motion:reduce){.xa-featured-work-image img{transition:none}}

@@ -30,6 +30,7 @@ async function ui({connected=true,error=false,path='/workspace/wallet'}={}){
   '../lib/xportalWc':{clearXPortalSession:()=>{}},
   '../components/ui/Toast':{useToast:()=>({push})},
   '../components/MoonPayBuyButton':()=>null,
+  '../experience/Pages':{ArtworkGrid:()=>null},
  })
  const host=document.createElement('div');document.body.append(host)
  const root=createRoot(host)
@@ -45,11 +46,13 @@ test('overview and assets share one account request set while real data survive 
  try{
   assert.equal(h.requests.length,3)
   assert.equal(h.host.querySelectorAll('h1').length,1)
-  assert.equal(h.host.querySelector('.xa-wallet-summary strong').textContent,'3.0000')
-  await h.click(h.button('walletAssets'))
+  assert.equal(h.host.querySelector('.xa-cockpit-metrics strong').textContent,'3.0000')
+  await h.click(h.button('Tokens'))
   assert.equal(h.requests.length,3,'changing view must not fetch the account again')
-  assert.match(h.host.textContent,/Test artwork/)
   assert.match(h.host.textContent,/TEST/)
+  await h.click(h.button('NFT'))
+  assert.equal(h.requests.length,3)
+  assert.match(h.host.textContent,/Test artwork/)
   await h.click(h.button('walletOverview'))
   assert.equal(h.requests.length,3)
   assert.equal(h.connects.length,0)
@@ -58,9 +61,11 @@ test('overview and assets share one account request set while real data survive 
 test('failed account reads remain unavailable in both views rather than verified zero balances',async()=>{
  const h=await ui({error:true})
  try{
-  assert.equal(h.host.querySelector('.xa-wallet-summary strong').textContent,'—')
+  assert.equal(h.host.querySelector('.xa-cockpit-metrics strong').textContent,'—')
   assert.match(h.host.textContent,/walletUnavailable/)
-  await h.click(h.button('walletAssets'))
+  await h.click(h.button('Tokens'))
+  assert.match(h.host.textContent,/walletUnavailable/)
+  await h.click(h.button('NFT'))
   assert.match(h.host.textContent,/walletUnavailable/)
   assert.doesNotMatch(h.host.textContent,/Aucun token ESDT|Aucun NFT trouvé/)
  }finally{await h.close()}
