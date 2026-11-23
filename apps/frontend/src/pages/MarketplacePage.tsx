@@ -3,7 +3,7 @@
  * The existing API is only a listings discovery source; buying remains gated
  * on fresh on-chain codehash / reconciled contract status.
  */
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, Navigate, useSearchParams } from 'react-router-dom'
 import RwaPhysicalPanel from '../components/market/RwaPhysicalPanel'
 import OpenSeaCollectionPanel from '../components/market/OpenSeaCollectionPanel'
@@ -41,6 +41,7 @@ function isPackListing(l:Listing):boolean{
 }
 export default function MarketplacePage(){
   const c=useCopy()
+  const marketDepthRef=useRef<HTMLDetailsElement>(null)
   const live=useMarketplaceReadiness()
   const [params,setParams]=useSearchParams()
   const param=params.get('tab')
@@ -86,6 +87,13 @@ export default function MarketplacePage(){
     else v.set('tab',next)
     setParams(v)
   }
+  // Preserve deep links into verified listings and personal selling when the
+  // editorial gallery is otherwise the simple default experience.
+  useEffect(()=>{
+    const reveal=()=>{if(params.has('buy')||params.has('list')||/^#xa-market-(grid|sell)$/.test(window.location.hash))marketDepthRef.current?.setAttribute('open','')}
+    reveal();window.addEventListener('hashchange',reveal)
+    return()=>window.removeEventListener('hashchange',reveal)
+  },[params])
   // Preserve bookmarked pack links, but place agent products in their own space.
   if(selected==='packs')return <Navigate replace to={{pathname:'/intelligence/agents',search:params.toString()?'?'+params.toString():''}}/>
   return <div className={"xa-page xa-marketplace animate-fade-in space-y-6 pb-24 max-w-6xl mx-auto"+(selected==='art'?" xa-marketplace--art":"")}>
@@ -124,7 +132,7 @@ export default function MarketplacePage(){
         <h2 id="xa-market-categories-title">{c('marketExploreTitle')}</h2>
         <p>{c('marketExploreIntro')} {selected==='art'&&<a href="#xa-market-sell"
           className="inline-flex min-h-[40px] items-center font-semibold underline underline-offset-4"
-          aria-label="Vendre un NFT de mon wallet">Vendre mon NFT →</a>}{selected==='art'&&<Link to="/create/gallery"
+          aria-label="Vendre un NFT de mon wallet" onClick={()=>marketDepthRef.current?.setAttribute('open','')}>Vendre mon NFT →</a>}{selected==='art'&&<Link to="/create/gallery"
           className="inline-flex min-h-[40px] items-center font-semibold underline underline-offset-4 ml-3">
           {c('welcomeExhibit')}
         </Link>}</p>
@@ -140,7 +148,9 @@ export default function MarketplacePage(){
       </nav>
     </section>
 
-    {selected==='art'&&<MarketplaceDiscoveryGrid
+    {selected==='art'&&<details className="xa-market-depth" ref={marketDepthRef}>
+      <summary><strong>{c('simpleMarketAll')}</strong><small>{c('simpleMarketAllDesc')}</small></summary>
+      <div className="xa-market-depth-content"><MarketplaceDiscoveryGrid
       listings={items} sourceReady={sourceReady} loading={loading} query={query} sort={sort}
       onQuery={setQuery} onSort={setSort} onRefresh={()=>void refresh()}
     />}
@@ -158,7 +168,7 @@ export default function MarketplacePage(){
       onToggle={e=>setShowTech(e.currentTarget.open)}>
       <summary>{c('marketGridTechTitle')}</summary>
       {showTech&&<div><LiaAndEscrowNfts /><ExistingNftReadiness /></div>}
-    </details>}
+    </details></div></details>}
 
     <p className="xa-marketplace-status" role="note">
       <span className="xa-marketplace-status__dot" aria-hidden="true" />
