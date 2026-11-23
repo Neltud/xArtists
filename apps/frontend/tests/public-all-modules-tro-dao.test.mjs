@@ -1,3 +1,4 @@
+import {architecture as a,catalogue,navigation as n} from './architecture-catalogue.mjs'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
@@ -20,17 +21,13 @@ test('DAO voting weight is exclusively staked TRO, never NFT/SFT or local balanc
   for (const sentence of variants) assert.ok(sentence.includes('$TRO'))
 })
 
-test('all registered routes are preserved while group/sidebar listings honor the core or lab opt-in', () => {
-  const pages = read('../src/experience/Pages.tsx')
-  const modules = read('../src/experience/modules.ts')
-  const count = [...modules.matchAll(/\bmodule\('/g)].length
-  assert.ok(count >= 35, `unexpected module count: ${count}`)
-  assert.match(pages, /const list=modules\.filter\(m=>m\.group===group&&/)
-  assert.match(pages, /modules\.filter\(x=>x\.group===m\.group&&\(x\.id===m\.id\|\|isSoftLaunchVisible\(x\)\)\)/)
-  assert.match(pages, /showLabModules\(\)/)
-  assert.match(pages, /to="\/directory\?lab=1"/)
-  assert.match(pages, /<StageBadge stage=\{stage\}\/>/)
-  assert.match(pages, /publicStage\(m\.id\)/)
-  assert.match(pages, /PUBLIC_STAGE_ORDER\.map/)
-  assert.match(pages, /welcomeNoBridge/)
+test('all routes remain registered while context and directory follow the shared hierarchy',()=>{
+  assert.equal(catalogue.length,44)
+  const pages=read('../src/experience/Pages.tsx')
+  assert.match(pages,/contextualModules\(modules,m.id\)/)
+  assert.match(pages,/showLabModules\(\)/)
+  assert.match(pages,/isSoftLaunchVisible\(m,lab\)/)
+  assert.match(pages,/xa-directory-stage-controls/)
+  assert.match(pages,/StageBadge stage=\{publicStage\(m.id\)\}/)
+  assert.match(pages,/welcomeNoBridge/)
 })

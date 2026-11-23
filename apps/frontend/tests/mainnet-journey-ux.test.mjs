@@ -72,9 +72,9 @@ test('marketplace transactions retain fresh on-chain codehash and build gate',()
 })
 
 test('entry journeys never require a wallet to browse',()=>{
-  assert.match(home,/to="\/museum"/)
+  assert.match(home,/PRIMARY_AREAS.map/)
   assert.match(home,/to="\/marketplace"/)
-  assert.match(home,/to:'\/studio'/)
+  assert.match(home,/to="\/studio"/)
   assert.match(market,/to="\/studio"/)
   assert.match(studio,/to="\/marketplace"/)
   assert.match(journey,/connected\s*\n\s*\?/)

@@ -4,25 +4,12 @@
  * catalogue without granting payments, minting, signing or trading rights.
  */
 import type { Module } from './modules'
+import {MODULE_PLACEMENT,isNavigationVisible} from './informationArchitecture'
 
 /** User-facing starting surfaces (browse, informational or explicitly preview). */
-export const CORE_MODULE_IDS = new Set([
-  'museum',
-  'market',
-  'maison',
-  'lia',
-  'agents',
-  'packs',
-  'studio',
-  'gallery-builder',
-  'wallet',
-  'account',
-  'tro-crosschain',
-  'status',
-  'legal',
-  'guide',
-  'app',
-])
+export const CORE_MODULE_IDS = new Set(
+  Object.keys(MODULE_PLACEMENT).filter(id=>isNavigationVisible(id))
+)
 
 export function isCoreModule(m: Module | { id: string }): boolean {
   return CORE_MODULE_IDS.has(m.id)
@@ -41,5 +28,5 @@ export function showLabModules(): boolean {
 
 /** Presentation-only visibility. NEVER use this as a capability or auth gate. */
 export function isSoftLaunchVisible(m: Module | {id:string}, lab = showLabModules()): boolean {
-  return lab || isCoreModule(m)
+  return isNavigationVisible(m.id,lab)
 }

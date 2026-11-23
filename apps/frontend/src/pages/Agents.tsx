@@ -85,7 +85,7 @@ export default function Agents() {
         {showPacks && <div className="space-y-8">
       <header className="space-y-4 border-b border-[color:var(--xa-border)] pb-7">
         <p className="section-label">{xaRender('Genesis · Limited')}</p>
-        <h1 className="section-title display">{xaRender('Pulse · Yield · Sentinel')}</h1>
+        <h2 className="section-title display">{xaRender('Pulse · Yield · Sentinel')}</h2>
         <p className="section-lead text-[color:var(--xa-text-secondary)]">
           {xaRender(
             'Packs Genesis NFT en découverte — pas un fonds, pas d’APY promis. Objectifs/plafonds Pulse 33, Yield 22, Sentinel 11 EGLD ; prix de contrat différents. Les ventes et livraisons restent suspendues.',

@@ -2,23 +2,20 @@ import {Suspense,useCallback,useEffect,useMemo,useState} from 'react'
 import {Link,useLocation,useParams,useSearchParams} from 'react-router-dom'
 import {modules,groups,type Group,type Module} from './modules'
 import {isSoftLaunchVisible,showLabModules} from './softLaunch'
-import { publicStage, stageRank, PUBLIC_STAGE_ORDER, type PublicStage } from './publicReadiness'
-import OrbitalArt from './OrbitalArt'
+import { publicStage, PUBLIC_STAGE_ORDER, type PublicStage } from './publicReadiness'
+import {AREAS,PRIMARY_AREAS,MOBILE_AREAS,MODULE_PLACEMENT,areaFor,areaDefinition,moduleLabel,navigationRank,contextualModules,type AreaId} from './informationArchitecture'
 import {useCopy} from './state'
 import {useI18n} from '../i18n/I18nContext'
 import Icon from './Icon'
 import {matchesModuleSearch} from './moduleSearch'
 import RouteErrorBoundary from '../components/RouteErrorBoundary'
-import GenesisPackShelf from '../components/packs/GenesisPackShelf'
-import IntelligencePath from '../components/intelligence/IntelligencePath'
-import HomeHeroSculpture from './HomeHeroSculpture'
 import MainnetJourney from '../components/MainnetJourney'
 import { MultiversXProvider } from '../context/MultiversXContext'
 const API='https://api.multiversx.com'
 
 export function Loader(){const c=useCopy();return <div className="xa-loading" role="status"><span className="xa-loader"/><span>{c('commonLoading')}</span></div>}
 export function StageBadge({stage}:{stage:PublicStage}){const c=useCopy();return <span className="xa-module-status" data-stage={stage}><span className="xa-module-status-dot"/>{c(stage==='browse'?'stageBrowse':stage==='preview'?'stagePreview':'stageRoadmap')}</span>}
-export function ModuleCard({module:m,index=0}:{module:Module;index?:number}){const c=useCopy(),stage=publicStage(m.id);return <Link className="xa-module-card" to={m.path}><div className="xa-card-top"><span className="xa-module-icon"><Icon name={m.icon} size={23}/></span><span className="xa-card-number">{String(index+1).padStart(2,'0')}</span><Icon name="diagonal" size={17}/></div><h3>{c(m.label)}</h3><div className="xa-card-tags"><span>{c(m.group)}</span></div><StageBadge stage={stage}/></Link>}
+export function ModuleCard({module:m,index=0}:{module:Module;index?:number}){const c=useCopy(),stage=publicStage(m.id);return <Link className="xa-module-card" to={m.path}><div className="xa-card-top"><span className="xa-module-icon"><Icon name={m.icon} size={23}/></span><span className="xa-card-number">{String(index+1).padStart(2,'0')}</span><Icon name="diagonal" size={17}/></div><h3>{c(moduleLabel(m))}</h3><div className="xa-card-tags"><span>{c(areaDefinition(areaFor(m.id)).label)}</span></div><StageBadge stage={stage}/></Link>}
 export function NetworkStrip(){
  const c=useCopy(),{lang}=useI18n(),[data,setData]=useState<any>(null),[loading,setLoading]=useState(true),[error,setError]=useState(false)
  const load=useCallback(()=>{const abort=new AbortController();setLoading(true);setError(false);const timer=setTimeout(()=>abort.abort(),10000);Promise.all([fetch(`${API}/economics`,{signal:abort.signal}).then(r=>{if(!r.ok)throw Error();return r.json()}),fetch(`${API}/stats`,{signal:abort.signal}).then(r=>{if(!r.ok)throw Error();return r.json()})]).then(([e,s])=>setData({...e,epoch:s.epoch})).catch(()=>setError(true)).finally(()=>{setLoading(false);clearTimeout(timer)});return()=>{abort.abort();clearTimeout(timer)}},[])
@@ -28,148 +25,55 @@ export function NetworkStrip(){
 }
 export function Home(){
  const c=useCopy()
- const journeys=[
-  {id:'visit',to:'/museum',module:'museum',label:c('welcomeExplore'),desc:c('welcomeExploreDesc'),icon:'museum'},
-  {id:'exhibit',to:'/create/gallery',module:'gallery-builder',label:c('welcomeExhibit'),desc:c('welcomeExhibitDesc'),icon:'museum'},
-  {id:'create',to:'/studio',module:'studio',label:c('welcomeCreate'),desc:c('welcomeCreateDesc'),icon:'create'},
-  {id:'market',to:'/marketplace',module:'market',label:c('welcomeMarket'),desc:c('welcomeMarketDesc'),icon:'market'},
- ]
- return <div className="xa-container xa-first-visit">
-  <section className="xa-first-hero" aria-labelledby="xa-first-title">
-   <div>
-    <p className="xa-eyebrow">{c('welcomeEyebrow')}</p>
-    <h1 id="xa-first-title">{c('welcomeTitle')}</h1>
-    <p className="xa-first-lead">{c('welcomeIntro')}</p>
-    <div className="xa-first-actions">
-     <Link className="xa-button primary" to="/museum">{c('welcomeExplore')}<Icon name="arrow" size={17}/></Link>
-     <Link className="xa-button secondary" to="/guide">{c('help')}<Icon name="book" size={17}/></Link>
-     <Link className="xa-button secondary" to="/roadmap">{c('roadmapLabel')}<Icon name="arrow" size={17}/></Link>
-    </div>
-    <p className="xa-first-privacy">{c('optional')}</p>
-   </div>
-   <OrbitalArt/>
+ return <div className="xa-container xa-first-visit xa-workspace-home">
+  <section className="xa-first-hero" aria-labelledby="xa-first-title"><div>
+   <p className="xa-eyebrow">xArtists · Art × Web3 × IA</p>
+   <h1 id="xa-first-title">{c('navHomeTitle')}</h1>
+   <p className="xa-first-lead">{c('navHomeIntro')}</p>
+   <div className="xa-first-actions"><Link className="xa-button primary" to="/marketplace">{c('welcomeExplore')}<Icon name="arrow" size={17}/></Link><Link className="xa-button secondary" to="/studio">{c('welcomeCreate')}<Icon name="create" size={17}/></Link></div>
+   <p className="xa-first-privacy">{c('optional')}</p>
+  </div><Link to="/wallet" className="xa-home-personal"><Icon name="wallet" size={30}/><strong>{c('navWallet')}</strong><span>{c('navWalletDesc')}</span><span className="xa-text-link">{c('open')}<Icon name="arrow" size={17}/></span></Link></section>
+  <section className="xa-first-journeys" aria-labelledby="xa-first-what"><div className="xa-first-heading"><h2 id="xa-first-what">{c('navHomeChoose')}</h2><Link to="/guide" className="xa-text-link">{c('help')}<Icon name="arrow" size={16}/></Link></div>
+   <ul className="xa-first-tiles">{PRIMARY_AREAS.map((area,i)=><li key={area.id}><Link className="xa-first-tile" to={area.to}><span className="xa-first-tile-top"><Icon name={area.icon} size={24}/><span>0{i+1}</span></span><strong>{c(area.label)}</strong><span className="xa-first-tile-desc">{c(area.description)}</span><span className="xa-first-tile-bottom">{c('open')}<Icon name="arrow" size={17}/></span></Link></li>)}</ul>
   </section>
-  <section className="xa-first-journeys" aria-labelledby="xa-first-what">
-   <div className="xa-first-heading">
-    <div><p className="xa-eyebrow">xArtists</p><h2 id="xa-first-what">{c('welcomeAsk')}</h2></div>
-    <div className="xa-first-quicklinks"><Link to="/auction" className="xa-text-link">{c('auction')}<Icon name="arrow" size={16}/></Link><Link to="/guide" className="xa-text-link">{c('help')}<Icon name="arrow" size={16}/></Link></div>
-   </div>
-   <ul className="xa-first-tiles">
-    {journeys.map((a,i)=><li key={a.id}>
-      <Link className="xa-first-tile" to={a.to}>
-       <span className="xa-first-tile-top"><Icon name={a.icon} size={24}/><span>0{i+1}</span></span>
-       <strong>{a.label}</strong>
-       <StageBadge stage={publicStage(a.module)}/>
-       <span className="xa-first-tile-desc">{a.desc}</span>
-       <span className="xa-first-tile-bottom">{c('open')}<Icon name="arrow" size={17}/></span>
-      </Link>
-    </li>)}
-   </ul>
-  </section>
-  <MainnetJourney current="home" />
-  <section className="xa-home-roadmap" aria-labelledby="xa-home-roadmap-title">
-   <div><h2 id="xa-home-roadmap-title">{c('roadmapTitle')}</h2><p>{c('roadmapFutureLead')}</p></div>
-   <Link className="xa-button secondary" to="/roadmap">{c('roadmapLabel')}<Icon name="arrow" size={16}/></Link>
-  </section>
-  <section className="xa-first-access" aria-labelledby="xa-first-networks">
-   <div>
-    <p className="xa-eyebrow">xArtists · Multi-chain</p>
-    <h2 id="xa-first-networks">{c('welcomeNetworks')}</h2>
-    <p>{c('welcomeNetworksDesc')}</p>
-    <p className="xa-first-access-warning">{c('welcomeNoBridge')}</p>
-   </div>
-   <div className="xa-first-network-list">
-    <Link to="/marketplace" className="xa-first-network"><span>{c('welcomeMx')}</span><Icon name="arrow" size={16}/></Link>
-    <Link to="/marketplace?tab=opensea" className="xa-first-network"><span>{c('welcomeOpenSea')}</span><Icon name="arrow" size={16}/></Link>
-    <Link to="/offres" className="xa-first-network"><span>{c('welcomeEuros')}</span><Icon name="arrow" size={16}/></Link>
-   </div>
-  </section>
-  <section className="xa-first-tools" aria-labelledby="xa-first-tools-title">
-   <div><h2 id="xa-first-tools-title">{c('welcomeSeeAll')}</h2><p>{c('welcomeToolsLead')}</p></div>
-   <Link to="/directory" className="xa-button secondary">{c('directory')}<Icon name="arrow" size={16}/></Link>
-  </section>
-  <details className="xa-first-details">
-   <summary>{c('welcomeAdvanced')}</summary>
-   <p>{c('welcomeMx')}. {c('welcomeOpenSea')}. {c('welcomeEuros')}. {c('welcomeNoBridge')}</p>
-   <Link to="/dao" className="xa-first-context-link">{c('dao')}<Icon name="arrow" size={14}/></Link> <Link to="/xorus" className="xa-first-context-link">{c('lia')}<Icon name="arrow" size={14}/></Link> <Link to="/lab?view=3d" className="xa-first-context-link">Labo sculpture 3D<Icon name="arrow" size={14}/></Link> <Link to="/go-live" className="xa-first-context-link">{c('status')}<Icon name="arrow" size={14}/></Link>
-  </details>
+  <section className="xa-home-workflow" aria-labelledby="xa-home-workflow-title"><div><p className="xa-eyebrow">{c('navStudio')}</p><h2 id="xa-home-workflow-title">{c('welcomeExhibit')}</h2><p>{c('welcomeExhibitDesc')}</p></div><nav aria-label={c('navStudio')}>{contextualModules(modules,'studio').map(m=><Link to={m.path} key={m.id}><Icon name={m.icon} size={20}/><span>{c(moduleLabel(m))}</span><StageBadge stage={publicStage(m.id)}/><Icon name="arrow" size={16}/></Link>)}</nav></section>
+  <div className="xa-home-utilities"><Link to="/offres">{c('navAgentCatalogue')}<Icon name="arrow" size={16}/></Link><Link to="/directory">{c('directory')}<Icon name="search" size={16}/></Link><Link to="/roadmap">{c('roadmapLabel')}<Icon name="arrow" size={16}/></Link></div>
+  <details className="xa-first-details"><summary>{c('navHelpProject')}</summary><MainnetJourney current="home"/><p>{c('welcomeMx')}. {c('welcomeOpenSea')}. {c('welcomeEuros')}. {c('welcomeNoBridge')}</p><Link to="/marketplace?tab=opensea" className="xa-text-link">{c('welcomeOpenSea')}<Icon name="arrow" size={14}/></Link></details>
  </div>
 }
-
+const LEGACY_GROUP_AREA:Record<Group,AreaId>={explore:'art',create:'studio',intelligence:'intelligence',finance:'ecosystem',workspace:'wallet'}
 export function GroupPage({group}:{group:Group}){
- const c=useCopy(),{lang}=useI18n()
- const [q,setQ]=useState('')
- const [showIntelligenceAdvanced,setShowIntelligenceAdvanced]=useState(false)
- const lab=showLabModules()
- const list=modules.filter(m=>m.group===group&&
-  (isSoftLaunchVisible(m,lab)||(group==='intelligence'&&showIntelligenceAdvanced))&&
-  matchesModuleSearch(q,[c(m.label),c(m.group),...m.tags,m.path,...m.aliases],lang)).sort((a,b)=>stageRank(a.id)-stageRank(b.id))
- return <div className={`xa-container xa-group-page group-${group}`}>
-  <div className="xa-page-intro">
-   <div><div className="xa-breadcrumb"><Link to="/">xArtists</Link><Icon name="chevron" size={12}/><span>{c(group)}</span></div>
-    <div className="xa-eyebrow">{c('welcomeSeeAll')}</div>
-    <h1>{c(group)}<span>↗</span></h1>
-    <p>{c('welcomeToolsLead')}</p>
-   </div>
-  </div>
-  {group==='intelligence'&&<section className="mb-5" aria-label={lang==='fr'?'Commencer avec xOrus':'Start with xOrus'}>
-   <p className="xa-intelligence-note mb-3">{lang==='fr'
-     ? 'Commencez par xOrus et les agents. Les outils spécialisés restent accessibles en mode avancé.'
-     : 'Start with xOrus and the agents. Specialized tools remain available in advanced mode.'}</p>
-   <IntelligencePath advanced={showIntelligenceAdvanced||lab}/>
-   <button type="button" className="xa-button secondary" aria-expanded={showIntelligenceAdvanced}
-     onClick={()=>setShowIntelligenceAdvanced(open=>!open)}>
-     {showIntelligenceAdvanced
-       ? (lang==='fr'?'Masquer les outils avancés':'Hide advanced tools')
-       : (lang==='fr'?'Afficher les outils avancés':'Show advanced tools')}
-   </button>
-  </section>}
-  <div className="xa-directory-head">
-   <h2>{c('modules')}<span role="status" aria-live="polite" aria-atomic="true">{list.length}</span></h2>
-   <label className="xa-filter-search"><Icon name="search" size={17}/>
-    <input type="search" value={q} onChange={e=>setQ(e.target.value)} placeholder={c('search')} aria-label={c('search')}/>
-   </label>
-  </div>
-  {PUBLIC_STAGE_ORDER.map(stage=>{const items=list.filter(m=>publicStage(m.id)===stage);return items.length?<section key={stage} className="xa-public-stage-section"><div className="xa-stage-heading"><h2>{c(stage==='browse'?'stageBrowse':stage==='preview'?'stagePreview':'stageRoadmap')}</h2><p>{c(stage==='browse'?'roadmapNowLead':stage==='preview'?'roadmapPreviewLead':'roadmapFutureLead')}</p></div><div className="xa-module-grid">{items.map((m,k)=><ModuleCard key={m.id} module={m} index={k}/>)}</div></section>:null})}
-  {!list.length&&<p className="xa-empty" role="status">{c('noResults')}</p>}
-  <p className="mt-8 text-sm text-[color:var(--xa-muted)]">
-   <Link className="xa-text-link" to={`/directory?group=${group}`}>{c('directory')}<Icon name="arrow" size={17}/></Link>
-  </p>
-  {group==='explore'&&<details className="xa-first-details">
-   <summary>{c('discoverArt')}</summary><ArtworkGrid/>
-  </details>}
- </div>
+ const c=useCopy(),area=areaDefinition(LEGACY_GROUP_AREA[group])
+ const list=modules.filter(m=>areaFor(m.id)===area.id&&isSoftLaunchVisible(m)).sort((a,b)=>navigationRank(a.id)-navigationRank(b.id))
+ return <div className="xa-container xa-group-page"><div className="xa-page-intro"><div><div className="xa-breadcrumb"><Link to="/">xArtists</Link><Icon name="chevron" size={12}/><span>{c(area.label)}</span></div><h1>{c(area.label)}</h1><p>{c(area.description)}</p></div></div><div className="xa-module-grid">{list.map((m,i)=><ModuleCard module={m} index={i} key={m.id}/>)}</div><p className="xa-area-more"><Link className="xa-text-link" to={`/directory?area=${area.id}&lab=1`}>{c('navMore')}<Icon name="arrow" size={17}/></Link></p></div>
 }
 export function Directory(){
- const c=useCopy(),{lang}=useI18n()
- const [params,setParams]=useSearchParams()
- const group=params.get('group')||'all',q=params.get('q')||'',stage=params.get('stage')||'all'
- const set=(key:string,val:string)=>setParams(p=>{const next=new URLSearchParams(p);val&&val!=='all'?next.set(key,val):next.delete(key);return next},{replace:true})
- const lab=showLabModules()
- const hasFilters=group!=='all'||q.trim().length>0||stage!=='all'
- const list=modules.filter(m=>
-  isSoftLaunchVisible(m,lab)&&
-  (group==='all'||m.group===group)&&
-  matchesModuleSearch(q,[c(m.label),c(m.group),...m.tags,m.path,...m.aliases],lang)&&
-  (stage==='all'||publicStage(m.id)===stage)
- ).sort((a,b)=>stageRank(a.id)-stageRank(b.id))
+ const c=useCopy(),{lang}=useI18n(),[params,setParams]=useSearchParams()
+ const oldGroup=params.get('group') as Group|null
+ const area=params.get('area')||(oldGroup&&LEGACY_GROUP_AREA[oldGroup])||'all',q=params.get('q')||'',stage=params.get('stage')||'all'
+ const set=(key:string,val:string)=>setParams(p=>{const next=new URLSearchParams(p);next.delete('group');val&&val!=='all'?next.set(key,val):next.delete(key);return next},{replace:true})
+ const lab=showLabModules(),hasFilters=area!=='all'||q.trim().length>0||stage!=='all'
+ const list=modules.filter(m=>isSoftLaunchVisible(m,lab)&&(area==='all'||areaFor(m.id)===area)&&matchesModuleSearch(q,[c(moduleLabel(m)),c(m.label),c(areaDefinition(areaFor(m.id)).label),...m.tags,m.path,...m.aliases],lang)&&(stage==='all'||publicStage(m.id)===stage)).sort((a,b)=>navigationRank(a.id)-navigationRank(b.id))
  return <div className="xa-container xa-directory-page">
-  <div className="xa-page-intro"><div><div className="xa-eyebrow">xArtists / {c('modules')}</div><h1>{c('directory')}<span>↗</span></h1><p>{c('welcomeToolsLead')}</p></div><span className="xa-directory-count" role="status" aria-live="polite">{list.length.toString().padStart(2,'0')}<small>{c('modules')}</small></span></div>
-  <nav className="xa-directory-starters" aria-label={c('welcomeAsk')}><h2>{c('welcomeAsk')}</h2><div className="xa-directory-starter-grid">
-   {[{to:"/museum",icon:"museum",title:c("welcomeExplore"),lead:c("welcomeExploreDesc")},{to:"/studio",icon:"create",title:c("welcomeCreate"),lead:c("welcomeCreateDesc")},{to:"/create/gallery",icon:"museum",title:c("welcomeExhibit"),lead:c("welcomeExhibitDesc")},{to:"/marketplace",icon:"market",title:c("welcomeMarket"),lead:c("welcomeMarketDesc")},{to:"/guide",icon:"book",title:c("help"),lead:c("guideIntro")}].map(item=><Link to={item.to} key={item.to} className="xa-directory-starter"><Icon name={item.icon} size={22}/><strong>{item.title}</strong><small>{item.lead}</small></Link>)}
-  </div></nav>
-  {!lab&&<p className="xa-soft-launch-advanced"><Link to="/directory?lab=1" className="xa-text-link">{c('advancedModules')} <Icon name="arrow" size={16}/></Link></p>}
-  <div className="xa-directory-controls">
-   <div className="xa-filter-tabs" role="group" aria-label={c('filter')}>{['all',...groups].map(g=><button type="button" key={g} className={group===g?'active':''} onClick={()=>set('group',g)} aria-pressed={group===g}>{c(g)}</button>)}</div>
-   <label className="xa-filter-search"><Icon name="search" size={17}/><input type="search" value={q} onChange={e=>set('q',e.target.value)} placeholder={c('search')} aria-label={c('search')}/></label>
-   {hasFilters&&<button type="button" className="xa-directory-reset" onClick={()=>setParams(p=>{const next=new URLSearchParams(p);for(const key of ['group','q','stage'])next.delete(key);return next},{replace:true})}>{c('directoryReset')}</button>}
-  </div>
-  <div className="xa-directory-stage-controls" role="group" aria-label={c('roadmapLabel')}>{(['all',...PUBLIC_STAGE_ORDER] as const).map(item=><button type="button" key={item} aria-pressed={stage===item} onClick={()=>set('stage',item)}>{c(item==='all'?'stageAll':item==='browse'?'stageBrowse':item==='preview'?'stagePreview':'stageRoadmap')}</button>)}</div>
-  <div className="xa-module-grid">{list.map((m,i)=><ModuleCard module={m} index={i} key={m.id}/>)}</div>
+  <div className="xa-page-intro"><div><div className="xa-eyebrow">xArtists</div><h1>{c('directory')}</h1><p>{c('navHomeIntro')}</p></div><span className="xa-directory-count" role="status" aria-live="polite">{list.length}<small>{c('modules')}</small></span></div>
+  <nav className="xa-directory-starters" aria-label={c('navHomeChoose')}><div className="xa-directory-starter-grid">{MOBILE_AREAS.map(item=><Link to={item.to} key={item.id} className="xa-directory-starter"><Icon name={item.icon} size={22}/><strong>{c(item.label)}</strong><small>{c(item.description)}</small></Link>)}</div></nav>
+  <div className="xa-directory-controls"><div className="xa-filter-tabs" role="group" aria-label={c('filter')}><button type="button" className={area==='all'?'active':''} onClick={()=>set('area','all')} aria-pressed={area==='all'}>{c('all')}</button>{AREAS.filter(a=>lab||a.id!=='operations').map(a=><button type="button" key={a.id} className={area===a.id?'active':''} onClick={()=>set('area',a.id)} aria-pressed={area===a.id}>{c(a.label)}</button>)}</div><label className="xa-filter-search"><Icon name="search" size={17}/><input type="search" value={q} onChange={e=>set('q',e.target.value)} placeholder={c('search')} aria-label={c('search')}/></label>{hasFilters&&<button type="button" className="xa-directory-reset" onClick={()=>setParams(p=>{const next=new URLSearchParams(p);for(const key of ['group','area','q','stage'])next.delete(key);return next},{replace:true})}>{c('directoryReset')}</button>}</div>
+  <details className="xa-directory-options"><summary>{c('navMore')}</summary><label className="xa-directory-advanced-toggle"><input type="checkbox" checked={lab} onChange={e=>setParams(p=>{const next=new URLSearchParams(p);if(e.target.checked)next.set('lab','1');else{next.set('lab','0');try{localStorage.removeItem('xa_show_lab')}catch{}}return next},{replace:true})}/>{c('advancedModules')}</label><div className="xa-directory-stage-controls" role="group" aria-label={c('roadmapLabel')}>{(['all',...PUBLIC_STAGE_ORDER] as const).map(item=><button type="button" key={item} aria-pressed={stage===item} onClick={()=>set('stage',item)}>{c(item==='all'?'stageAll':item==='browse'?'stageBrowse':item==='preview'?'stagePreview':'stageRoadmap')}</button>)}</div></details>
+  {AREAS.map(a=>{const items=list.filter(m=>areaFor(m.id)===a.id);return items.length?<section className="xa-directory-area" key={a.id} aria-labelledby={`directory-${a.id}`}><header><h2 id={`directory-${a.id}`}>{c(a.label)}</h2><p>{c(a.description)}</p></header><div className="xa-module-grid">{items.map((m,i)=><ModuleCard module={m} index={i} key={m.id}/>)}</div></section>:null})}
   {!list.length&&<p className="xa-empty" role="status">{c('directoryEmpty')}</p>}
  </div>
 }
-export function ModulePage({module:m}:{module:Module}){const c=useCopy(),Page=m.page;const [navOpen,setNavOpen]=useState(false);const related=modules.filter(x=>x.group===m.group&&x.id!==m.id&&isSoftLaunchVisible(x)).sort((a,b)=>stageRank(a.id)-stageRank(b.id));return <div className="xa-container xa-module-page"><div className="xa-breadcrumb"><Link to="/">xArtists</Link><Icon name="chevron" size={12}/><Link to={'/'+m.group}>{c(m.group)}</Link><Icon name="chevron" size={12}/><span>{c(m.label)}</span></div><div className="xa-module-layout"><aside className={`xa-module-sidebar ${navOpen?'is-open':''}`}><button className="xa-sidebar-toggle" onClick={()=>setNavOpen(!navOpen)} aria-expanded={navOpen}><Icon name="layers" size={18}/>{c(m.group)}<Icon name="chevron" size={14}/></button><nav aria-label={c(m.group)}><Link to={'/'+m.group} className="xa-sidebar-back"><Icon name="arrow" size={15}/>{c(m.group)}</Link>{modules.filter(x=>x.group===m.group&&(x.id===m.id||isSoftLaunchVisible(x))).map(x=><Link to={x.path} key={x.id} className={m.id===x.id?'active':''} aria-current={m.id===x.id?'page':undefined} onClick={()=>setNavOpen(false)}><Icon name={x.icon} size={17}/>{c(x.label)}</Link>)}<div className="xa-sidebar-bottom"><Link to={'/directory?group='+m.group}><Icon name="search" size={17}/>{c('directory')}</Link></div></nav></aside><div className="xa-module-content"><div className="xa-page-readiness"><StageBadge stage={publicStage(m.id)}/><p>{c(publicStage(m.id)==='browse'?'readinessBrowseHint':publicStage(m.id)==='preview'?'readinessPreviewHint':'readinessRoadmapHint')}</p></div>{m.id!=='market'&&m.id!=='tro-crosschain'&&m.id!=='rwa'&&m.id!=='guide'&&<><header className="xa-module-heading"><div><div className="xa-eyebrow">{c(m.group)}</div><h1>{c(m.label)}</h1></div><span className="xa-module-icon"><Icon name={m.icon} size={26}/></span></header><p className="xa-module-intro">{m.id==='market'?c('welcomeMarketDesc'):m.id==='studio'?c('welcomeCreateDesc'):m.id==='dao'?c('daoIntroPlain'):c(m.group+'Desc')}</p><details className="xa-module-technical"><summary>{c('welcomeAdvanced')}</summary><div className="xa-module-tags">{m.tags.map(tag=><span key={tag}>{tag}</span>)}</div></details></>}<section className="xa-module-body" aria-label={c(m.label)}><Suspense fallback={<Loader/>}><RouteErrorBoundary key={m.id} label={c(m.label)}>{(m.id==='hatom'||m.id==='tip')?<MultiversXProvider><Page/></MultiversXProvider>:<Page/>}</RouteErrorBoundary></Suspense></section><div className="xa-related"><h2>{c('related')}</h2><div>{related.slice(0,3).map(x=><Link key={x.id} to={x.path}><Icon name={x.icon} size={18}/><span>{c(x.label)}</span><Icon name="diagonal" size={15}/></Link>)}</div></div></div></div></div>}
+export function ModulePage({module:m}:{module:Module}){
+ const c=useCopy(),Page=m.page,area=areaDefinition(areaFor(m.id)),[navOpen,setNavOpen]=useState(false)
+ const current=MODULE_PLACEMENT[m.id],activeId=current.mergedInto??m.id
+ const siblings=contextualModules(modules,m.id),additional=contextualModules(modules,m.id,true).filter(x=>!siblings.includes(x))
+ const navLink=(x:Module)=><Link to={x.path} key={x.id} className={activeId===x.id?'active':''} aria-current={activeId===x.id?'page':undefined} onClick={()=>setNavOpen(false)}><Icon name={x.icon} size={17}/>{c(moduleLabel(x))}</Link>
+ return <div className="xa-container xa-module-page"><div className="xa-breadcrumb"><Link to="/">xArtists</Link><Icon name="chevron" size={12}/><Link to={area.to}>{c(area.label)}</Link><Icon name="chevron" size={12}/><span>{c(moduleLabel(m))}</span>{publicStage(m.id)!=='browse'&&<StageBadge stage={publicStage(m.id)}/>}</div>
+  <div className="xa-module-layout"><aside className={`xa-module-sidebar ${navOpen?'is-open':''}`}><button className="xa-sidebar-toggle" onClick={()=>setNavOpen(!navOpen)} aria-expanded={navOpen} aria-controls="xa-context-navigation"><Icon name={area.icon} size={18}/>{c(area.label)}<Icon name="chevron" size={14}/></button><nav id="xa-context-navigation" aria-label={c(area.label)}><p className="xa-context-caption">{c('navContext')}</p>{siblings.map(navLink)}{additional.length>0&&<details key={m.id} className="xa-context-more" open={additional.some(x=>x.id===m.id)||undefined}><summary>{c('navMore')}<Icon name="chevron" size={14}/></summary>{additional.map(navLink)}</details>}<div className="xa-sidebar-bottom"><Link to={`/directory?area=${area.id}`}><Icon name="search" size={17}/>{c('directory')}</Link></div></nav></aside>
+   <div className="xa-module-content">{['analytics','tip'].includes(m.id)&&<header className="xa-module-heading"><h1>{c(moduleLabel(m))}</h1></header>}<section className="xa-module-body" aria-label={c(moduleLabel(m))}><Suspense fallback={<Loader/>}><RouteErrorBoundary key={m.id} label={c(moduleLabel(m))}>{(m.id==='hatom'||m.id==='tip')?<MultiversXProvider><Page/></MultiversXProvider>:<Page/>}</RouteErrorBoundary></Suspense></section></div>
+  </div>
+ </div>
+}
 
 type Artwork={identifier:string;name?:string;collection?:string;url?:string;thumbnailUrl?:string;media?:{url?:string;thumbnailUrl?:string}[];attributes?:any;metadata?:any;creator?:string;owner?:string}
 const imageOf=(n:Artwork)=>n.media?.[0]?.thumbnailUrl||n.thumbnailUrl||n.media?.[0]?.url||n.url

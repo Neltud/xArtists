@@ -1,107 +1,36 @@
-import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
-/** Wallet — session, soldes, MoonPay on-ramp, raccourcis. */
-import { Link, useSearchParams } from 'react-router-dom'
-import { useEffect } from 'react'
-import { useWallet } from '../context/WalletContext'
-import { useUserAccount } from '../hooks/useUserAccount'
-import { requestOpenConnect } from '../lib/walletEvents'
-import { clearXPortalSession } from '../lib/xportalWc'
-import { useToast } from '../components/ui/Toast'
+import {renderChild as xaRender} from '../i18n/phraseRuntime'
+import {Link,useSearchParams} from 'react-router-dom'
+import {useEffect} from 'react'
+import {useWallet} from '../context/WalletContext'
+import {useUserAccount} from '../hooks/useUserAccount'
+import {requestOpenConnect} from '../lib/walletEvents'
+import {clearXPortalSession} from '../lib/xportalWc'
+import {useToast} from '../components/ui/Toast'
 import MoonPayBuyButton from '../components/MoonPayBuyButton'
+import WalletAssets,{formatWalletBalance} from '../components/WalletAssets'
+import {useCopy} from '../experience/state'
+import Icon from '../experience/Icon'
 
-function fmt(n: number): string {
-  if (!Number.isFinite(n)) return '—'
-  if (n >= 1000) return n.toFixed(2)
-  if (n >= 1) return n.toFixed(4)
-  return n.toPrecision(3)
-}
-
-export default function WalletPage() {
-  const { connected, address, method, sessionLive, canAttemptSign, disconnect } = useWallet()
-  const account = useUserAccount(connected ? address : null)
-  const { push } = useToast()
-  const [params, setParams] = useSearchParams()
-
-  useEffect(() => {
-    if (params.get('moonpay') === 'done') {
-      push('Retour MoonPay — vérifie ton solde EGLD (quelques minutes).', 'ok')
-      const n = new URLSearchParams(params)
-      n.delete('moonpay')
-      setParams(n, { replace: true })
-    }
-  }, [params, setParams, push])
-
-  return (
-    <div className="animate-fade-in space-y-6 max-w-xl mx-auto pb-16">
-      <header className="space-y-1">
-        <p className="section-label">{xaRender("Portefeuille")}</p>
-        <h1 className="section-title display text-2xl">{xaRender("Wallet")}</h1>
-        <p className="text-sm text-zinc-400">{xaRender("Session MultiversX · recharge EGLD · signatures xPortal.")}</p>
-      </header>
-
-      {xaRender(!connected ? (
-        <div className="card space-y-3">
-          <p className="text-sm text-zinc-400">{xaRender("Aucune session active.")}</p>
-          <button type="button" className="btn-primary text-sm" onClick={requestOpenConnect}>
-            {xaRender("Connecter xPortal ")}</button>
-          <div className="pt-2 border-t border-white/5">
-            <p className="text-[12px] text-zinc-500 mb-2">{xaRender("Pas encore d’EGLD ?")}</p>
-            <MoonPayBuyButton amountEur={50} />
-          </div>
-        </div>
-      ) : (
-        <>
-          <div className="card space-y-2 text-sm">
-            <p className="text-[11px] uppercase tracking-wider text-zinc-500">{xaRender("Session")}</p>
-            <p className="mono text-[12px] text-emerald-200/90 break-all">{xaRender(address)}</p>
-            <p className="text-[12px] text-zinc-500">
-              {xaRender(method === 'xportal'
-                ? sessionLive
-                  ? 'xPortal · prêt à signer'
-                  : 'xPortal · reconnecte si signature refuse'
-                : method === 'paste_readonly'
-                  ? 'Lecture seule — pas de signature'
-                  : method || 'wallet')}
-            </p>
-            {xaRender(!canAttemptSign && (
-              <p className="text-[12px] text-amber-200/90">{xaRender("Reconnecte xPortal pour signer les TX.")}</p>
-            ))}
-            <button
-              type="button"
-              className="btn-secondary text-sm"
-              onClick={() => {
-                clearXPortalSession()
-                disconnect()
-                push('Déconnecté', 'info')
-              }}
-            >
-              {xaRender("Disconnect ")}</button>
-          </div>
-
-          <div className="card space-y-3 text-sm">
-            <div className="flex justify-between items-baseline">
-              <span className="text-zinc-500">{xaRender("EGLD")}</span>
-              <strong className="text-white tabular-nums text-lg">
-                {xaRender(account.loading ? '…' : fmt(account.balanceEgld))}
-              </strong>
-            </div>
-            <p className="text-zinc-500 text-[12px]">
-              {xaRender("Tokens ")}{xaRender(account.tokens?.length ?? 0)} {xaRender(" · NFT ")}{xaRender(account.nfts?.length ?? 0)}
-            </p>
-            <MoonPayBuyButton amountEur={30} label="Recharger EGLD · MoonPay" />
-            <div className="flex flex-wrap gap-2 pt-1">
-              <Link to="/marketplace" className="btn-primary text-sm">
-                {xaRender("Marketplace ")}</Link>
-              <Link to="/staking" className="btn-secondary text-sm">
-                {xaRender("Staking ")}</Link>
-              <Link to="/slot" className="btn-secondary text-sm">
-                {xaRender("Slot ")}</Link>
-              <Link to="/portfolio" className="btn-secondary text-sm">
-                {xaRender("Portfolio ")}</Link>
-            </div>
-          </div>
-        </>
-      ))}
-    </div>
-  )
+/** Session and portfolio share one address-scoped snapshot, with URL-backed views. */
+export default function WalletPage(){
+ const c=useCopy(),{connected,address,method,sessionLive,canAttemptSign,disconnect}=useWallet()
+ const account=useUserAccount(connected?address:null),{push}=useToast(),[params,setParams]=useSearchParams()
+ const assets=params.get('view')==='assets'||params.get('tab')==='nft'
+ const known=account.refreshedAt!==null&&!account.error
+ const view=(next:string)=>setParams(p=>{const n=new URLSearchParams(p);n.delete('tab');next==='assets'?n.set('view','assets'):n.delete('view');return n})
+ useEffect(()=>{
+  if(params.get('moonpay')==='done'){
+   push('Retour MoonPay — vérifie ton solde EGLD (quelques minutes).','ok')
+   const next=new URLSearchParams(params);next.delete('moonpay');setParams(next,{replace:true})
+  }
+ },[params,setParams,push])
+ return <div className="xa-wallet-workspace">
+  <header className="xa-wallet-heading"><div><p className="xa-eyebrow">MultiversX</p><h1>{c('wallet')}</h1><p>{c('walletIntro')}</p></div><Icon name="wallet" size={32}/></header>
+  <nav className="xa-wallet-views" aria-label={c('wallet')}><button type="button" aria-current={!assets?'page':undefined} onClick={()=>view('overview')}>{c('walletOverview')}</button><button type="button" aria-current={assets?'page':undefined} onClick={()=>view('assets')}>{c('walletAssets')}</button><Link to="/workspace/account">{c('account')}</Link></nav>
+  {!connected?<section className="xa-wallet-card xa-wallet-connect"><Icon name="wallet" size={32}/><h2>{c('connect')}</h2><p>{xaRender('Connecte ton wallet pour consulter tes soldes, tokens et NFT.')}</p><button type="button" className="xa-button primary" onClick={requestOpenConnect}>{c('connect')}</button><Link className="xa-text-link" to="/marketplace">{c('welcomeExplore')}<Icon name="arrow" size={16}/></Link></section>:<>
+   <section className="xa-wallet-card xa-wallet-session"><div><p className="xa-wallet-address">{address}</p><p>{xaRender(method==='paste_readonly'?'Lecture seule — pas de signature':method==='xportal'?(sessionLive?'xPortal · session active':'xPortal · reconnexion nécessaire'):method||'wallet')}</p>{!canAttemptSign&&method!=='paste_readonly'&&<button type="button" className="xa-button secondary" onClick={requestOpenConnect}>{c('connect')}</button>}</div><button type="button" className="xa-button secondary" onClick={()=>{clearXPortalSession();disconnect();push('Déconnecté','info')}}>{xaRender('Déconnecter')}</button></section>
+   <div className="xa-wallet-toolbar"><span>{account.loading?c('commonLoading'):account.error?c('walletUnavailable'):known?new Date(account.refreshedAt!).toLocaleTimeString():c('unavailable')}</span><button type="button" className="xa-button secondary" onClick={account.refresh} disabled={account.loading}><Icon name="refresh" size={16}/>{c('refresh')}</button></div>
+   {!assets?<><section className="xa-wallet-summary" aria-label={c('walletOverview')}><div className="xa-wallet-card"><span>EGLD</span><strong>{account.loading?'…':known?formatWalletBalance(account.balanceEgld):'—'}</strong><MoonPayBuyButton amountEur={30}/></div><button className="xa-wallet-card" type="button" onClick={()=>view('assets')}><span>Tokens</span><strong>{known?account.tokens.length:'—'}</strong><span>{c('walletAssets')} →</span></button><button className="xa-wallet-card" type="button" onClick={()=>view('assets')}><span>NFT</span><strong>{known?account.nfts.length:'—'}</strong><span>{c('walletAssets')} →</span></button></section><div className="xa-wallet-next"><Link to="/marketplace#xa-market-sell" className="xa-button secondary">{c('market')}<Icon name="arrow" size={16}/></Link><Link to="/create/gallery" className="xa-button secondary">{c('navExhibitionBuilder')}<Icon name="arrow" size={16}/></Link><Link to="/workspace/agents" className="xa-button secondary">{c('navMyAccess')}<Icon name="arrow" size={16}/></Link></div></>:<WalletAssets key={address} account={account}/>}
+  </>}
+ </div>
 }

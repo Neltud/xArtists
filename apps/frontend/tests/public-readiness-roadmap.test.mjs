@@ -30,7 +30,7 @@ test('every module has exactly one conservative editorial stage and no stage mea
 test('public roadmap is routed, discoverable, translated and linked to verifiable release issues',()=>{
  assert.match(app,/path="\/roadmap" element=\{<PublicRoadmap\/>\}/)
  assert.match(app,/path="\/feuille-de-route"/)
- assert.match(shell,/\['guide','\/guide',c\('help'\)\]/)
+ assert.match(shell,/to="\/guide"/)
  assert.match(pages,/to="\/roadmap"/)
  assert.match(shell,/to="\/roadmap" onClick=\{closeMobile\}/)
  assert.match(road,/publicMilestones\.map/)
@@ -46,17 +46,18 @@ test('public roadmap is routed, discoverable, translated and linked to verifiabl
 
 test('module pages, directory and home show readiness without claiming financial LIVE',()=>{
  assert.match(pages,/StageBadge/)
- assert.match(pages,/PUBLIC_STAGE_ORDER\.map/)
+ assert.match(pages,/PUBLIC_STAGE_ORDER/ )
  assert.match(pages,/xa-directory-stage-controls/)
- assert.match(pages,/readinessBrowseHint/)
- assert.match(pages,/xa-home-roadmap/)
+ assert.match(pages,/StageBadge stage=\{publicStage\(m.id\)\}/)
+ assert.match(pages,/xa-home-utilities/)
  assert.match(pages,/to="\/roadmap"/)
  const home=pages.slice(pages.indexOf('export function Home()'),pages.indexOf('export function GroupPage'))
  assert.doesNotMatch(home,/sendTransaction|signTransaction|checkout_enabled|mint_live_enabled/)
 })
 
 test('CSS-3D decorative sculpture retains responsive, static and reduced-motion defaults',()=>{
- assert.match(pages,/<OrbitalArt\/>/)
+ assert.doesNotMatch(pages,/<OrbitalArt\/>/)
+ assert.match(pages,/xa-home-personal/)
  assert.match(orbital,/xa-orbital-panel-one/)
  assert.match(orbital,/aria-hidden="true"/)
  assert.doesNotMatch(orbital,/WebGLRenderer|Canvas|requestAnimationFrame|Math\.random|fetch\(/)
@@ -64,5 +65,5 @@ test('CSS-3D decorative sculpture retains responsive, static and reduced-motion 
  assert.match(styles,/html\[data-motion="off"\] \.xa-orbital-axis\{animation:none\}/)
  assert.match(styles,/@media\(prefers-reduced-motion:reduce\)\{\.xa-orbital-axis\{animation:none!important\}\}/)
  assert.match(styles,/\.xa-first-art\.xa-orbital-art\{display:none\}/)
- assert.match(shell,/const MOBILE_DESTINATIONS = \[/)
+ assert.match(shell,/MOBILE_AREAS.map/)
 })

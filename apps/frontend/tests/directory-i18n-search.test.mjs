@@ -44,7 +44,7 @@ test('all eight languages explain failed directory filters and how to recover',(
   assert.match(directory,/directoryReset/)
   assert.match(directory,/className="xa-directory-reset"/)
   assert.match(directory,/role="status" aria-live="polite"/)
-  assert.match(directory,/for\(const key of \['group','q','stage'\]\)next\.delete\(key\)/)
+  assert.match(directory,/for\(const key of \['group','area','q','stage'\]\)next\.delete\(key\)/)
   assert.doesNotMatch(directory,/new URLSearchParams\(\),\{replace:true\}/)
 })
 
@@ -76,9 +76,7 @@ test('section search preserves Unicode folding and legacy route discovery',async
   assert.equal(matchesModuleSearch('CREATION',['Création'],'fr'),true)
   assert.equal(matchesModuleSearch('nft-factory',['Distributeurs','/create/nft-factory'],'fr'),true)
   assert.equal(matchesModuleSearch('absent',['Musée','/explore/museum'],'fr'),false)
-  const section=directory.split('export function GroupPage(')[1].split('export function Directory(')[0]
-  assert.ok(section.includes("matchesModuleSearch(q,[c(m.label),c(m.group),...m.tags,m.path,...m.aliases],lang)"))
-  assert.match(section,/type="search"/)
-  assert.match(section,/aria-live="polite" aria-atomic="true"/)
-  assert.ok(!section.includes('.toLowerCase().includes(needle)'))
+  assert.match(directory,/m.path,...m.aliases/)
+  assert.match(directory,/type="search"/)
+  assert.match(directory,/matchesModuleSearch\(q,/)
 })

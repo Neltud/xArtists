@@ -147,13 +147,13 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
       }
       await expect(page.locator('.xa-market-grid').getByRole('searchbox')).toBeVisible()
       const categories = page.locator('.xa-marketplace-category')
-      await expect(categories).toHaveCount(4)
+      await expect(categories).toHaveCount(3)
       const navigationDisplay = await page.locator('.xa-marketplace-categories__grid').evaluate(el =>
         getComputedStyle(el).display)
       expect(navigationDisplay, 'compact horizontally scrolling marketplace categories').toBe('flex')
       await expect(page.locator('.xa-market-grid__drive-mint a')).toHaveAttribute('href', /studio/)
       await expect(page.locator('.xa-market-grid img[src*="/art/drive/"]')).toHaveCount(0)
-      await expect(page.locator('.xa-market-tech')).not.toHaveAttribute('open', '')
+      await expect(page.locator('.xa-market-tech').first()).not.toHaveAttribute('open', '')
       const grid = page.locator('.xa-market-grid__cards')
       if (await grid.isVisible()) {
         const columns = await grid.evaluate(el =>
@@ -224,7 +224,7 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
       await visit(page, '/marketplace/?lang=' + lang)
       await expect(page.locator('.xa-market-grid__heading h1')).toContainText(title)
       const tabs = page.locator('.xa-marketplace-category')
-      await expect(tabs).toHaveCount(4)
+      await expect(tabs).toHaveCount(3)
       await expect(tabs.first()).toContainText(category)
       await expect(page.locator('html')).toHaveAttribute('lang', lang)
       await expect(page.locator('html')).toHaveAttribute('dir', lang==='ar'?'rtl':'ltr')
@@ -304,14 +304,14 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
       await expect(page.locator('.xa-first-hero')).toBeVisible()
       await expect(page.locator('.xa-first-tile')).toHaveCount(4)
       await expect(page.locator('.xa-first-hero canvas')).toHaveCount(0)
-      for (const path of ['/museum', '/studio', '/marketplace', '/intelligence/xorus']) {
+      for (const path of ['/marketplace', '/studio', '/intelligence/xorus', '/finance', '/wallet']) {
         await expect(page.locator(`.xa-mobile-dock a[href*="${path}"]`)).toHaveCount(1)
       }
       const menu = page.locator('.xa-mobile-trigger')
       await menu.click()
       await page.locator('.xa-mobile-advanced summary').click()
-      await expect(page.locator('.xa-mobile-menu a[href*="/auction"]')).toBeVisible()
-      await expect(page.locator('.xa-mobile-menu a[href*="/dao"]')).toBeVisible()
+      await expect(page.locator('.xa-mobile-menu a[href*="/explore/auction"]')).toBeVisible()
+      await expect(page.locator('.xa-mobile-menu a[href*="/finance/governance"]')).toBeVisible()
       await expect(page.locator('.xa-mobile-menu a[href*="/create/world-rights"]')).toBeVisible()
       await page.keyboard.press('Escape')
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)
@@ -489,7 +489,7 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
       await expect(menu).toBeVisible()
       await expect(page.locator('.xa-connect svg')).toBeVisible()
       await expect(page.locator('.xa-connect span')).toBeHidden()
-      await expect(page.locator('.xa-connect')).toHaveAttribute('aria-label', /erd1qqqq/)
+      await expect(page.locator('.xa-connect')).toHaveAttribute('aria-label', 'Mon espace')
       await expect(page.locator('.music-player-toggle')).toBeHidden()
       const box = await menu.boundingBox()
       expect(box, 'menu has measurable hit target').toBeTruthy()
@@ -564,7 +564,7 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
     await visit(page, '/staking/')
     const card = page.locator('.xa-staking-pool-card').first()
     await expect(card).toBeVisible()
-    expect(await card.evaluate(el => getComputedStyle(el).backgroundColor)).toBe('rgb(245, 247, 243)')
+    expect(await card.evaluate(el => getComputedStyle(el).backgroundColor)).toBe('rgb(241, 237, 249)')
     await page.screenshot({ animations: 'disabled', path: 'artifacts/ux-mobile/staking-pool-contrast-390.png' })
   })
 
@@ -595,14 +595,14 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
     await visit(page, '/')
     await page.locator('.xa-mobile-trigger').click()
     await expect(page.locator('.xa-mobile-start')).toBeVisible()
-    for (const path of ['/museum', '/studio', '/marketplace', '/guide']) {
+    for (const path of ['/marketplace', '/studio', '/intelligence/xorus', '/finance', '/wallet']) {
       await expect(page.locator(`.xa-mobile-start a[href*="${path}"]`)).toBeVisible()
     }
     const advancedMenu = page.locator('.xa-mobile-advanced')
     await expect(advancedMenu).not.toHaveAttribute('open', '')
     await advancedMenu.locator('summary').press('Enter')
     await expect(advancedMenu).toHaveAttribute('open', '')
-    await expect(advancedMenu.locator('a[href*="/dao"]')).toBeVisible()
+    await expect(advancedMenu.locator('a[href*="/finance/governance"]')).toBeVisible()
     await page.keyboard.press('Escape')
     await expect(page.locator('.xa-mobile-menu')).toBeHidden()
   })
@@ -611,8 +611,10 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
     await page.setViewportSize({ width: 390, height: 844 })
     await visit(page, '/directory/')
     await expect(page.locator('.xa-directory-starter')).toHaveCount(5)
-    await expect(page.locator('.xa-directory-starter[href*="/create/gallery"]')).toBeVisible()
+    await expect(page.locator('.xa-directory-starter[href*="/wallet"]')).toBeVisible()
+    await expect(page.locator('.xa-directory-page a[href*="/create/gallery"]')).toBeVisible()
     await expect(page.locator('.xa-directory-page .xa-module-card').first()).toBeVisible()
+    await page.locator('.xa-directory-options > summary').click()
     await expect(page.locator('.xa-directory-stage-controls')).toBeVisible()
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)
     expect(overflow, 'directory horizontal overflow at 390px').toBeLessThanOrEqual(12)
@@ -756,7 +758,7 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
     await expect(search).toBeVisible()
     await search.fill('musee')
     await expect(page.locator('.xa-search-results [role="option"]')).toHaveCount(1)
-    await expect(page.locator('.xa-search-results')).toContainText('Musée immersif')
+    await expect(page.locator('.xa-search-results')).toContainText('Expositions')
     await search.press('Enter')
     await expect(page).toHaveURL(/\/explore\/museum\/?/)
   })
@@ -766,6 +768,7 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
       await page.setViewportSize({width,height:844})
       await page.emulateMedia({reducedMotion:'reduce'})
       await visit(page,'/?lang=fr')
+      await page.locator('.xa-first-details > summary').click()
       const home=page.locator('[data-mainnet-journey="home"]')
       await expect(home).toBeVisible()
       await expect(home.locator('.xa-mainnet-journey-steps a')).toHaveCount(3)
@@ -885,4 +888,39 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
   })
 
 
+})
+
+test('task navigation follows wallet, access and creator aliases without conflating ownership',async({page})=>{
+ await page.setViewportSize({width:1440,height:900})
+ await visit(page,'/my-packs/?lang=fr')
+ await expect(page.locator('.xa-desktop-nav a[aria-current="page"]')).toHaveText('Agents & IA')
+ await expect(page.locator('main h1')).toHaveCount(1)
+ await expect(page.locator('.xa-module-sidebar a[href="/workspace/agents"]')).toHaveAttribute('aria-current','page')
+ await visit(page,'/create/gallery/?lang=fr')
+ await expect(page.locator('.xa-desktop-nav a[aria-current="page"]')).toHaveText('Studio')
+ await expect(page.locator('.xa-module-sidebar a[href="/create/world-rights"]')).toBeVisible()
+ await page.setViewportSize({width:390,height:844})
+ await visit(page,'/portfolio/?lang=fr')
+ await expect(page).toHaveURL(/\/workspace\/wallet\?.*view=assets/)
+ await expect(page.locator('.xa-wallet-views button[aria-current="page"]')).toHaveText('Mes actifs')
+ await expect(page.locator('.xa-mobile-dock a[aria-current="page"]')).toHaveAttribute('href','/wallet')
+ await expect(page.locator('main h1')).toHaveCount(1)
+ await expect(page.locator('.xa-wallet-connect')).toBeVisible()
+ await expect(page.locator('[role="dialog"]')).toHaveCount(0)
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(12)
+ await page.screenshot({animations:'disabled',path:'artifacts/ux-mobile/wallet-architecture-390.png'})
+})
+
+test('legacy laboratory and agent shelf links retain query context in their shared destinations',async({page})=>{
+ for(const [path,view] of [['/sim','simulation'],['/entities','network']]){
+  await visit(page,path+'/?lang=fr&from=legacy')
+  await expect(page).toHaveURL(new RegExp('/intelligence/lab\\?.*view='+view))
+  expect(new URL(page.url()).searchParams.get('lang')).toBe('fr')
+  expect(new URL(page.url()).searchParams.get('from')).toBe('legacy')
+  await expect(page.locator('.xa-lab-switch button[aria-pressed="true"]')).toHaveText(view==='simulation'?'Simulation':'Connexions')
+ }
+ await visit(page,'/marketplace/?tab=packs&lang=fr')
+ await expect(page).toHaveURL(/\/intelligence\/agents\?/)
+ await expect(page.getByRole('heading',{name:'Les agents xOrus, simplement'})).toBeVisible()
+ await expect(page.locator('.xa-marketplace-category')).toHaveCount(0)
 })

@@ -26,7 +26,8 @@ test('language is the first accessible utility in the mobile menu', () => {
   assert.ok(menu.indexOf('xa-mobile-utilities-top') > -1)
   assert.ok(menu.indexOf('xa-mobile-utilities-top') < menu.indexOf('xa-mobile-menu-group xa-mobile-start'))
   assert.match(menu, /xa-mobile-utilities-top[^>]*><label className="xa-mobile-lang"/)
-  assert.match(menu, /<select value=\{lang\} onChange=\{e=>setLang\(e\.target\.value as Lang\)\} aria-label=\{c\('language'\)\}/)
+  assert.match(shell, /<select value=\{lang\} onChange=\{e=>setLang\(e\.target\.value as Lang\)\} aria-label=\{c\('language'\)\}/)
+  assert.match(menu, /\{languages\}/)
   assert.match(mobileCss, /\.xa-mobile-utilities-top \.xa-mobile-lang/)
 })
 

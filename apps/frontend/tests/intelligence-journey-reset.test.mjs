@@ -21,9 +21,8 @@ test('a single understandable journey connects xOrus, Agents and Lab',()=>{
   assert.match(css,/@media\(max-width:760px\)/)
   assert.match(routes,/import '\.\.\/pages\/lab-page\.css'/)
   assert.match(directory,/isSoftLaunchVisible\(m,lab\)/)
-  assert.match(directory,/showIntelligenceAdvanced/)
-  assert.match(directory,/group==='intelligence'/)
-  assert.match(directory,/<IntelligencePath advanced=\{showIntelligenceAdvanced\|\|lab\}\/>/)
+  assert.match(directory,/contextualModules\(modules,m.id\)/)
+  assert.match(directory,/areaFor\(m.id\)/)
 
 })
 

@@ -12,7 +12,7 @@ const home = read('../src/experience/Pages.tsx')
 test('xOrus has a canonical route but retains both historical LIA routes', () => {
   assert.match(routes, /module\('lia','\/intelligence\/xorus',\['\/lia','\/intelligence\/lia','\/xorus'\]/)
   assert.match(routes, /'xOrus · Intelligence'/)
-  assert.match(home, /to="\/xorus" className="xa-first-context-link"/)
+  assert.match(home, /PRIMARY_AREAS.map/)
 })
 test('xRights is public name and technical package URLs remain compatible', () => {
   assert.match(routes, /'xRights · Licences & Royalties'/)
