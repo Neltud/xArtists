@@ -50,6 +50,7 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
       })
       await page.setViewportSize({width,height:900})
       await visit(page,'/marketplace/?lang=fr')
+      await page.locator('.xa-market-depth > summary').click()
       const seller=page.locator('#xa-market-sell')
       const search=seller.locator('#xa-owned-nft-search')
       await expect(seller.getByRole('button',{name:'Préparer la mise en vente',exact:true})).toHaveCount(48)
@@ -129,6 +130,8 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
       await page.setViewportSize({ width, height: 844 })
       await page.emulateMedia({ reducedMotion: 'reduce' })
       await visit(page, '/marketplace/?lang=fr')
+      await expect(page.locator('.xa-market-depth')).not.toHaveAttribute('open','')
+      await page.locator('.xa-market-depth > summary').click()
       // The artwork catalog replaces the marketing hero on the marketplace tab.
       await expect(page.locator('.xa-marketplace-hero')).toHaveCount(0)
       const title = page.locator('.xa-market-grid__heading h1')
@@ -173,6 +176,7 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
   test('NFT catalogue filters work without a wallet or pretending Drive originals are tokens', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 })
     await visit(page, '/marketplace/?lang=fr')
+    await page.locator('.xa-market-depth > summary').click()
     const gallery = page.locator('.xa-market-grid')
     await expect(gallery.getByRole('heading', { name: 'Œuvres à découvrir' })).toBeVisible()
     await expect(gallery.locator('.xa-market-grid__drive-mint a[href*="/studio"]')).toBeVisible()
@@ -193,6 +197,7 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
     test(`NFT catalog at ${width}px is responsive even when the chain index is empty`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 })
       await visit(page, '/marketplace/?lang=fr')
+      await page.locator('.xa-market-depth > summary').click()
       const cards = page.locator('.xa-market-grid__cards')
       await expect(page.locator('.xa-market-grid')).toBeVisible()
       await expect(page.locator('.xa-market-grid img[src*="/art/drive/"]')).toHaveCount(0)
@@ -222,6 +227,7 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
     ]
     for (const [lang, title, category] of cases) {
       await visit(page, '/marketplace/?lang=' + lang)
+      await page.locator('.xa-market-depth > summary').click()
       await expect(page.locator('.xa-market-grid__heading h1')).toContainText(title)
       const tabs = page.locator('.xa-marketplace-category')
       await expect(tabs).toHaveCount(3)
@@ -785,6 +791,7 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
       await expect(market.locator('a[aria-current="step"]')).toHaveCount(1)
       await expect(market.locator('a[aria-current="step"]')).toContainText('Marketplace')
       await market.locator('a[href*="/studio"]').click()
+      await page.locator('.xa-studio-advanced > summary').click()
       const studio=page.locator('[data-mainnet-journey="studio"]')
       await expect(studio).toBeVisible()
       await expect(studio.locator('a[aria-current="step"]')).toContainText('Studio')
@@ -884,6 +891,8 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
       await page.setViewportSize({width:390,height:844})
       await visit(page,path)
       await expect(page.locator('.xa-creator-studio')).toBeVisible()
+      await expect(page.locator('.xa-studio-advanced')).not.toHaveAttribute('open','')
+      await page.locator('.xa-studio-advanced > summary').click()
       await expect(page.locator('.xa-creator-studio .xa-studio-steps')).toHaveCSS('display','grid')
       await expect(page.locator('[data-mainnet-journey="studio"]')).toBeVisible()
       await expect(page.locator('.xa-not-found')).toHaveCount(0)
@@ -935,6 +944,7 @@ test('approved art gallery uses source-linked pieces and studio preview remains 
  await page.setViewportSize({width:1440,height:900})
  await visit(page,'/marketplace/?lang=fr')
  await expect(page.locator('.xa-featured-gallery')).toBeVisible()
+ await expect(page.locator('.xa-market-depth')).not.toHaveAttribute('open','')
  await expect(page.locator('.xa-featured-work')).toHaveCount(3)
  await expect(page.locator('.xa-featured-work h3').first()).toContainText('TRANSMUNDO 03')
  await expect(page.locator('.xa-featured-work h3').nth(1)).toContainText('BlackArtPass')
@@ -943,6 +953,7 @@ test('approved art gallery uses source-linked pieces and studio preview remains 
  await expect(page.locator('.xa-featured-work a[href*="explorer.multiversx.com/nfts/"]')).toHaveCount(6)
  await visit(page,'/studio/?lang=fr')
  await expect(page.locator('.xa-visual-studio')).toBeVisible()
+ await expect(page.locator('.xa-studio-advanced')).not.toHaveAttribute('open','')
  await expect(page.locator('.xa-visual-studio-columns')).toHaveCSS('display','grid')
  await expect(page.locator('.xa-visual-studio-publication button')).toBeDisabled()
  await expect(page.locator('.xa-visual-studio-preview-label')).toContainText('exemple')
