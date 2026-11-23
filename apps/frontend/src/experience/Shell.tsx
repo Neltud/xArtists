@@ -7,7 +7,7 @@ import LoginModal from '../components/LoginModal'
 import {openPlaylistModal} from '../config/playlist'
 import {groups,modules,findModule,type Group} from './modules'
 import {isSoftLaunchVisible,showLabModules} from './softLaunch'
-import {PRIMARY_AREAS,MOBILE_AREAS,MODULE_PLACEMENT,areaFor,areaDefinition,moduleLabel,navigationRank,contextualModules} from './informationArchitecture'
+import {AREAS,PRIMARY_AREAS,MOBILE_AREAS,MODULE_PLACEMENT,areaFor,areaDefinition,moduleLabel,navigationRank,contextualModules} from './informationArchitecture'
 import Icon from './Icon'
 import {packNameForPublicPath} from '../lib/publicRoutes'
 import Dialog from './Dialog'
@@ -18,6 +18,26 @@ import {COMMUNITY_CONTACTS} from '../config/communityLinks'
 import './beginner-navigation.css'
 
 function Logo(){return <Link to="/" className="xa-logo" aria-label="xArtists"><svg viewBox="0 0 40 40" width="34" height="34" aria-hidden="true"><path d="m8 7 12 13L32 7M8 33l12-13 12 13" stroke="currentColor" strokeWidth="6" fill="none"/><path d="m8 7 24 26" stroke="var(--xa-accent)" strokeWidth="6"/></svg><span>xArtists<span className="xa-logo-dot">®</span></span></Link>}
+
+/** Fixed, task-first desktop navigation based on the approved visual reference.
+ * Uses the existing route catalogue; does not grant permissions or change commerce.
+ */
+function DesktopRail(){
+ const c=useCopy(),{pathname}=useLocation(),section=currentPrimarySection(pathname,modules)
+ const destinations=[AREAS[4],...PRIMARY_AREAS]
+ return <aside className="xa-primary-rail" aria-label={c('modules')}>
+  <div className="xa-rail-brand"><Logo/></div>
+  <nav className="xa-rail-navigation" aria-label={c('modules')}>
+   {destinations.map(area=><Link key={area.id} to={area.to} className={section===area.id?'active':''} aria-current={section===area.id?'page':undefined}>
+    <Icon name={area.icon} size={22}/><span>{c(area.id==='wallet'?'wallet':area.label)}</span>
+   </Link>)}
+  </nav>
+  <nav className="xa-rail-utility" aria-label={c('navHelpProject')}>
+   <Link to="/guide"><Icon name="book" size={19}/><span>{c('help')}</span></Link>
+   <Link to="/workspace/account"><Icon name="settings" size={19}/><span>{c('settings')}</span></Link>
+  </nav>
+ </aside>
+}
 
 export function Search({onClose}:{onClose:()=>void}){
  const c=useCopy(),{lang}=useI18n(),[q,setQ]=useState(''),[selected,setSelected]=useState(0)
@@ -51,7 +71,7 @@ function Header(){
   <header className="xa-header"><div className="xa-header-inner"><Logo/>
    <nav className="xa-desktop-nav" aria-label={c('modules')}>{PRIMARY_AREAS.map(({id,to,label})=><Link to={to} key={id} className={primarySection===id?'active':''} aria-current={primarySection===id?'page':undefined}>{c(label)}</Link>)}</nav>
    <div className="xa-header-actions">
-    <button className="xa-icon-button xa-search-trigger" onClick={()=>setSearchOpen(true)} aria-label={c('searchLabel')}><Icon name="search"/><kbd>⌘ K</kbd></button>
+    <button className="xa-icon-button xa-search-trigger" onClick={()=>setSearchOpen(true)} aria-label={c('searchLabel')}><Icon name="search"/><span className="xa-search-prompt">{c('search')}</span><kbd>⌘ K</kbd></button>
     <label className="xa-lang"><Icon name="globe" size={15}/><span className="sr-only">{c('language')}</span>{languages}</label>
     <button type="button" className="xa-icon-button xa-theme-toggle" onClick={()=>setTheme(theme==='dark'?'light':'dark')} aria-label={lang==='fr'?(theme==='dark'?'Activer le mode clair':'Activer le mode sombre'):(theme==='dark'?'Switch to light mode':'Switch to dark mode')} aria-pressed={theme==='dark'}><Icon name={theme==='dark'?'sun':'moon'} size={18}/></button>
     <div className="xa-preferences" ref={settingsRef}><button className="xa-icon-button" aria-expanded={settingsOpen} aria-label={c('settings')} onClick={()=>setSettingsOpen(v=>!v)}><Icon name="settings" size={18}/></button>{settingsOpen&&<div className="xa-preferences-panel"><h3>{c('settings')}</h3><button onClick={()=>setMotion(!motion)} aria-pressed={motion}><Icon name={motion?'pause':'play'} size={17}/>{c(motion?'pause':'play')}</button><Link to="/workspace/account">{c('account')}</Link><Link to="/guide">{c('help')}</Link></div>}</div>
@@ -87,5 +107,5 @@ function MobileDock(){
 export default function Shell({children}:{children:ReactNode}){
  const {pathname}=useLocation(),{lang}=useI18n(),c=useCopy()
  useEffect(()=>{window.scrollTo({top:0,behavior:'instant'});const m=findModule(pathname);const key=pathname.split('/').filter(Boolean).join('/');const isOffers=key==='offres'||key==='offers';const isRoadmap=key==='roadmap'||key==='feuille-de-route';const packName=packNameForPublicPath(pathname);const title=isOffers?(lang==='fr'?'Offres · Packs IA et présentations':'Offers · AI packs and introductions'):isRoadmap?c('roadmapLabel'):packName?`${packName} · Genesis`:m?c(moduleLabel(m)):key===''?c('home'):key==='maison'||key==='manifesto'?c('house'):groups.includes(key as Group)||key==='directory'?c(key):c('notFound');document.title=`${title} — xArtists`;const meta=document.querySelector('meta[name="description"]');const offersDescription=lang==='fr'?'Découvrez les packs IA Pulse, Yield et Sentinel. Demandes de présentation ouvertes, paiements et mint NFT encore fermés.':'Explore the Pulse, Yield and Sentinel AI packs. Enquiries open, public checkout and NFT minting are not yet live.';meta?.setAttribute('content',isRoadmap?c('roadmapIntro'):isOffers?offersDescription:m?`${c(m.label)}. ${c(m.group+'Desc')}`:c('heroLead'));document.querySelector('meta[property="og:title"]')?.setAttribute('content',document.title);document.querySelector('meta[property="og:description"]')?.setAttribute('content',meta?.getAttribute('content')||c('heroLead'));const locale={fr:'fr_FR',en:'en_US',es:'es_ES',de:'de_DE',ru:'ru_RU',uk:'uk_UA',zh:'zh_CN',ar:'ar_AE'}[lang];document.querySelector('meta[property="og:locale"]')?.setAttribute('content',locale);const localizedUrl=(code:string)=>{const url=new URL(import.meta.env.BASE_URL,window.location.origin);url.pathname+=pathname.replace(/^\//,'');url.searchParams.set('lang',code);return url.href};const canonical=isOffers?new URL('offres/',new URL(import.meta.env.BASE_URL,window.location.origin)).href:localizedUrl(lang);document.querySelector('link[rel="canonical"]')?.setAttribute('href',canonical);document.querySelector('meta[property="og:url"]')?.setAttribute('content',canonical);for(const l of LANGS){let node=document.querySelector(`link[data-xa-locale="${l.id}"]`) as HTMLLinkElement|null;if(!node){node=document.createElement('link');node.rel='alternate';node.hreflang=l.id;node.dataset.xaLocale=l.id;document.head.append(node)}node.href=localizedUrl(l.id)}},[pathname,lang])
- return <div className="xa-app"><Header/><main id="xa-main" tabIndex={-1}>{children}</main><Footer/><MobileDock/></div>
+ return <div className="xa-app xa-ref-v2" data-area={currentPrimarySection(pathname,modules)||'home'}><DesktopRail/><Header/><main id="xa-main" tabIndex={-1}>{children}</main><Footer/><MobileDock/></div>
 }
