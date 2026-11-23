@@ -1,8 +1,85 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-23T11:50:31.332Z",
+  "updatedAt": "2026-11-23T23:25:05.346Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1795476304843",
+      "timestamp": "23:25",
+      "source": "EGLD",
+      "title": "Cotation publique · $2.24 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1795470044000",
+      "timestamp": "21:40",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1795467843000",
+      "timestamp": "21:04",
+      "source": "CoinTelegraph",
+      "title": "US seeks to recover $1.1B in crypto stolen in North Korea-linked Binance hack",
+      "link": "https://cointelegraph.com/news/us-seeks-11b-crypto-stolen-north-korea-binance-hack?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1795466323000",
+      "timestamp": "20:38",
+      "source": "CoinTelegraph",
+      "title": "Kalshi secures temporary win in New York gambling law dispute",
+      "link": "https://cointelegraph.com/news/kalshi-temporary-win-new-york-gambling-law-dispute?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1795462506000",
+      "timestamp": "19:35",
+      "source": "CoinTelegraph",
+      "title": "BTCS offloads $44M in ETH to reduce DeFi debt amid market downturn",
+      "link": "https://cointelegraph.com/news/btcs-offloads-44m-eth-reduce-defi-debt-market-downturn?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1795461406000",
+      "timestamp": "19:16",
+      "source": "CoinTelegraph",
+      "title": "Base makes quantum security a 2027 priority as regulators warn of risks",
+      "link": "https://cointelegraph.com/interview/base-quantum-security-2027-priority-regulators-warn-risks?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1795455738000",
+      "timestamp": "17:42",
+      "source": "CoinTelegraph",
+      "title": "Cuomo says rivals urged companies to opt out of OKXICE tokenized stocks",
+      "link": "https://cointelegraph.com/news/cuomo-rivals-urged-companies-reject-okx-ice-tokenized-stocks?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1795458123000",
+      "timestamp": "18:22",
+      "source": "CoinDesk",
+      "title": "New York judge declines to block Kalshi from operating in the state for now",
+      "link": "https://www.coindesk.com/policy/2026/11/23/new-york-judge-declines-to-block-kalshi-from-operating-in-the-state-for-now"
+    },
+    {
+      "id": "rss-CoinDesk-1-1795457525000",
+      "timestamp": "18:12",
+      "source": "CoinDesk",
+      "title": "Nvidia's Jensen Huang faces Senate scrutiny despite Trump-backed return as CEO",
+      "link": "https://www.coindesk.com/business/2026/11/23/nvidia-s-jensen-huang-faces-senate-scrutiny-despite-trump-backed-return-as-ceo"
+    },
+    {
+      "id": "rss-CoinDesk-2-1795455087000",
+      "timestamp": "17:31",
+      "source": "CoinDesk",
+      "title": "Bitcoin rebound already losing steam as AI trade returns with a bang",
+      "link": "https://www.coindesk.com/markets/2026/11/23/bitcoin-rebound-already-losing-steam-as-ai-trade-returns-with-a-bank"
+    },
+    {
+      "id": "rss-CoinDesk-3-1795451943000",
+      "timestamp": "16:39",
+      "source": "CoinDesk",
+      "title": "Cathie Wood's ARK Invest pulls the plug on two planned crypto ETFs",
+      "link": "https://www.coindesk.com/business/2026/11/23/cathie-wood-s-ark-invest-pulls-the-plug-on-two-planned-crypto-etfs"
+    },
     {
       "id": "egld-1795434630794",
       "timestamp": "11:50",
@@ -30,13 +107,6 @@
       "source": "CoinTelegraph",
       "title": "Bitcoin ETFs shed $1.8B in third-largest weekly outflow",
       "link": "https://cointelegraph.com/markets/bitcoin-etfs-third-largest-weekly-outflows-1-8-billion?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1795413600000",
-      "timestamp": "06:00",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "rss-CoinTelegraph-4-1795405040000",
@@ -128,76 +198,6 @@
       "source": "CoinDesk",
       "title": "More on the pending oversight hearings: State of Crypto",
       "link": "https://www.coindesk.com/"
-    },
-    {
-      "id": "rss-CoinDesk-1-1795356000000",
-      "timestamp": "14:00",
-      "source": "CoinDesk",
-      "title": "Bitcoin's quantum security challenge extends to bridges, custodians and millions of coins",
-      "link": "https://www.coindesk.com/tech/2026/11/22/bitcoin-s-quantum-security-challenge-extends-to-bridges-custodians-and-millions-of-coins"
-    },
-    {
-      "id": "rss-CoinDesk-2-1795283400000",
-      "timestamp": "17:50",
-      "source": "CoinDesk",
-      "title": "Bitcoin rebounds above $60,000 after $1.8 billion crypto liquidation wave",
-      "link": "https://www.coindesk.com/markets/2026/11/21/bitcoin-bounces-9-from-two-year-low-to-retake-usd60-000-as-traders-eye-monday-s-stock-open"
-    },
-    {
-      "id": "rss-CoinDesk-3-1795279260000",
-      "timestamp": "16:41",
-      "source": "CoinDesk",
-      "title": "Cross-chain protocol Chainflip's FLIP tanks 30% after suspected $4.86 million vault drain",
-      "link": "https://www.coindesk.com/business/2026/11/21/cross-chain-protocol-chainflip-s-flip-tanks-30-after-suspected-usd4-86-million-vault-drain"
-    },
-    {
-      "id": "egld-1795374278110",
-      "timestamp": "19:04",
-      "source": "EGLD",
-      "title": "Cotation publique · $2.33 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1795325323000",
-      "timestamp": "05:28",
-      "source": "CoinTelegraph",
-      "title": "Chainflip confirms $12M hack, offers attacker 10% bounty",
-      "link": "https://cointelegraph.com/news/chainflip-12m-crypto-hack-10-percent-bounty?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1795254536000",
-      "timestamp": "09:48",
-      "source": "CoinTelegraph",
-      "title": "ECB seeks industry partners for tokenized deposits, securities experiments",
-      "link": "https://cointelegraph.com/news/ecb-tokenized-deposits-securities-experiments-appia?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-3-1795264200000",
-      "timestamp": "12:30",
-      "source": "CoinDesk",
-      "title": "Ether treasury firm BTCS warns SEC its $54 million Aave loan could be liquidated",
-      "link": "https://www.coindesk.com/markets/2026/11/21/ether-treasury-firm-btcs-warns-sec-its-usd54-million-aave-loan-could-be-liquidated"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1795247507000",
-      "timestamp": "07:51",
-      "source": "CoinTelegraph",
-      "title": "US lawmakers propose up to 30% rewards for prediction market whistleblowers",
-      "link": "https://cointelegraph.com/news/us-prediction-market-whistleblower-rewards-30-percent?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-3-1795241802000",
-      "timestamp": "06:16",
-      "source": "CoinDesk",
-      "title": "Bitcoin nodes could be stalled by repeating one ID 50,000 times. AI found the bug",
-      "link": "https://www.coindesk.com/markets/2026/11/21/bitcoin-nodes-could-be-stalled-by-repeating-one-id-50-000-times-ai-found-the-bug"
-    },
-    {
-      "id": "egld-1795309084671",
-      "timestamp": "00:58",
-      "source": "EGLD",
-      "title": "Cotation publique · $2.28 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
     }
   ]
 }
