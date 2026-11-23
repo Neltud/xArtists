@@ -61,7 +61,7 @@ test('overview and assets share one account request set while real data survive 
 test('failed account reads remain unavailable in both views rather than verified zero balances',async()=>{
  const h=await ui({error:true})
  try{
-  assert.equal(h.host.querySelector('.xa-wallet-summary strong').textContent,'—')
+  assert.equal(h.host.querySelector('.xa-cockpit-metrics strong').textContent,'—')
   assert.match(h.host.textContent,/walletUnavailable/)
   await h.click(h.button('Tokens'))
   assert.match(h.host.textContent,/walletUnavailable/)
