@@ -22,6 +22,7 @@ import './pages/marketplace-page.css'
 import './experience/workspaces.css'
 import './experience/reference-v2.css'
 import './experience/reference-art-gallery.css'
+import './experience/reference-studio-editor.css'
 
 const PackLandingPage = lazy(() => import('./pages/PackLandingPage'))
 const HousePage = lazy(() => import('./pages/HousePage'))
