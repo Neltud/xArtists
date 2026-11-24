@@ -126,7 +126,8 @@
 }
 .xa-ref-v2[data-area="wallet"] .xa-header,
 .xa-ref-v2[data-area="wallet"] .xa-footer,
-.xa-ref-v2[data-area="wallet"] main {
+/* Match the global theme selector's specificity: the cockpit owns its canvas. */
+html[data-theme] .xa-ref-v2[data-area="wallet"] main {
   background: var(--xa-bg); color: var(--xa-text);
 }
 .xa-ref-v2[data-area="wallet"] .xa-header { border-color: var(--xa-border); }

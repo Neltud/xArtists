@@ -940,6 +940,36 @@ test('legacy laboratory and agent shelf links retain query context in their shar
 })
 
 
+for(const theme of ['light','dark'] as const){
+ for(const width of [390,1440]){
+  test(`wallet cockpit stays readable with ${theme} preference at ${width}px`,async({page})=>{
+   await page.addInitScript(theme=>localStorage.setItem('xa-theme',theme),theme)
+   await page.setViewportSize({width,height:900})
+   await page.emulateMedia({reducedMotion:'reduce'})
+   await visit(page,'/wallet/?lang=fr')
+   await expect(page.locator('.xa-cockpit-hero')).toBeVisible()
+   await expect(page.locator('html')).toHaveAttribute('data-theme',theme)
+   await expect(page.locator('main')).toHaveCSS('background-color','rgb(13, 9, 21)')
+   const colors=await page.evaluate(()=>[
+    '.xa-cockpit-title-row h1','.xa-cockpit-ai h2','.xa-cockpit-agent-text strong',
+    '.xa-cockpit-agent-text small','.xa-cockpit-notice','.xa-wallet-views button',
+   ].map(selector=>{
+    const element=document.querySelector(selector)!
+    let surface:Element|null=element,background=''
+    while(surface){
+     background=getComputedStyle(surface).backgroundColor
+     if(background!=='rgba(0, 0, 0, 0)'&&background!=='transparent')break
+     surface=surface.parentElement
+    }
+    return {selector,foreground:getComputedStyle(element).color,background}
+   }))
+   for(const color of colors)expect(contrastRatio(color.foreground,color.background),color.selector+' contrast').toBeGreaterThanOrEqual(4.5)
+   expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(12)
+   await page.screenshot({animations:'disabled',path:`artifacts/ux-mobile/clarity-wallet-${theme}-${width}.png`})
+  })
+ }
+}
+
 test('approved art gallery uses source-linked pieces and studio preview remains local-only', async ({page})=>{
  await page.setViewportSize({width:1440,height:900})
  await visit(page,'/marketplace/?lang=fr')
