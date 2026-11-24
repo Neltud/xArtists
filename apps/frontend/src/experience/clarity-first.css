@@ -115,9 +115,9 @@ html[data-theme] .xa-home-editorial .xa-home-personal>span:not(.xa-text-link){di
 html[data-theme] .xa-home-editorial .xa-home-personal>.xa-text-link{color:#f6ebff;margin-inline-start:auto}
 .xa-home-editorial a:focus-visible{outline:3px solid #fff;outline-offset:3px}
 html[data-theme] .xa-workspace-home .xa-first-tile{background:linear-gradient(145deg,#f8f0ff,#ede1ff);color:#30134f;border-color:#d6baf5;min-height:170px;gap:10px}
-html[data-theme] .xa-workspace-home .xa-first-tiles>li:nth-child(2) .xa-first-tile{background:linear-gradient(145deg,#fdf1f9,#efddfa);border-color:#e8c5eb}
-html[data-theme] .xa-workspace-home .xa-first-tiles>li:nth-child(3) .xa-first-tile{background:linear-gradient(145deg,#eef0ff,#dedfff);border-color:#c5c5f6}
-html[data-theme] .xa-workspace-home .xa-first-tiles>li:nth-child(4) .xa-first-tile{background:linear-gradient(145deg,#f3e6ff,#e9d5ff);border-color:#d3b4f4}
+html[data-theme="light"] .xa-workspace-home .xa-first-tiles>li:nth-child(2) .xa-first-tile{background:linear-gradient(145deg,#fdf1f9,#efddfa);border-color:#e8c5eb}
+html[data-theme="light"] .xa-workspace-home .xa-first-tiles>li:nth-child(3) .xa-first-tile{background:linear-gradient(145deg,#eef0ff,#dedfff);border-color:#c5c5f6}
+html[data-theme="light"] .xa-workspace-home .xa-first-tiles>li:nth-child(4) .xa-first-tile{background:linear-gradient(145deg,#f3e6ff,#e9d5ff);border-color:#d3b4f4}
 html[data-theme] .xa-workspace-home .xa-first-tile-desc{color:#584168}
 html[data-theme] .xa-workspace-home .xa-first-tile-top,html[data-theme] .xa-workspace-home .xa-first-tile-bottom{color:#6328a7}
 html[data-theme] .xa-workspace-home .xa-first-tile-top{margin-bottom:4px}
@@ -125,7 +125,7 @@ html[data-theme="dark"] .xa-workspace-home .xa-first-tile{background:linear-grad
 html[data-theme="dark"] .xa-workspace-home .xa-first-tile-desc{color:#e8d6f7}
 html[data-theme="dark"] .xa-workspace-home .xa-first-tile-top,html[data-theme="dark"] .xa-workspace-home .xa-first-tile-bottom{color:#e2bfff}
 @media(max-width:720px){
-  html[data-theme] .xa-workspace-home .xa-home-editorial{grid-template-columns:minmax(0,1fr);grid-template-areas:"artwork" "copy" "wallet";padding:16px;gap:16px;border-radius:18px}
+  html[data-theme] .xa-workspace-home .xa-home-editorial{grid-template-columns:minmax(0,1fr);grid-template-areas:"copy" "artwork" "wallet";padding:16px;gap:16px;border-radius:18px}
   .xa-home-editorial-art{min-height:148px;grid-template-columns:1.2fr .8fr}
   .xa-home-artwork:nth-child(2){margin-top:10px;margin-bottom:0}
   html[data-theme] .xa-home-editorial h1{font-size:clamp(30px,8vw,38px);margin:8px 0 10px}
