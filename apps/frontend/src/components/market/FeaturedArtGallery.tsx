@@ -16,7 +16,7 @@ export default function FeaturedArtGallery(){
  const c=useCopy()
  return <section className="xa-featured-gallery" aria-labelledby="xa-featured-title">
   <header className="xa-featured-gallery-header">
-   <h2 id="xa-featured-title">{c('editorialDiscover')}</h2>
+   <h1 id="xa-featured-title">{c('editorialDiscover')}</h1>
    <nav className="xa-featured-tabs" aria-label={c('editorialExploreTabs')}>
     <span className="xa-featured-tab-current" aria-current="page">{c('editorialArtworks')}</span>
     <Link to="/museum">{c('navExhibitions')}</Link>

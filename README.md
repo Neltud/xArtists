@@ -15,6 +15,10 @@ xArtists est une dApp d'art et de création : découverte sans wallet, œuvres p
 
 Les identifiants historiques `/lia` et `lia/` restent en compatibilité pendant la migration vers **xOrus**. L'archive Vellum/Chorus n'est plus un moteur autorisé à lancer des transactions. Le vote externe ChatGPT est au plus de 15 % ; Sentinel garde son veto.
 
+## État confirmé au 24 novembre 2026
+
+Sonde `2026-11-24T05:33Z`. Pages **0.139.0** / **`5271cefe`** / `lia_live_trading=false`, construit après le cockpit V2. API Render toujours `8b6fae84` (un push git ne la redéploie pas). Studio store **503** (`table_ready=false`) alors que la page Studio sert le shell. Hub xOrus sandbox `e580388b`, exécution **fermée**, budget live **0**, stance **ABSTAIN**, valorisation paper encore manuelle. `api.xartists.art` non résolu. Détail : [sonde du 24 nov](docs/ops/PROBE_PUBLIC_2026-11-24.md). Aucun gate commerce n'est levé.
+
 ## État confirmé au 22 novembre 2026
 
 Sonde `2026-11-22T05:33Z`. Pages **0.139.0** / `d5f1140e` / `lia_live_trading=false` au moment de la lecture. Le correctif de titre xOrus (outils avancés repliés) est sur `main` et suit le prochain build Pages. API Render toujours `8b6fae84`. Studio **503**. xOrus **ABSTAIN** (`thin_tape`). Hub Neon en lecture sandbox, pas une autorisation d'exécution. Détail : [sonde du 22 nov](docs/ops/PROBE_PUBLIC_2026-11-22.md). Aucun gate commerce n'est levé.

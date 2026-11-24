@@ -21,7 +21,7 @@
 .xa-ref-v2[data-area="art"] .xa-marketplace {max-width:none !important;width:100%;margin:0;color:var(--xa-text)}
 .xa-featured-gallery {max-width:100%;color:var(--xa-text);margin:12px 0 34px}
 .xa-featured-gallery-header {display:flex;align-items:end;gap:clamp(22px,5vw,64px);padding-bottom:24px}
-.xa-ref-v2 .xa-module-body .xa-featured-gallery-header h2 {
+.xa-ref-v2 .xa-module-body .xa-featured-gallery-header h1 {
   font-family:Georgia, 'Times New Roman',serif !important;
   font-size:clamp(50px,6.1vw,91px) !important;
   letter-spacing:-.058em !important;
@@ -62,7 +62,7 @@
 .xa-ref-v2[data-area="art"] .xa-marketplace-categories__heading{display:none}
 .xa-ref-v2[data-area="art"] .xa-marketplace-category{min-height:54px;border-radius:8px}
 .xa-ref-v2[data-area="art"] .xa-market-grid{margin:24px 0 0}
-.xa-ref-v2[data-area="art"] .xa-market-grid__heading h1{color:var(--xa-text)!important}
+.xa-ref-v2[data-area="art"] .xa-market-grid__heading h2{color:var(--xa-text)!important}
 .xa-ref-v2[data-area="art"] .xa-marketplace-status {color:#59466a}
 
 /* The app can be globally dark while the gallery stays a bright editorial surface. */
@@ -80,7 +80,7 @@ html[data-theme="dark"] .xa-ref-v2[data-area="art"] .xa-module-page[data-module=
 }
 @media(max-width:720px) {
   .xa-featured-gallery-header{align-items:flex-start;flex-direction:column;gap:8px}
-  .xa-ref-v2 .xa-module-body .xa-featured-gallery-header h2{font-size:clamp(42px,11vw,63px)!important}
+  .xa-ref-v2 .xa-module-body .xa-featured-gallery-header h1{font-size:clamp(42px,11vw,63px)!important}
   .xa-featured-tabs{font-size:17px;gap:24px;padding-bottom:5px}
   .xa-featured-gallery-grid{grid-template-columns:1fr;grid-template-rows:auto;gap:22px}
   .xa-featured-work-0{grid-row:auto}

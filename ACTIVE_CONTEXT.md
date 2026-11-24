@@ -1,5 +1,15 @@
 # ACTIVE_CONTEXT — xArtists / xOrus
 
+## Sonde et suite quotes — 24 novembre 2026 (05:33 UTC)
+
+- Lecture publique seulement. Pages **0.139.0** sert `5271cefe` (cockpit V2, build `2026-11-23T17:19:23Z`, `lia_live_trading=false`). API Render reste `8b6fae84` : checkout, mint live, enchères, upload et pont $TRO **off**. PayBox est configuré en prod et le checkout est **désactivé**. Studio store **503**, schéma absent. `api.xartists.art` non résolu.
+- Hub Neon inchangé à l'exécution : source `e580388b53d65da6f10f86bab37527215f5072f3`, `execution_authorized=false`, `live_budget_cents=0`, stance **ABSTAIN**, 0 wallet, valorisation paper **manuelle**. Les commandes paper sans token répondent 401. Aucun registre de risque live.
+- Prochaine tranche de code, **pas un GO** : schéma `GET /v1/xorus/reference-quotes` (univers + règles d'admission, `quotes=[]`, aucun I/O, POST 405). Il ne remplace pas le bundle Neon tant qu'un reçu de déploiement n'est pas écrit. Une quote n'est pas un fill ; le catalogue n'est pas une preuve de swap.
+- Bloquants humains inchangés : [#506](https://github.com/Neltud/xArtists/issues/506) allowlist xPortal, puis [#428](https://github.com/Neltud/xArtists/issues/428) deux hashes Explorer, [#341](https://github.com/Neltud/xArtists/issues/341) réception mail, migrations Studio après backup. PR UX [#634](https://github.com/Neltud/xArtists/pull/634) reste un brouillon, hors de ce correctif.
+- Interdit par cette mise à jour : `LIA_LIVE_TRADING`, `paybox_checkout_enabled`, mint public, assisted POST, annonce de commerce ouvert.
+
+Preuve : [`docs/ops/PROBE_PUBLIC_2026-11-24.md`](docs/ops/PROBE_PUBLIC_2026-11-24.md).
+
 ## Terminal paper publié — 22 novembre 2026 (18:35 UTC)
 
 - [PR #630](https://github.com/Neltud/xArtists/pull/630) fusionnée après **16 contrôles CI verts**, dont le nouveau parcours mobile complet. **41 tests service**, **525 tests frontend**, TypeScript, build et audit des 140 routes réussis.
