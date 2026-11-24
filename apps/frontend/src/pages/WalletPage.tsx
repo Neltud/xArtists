@@ -11,6 +11,9 @@ import WalletAssets,{formatWalletBalance} from '../components/WalletAssets'
 import {ArtworkGrid} from '../experience/Pages'
 import {useCopy} from '../experience/state'
 import Icon from '../experience/Icon'
+import NetworkSelector from '../components/NetworkSelector'
+import SolanaWalletWorkspace from '../components/SolanaWalletWorkspace'
+import {useWalletNetwork} from '../context/NetworkContext'
 
 type WalletView='overview'|'tokens'|'nft'|'assets'
 const AGENT_PREVIEWS=[
@@ -23,6 +26,10 @@ const AGENT_PREVIEWS=[
  * address-scoped read; agent previews are links, NOT entitlement claims.
  */
 export default function WalletPage(){
+ const {network}=useWalletNetwork()
+ return network==='solana'?<SolanaWalletWorkspace/>:<MultiversxWalletWorkspace/>
+}
+function MultiversxWalletWorkspace(){
  const c=useCopy(),{connected,address,method,sessionLive,canAttemptSign,disconnect}=useWallet()
  const account=useUserAccount(connected?address:null),{push}=useToast(),[params,setParams]=useSearchParams()
  const known=connected&&!account.loading&&account.refreshedAt!==null&&!account.error
@@ -43,9 +50,7 @@ export default function WalletPage(){
  return <div className="xa-wallet-workspace xa-wallet-cockpit">
   <header className="xa-cockpit-title-row">
    <h1>{c('wallet')}</h1>
-   <div className="xa-cockpit-network" aria-label={c('cockpitNetworkLabel')}>
-    <span className="xa-cockpit-network-symbol" aria-hidden="true">✳</span>MultiversX
-   </div>
+   <NetworkSelector/>
   </header>
   <div className="xa-cockpit-overview-grid">
    <div className="xa-cockpit-main-column">

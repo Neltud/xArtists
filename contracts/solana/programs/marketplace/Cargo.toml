@@ -1,0 +1,22 @@
+[package]
+name = "xartists-marketplace"
+version = "0.1.0"
+edition = "2021"
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "xartists_marketplace"
+[features]
+default = []
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
+[dependencies]
+anchor-lang = { workspace = true }
+anchor-spl = { workspace = true }
+[dev-dependencies]
+solana-program-test = "=2.3.13"
+solana-sdk = "=2.3.1"
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+xartists-governance = { path = "../governance", features = ["no-entrypoint"] }

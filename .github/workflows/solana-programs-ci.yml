@@ -1,0 +1,63 @@
+name: Solana marketplace and governance — local SVM
+on:
+  pull_request:
+    paths:
+      - 'contracts/solana/**'
+      - 'apps/frontend/src/lib/solanaInstructions.ts'
+      - 'apps/frontend/src/config/solanaPrograms.ts'
+      - 'apps/frontend/tests/solana-*.test.mjs'
+      - '.github/workflows/solana-programs-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'contracts/solana/**'
+      - '.github/workflows/solana-programs-ci.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  solana-svm:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      RUST_LOG: error
+      SOLANA_PLATFORM_TOOLS_DIR: ${{ runner.temp }}/solana-platform-tools
+      BPF_OUT_DIR: ${{ github.workspace }}/contracts/solana/target/deploy
+      LIA_LIVE_TRADING: '0'
+      PAYBOX_CHECKOUT_ENABLED: '0'
+      MINT_LIVE_ENABLED: 'false'
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      - uses: actions/cache@v5
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            ~/.cargo/bin/cargo-build-sbf
+            ~/.cargo/bin/cargo-test-sbf
+            ${{ runner.temp }}/solana-platform-tools
+            contracts/solana/target
+          key: solana-v1-sbf4.6.0-${{ runner.os }}-${{ hashFiles('contracts/solana/Cargo.lock') }}
+      - name: Check Rust formatting
+        run: cargo fmt --manifest-path contracts/solana/Cargo.toml --all -- --check
+      - name: Install pinned official SBF builder
+        run: |
+          if ! cargo-build-sbf --version 2>/dev/null | grep -q '4.6.0'; then
+            cargo install cargo-build-sbf --version 4.6.0 --locked
+          fi
+      - name: Build both actual SBF programs, without deployment
+        run: cargo-build-sbf --manifest-path contracts/solana/Cargo.toml --workspace --arch v0 --sbf-out-dir "$BPF_OUT_DIR" -- --locked
+      - name: Run unit and in-memory Solana runtime tests against these binaries
+        run: cargo test --manifest-path contracts/solana/Cargo.toml --workspace --locked
+      - name: Record program hashes
+        run: sha256sum "$BPF_OUT_DIR"/*.so > "$BPF_OUT_DIR/program-sha256.txt"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: solana-programs-local-only
+          path: |
+            contracts/solana/target/deploy/*.so
+            contracts/solana/target/deploy/program-sha256.txt
+          retention-days: 14

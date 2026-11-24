@@ -2,7 +2,9 @@ import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phra
 /**
  * $TRO tokenomics — cap 500k, burns, flows, pools, utilitaire (pas share).
  */
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import TroCrosschainPage from './TroCrosschainPage'
+import {useNetworkCopy} from '../experience/networkCopy'
 import { Link } from 'react-router-dom'
 import { getTroInfo, getEgldPrice } from '../services/priceService'
 import TreasurySplitViz from '../components/treasury/TreasurySplitViz'
@@ -66,7 +68,12 @@ const FLOW_LABELS: Record<string, string> = {
   tip: 'Tips',
 }
 
-export default function TroPage() {
+export default function TroPage(){
+ const n=useNetworkCopy(),ref=useRef<HTMLDetailsElement>(null),[open,setOpen]=useState(false)
+ useEffect(()=>{const reveal=()=>{if(window.location.hash==='#token-details'&&ref.current){ref.current.open=true;setOpen(true)}};reveal();window.addEventListener('hashchange',reveal);return()=>window.removeEventListener('hashchange',reveal)},[])
+ return <><TroCrosschainPage/><details id="token-details" ref={ref} className="xa-task-details xa-token-history" onToggle={e=>setOpen(e.currentTarget.open)}><summary>{n('sourceArchive')}</summary>{open&&<TroTokenDetails/>}</details></>
+}
+function TroTokenDetails() {
   const [info, setInfo] = useState<TroInfo | null>(null)
   const [egld, setEgld] = useState(0)
   const [pools, setPools] = useState<PoolCfg[]>([])
@@ -112,7 +119,7 @@ export default function TroPage() {
 
       <header className="space-y-2">
         <p className="section-label">{xaRender("Token · utilitaire")}</p>
-        <h1 className="section-title display">{xaRender("$TRO tokenomics")}</h1>
+        <h2 className="section-title display">{xaRender("$TRO tokenomics")}</h2>
         <Link to="/tro/sale"
           className="inline-flex min-h-[44px] items-center gap-2 rounded-lg border border-lime-300/30 bg-lime-300/10 px-4 py-2 text-sm font-semibold text-lime-200 hover:border-lime-300/70">
           Découvrir $TRO · Achat et projet de bridge Solana <span aria-hidden="true">↗</span>

@@ -730,14 +730,14 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
       await expect(page.locator('#rwa-preparation-trigger')).toHaveAttribute('aria-expanded','false')
       expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth),'RWA overflow '+width).toBeLessThanOrEqual(12)
       await visit(page,'/finance/tro/sale/')
-      await expect(page.locator('.tro-portal__quicknav a')).toHaveCount(3)
-      await expect(page.getByText(/Bridge Solana : désactivé/)).toBeVisible()
-      await page.locator('.tro-portal__quicknav a[href="#tro-roadmap-details-trigger"]').click()
-      await expect(page).toHaveURL(/#tro-roadmap-details-trigger$/)
-      await expect(page.locator('#tro-roadmap-details-trigger')).toHaveAttribute('aria-expanded','false')
-      await page.locator('#tro-roadmap-details-trigger').press('Enter')
-      await expect(page.locator('#tro-roadmap-details-trigger')).toHaveAttribute('aria-expanded','true')
-      await expect(page.getByRole('button',{name:'Bridge non disponible',exact:true})).toBeDisabled()
+      await expect(page.locator('.xa-token-networks .xa-token-network')).toHaveCount(2)
+      await expect(page.locator('.tro-portal__availability')).toContainText('Bridge et vente directe fermés')
+      const details=page.locator('#tro-roadmap-details-trigger')
+      await expect(details).not.toHaveAttribute('open','')
+      await details.locator('summary').press('Enter')
+      await expect(details).toHaveAttribute('open','')
+      await expect(page.locator('#tro-transparency')).toContainText('Aucun achat, transfert ou dépôt')
+      await expect(page.getByRole('button',{name:/bridge|acheter/i})).toHaveCount(0)
       expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth),'TRO overflow '+width).toBeLessThanOrEqual(12)
     }
   })
@@ -806,7 +806,7 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
 
   test('xOrus paper terminal persists simulations and applies caps without wallet or order requests',async({page})=>{
     await page.setViewportSize({width:390,height:844})
-    await visit(page,'/intelligence/xorus/?lang=fr')
+    await visit(page,'/intelligence/xorus/?lang=fr&view=simulation')
     await page.evaluate(()=>localStorage.removeItem('xartists-xorus-paper-ledger-v1'))
     await page.reload()
     const terminal=page.getByTestId('xorus-paper-terminal')
@@ -843,7 +843,8 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
       await expect(journey.locator('a[href="'+path+'"]')).toBeVisible()
     }
     await page.locator('.xa-sidebar-toggle').click()
-    await expect(page.getByRole('heading',{name:'xOrus, l’intelligence expliquée simplement'})).toBeVisible()
+    await expect(page.getByRole('heading',{name:'Analyses xOrus',level:1})).toBeVisible()
+    await page.locator('.xa-xorus-page > .xa-task-details > summary').click()
     await expect(page.getByRole('button',{name:'Afficher les outils avancés'})).toHaveAttribute('aria-expanded','false')
     await expect(page.locator('#xorus-paybox-wallet')).toHaveCount(0)
     await page.screenshot({animations:'disabled',path:'artifacts/ux-mobile/intelligence-xorus-390.png'})
@@ -1012,4 +1013,119 @@ test('approved art gallery uses source-linked pieces and studio preview remains 
  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)
  expect(overflow,'visual studio horizontal overflow').toBeLessThanOrEqual(12)
  await page.screenshot({animations:'disabled',path:'artifacts/ux-mobile/clarity-studio-390.png'})
+})
+
+test('focused support, DAO and token pages keep the initial mobile view concise',async({page})=>{
+ await page.setViewportSize({width:390,height:844})
+ await page.emulateMedia({reducedMotion:'reduce'})
+ for(const [path,name,limit] of [['/finance/support/','support',140],['/finance/governance/','dao',180],['/finance/tro/sale/','token',180]] as const){
+  await visit(page,path+'?lang=fr')
+  await expect(page.locator('.xa-task-page')).toBeVisible()
+  await expect(page.locator('main h1')).toHaveCount(1)
+  const body=page.locator('.xa-task-page')
+  const words=(await body.innerText()).trim().split(/\s+/).length
+  expect(words,name+' default text density').toBeLessThan(limit)
+  await expect(body.getByText('Services LIA',{exact:false})).toHaveCount(0)
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(12)
+  await page.screenshot({animations:'disabled',path:'artifacts/ux-mobile/focused-'+name+'-390.png'})
+ }
+ await visit(page,'/finance/governance/?lang=fr')
+ await expect(page.getByRole('button',{name:'Essayer « Pour »',exact:true})).toHaveCount(0)
+ await page.locator('.xa-task-tabs').getByRole('button',{name:'Règles',exact:true}).click()
+ const practice=page.locator('.xa-dao-practice')
+ await expect(practice).not.toHaveAttribute('open','')
+ await practice.locator('summary').press('Enter')
+ await expect(page.getByRole('button',{name:'Essayer « Pour »',exact:true}).first()).toBeVisible()
+})
+
+for(const width of [390,1440]){
+ test('network switch separates Solana and MultiversX wallets at '+width+'px',async({page})=>{
+  await page.setViewportSize({width,height:900})
+  let solanaReads=0,mutations=0
+  page.on('request',request=>{
+   if(request.url().includes('api.mainnet-beta.solana.com'))solanaReads++
+   if(request.method()==='POST'&&/\/transactions(?:\?|$)|\/v1\/xorus\/(execute|orders|sign)/.test(request.url()))mutations++
+  })
+  await visit(page,'/wallet/?lang=fr&network=multiversx')
+  const chooser=page.getByRole('group',{name:'Réseau',exact:true})
+  await expect(chooser.getByRole('button',{name:'MultiversX',exact:true})).toHaveAttribute('aria-pressed','true')
+  await expect(chooser.locator('img[src$="/brands/multiversx.svg"]')).toBeVisible()
+  await chooser.getByRole('button',{name:'Solana',exact:true}).click()
+  await expect(page.locator('.xa-solana-wallet')).toBeVisible()
+  await expect(page).toHaveURL(/network=solana/)
+  await expect(page.locator('.xa-cockpit-metrics strong')).toHaveText(['—','—','—'])
+  await expect(page.getByRole('link',{name:'Phantom',exact:true})).toBeVisible()
+  await expect(page.locator('.xa-solana-wallet')).not.toContainText('erd1')
+  expect(solanaReads).toBe(0);expect(mutations).toBe(0)
+  await page.screenshot({animations:'disabled',path:'artifacts/ux-mobile/solana-wallet-'+width+'.png'})
+  await chooser.getByRole('button',{name:'MultiversX',exact:true}).click()
+  await expect(page.locator('.xa-solana-wallet')).toHaveCount(0)
+  await expect(page.getByRole('button',{name:'Connecter un wallet',exact:true})).toBeVisible()
+  expect(mutations).toBe(0)
+ })
+}
+
+test('Wallet Standard consent reads only Solana assets and revocation clears every balance',async({page})=>{
+ const address='11111111111111111111111111111111',mint='2xqre66jAqcSZFh1seMkgvQNVgG6uL1gwBtKVWuwePYC'
+ await page.addInitScript(({address})=>{
+  const state=window as any
+  state.__solanaConnects=0;state.__solanaSigns=0
+  let accounts:any[]=[{address,publicKey:new Uint8Array(32),chains:['solana:mainnet'],features:['solana:signTransaction','solana:signMessage']}]
+  const listeners=new Set<(event:any)=>void>()
+  let unregister:(()=>void)|undefined
+  const wallet={version:'1.0.0',name:'Wallet test local',icon:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/B9sAAAAASUVORK5CYII=',chains:['solana:mainnet'],get accounts(){return accounts},features:{
+   'standard:connect':{version:'1.0.0',connect:async()=>{state.__solanaConnects++;return {accounts}}},
+   'standard:events':{version:'1.0.0',on:(_event:string,listener:(event:any)=>void)=>{listeners.add(listener);return()=>listeners.delete(listener)}},
+   'standard:disconnect':{version:'1.0.0',disconnect:async()=>{accounts=[];for(const cb of listeners)cb({accounts})}},
+   'solana:signTransaction':{version:'1.0.0',supportedTransactionVersions:['legacy',0],signTransaction:async()=>{state.__solanaSigns++;throw Error('signing forbidden in this test')}},
+   'solana:signMessage':{version:'1.0.0',signMessage:async()=>{state.__solanaSigns++;throw Error('signing forbidden in this test')}},
+  }}
+  const register=(api:any)=>{unregister=api.register(wallet)}
+  window.addEventListener('wallet-standard:app-ready',(event:any)=>register(event.detail))
+  window.dispatchEvent(new CustomEvent('wallet-standard:register-wallet',{detail:register}))
+  state.__solanaRevoke=()=>{accounts=[];for(const cb of listeners)cb({accounts})}
+  state.__solanaUnregister=()=>unregister?.()
+ },{address})
+ const methods:string[]=[]
+ await page.route('https://api.mainnet-beta.solana.com/**',async route=>{
+  const r=route.request().postDataJSON();methods.push(r.method)
+  const result=r.method==='getBalance'?{value:1234567890}
+   :r.method==='getTokenAccountsByOwner'?{value:[{account:{owner:'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',data:{parsed:{info:{owner:address,mint,tokenAmount:{amount:'1',decimals:0}}}}}}]}
+   :r.method==='getMultipleAccounts'?{value:[{owner:'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',data:{parsed:{type:'mint',info:{isInitialized:true,supply:'1',decimals:0}}}}]}
+   :null
+  expect(result,'only read-only RPC methods are allowed').not.toBeNull()
+  await route.fulfill({json:{jsonrpc:'2.0',id:r.id,result}})
+ })
+ await page.setViewportSize({width:390,height:900})
+ await visit(page,'/wallet/?lang=fr&network=solana')
+ await expect(page.getByRole('button',{name:'Wallet test local',exact:true})).toBeVisible()
+ expect(await page.evaluate(()=>(window as any).__solanaConnects)).toBe(0)
+ await page.getByRole('button',{name:'Wallet test local',exact:true}).click()
+ await expect(page.locator('.xa-cockpit-metrics strong').first()).toHaveText('1.23456789')
+ await expect(page.locator('.xa-wallet-address')).toHaveText(address)
+ await page.locator('.xa-wallet-views').getByRole('button',{name:'NFT',exact:true}).click()
+ await expect(page.locator('.xa-solana-asset')).toHaveCount(1)
+ expect(methods.sort()).toEqual(['getBalance','getMultipleAccounts','getTokenAccountsByOwner'].sort())
+ expect(await page.evaluate(()=>(window as any).__solanaSigns)).toBe(0)
+ await page.evaluate(()=>(window as any).__solanaRevoke())
+ await expect(page.locator('.xa-cockpit-metrics strong')).toHaveText(['—','—','—'])
+ await expect(page.locator('.xa-wallet-address')).toHaveCount(0)
+ await expect(page.locator('.xa-solana-asset')).toHaveCount(0)
+ expect(await page.evaluate(()=>(window as any).__solanaSigns)).toBe(0)
+})
+
+test('Solana marketplace and governance show their own network with no live purchase or official vote',async({page})=>{
+ await page.setViewportSize({width:390,height:900})
+ await visit(page,'/marketplace/?network=solana&lang=fr')
+ await expect(page.locator('.xa-solana-market')).toBeVisible()
+ await expect(page.getByRole('group',{name:'Réseau'}).getByRole('button',{name:'Solana',exact:true})).toHaveAttribute('aria-pressed','true')
+ await expect(page.locator('.xa-task-status')).toContainText('Ventes xArtists non ouvertes')
+ await expect(page.getByRole('button',{name:/acheter|buy|mint/i})).toHaveCount(0)
+ await expect(page.locator('.xa-task-page')).not.toContainText('Polygon')
+ await page.screenshot({animations:'disabled',path:'artifacts/ux-mobile/solana-market-390.png'})
+ await visit(page,'/dao/?network=solana&lang=fr')
+ await expect(page.getByRole('group',{name:'Réseau'}).getByRole('button',{name:'Solana',exact:true})).toHaveAttribute('aria-pressed','true')
+ await expect(page.locator('.xa-task-status')).toContainText('Vote officiel non ouvert')
+ await expect(page.getByRole('button',{name:/essayer|voter|vote for/i})).toHaveCount(0)
+ await page.screenshot({animations:'disabled',path:'artifacts/ux-mobile/solana-dao-390.png'})
 })

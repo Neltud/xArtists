@@ -1,174 +1,44 @@
-/**
- * External multichain discovery only. No wallet connect, signing, fulfilment,
- * Solana mint or Polygon contract deployment is performed in xArtists.
- */
-import { useRef, useState, type FormEvent } from 'react'
-
-type Chain = 'solana' | 'polygon'
-type OpenSeaItem = {
-  identifier: string
-  contract: string
-  name: string
-  image_url: string | null
-  opensea_url: string
-  collection: string
-  price: null
-  listing_verified: false
-}
-type Preview = {
-  ok: true
-  chain: Chain
-  collection: string
-  collection_name: string
-  collection_url: string
-  source: 'opensea_api_v2'
-  mode: 'read_only'
-  on_site_order_enabled: false
-  fetched_at: string
-  items: OpenSeaItem[]
-}
-
-const API_BASE = (import.meta.env.VITE_API_BASE as string | undefined)?.replace(/\/$/, '') ||
-  'https://xartists-access-api.onrender.com'
-const collectionPattern = /^[a-z0-9](?:[a-z0-9-]{0,62}[a-z0-9])?$/
-
-function messageForStatus(status: number, error?: string) {
-  if (error === 'opensea_api_not_configured')
-    return 'OpenSea API non configurée sur le serveur xArtists. Consulter OpenSea directement.'
-  if (error === 'collection_chain_not_verified')
-    return 'Cette collection OpenSea ne correspond pas au réseau choisi.'
-  if (status === 404) return 'Collection non trouvée sur OpenSea.'
-  if (status === 429) return 'Trop de demandes simultanées. Réessayer plus tard.'
-  return 'Catalogue OpenSea temporairement indisponible. Aucun achat possible depuis xArtists.'
-}
-
-export default function OpenSeaCollectionPanel() {
-  const [chain, setChain] = useState<Chain>('solana')
-  const [slug, setSlug] = useState('')
-  const [result, setResult] = useState<Preview | null>(null)
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-  const pending = useRef<AbortController | null>(null)
-
-  const clear = () => {
-    pending.current?.abort()
-    setResult(null)
-    setError('')
-    setLoading(false)
-  }
-  async function onSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    pending.current?.abort()
-    setResult(null)
-    setError('')
-    const cleanSlug = slug.trim().toLowerCase()
-    if (!collectionPattern.test(cleanSlug)) {
-      setError('Saisir le slug OpenSea exact de la collection, sans URL ni caractères spéciaux.')
-      setLoading(false)
-      return
-    }
-    const controller = new AbortController()
-    pending.current = controller
-    setLoading(true)
-    try {
-      const u = new URL('/v1/marketplace/opensea/collection', API_BASE + '/')
-      u.searchParams.set('chain', chain)
-      u.searchParams.set('slug', cleanSlug)
-      const timeout = setTimeout(() => controller.abort('timeout'), 10_000)
-      let response: Response
-      try {
-        response = await fetch(u.toString(), { method: 'GET', cache: 'no-store', signal: controller.signal })
-      } finally { clearTimeout(timeout) }
-      const payload = await response.json() as Partial<Preview> & { error?: string }
-      if (!response.ok || payload.ok !== true || payload.mode !== 'read_only' ||
-          payload.chain !== chain || payload.collection !== cleanSlug ||
-          !Array.isArray(payload.items) || payload.on_site_order_enabled !== false)
-        throw new Error(messageForStatus(response.status, payload.error))
-      setResult(payload as Preview)
-    } catch (e) {
-      if (controller.signal.reason === 'timeout') {
-        setError('Le catalogue OpenSea ne répond pas dans les 10 secondes. Réessayer plus tard.')
-      } else if (!controller.signal.aborted) {
-        setError(e instanceof Error ? e.message : messageForStatus(503))
-      }
-    } finally {
-      if (pending.current === controller) { pending.current = null; setLoading(false) }
-    }
-  }
-
-  return <section className="space-y-5" aria-label="Découvrir les NFT Solana et Polygon via OpenSea">
-    <div>
-      <h2 className="text-xl font-semibold text-white">OpenSea · Polygon & Solana</h2>
-      <p className="mt-2 max-w-3xl text-sm text-zinc-300">
-        Explorer une collection déjà répertoriée sur OpenSea, sans connecter de wallet.
-        Le catalogue est une lecture de métadonnées : il ne garantit ni disponibilité,
-        ni prix, ni authenticité, ni propriété du NFT.
-      </p>
-    </div>
-    <form onSubmit={onSubmit} className="grid gap-3 sm:grid-cols-[160px_minmax(0,1fr)_auto] sm:items-end">
-      <label className="text-xs text-zinc-300">
-        Blockchain
-        <select value={chain} onChange={e => { clear(); setChain(e.target.value as Chain) }}
-          className="mt-1 block min-h-[44px] w-full rounded-xl border border-white/20 bg-zinc-950 px-3 text-white">
-          <option value="solana">Solana</option>
-          <option value="polygon">Polygon</option>
-        </select>
-      </label>
-      <label className="text-xs text-zinc-300">
-        Slug de collection OpenSea
-        <input type="text" value={slug} maxLength={64} autoCapitalize="none" autoComplete="off"
-          onChange={e => { clear(); setSlug(e.target.value) }}
-          placeholder="ex. ma-collection" className="mt-1 block min-h-[44px] w-full rounded-xl border border-white/20 bg-zinc-950 px-3 text-white" />
-      </label>
-      <button type="submit" disabled={loading}
-        className="btn-primary min-h-[44px] rounded-xl px-4 text-sm disabled:opacity-60">
-        {loading ? 'Recherche…' : 'Explorer la collection'}
-      </button>
-    </form>
-    <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/[0.05] p-4 text-xs leading-relaxed text-zinc-300">
-      {chain === 'solana'
-        ? 'Solana : OpenSea ne référence pas encore toutes les collections. OpenSea Studio ne permet pas le mint Solana. Création via un outil Solana compatible, puis découverte/vente sur une collection prise en charge.'
-        : 'Polygon : création ERC-721/1155 possible via un outil EVM compatible ou OpenSea Studio ; aucune collection ou vente n’est créée par ce formulaire.'}
-      {' '}Pour vendre ou acheter, finalisez exclusivement sur OpenSea avec votre propre wallet après vérification des frais et permissions.
-    </div>
-    {loading && <p role="status" className="text-sm text-zinc-400">Lecture sécurisée du catalogue OpenSea…</p>}
-    {error && <p role="alert" className="rounded-xl border border-amber-500/30 p-4 text-sm text-amber-200">{error}</p>}
-    {!result && <a href="https://opensea.io/" target="_blank" rel="noopener noreferrer"
-      className="inline-flex min-h-[44px] items-center text-sm text-cyan-300 underline">
-      Explorer OpenSea directement
-    </a>}
-    {result && <>
-      <header className="flex flex-wrap justify-between gap-3">
-        <div>
-          <h3 className="text-lg font-semibold text-white">{result.collection_name}</h3>
-          <p className="text-xs text-zinc-400">Source OpenSea API v2 · {result.chain} · lecture seule · {result.items.length} NFT chargés</p>
-        </div>
-        <a href={result.collection_url} target="_blank" rel="noopener noreferrer"
-          className="btn-secondary inline-flex min-h-[44px] items-center px-4 text-sm">
-          Voir la collection sur OpenSea
-        </a>
-      </header>
-      {result.items.length === 0 && <p className="text-sm text-zinc-400">Aucun NFT visible pour cette collection dans la réponse OpenSea.</p>}
-      <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {result.items.map(item => <li key={item.contract + ':' + item.identifier}
-          className="overflow-hidden rounded-2xl border border-white/10 bg-zinc-950/50">
-          <div className="flex aspect-[4/3] items-center justify-center bg-white/[0.03]">
-            {item.image_url
-              ? <img src={item.image_url} alt={item.name} loading="lazy" referrerPolicy="no-referrer"
-                  className="h-full w-full object-cover" />
-              : <span className="text-xs text-zinc-500">Aperçu indisponible</span>}
-          </div>
-          <div className="space-y-2 p-4">
-            <p className="line-clamp-2 text-sm font-semibold text-white">{item.name}</p>
-            <p className="truncate text-xs text-zinc-500">NFT {item.identifier}</p>
-            <p className="text-xs text-zinc-400">Prix et listing non vérifiés par xArtists</p>
-            <a href={item.opensea_url} target="_blank" rel="noopener noreferrer"
-              className="inline-flex min-h-[44px] items-center text-sm text-cyan-200 underline">
-              Vérifier sur OpenSea
-            </a>
-          </div>
-        </li>)}
-      </ul>
-    </>}
-  </section>
+/** External Solana catalogue. Orders remain on the source marketplace. */
+import {useEffect,useRef,useState,type FormEvent} from 'react'
+import {useNetworkCopy} from '../../experience/networkCopy'
+import Icon from '../../experience/Icon'
+type Item={identifier:string;name:string;image_url:string|null;opensea_url:string;collection:string}
+type Preview={ok:true;chain:'solana';collection:string;collection_name:string;collection_url:string;mode:'read_only';on_site_order_enabled:false;items:Item[]}
+const API_BASE=(import.meta.env.VITE_API_BASE as string|undefined)?.replace(/\/$/,'')||'https://xartists-access-api.onrender.com'
+const collectionPattern=/^[a-z0-9](?:[a-z0-9-]{0,62}[a-z0-9])?$/
+function sourceUrl(value:unknown){try{const url=new URL(String(value));return url.protocol==='https:'&&url.hostname==='opensea.io'&&!url.username&&!url.password?url.href:null}catch{return null}}
+export default function OpenSeaCollectionPanel(){
+ const n=useNetworkCopy(),chain='solana' as const,[slug,setSlug]=useState(''),[result,setResult]=useState<Preview|null>(null),[error,setError]=useState(false),[loading,setLoading]=useState(false)
+ const pending=useRef<AbortController|null>(null)
+ useEffect(()=>()=>pending.current?.abort(),[])
+ const clear=()=>{pending.current?.abort();setResult(null);setError(false);setLoading(false)}
+ async function onSubmit(event:FormEvent<HTMLFormElement>){
+  event.preventDefault();clear()
+  const cleanSlug=slug.trim().toLowerCase()
+  if(!collectionPattern.test(cleanSlug)){setError(true);return}
+  const controller=new AbortController();pending.current=controller;setLoading(true)
+  const timer=setTimeout(()=>controller.abort('timeout'),10000)
+  try{
+   const url=new URL('/v1/marketplace/opensea/collection',API_BASE+'/');url.searchParams.set('chain',chain);url.searchParams.set('slug',cleanSlug)
+   const response=await fetch(url.toString(),{cache:'no-store',signal:controller.signal})
+   const payload=await response.json() as Partial<Preview>
+   if(!response.ok||payload.ok!==true||payload.chain!==chain||payload.collection!==cleanSlug||payload.mode !== 'read_only'||payload.on_site_order_enabled !== false||!Array.isArray(payload.items))throw new Error('unavailable')
+   if(controller.signal.aborted)return
+   setResult({...payload,items:payload.items.slice(0,20).filter(i=>i&&typeof i.identifier==='string'&&sourceUrl(i.opensea_url))} as Preview)
+  }catch{if(!controller.signal.aborted||controller.signal.reason==='timeout')setError(true)}
+  finally{clearTimeout(timer);if(pending.current===controller){pending.current=null;setLoading(false)}}
+ }
+ return <section className="xa-task-surface xa-opensea-collection" aria-label="OpenSea · Solana">
+  <header className="xa-task-toolbar"><h2>OpenSea · Solana</h2><span className="xa-token-state">{n('readOnly')}</span></header>
+  <form onSubmit={onSubmit} className="xa-collection-search">
+   <label htmlFor="xa-solana-collection">{n('collectionSlug')}</label>
+   <div><input id="xa-solana-collection" value={slug} maxLength={64} autoComplete="off" autoCapitalize="none" required pattern="[a-z0-9][a-z0-9-]{0,63}" onChange={e=>{clear();setSlug(e.target.value)}} placeholder="collection-slug"/><button type="submit" className="xa-button primary" disabled={loading}>{loading?n('loading'):n('search')}</button></div>
+  </form>
+  {error&&<p role="alert" className="xa-task-status">{n('unavailable')}</p>}
+  {result&&<><h3>{result.collection_name}</h3>{result.items.length===0?<p>{n('noResults')}</p>:<div className="xa-solana-collection-grid">{result.items.map(item=><a key={item.identifier} href={sourceUrl(item.opensea_url)!} target="_blank" rel="noopener noreferrer" className="xa-solana-collection-card">
+   {item.image_url?.startsWith('https://')?<img src={item.image_url} alt={item.name||item.identifier} loading="lazy"/>:<Icon name="cube" size={40}/>}<strong>{item.name||item.identifier}</strong><span>{n('explorer')} ↗</span>
+  </a>)}</div>}</>}
+  <details className="xa-task-details"><summary>{n('details')}</summary><p>{n('marketClosed')} {n('unsupportedMint')}</p></details>
+  <a href="https://opensea.io/" target="_blank" rel="noopener noreferrer" className="xa-text-link">OpenSea ↗</a>
+ </section>
 }

@@ -6,6 +6,8 @@ import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phra
  * an explicit advanced toggle. Nothing here signs or spends.
  */
 import { useEffect, useState } from 'react'
+import {useSearchParams} from 'react-router-dom'
+import {useNetworkCopy} from '../experience/networkCopy'
 import { Link } from 'react-router-dom'
 import XorusDecisionDesk from '../components/intelligence/XorusDecisionDesk'
 import { useI18n } from '../i18n/I18nContext'
@@ -22,6 +24,9 @@ void xaLocalize
 export default function XorusPage() {
   const { lang } = useI18n()
   const fr = lang === 'fr'
+  const n=useNetworkCopy(),[params,setParams]=useSearchParams()
+  const view=params.get('view')==='simulation'?'simulation':'analysis'
+  const choose=(next:string)=>setParams(p=>{const q=new URLSearchParams(p);if(next==='analysis')q.delete('view');else q.set('view',next);return q})
   const [showArchive, setShowArchive] = useState(false)
   const [showAdvanced, setShowAdvanced] = useState(false)
 
@@ -32,38 +37,12 @@ export default function XorusPage() {
   }, [])
 
   return (
-    <div className="mx-auto max-w-6xl space-y-8 px-4 py-8">
-      <header className="space-y-2">
-        <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-500">
-          {xaRender('Intelligence · xOrus')}
-        </p>
-        <h1 className="text-2xl font-semibold text-zinc-950 md:text-3xl dark:text-white">
-          {fr ? 'xOrus, l’intelligence expliquée simplement' : 'xOrus, explained simply'}
-        </h1>
-        <p className="max-w-2xl text-sm text-zinc-600 dark:text-zinc-400">
-          {fr
-            ? 'Lecture paper. xOrus observe, compare et s’abstient quand les preuves manquent. Aucun ordre n’est envoyé depuis cette page.'
-            : 'Paper reading. xOrus observes, compares and abstains when evidence is thin. This page sends no order.'}
-        </p>
-        <p className="text-xs text-zinc-500">{XORUS_BADGE}</p>
-        <button
-          type="button"
-          className="mt-2 min-h-11 rounded-full border border-zinc-300 px-4 text-sm text-zinc-800 dark:border-zinc-600 dark:text-zinc-200"
-          aria-expanded={showAdvanced}
-          onClick={() => setShowAdvanced((open) => !open)}
-        >
-          {showAdvanced
-            ? (fr ? 'Masquer les outils avancés' : 'Hide advanced tools')
-            : (fr ? 'Afficher les outils avancés' : 'Show advanced tools')}
-        </button>
-      </header>
-
-
-      <PaperTradingPanel />
-
-      <section aria-label="xOrus decision">
-        <XorusDecisionDesk />
-      </section>
+    <div className="xa-task-page xa-xorus-page">
+      <header className="xa-task-header"><div><p className="xa-task-kicker">Agents & IA</p><h1>{n('analysis')}</h1><p>{n('analysisIntro')}</p></div><Link to="/agents" className="xa-button secondary">{n('agents')} →</Link></header>
+      <nav className="xa-task-tabs" aria-label={n('analysis')}><button type="button" aria-current={view==='analysis'?'page':undefined} onClick={()=>choose('analysis')}>{n('analysis')}</button><button type="button" aria-current={view==='simulation'?'page':undefined} onClick={()=>choose('simulation')}>{n('simulation')}</button></nav>
+      <p className="xa-task-status">{n('paper')}</p>
+      {view==='simulation'?<PaperTradingPanel/>:<section aria-label="xOrus decision"><XorusDecisionDesk /></section>}
+      <details className="xa-task-details"><summary>{n('research')}</summary><p>{fr?'xOrus observe, compare et s’abstient quand les preuves manquent. Aucun ordre n’est envoyé depuis cette page.':'xOrus observes, compares and abstains when evidence is thin. This page sends no order.'}</p><p>{XORUS_BADGE}</p><button type="button" className="xa-button secondary" aria-expanded={showAdvanced} onClick={()=>setShowAdvanced(v=>!v)}>{showAdvanced?(fr?'Masquer les outils avancés':'Hide advanced tools'):(fr?'Afficher les outils avancés':'Show advanced tools')}</button></details>
 
       {showAdvanced && (
         <>

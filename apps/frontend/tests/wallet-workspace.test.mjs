@@ -25,6 +25,7 @@ async function ui({connected=true,error=false,path='/workspace/wallet'}={}){
  const Wallet=compile('pages/WalletPage.tsx',{
   '../context/WalletContext':{useWallet:()=>({connected,address:connected?A:null,method:'paste_readonly',canAttemptSign:false,sessionLive:false,disconnect:()=>disconnects.push(true)})},
   '../experience/state':{useCopy:()=>key=>key},
+  '../experience/networkCopy':{useNetworkCopy:()=>key=>key},
   '../i18n/phraseRuntime':{renderChild:value=>value},
   '../lib/walletEvents':{requestOpenConnect:()=>connects.push(true)},
   '../lib/xportalWc':{clearXPortalSession:()=>{}},

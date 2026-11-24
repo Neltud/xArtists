@@ -12,6 +12,9 @@ import ExistingNftReadiness from '../components/market/ExistingNftReadiness'
 import LiaAndEscrowNfts from '../components/market/LiaAndEscrowNfts'
 import MarketplaceDiscoveryGrid from '../components/market/MarketplaceDiscoveryGrid'
 import FeaturedArtGallery from '../components/market/FeaturedArtGallery'
+import NetworkSelector from '../components/NetworkSelector'
+import SolanaMarketplace from '../components/market/SolanaMarketplace'
+import {useWalletNetwork} from '../context/NetworkContext'
 import MainnetJourney from '../components/MainnetJourney'
 import MyOwnedNftsPanel from '../components/MyOwnedNftsPanel'
 import {useMarketplaceReadiness} from '../hooks/useMarketplaceReadiness'
@@ -40,7 +43,12 @@ function isPackListing(l:Listing):boolean{
   return ['XAIPLS','XAIYLD','XAISNT'].some(prefix=>tag.startsWith(prefix+'-'))
 }
 export default function MarketplacePage(){
+ const {network}=useWalletNetwork()
+ return network==='solana'?<SolanaMarketplace/>:<MultiversxMarketplace/>
+}
+function MultiversxMarketplace(){
   const c=useCopy()
+  const {network,setNetwork}=useWalletNetwork()
   const marketDepthRef=useRef<HTMLDetailsElement>(null)
   const live=useMarketplaceReadiness()
   const [params,setParams]=useSearchParams()
@@ -83,7 +91,8 @@ export default function MarketplacePage(){
 
   const navigate=(next:Shelf)=>{
     const v=new URLSearchParams(params)
-    if(next==='art')v.delete('tab')
+    if(next==='opensea'){setNetwork('solana');v.set('network','solana');v.delete('tab')}
+    else if(next==='art')v.delete('tab')
     else v.set('tab',next)
     setParams(v)
   }
@@ -97,6 +106,7 @@ export default function MarketplacePage(){
   // Preserve bookmarked pack links, but place agent products in their own space.
   if(selected==='packs')return <Navigate replace to={{pathname:'/intelligence/agents',search:params.toString()?'?'+params.toString():''}}/>
   return <div className={"xa-page xa-marketplace animate-fade-in space-y-6 pb-24 max-w-6xl mx-auto"+(selected==='art'?" xa-marketplace--art":"")}>
+    <div className="xa-market-network-row"><NetworkSelector/></div>
     {selected!=='art'&&<header className="xa-marketplace-hero">
       <div className="xa-marketplace-hero__copy">
         <p className="xa-marketplace-hero__eyebrow">{c('marketHeroEyebrow')}</p>
@@ -209,7 +219,7 @@ export default function MarketplacePage(){
 
     <footer className="flex flex-wrap gap-3 border-t border-white/10 pt-5 text-xs text-zinc-400">
       <Link to="/studio" className="hover:text-cyan-200">Creator Studio</Link>
-      <Link to="/marketplace?tab=opensea" className="hover:text-cyan-200">OpenSea · Solana / Polygon</Link>
+      <Link to="/marketplace?tab=opensea" className="hover:text-cyan-200">OpenSea · Solana</Link>
       <Link to="/rwa" className="hover:text-cyan-200">Provenance RWA</Link>
       <Link to="/museum" className="hover:text-cyan-200">Musée</Link>
       <Link to="/auction" className="hover:text-cyan-200">Enchères</Link>

@@ -19,9 +19,6 @@ export default function XorusAnalysisReport({report}:{report:XorusAnalysisReadou
     <div>
       <p className="xa-intelligence-eyebrow">{fr?'Le produit xOrus':'The xOrus product'}</p>
       <h3>{fr?'Nos analyses : synthèse, scénarios et risques':'Our analysis: synthesis, scenarios and risks'}</h3>
-      <p>{fr
-        ? 'Les abonnements et packs d’accès portent sur les analyses produites par xArtists. Les données collectées servent d’entrées internes et ne sont pas revendues.'
-        : 'Subscriptions and access packs cover analysis produced by xArtists. Collected data are internal inputs and are not resold.'}</p>
     </div>
     <p role="status" className="xa-intelligence-note">{!report
       ? (fr?'Rapport indisponible ou non conforme. Aucune conclusion de remplacement.':'Report unavailable or invalid. No substitute conclusion.')
@@ -35,14 +32,17 @@ export default function XorusAnalysisReport({report}:{report:XorusAnalysisReadou
           ? (fr?`Observations clôturées le ${new Date(report.sourceTs).toLocaleString('fr-FR')}.`:`Observations closed at ${new Date(report.sourceTs).toLocaleString('en-GB')}.`)
           : (fr?'Date des observations indisponible. La génération ne prouve pas la fraîcheur des sources.':'Observation time unavailable. Generation does not prove source freshness.')}
       </p>
+      <details className="xa-intelligence-advanced">
+        <summary>{fr?'Voir les analyses par agent (8)':'View analysis by agent (8)'}</summary>
+      <p>{fr
+        ? 'Les abonnements et packs d’accès portent sur les analyses produites par xArtists. Les données collectées servent d’entrées internes et ne sont pas revendues.'
+        : 'Subscriptions and access packs cover analysis produced by xArtists. Collected data are internal inputs and are not resold.'}</p>
       {report.collection&&<p className="xa-intelligence-note" data-testid="xorus-collection-status">{report.collection.state==='observed'
         ? (fr?`Source consultée : Binance Spot · EGLD/USDT · ${report.collection.candlesUsed} bougies horaires clôturées. Une seule place de marché ; USDT n’est pas assimilé au dollar. Les données brutes restent internes.`
           : `Source consulted: Binance Spot · EGLD/USDT · ${report.collection.candlesUsed} closed hourly candles. One venue; USDT is not assumed to equal USD. Raw data stay internal.`)
         : report.collection.state==='rate_limited'
           ? (fr?'Source temporairement limitée. Nouvelle collecte différée, sans valeur de remplacement.':'Source temporarily rate limited. Collection is deferred, without substitute values.')
           : (fr?'Source indisponible, périmée ou non conforme. Aucun indicateur conservé.':'Source unavailable, stale or invalid. No indicators retained.')}</p>}
-      <details className="xa-intelligence-advanced">
-        <summary>{fr?'Voir les analyses par agent (8)':'View analysis by agent (8)'}</summary>
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
           {report.agents.map(agent=><article key={agent.agent} className="min-w-0 rounded-xl border border-[color:var(--xa-border)] p-3">
             <h4 className="font-semibold">{NAMES[agent.agent]}</h4>
@@ -55,7 +55,6 @@ export default function XorusAnalysisReport({report}:{report:XorusAnalysisReadou
         <p className="xa-intelligence-note mt-3">{fr
           ? 'Rapport paper fondé sur les entrées disponibles. La présence d’un rôle ne prouve pas que ses sources sont alimentées.'
           : 'Paper report based on available inputs. A listed role does not establish that its sources are populated.'}</p>
-      </details>
       <div className="text-sm">
         <h4 className="font-semibold">{fr?'Conditions de réévaluation':'Reassessment conditions'}</h4>
         <ul className="mt-2 list-disc space-y-1 pl-5">
@@ -63,6 +62,7 @@ export default function XorusAnalysisReport({report}:{report:XorusAnalysisReadou
           <li>{fr?'Maintenir l’abstention en cas de veto Sentinel ou d’arrêt opérateur.':'Maintain abstention if Sentinel vetoes or the operator halts.'}</li>
         </ul>
       </div>
+      </details>
     </>}
   </section>
 }

@@ -42,7 +42,7 @@ test('Browsing is walletless and NFT transaction safeguards remain unchanged', (
   assert.match(market, /<Link to="\/studio"/)
   assert.match(market, /<Link to="\/rwa"/)
   assert.match(market, /<Link to="\/auction"/)
-  assert.doesNotMatch(market, /requestOpenConnect|useWallet/)
+  assert.doesNotMatch(market, /requestOpenConnect|useWallet\(/)
   assert.match(market, /const live=useMarketplaceReadiness\(\)/)
   assert.match(market, /c\(live\?'marketStatusLive':'marketStatusOff'\)/)
   assert.match(market, /c\('marketStatusOwnership'\)/)
