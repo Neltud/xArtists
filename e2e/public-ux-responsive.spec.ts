@@ -1133,3 +1133,27 @@ test('Solana marketplace and governance show their own network with no live purc
  await expect(page.getByRole('button',{name:/essayer|voter|vote for/i})).toHaveCount(0)
  await page.screenshot({animations:'disabled',path:'artifacts/ux-mobile/solana-dao-390.png'})
 })
+
+for (const width of [390,1440]) {
+ for (const theme of ['light','dark'] as const) {
+  test(`art-first home preserves readable violet hero at ${width}px in ${theme} mode`,async({page})=>{
+   await page.addInitScript(theme=>localStorage.setItem('xa-theme',theme),theme)
+   await page.setViewportSize({width,height:900})
+   await page.emulateMedia({reducedMotion:'reduce'})
+   await visit(page,'/?lang=fr')
+   await expect(page.locator('html')).toHaveAttribute('data-theme',theme)
+   const hero=page.locator('.xa-home-editorial')
+   await expect(hero).toBeVisible()
+   await expect(hero.locator('h1')).toHaveCSS('color','rgb(255, 255, 255)')
+   await expect(hero).toHaveCSS('background-image',/radial-gradient/)
+   await expect(hero.locator('.xa-home-artwork[href^="https://explorer.multiversx.com/nfts/"]')).toHaveCount(2)
+   await expect(hero.locator('.xa-home-editorial-art')).toBeVisible()
+   await expect(hero.locator('.xa-first-actions a')).toHaveCount(2)
+   await expect(hero.locator('.xa-home-personal')).toBeVisible()
+   await expect(hero.locator('canvas')).toHaveCount(0)
+   await expect(page.locator('.xa-first-tile')).toHaveCount(4)
+   expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(12)
+   await page.screenshot({animations:'disabled',path:`artifacts/ux-mobile/editorial-home-${theme}-${width}.png`})
+  })
+ }
+}
