@@ -81,3 +81,60 @@
 @media(prefers-reduced-motion:reduce){
   .xa-studio-advanced>summary,.xa-market-depth>summary,.xa-simple-evidence>summary,.xa-home-more>summary{scroll-behavior:auto}
 }
+
+/* Home editorial: violet art-first welcome, independent of global theme.
+   Source-linked artworks are editorial images, not live sale offers. */
+html[data-theme] .xa-workspace-home .xa-home-editorial{
+  display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);
+  grid-template-areas:"copy artwork" "wallet artwork";
+  gap:20px 32px;align-items:center;padding:clamp(24px,4vw,48px);
+  background:radial-gradient(ellipse at 88% 8%,#7839cd 0,transparent 55%),
+    linear-gradient(135deg,#211036 0%,#3b1667 58%,#281044 100%);
+  color:#fff;border:1px solid #6738a2;border-radius:22px;
+  box-shadow:0 14px 36px #36136829;
+}
+.xa-home-editorial-copy{grid-area:copy;min-width:0}
+html[data-theme] .xa-home-editorial h1{color:#fff;font-weight:680;line-height:1.04;letter-spacing:-.045em;font-size:clamp(34px,4.7vw,64px);margin:12px 0}
+html[data-theme] .xa-home-editorial .xa-eyebrow{color:#e7ceff}
+html[data-theme] .xa-home-editorial .xa-first-lead{color:#f0e5ff;line-height:1.5}
+html[data-theme] .xa-home-editorial .xa-first-privacy{color:#dfcef4;margin-top:12px}
+html[data-theme] .xa-home-editorial .xa-first-actions>.xa-button.primary{background:#fff;color:#411572;border-color:#fff}
+html[data-theme] .xa-home-editorial .xa-first-actions>.xa-button.secondary{background:#512489;color:#fff;border-color:#b58be7}
+html[data-theme] .xa-home-editorial .xa-first-actions>.xa-button:hover{background:#e8d6ff;color:#33105c;border-color:#e8d6ff}
+.xa-home-editorial-art{grid-area:artwork;display:grid;grid-template-columns:1.15fr .85fr;gap:10px;min-width:0;align-self:stretch;min-height:240px}
+.xa-home-artwork{display:flex;align-items:flex-end;position:relative;isolation:isolate;overflow:hidden;min-width:0;min-height:0;border-radius:15px;border:1px solid #b68aeb80;background:linear-gradient(155deg,#823be2,#200e37 75%);color:#fff}
+.xa-home-artwork:nth-child(2){background:linear-gradient(155deg,#d66da1,#351265 65%);margin-top:28px;margin-bottom:12px}
+.xa-home-artwork img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-1}
+.xa-home-artwork img[hidden]{display:none}
+.xa-home-artwork-caption{width:100%;display:flex;align-items:center;justify-content:space-between;gap:4px;padding:12px 9px;background:#180a2be8;color:#fff;font-size:11px;line-height:1.25;font-weight:650;overflow-wrap:anywhere}
+.xa-home-artwork-caption svg{flex:none}
+html[data-theme] .xa-home-editorial .xa-home-personal{grid-area:wallet;display:flex;flex-direction:row;align-items:center;gap:12px;padding:13px 16px;min-width:0;border:1px solid #b28ae2;background:#4c247c;color:#fff;border-radius:13px}
+html[data-theme] .xa-home-editorial .xa-home-personal>svg{color:#f1dcff;width:24px;flex:none}
+html[data-theme] .xa-home-editorial .xa-home-personal>strong{font-size:16px}
+html[data-theme] .xa-home-editorial .xa-home-personal>span:not(.xa-text-link){display:none}
+html[data-theme] .xa-home-editorial .xa-home-personal>.xa-text-link{color:#f6ebff;margin-inline-start:auto}
+.xa-home-editorial a:focus-visible{outline:3px solid #fff;outline-offset:3px}
+html[data-theme] .xa-workspace-home .xa-first-tile{background:linear-gradient(145deg,#f8f0ff,#ede1ff);color:#30134f;border-color:#d6baf5;min-height:170px;gap:10px}
+html[data-theme] .xa-workspace-home .xa-first-tiles>li:nth-child(2) .xa-first-tile{background:linear-gradient(145deg,#fdf1f9,#efddfa);border-color:#e8c5eb}
+html[data-theme] .xa-workspace-home .xa-first-tiles>li:nth-child(3) .xa-first-tile{background:linear-gradient(145deg,#eef0ff,#dedfff);border-color:#c5c5f6}
+html[data-theme] .xa-workspace-home .xa-first-tiles>li:nth-child(4) .xa-first-tile{background:linear-gradient(145deg,#f3e6ff,#e9d5ff);border-color:#d3b4f4}
+html[data-theme] .xa-workspace-home .xa-first-tile-desc{color:#584168}
+html[data-theme] .xa-workspace-home .xa-first-tile-top,html[data-theme] .xa-workspace-home .xa-first-tile-bottom{color:#6328a7}
+html[data-theme] .xa-workspace-home .xa-first-tile-top{margin-bottom:4px}
+html[data-theme="dark"] .xa-workspace-home .xa-first-tile{background:linear-gradient(145deg,#3e235e,#241438);color:#fff;border-color:#7653a4}
+html[data-theme="dark"] .xa-workspace-home .xa-first-tile-desc{color:#e8d6f7}
+html[data-theme="dark"] .xa-workspace-home .xa-first-tile-top,html[data-theme="dark"] .xa-workspace-home .xa-first-tile-bottom{color:#e2bfff}
+@media(max-width:720px){
+  html[data-theme] .xa-workspace-home .xa-home-editorial{grid-template-columns:minmax(0,1fr);grid-template-areas:"artwork" "copy" "wallet";padding:16px;gap:16px;border-radius:18px}
+  .xa-home-editorial-art{min-height:148px;grid-template-columns:1.2fr .8fr}
+  .xa-home-artwork:nth-child(2){margin-top:10px;margin-bottom:0}
+  html[data-theme] .xa-home-editorial h1{font-size:clamp(30px,8vw,38px);margin:8px 0 10px}
+  html[data-theme] .xa-home-editorial .xa-first-lead{font-size:15px}
+  html[data-theme] .xa-home-editorial .xa-first-privacy{margin-top:10px}
+  html[data-theme] .xa-home-editorial .xa-first-actions{margin-top:16px}
+  html[data-theme] .xa-workspace-home .xa-first-journeys{margin-top:24px}
+  html[data-theme] .xa-workspace-home .xa-first-tiles{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  html[data-theme] .xa-workspace-home .xa-first-tile{min-height:145px;padding:13px;overflow-wrap:anywhere}
+  html[data-theme] .xa-workspace-home .xa-first-tile strong{font-size:17px}
+  html[data-theme] .xa-workspace-home .xa-first-tile-desc{font-size:12px}
+}
