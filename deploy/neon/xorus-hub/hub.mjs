@@ -3,6 +3,7 @@ import { ORGANIZATION, platformRegistry, walletRoutePlan } from './registry.mjs'
 import { boundedText, probePlatforms } from './probes.mjs'
 import { agentManifest, runNetworkAgents, CYCLE_MS, CYCLE_CRON, RECEIPT_MAX_AGE_MS } from './network-agents.mjs'
 import { riskPolicy } from './risk-policy.mjs'
+import { referenceQuoteManifest } from './reference-quotes.mjs'
 
 const ORIGINS = new Set(['https://xartists.art', 'https://www.xartists.art'])
 const SAFETY = Object.freeze({ mode: 'read_only', execution_authorized: false,
@@ -137,8 +138,19 @@ export function createHub({ env = process.env, store = null, parseTrigger = null
       if (path === '/' || path === '/health') return reply(request, 200, { ok: true, ...source, ...SAFETY,
         store_target_confirmed: correctTarget, probe_schedule: CYCLE_CRON,
         schedule_state: 'query_provider_trigger_for_actual_state', linked_wallets: 0,
-        endpoints: ['/v1/xorus/platforms', '/v1/xorus/agents', '/v1/xorus/agents/reports', '/v1/xorus/risk-policy', '/v1/xorus/paper', '/v1/xorus/snapshot', '/v1/xorus/wallet-route'] })
+        endpoints: ['/v1/xorus/platforms', '/v1/xorus/agents', '/v1/xorus/agents/reports', '/v1/xorus/risk-policy', '/v1/xorus/paper', '/v1/xorus/reference-quotes', '/v1/xorus/snapshot', '/v1/xorus/wallet-route'] })
       if (path === '/v1/xorus/platforms') return reply(request, 200, { ok: true, ...platformRegistry() })
+      if (path === '/v1/xorus/reference-quotes') {
+        const manifest = referenceQuoteManifest(clock())
+        return reply(request, 200, { ok: true, ...source, ...manifest, ...SAFETY,
+          status: manifest.status, rights_status: manifest.rights_status,
+          valuation: manifest.valuation, feed: null, quotes: [],
+          universe: manifest.universe, accept_rules: manifest.accept_rules,
+          policy_id: manifest.policy_id, schema_version: manifest.schema_version,
+          checked_at: manifest.checked_at,
+          execution_authorized: false, signing_authorized: false, executable: false,
+          trading_enabled: false, independently_verified_market_signals: 0 })
+      }
       if (path === '/v1/xorus/risk-policy') return reply(request, 200, { ok: true, ...source, ...riskPolicy() })
       if (path === '/v1/xorus/agents') return reply(request, 200, { ok: true, ...source, ...agentManifest() })
       if (path === '/v1/xorus/snapshot' || path === '/v1/xorus/agents/reports') {
