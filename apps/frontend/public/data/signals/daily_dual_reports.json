@@ -1,6 +1,6 @@
 {
   "schema": "xorus_dual_reports/v1",
-  "generated_at": "2026-11-23T19:53:45Z",
+  "generated_at": "2026-11-24T19:22:01Z",
   "mode": "paper_only",
   "executable": false,
   "live_trading": false,
@@ -23,7 +23,7 @@
     "instrument": "EGLDUSDT",
     "interval": "1h",
     "candles": 48,
-    "source_ts": "2026-11-23T19:59:59Z",
+    "source_ts": "2026-11-24T19:59:59Z",
     "ok": true,
     "mx_economics_ok": true
   },
@@ -32,16 +32,16 @@
       "id": "price.ret_1h",
       "family": "price",
       "status": "observed_unverified",
-      "reading": "negative",
-      "value": -1.12311,
+      "reading": "positive",
+      "value": 0.957592,
       "note": "1h close return %"
     },
     {
       "id": "price.ret_4h",
       "family": "price",
       "status": "observed_unverified",
-      "reading": "negative",
-      "value": -4.30602,
+      "reading": "positive",
+      "value": 3.072626,
       "note": "4h close return %"
     },
     {
@@ -49,15 +49,15 @@
       "family": "price",
       "status": "observed_unverified",
       "reading": "negative",
-      "value": -1.378716,
+      "value": -3.529412,
       "note": "~24h close return %"
     },
     {
       "id": "price.range_pos",
       "family": "price",
       "status": "observed_unverified",
-      "reading": "negative",
-      "value": 0.0,
+      "reading": "balanced",
+      "value": 0.540984,
       "note": "position in 14h range"
     },
     {
@@ -65,7 +65,7 @@
       "family": "volume",
       "status": "observed_unverified",
       "reading": "negative",
-      "value": 0.659184,
+      "value": 0.567462,
       "note": "recent vol vs prior window"
     },
     {
@@ -73,15 +73,15 @@
       "family": "volume",
       "status": "observed_unverified",
       "reading": "negative",
-      "value": 0.659184,
+      "value": 0.567462,
       "note": "quiet tape relative to baseline"
     },
     {
       "id": "volatility.atr_1h",
       "family": "volatility",
       "status": "observed_unverified",
-      "reading": "balanced",
-      "value": 1.372506,
+      "reading": "positive",
+      "value": 1.808567,
       "note": "ATR percent of last close (24h window)"
     },
     {
@@ -89,7 +89,7 @@
       "family": "risk",
       "status": "observed_unverified",
       "reading": "negative",
-      "value": -1.378716,
+      "value": -3.529412,
       "note": "proxy: 24h return as soft drawdown hint"
     }
   ],
@@ -100,8 +100,8 @@
       "mode": "paper_only",
       "method": "deterministic_paper_synthesis/v1",
       "weight_cap": null,
-      "text": "Paper brief (grok). Mode: observation only. No order, mint, or transfer.\nRegime: defensive. Instrument: EGLDUSDT 1h public tape.\nLast close observed: 2.2890 USDT (unverified provider observation).\nMultiversX economics price field present: 2.28 (context only).\nScored with public evidence only: price(4), risk(1), volatility(1), volume(2). Catalog remains 120 definitions; unverified signals stay silent.\n- price.ret_1h: negative (1h close return %)\n- price.ret_4h: negative (4h close return %)\n- price.ret_24h: negative (~24h close return %)\n- price.range_pos: negative (position in 14h range)\n- volume.spike_1h: negative (recent vol vs prior window)\n- volume.quiet_tape: negative (quiet tape relative to baseline)\n- volatility.atr_1h: balanced (ATR percent of last close (24h window))\n- risk.drawdown: negative (proxy: 24h return as soft drawdown hint)\nSentinel veto remains absolute. ChatGPT external weight <= 15%. Executable=false.",
-      "sha256": "31b5f4e04b32b8dba57b1dfbbcef1179dc33380606ba2610a8f432b483e27c4f",
+      "text": "Paper brief (grok). Mode: observation only. No order, mint, or transfer.\nRegime: neutral. Instrument: EGLDUSDT 1h public tape.\nLast close observed: 2.2140 USDT (unverified provider observation).\nMultiversX economics price field present: 2.2 (context only).\nScored with public evidence only: price(4), risk(1), volatility(1), volume(2). Catalog remains 120 definitions; unverified signals stay silent.\n- price.ret_1h: positive (1h close return %)\n- price.ret_4h: positive (4h close return %)\n- price.ret_24h: negative (~24h close return %)\n- price.range_pos: balanced (position in 14h range)\n- volume.spike_1h: negative (recent vol vs prior window)\n- volume.quiet_tape: negative (quiet tape relative to baseline)\n- volatility.atr_1h: positive (ATR percent of last close (24h window))\n- risk.drawdown: negative (proxy: 24h return as soft drawdown hint)\nSentinel veto remains absolute. ChatGPT external weight <= 15%. Executable=false.",
+      "sha256": "fb50f8d22f18ecd62261cd99fe153a2aa22a99f58f82274a3cd0a316263a0d07",
       "llm_invoked": false
     },
     "external.chatgpt_brief": {
@@ -110,8 +110,8 @@
       "mode": "paper_only",
       "method": "deterministic_paper_synthesis/v1",
       "weight_cap": 0.15,
-      "text": "Paper brief (chatgpt). Mode: observation only. No order, mint, or transfer.\nRegime: defensive. Instrument: EGLDUSDT 1h public tape.\nLast close observed: 2.2890 USDT (unverified provider observation).\nMultiversX economics price field present: 2.28 (context only).\nScored with public evidence only: price(4), risk(1), volatility(1), volume(2). Catalog remains 120 definitions; unverified signals stay silent.\n- price.ret_1h: negative (1h close return %)\n- price.ret_4h: negative (4h close return %)\n- price.ret_24h: negative (~24h close return %)\n- price.range_pos: negative (position in 14h range)\n- volume.spike_1h: negative (recent vol vs prior window)\n- volume.quiet_tape: negative (quiet tape relative to baseline)\n- volatility.atr_1h: balanced (ATR percent of last close (24h window))\n- risk.drawdown: negative (proxy: 24h return as soft drawdown hint)\nSentinel veto remains absolute. ChatGPT external weight <= 15%. Executable=false.",
-      "sha256": "479cf30404585396889d55bbfb71dde32a9a799c2c86e02b9c684174d31e8d5c",
+      "text": "Paper brief (chatgpt). Mode: observation only. No order, mint, or transfer.\nRegime: neutral. Instrument: EGLDUSDT 1h public tape.\nLast close observed: 2.2140 USDT (unverified provider observation).\nMultiversX economics price field present: 2.2 (context only).\nScored with public evidence only: price(4), risk(1), volatility(1), volume(2). Catalog remains 120 definitions; unverified signals stay silent.\n- price.ret_1h: positive (1h close return %)\n- price.ret_4h: positive (4h close return %)\n- price.ret_24h: negative (~24h close return %)\n- price.range_pos: balanced (position in 14h range)\n- volume.spike_1h: negative (recent vol vs prior window)\n- volume.quiet_tape: negative (quiet tape relative to baseline)\n- volatility.atr_1h: positive (ATR percent of last close (24h window))\n- risk.drawdown: negative (proxy: 24h return as soft drawdown hint)\nSentinel veto remains absolute. ChatGPT external weight <= 15%. Executable=false.",
+      "sha256": "7883eb1c92613eea43d831498e0df4809d520740fc062160afc2137fefcfd3fa",
       "llm_invoked": false
     }
   },
@@ -127,5 +127,5 @@
     "mint_authorized": false,
     "requires_human_review": true
   },
-  "report_sha256": "9ae81d2d16dcac1daa51c70349042e81420560bdb260e207adbc39d29114280e"
+  "report_sha256": "aa3ae2cd3332b45dd7dbcecc50c94f68742962bf0f895a88fa935a4a4bd27051"
 }
