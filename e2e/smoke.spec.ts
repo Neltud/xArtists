@@ -20,7 +20,7 @@ test.describe('xArtists published Pages — no wallet or transactions', () => {
   });
 
   for (const route of [
-    { path: '/marketplace/', heading: /L’art physique rencontre le Web3|Découvrez l’art.*Explorez ses univers|Physical art meets Web3|Discover art.*Explore its worlds|Œuvres à découvrir|Explore artworks/i },
+    { path: '/marketplace/?lang=fr', heading: /^(Découvrir|Discover)$/i },
     { path: '/auction/', heading: /Salle des enchères|Auction room/i },
     { path: '/finance/tro/sale/', heading: null },
   ]) {
@@ -29,17 +29,24 @@ test.describe('xArtists published Pages — no wallet or transactions', () => {
       if (route.heading) {
         await expect(page.getByRole('heading', { name: route.heading })).toBeVisible();
       } else {
-        // The hero requires the TRO lazy module and its stylesheet to load.
-        await expect(page.locator('.tro-portal__hero')).toBeVisible();
-        await expect(page.getByText(/Bridge Solana : désactivé/)).toBeVisible();
+        // Verify the deployed token route during either side of the workspace rollout.
+        await expect(page.locator('#tro-hero-title')).toBeVisible();
+        await expect(page.getByText(/Bridge Solana : désactivé|Bridge et vente directe fermés|Bridge and direct sale closed/i).first()).toBeVisible();
       }
     });
   }
 
   test('published marketplace loads without presuming any static Drive media is an NFT', async ({ page }) => {
     await visitPublished(page, '/marketplace/?lang=fr');
+    await expect(page.locator('#xa-featured-title')).toBeVisible();
+    await expect(page.locator('main h1')).toHaveCount(1);
+    const catalogue = page.locator('.xa-market-depth');
+    await expect(catalogue).not.toHaveAttribute('open', '');
+    await expect(page.locator('.xa-market-grid')).toBeHidden();
+    await catalogue.locator(':scope > summary').click();
+    await expect(catalogue).toHaveAttribute('open', '');
     await expect(page.locator('.xa-market-grid')).toBeVisible();
-    await expect(page.locator('.xa-market-grid__heading h1')).toBeVisible();
+    await expect(page.locator('.xa-market-grid__heading h2')).toBeVisible();
     await expect(page.locator('.xa-market-grid__filters')).toBeVisible();
   });
 

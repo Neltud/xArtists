@@ -10,11 +10,11 @@ const ads=read('../src/pages/AdsPage.tsx')
 const rwa=read('../src/pages/RwaCatalogPage.tsx')
 const status=read('../src/pages/GoLivePage.tsx')
 
-test('Hatom and support route mount their polling provider, without global always-on polling',()=>{
+test('Hatom owns its polling provider; support stays static and never asks for manual payments',()=>{
   assert.match(hatom,/useMultiversX\(\)/)
-  assert.match(tip,/useMultiversX\(\)/)
+  assert.doesNotMatch(tip,/useMultiversX|TipEgldTransfer|price_egld|memo =|Services LIA/)
   assert.match(pages,/import \{ MultiversXProvider \}/)
-  assert.match(pages,/m\.id==='hatom'\|\|m\.id==='tip'/)
+  assert.match(pages,/m\.id==='hatom'/)
   assert.match(pages,/<MultiversXProvider><Page\/><\/MultiversXProvider>/)
   assert.doesNotMatch(read('../src/main.tsx'), /<MultiversXProvider>/)
 })

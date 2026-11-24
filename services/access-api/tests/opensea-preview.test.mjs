@@ -39,34 +39,25 @@ test('Solana discovered only after chain verification; no simulated price or exe
   assert.deepEqual(cache, result)
   assert.equal(calls.length, 2)
 })
-test('Polygon uses the same API but rejects a Solana-only collection', async () => {
-  const calls = []
-  const preview = createOpenSeaPreviewService({ apiKey: KEY, fetchImpl: fakeFetch(calls) })
-  const result = await preview('polygon', 'curated-artists')
-  assert.equal(result.status, 409)
-  assert.equal(result.body.error, 'collection_chain_not_verified')
-  assert.equal(calls.length, 1)
-})
-test('Polygon collection succeeds after polygon contract verification', async () => {
-  const calls = []
-  const preview = createOpenSeaPreviewService({
-    apiKey: KEY, fetchImpl: fakeFetch(calls, { meta: { contracts: [{ chain: 'polygon' }] } }),
-  })
-  const result = await preview('polygon', 'curated-artists')
-  assert.equal(result.status, 200)
-  assert.equal(result.body.chain, 'polygon')
+test('Polygon is rejected before contacting an upstream provider',async()=>{
+ const calls=[]
+ const preview=createOpenSeaPreviewService({apiKey:KEY,fetchImpl:fakeFetch(calls)})
+ const result=await preview('polygon','curated-artists')
+ assert.equal(result.status,400)
+ assert.equal(result.body.error,'unsupported_chain')
+ assert.equal(calls.length,0)
 })
 test('Reject unsupported chain, slugs, injection, and query smuggling before fetch', async () => {
   let called = 0
   const preview = createOpenSeaPreviewService({ apiKey: KEY, fetchImpl: async () => { called++; throw Error('bad') } })
-  for (const chain of ['ethereum', 'mainnet', 'solana/../', '', null]) {
+  for (const chain of ['polygon', 'ethereum', 'mainnet', 'solana/../', '', null]) {
     assert.equal((await preview(chain, 'valid-slug')).status, 400)
   }
   for (const slug of ['../admin', 'solana?x=1', 'ABC', '', 'a'.repeat(65), '%2F', 'bad_slug']) {
     assert.equal((await preview('solana', slug)).status, 400)
   }
   assert.equal(called, 0)
-  assert.equal(validateOpenSeaRequest('polygon', 'a').ok, true)
+  assert.equal(validateOpenSeaRequest('solana', 'a').ok, true)
 })
 test('Fail closed without API key; no network request nor secret exposure', async () => {
   const preview = createOpenSeaPreviewService({ apiKey: '', fetchImpl: async () => { throw Error('should not fetch') } })

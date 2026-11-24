@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import App from './App'
 import { WalletProvider } from './context/WalletContext'
+import {NetworkProvider} from './context/NetworkContext'
+import {SolanaWalletProvider} from './context/SolanaWalletContext'
 import { I18nProvider } from './i18n/I18nContext'
 import './index.css'
 import { restorePublicRoute } from './lib/publicRoutes'
@@ -20,9 +22,9 @@ ReactDOM.createRoot(root).render(
   <React.StrictMode>
     <BrowserRouter basename={import.meta.env.BASE_URL}>
       <I18nProvider>
-        <WalletProvider>
+        <NetworkProvider><SolanaWalletProvider><WalletProvider>
           <App />
-        </WalletProvider>
+        </WalletProvider></SolanaWalletProvider></NetworkProvider>
       </I18nProvider>
     </BrowserRouter>
   </React.StrictMode>,

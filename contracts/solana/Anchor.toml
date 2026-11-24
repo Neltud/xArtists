@@ -1,0 +1,9 @@
+# Local test identities only. Nothing here is a deployment attestation.
+[toolchain]
+anchor_version = "0.32.1"
+[programs.localnet]
+xartists_marketplace = "2xqre66jAqcSZFh1seMkgvQNVgG6uL1gwBtKVWuwePYC"
+xartists_governance = "3chFT3jsz3jhPXujW8MNjXPB8UUdHY6pSBkB3A37kLJd"
+[provider]
+cluster = "localnet"
+wallet = "~/.config/solana/id.json"

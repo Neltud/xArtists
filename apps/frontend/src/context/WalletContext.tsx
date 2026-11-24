@@ -1,6 +1,7 @@
 import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { setEmpireWallet } from '../store/empireStore'
+import {useWalletNetwork} from './NetworkContext'
 import {readonlyWalletObservation,restoreWalletObservation,walletSignEligibility} from '../lib/walletObservation.mjs'
 import {
   clearXPortalSession,
@@ -78,6 +79,7 @@ function clearStorage() {
 }
 
 export function WalletProvider({ children }: { children: ReactNode }) {
+  const {network}=useWalletNetwork()
   const [state, setState] = useState<WalletState>(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY)
@@ -250,7 +252,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     : ''
 
   const isLiaAddress = state.address.toLowerCase() === LIA_WALLET.toLowerCase()
-  const canAttemptSign = !isLiaAddress && walletSignEligibility({
+  const canAttemptSign = network==='multiversx' && !isLiaAddress && walletSignEligibility({
     connected:state.connected,address:state.address,method:state.method,
     sessionLive:state.sessionLive,
     pairedAddress:state.method==='xportal' ? getXPortalSession()?.address : null,

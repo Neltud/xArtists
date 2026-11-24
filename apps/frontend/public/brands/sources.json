@@ -1,0 +1,11 @@
+{
+  "retrieved": "2026-11-24",
+  "multiversx": {
+    "source": "https://files.multiversx.com/MultiversX-Media-Kit.zip",
+    "asset": "MultiversX Media Kit/MultiversX Logo/x-mint.svg"
+  },
+  "solana": {
+    "source": "https://solana.com/branding",
+    "asset": "https://solana.com/src/img/branding/solanaLogoMark.svg"
+  }
+}

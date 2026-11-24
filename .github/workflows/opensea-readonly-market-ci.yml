@@ -1,4 +1,4 @@
-name: OpenSea Solana/Polygon read-only marketplace
+name: OpenSea Solana read-only marketplace
 
 on:
   pull_request:

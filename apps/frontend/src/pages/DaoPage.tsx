@@ -1,29 +1,24 @@
-import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
-/** DAO — gouvernance + pouvoir de vote. */
-import { Link } from 'react-router-dom'
+import {useState} from 'react'
+import {Link} from 'react-router-dom'
 import DaoGovernance from '../components/DaoGovernance'
-import { useI18n } from '../i18n/I18nContext'
-import { useCopy } from '../experience/state'
+import NetworkSelector,{NetworkLogo} from '../components/NetworkSelector'
+import {useWalletNetwork} from '../context/NetworkContext'
+import {useNetworkCopy} from '../experience/networkCopy'
+import {useCopy} from '../experience/state'
+import Icon from '../experience/Icon'
 
-export default function DaoPage() {
-  const { t } = useI18n()
-  const c = useCopy()
-  return (
-    <div className="animate-fade-in space-y-6 max-w-3xl mx-auto pb-16 px-4">
-      <header className="space-y-1">
-        <p className="section-label">{xaRender(t('dao.kicker'))}</p>
-        <h1 className="section-title display text-2xl">{xaRender(t('dao.title'))}</h1>
-        <p className="text-sm leading-relaxed text-zinc-300">{c('daoIntroPlain')}</p>
-        <p className="text-sm text-amber-200">{c('daoGovernanceUnavailable')}</p>
-      </header>
-      <DaoGovernance />
-      <Link to="/directory?group=finance" className="text-sm underline text-cyan-200">{c('directory')}</Link>
-      <div className="flex flex-wrap gap-2 text-sm">
-        <Link to="/staking" className="btn-secondary text-sm">
-          {xaRender("Staking & Yield ")}</Link>
-        <Link to="/tro" className="btn-secondary text-sm">
-          {xaRender("Tokenomics $TRO ")}</Link>
-      </div>
-    </div>
-  )
+export default function DaoPage(){
+ const n=useNetworkCopy(),c=useCopy(),{network}=useWalletNetwork(),[view,setView]=useState<'proposals'|'treasury'|'rules'>('proposals')
+ const code=network==='solana'?'solana/programs/governance':'tro-governance'
+ return <div className="xa-task-page xa-dao-page">
+  <header className="xa-task-header"><div><p className="xa-task-kicker">xArtists</p><h1>DAO</h1></div><NetworkSelector/></header>
+  <nav className="xa-task-tabs" aria-label={n('governance')}>{(['proposals','treasury','rules'] as const).map(v=><button type="button" key={v} aria-current={view===v?'page':undefined} onClick={()=>setView(v)}>{n(v)}</button>)}</nav>
+  <p className="xa-task-status" role="status">{c('daoGovernanceUnavailable')}</p>
+  {view==='proposals'&&<section className="xa-task-surface xa-task-empty"><Icon name="network" size={46}/><h2>{n('noProposals')}</h2><p>{n('registeredOnly')}</p><Link className="xa-button primary" to={'/wallet?network='+network}>{n('connect')}</Link></section>}
+  {view==='treasury'&&<section className="xa-task-surface xa-task-empty"><Icon name="wallet" size={46}/><h2>{n('noTreasury')}</h2><Link className="xa-button secondary" to="/finance/support">{n('supportDetails')}</Link></section>}
+  {view==='rules'&&<section className="xa-task-surface xa-task-rules"><h2>{n('method')}</h2><p>{c('daoIntroPlain')}</p><p>{n('programStage')}</p><a className="xa-button secondary" href={'https://github.com/Neltud/xArtists/tree/main/contracts/'+code} target="_blank" rel="noopener noreferrer">{n('viewCode')}</a>
+   {network==='multiversx'&&<details className="xa-task-details xa-dao-practice"><summary>{n('practice')}</summary><p>{c('daoDemoWarning')}</p><DaoGovernance/></details>}
+  </section>}
+  <div className="xa-task-footer"><span><NetworkLogo network={network}/>{network==='solana'?'Solana':'MultiversX'}</span><Link to="/tro">{n('token')} →</Link></div>
+ </div>
 }

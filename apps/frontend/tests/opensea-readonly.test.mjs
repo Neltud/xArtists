@@ -16,12 +16,12 @@ test('OpenSea panel is external read-only, with no wallet transaction or checkou
   assert.match(panel, /payload\.mode !== 'read_only'/)
   assert.match(panel, /payload\.on_site_order_enabled !== false/)
   assert.match(panel, /target="_blank" rel="noopener noreferrer"/)
-  assert.match(panel, /Prix et listing non vérifiés/)
+  assert.match(panel, /n\('marketClosed'\)/)
   assert.doesNotMatch(panel, /sendTransaction|signTransaction|mintNft|createOrder|CheckoutModal|executeOrder|window\.ethereum|requestOpenConnect/)
 })
-test('Only the two explicitly selected chains are exposed', () => {
-  assert.match(panel, /value="solana"/)
-  assert.match(panel, /value="polygon"/)
+test('Polygon is removed and only Solana discovery remains', () => {
+  assert.match(panel, /chain='solana'/)
+  assert.doesNotMatch(panel, /polygon/i)
   assert.match(panel, /collectionPattern\.test\(cleanSlug\)/)
   assert.doesNotMatch(panel, /x-api-key|OPEN_SEA_API_KEY|VITE_OPENSEA_API_KEY/)
 })

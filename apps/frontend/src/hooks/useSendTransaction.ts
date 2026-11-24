@@ -1,3 +1,4 @@
+import {useWalletNetwork} from '../context/NetworkContext'
 import { useWallet, LIA_WALLET } from '../context/WalletContext'
 import { signBlockReason, hasSendTxInjected } from '../lib/txCapability'
 import { bootstrapSendTx } from '../providers/bootstrapSendTx'
@@ -29,12 +30,14 @@ function handleFail(action: string, msg: string, sessionId?: string | null): Sen
 /** Send MultiversX TX — LIA ops autorisé seulement si LIA_LIVE_TRADING=1 (xPortal). */
 export const useSendTransaction = () => {
   const { connected, address, method } = useWallet()
+  const {network}=useWalletNetwork()
 
   const send = async (
     transactions: unknown[],
     displayInfo?: TransactionDisplayInfo,
   ): Promise<SendTransactionResult> => {
     const action = displayInfo?.processingMessage || 'tx'
+    if(network!=='multiversx')return {sessionId:null,error:'Sélectionne MultiversX pour cette transaction.'}
 
     if (!connected) {
       return handleFail(action, 'Wallet non connecté')

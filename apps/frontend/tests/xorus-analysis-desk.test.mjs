@@ -22,10 +22,11 @@ const compiled=buildSync({
   entryPoints:[new URL('../src/components/intelligence/XorusDecisionDesk.tsx',import.meta.url).pathname],
   bundle:true,write:false,platform:'node',format:'cjs',jsx:'automatic',logLevel:'silent',
   define:{'import.meta.env':JSON.stringify({BASE_URL:'/',VITE_ACCESS_API_BASE:apiBase})},
-  external:['react','react/jsx-runtime','react-router-dom','../../i18n/I18nContext'],
+  external:['react','react/jsx-runtime','react-router-dom','../../i18n/I18nContext','../../experience/networkCopy'],
 })
 const module={exports:{}}
 new Function('require','module','exports',compiled.outputFiles[0].text)(id=>
+  id==='../../experience/networkCopy'?{useNetworkCopy:()=>key=>key}:
   id==='../../i18n/I18nContext'?{useI18n:()=>({lang:'fr'})}:
     id==='react-router-dom'?{Link:({to,children,...props})=>React.createElement('a',{href:to,...props},children)}:require(id),module,module.exports)
 return module.exports.default

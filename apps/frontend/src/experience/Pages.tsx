@@ -26,13 +26,22 @@ export function NetworkStrip(){
 export function Home(){
  const c=useCopy()
  return <div className="xa-container xa-first-visit xa-workspace-home">
-  <section className="xa-first-hero" aria-labelledby="xa-first-title"><div>
+  <section className="xa-first-hero xa-home-editorial" aria-labelledby="xa-first-title"><div className="xa-home-editorial-copy">
    <p className="xa-eyebrow">xArtists · Art × Web3</p>
    <h1 id="xa-first-title">{c('navHomeTitle')}</h1>
    <p className="xa-first-lead">{c('navHomeIntro')}</p>
    <div className="xa-first-actions"><Link className="xa-button primary" to="/marketplace">{c('welcomeExplore')}<Icon name="arrow" size={17}/></Link><Link className="xa-button secondary" to="/studio">{c('navStudio')}<Icon name="create" size={17}/></Link></div>
    <p className="xa-first-privacy">{c('optional')}</p>
-  </div><Link to="/wallet" className="xa-home-personal"><Icon name="wallet" size={30}/><strong>{c('navWallet')}</strong><span>{c('navWalletDesc')}</span><span className="xa-text-link">{c('open')}<Icon name="arrow" size={17}/></span></Link></section>
+  </div><div className="xa-home-editorial-art">
+    <a className="xa-home-artwork" href="https://explorer.multiversx.com/nfts/ALISTOR-a646bc-03" target="_blank" rel="noopener noreferrer" aria-label={c('editorialViewOnExplorer')+' : TRANSMUNDO 03'}>
+     <img src="https://media.multiversx.com/nfts/asset/bafybeibimkykepq73n3wqajjjlc4yzhflkzyaxqhxw4qn364htfbxuf6te/item.jpg" alt="TRANSMUNDO 03" decoding="async" onError={e=>{e.currentTarget.hidden=true}}/>
+     <span className="xa-home-artwork-caption"><span>TRANSMUNDO 03</span><Icon name="diagonal" size={15}/></span>
+    </a>
+    <a className="xa-home-artwork" href="https://explorer.multiversx.com/nfts/BGG-2b627c-05" target="_blank" rel="noopener noreferrer" aria-label={c('editorialViewOnExplorer')+' : Line Up #03'}>
+     <img src="https://media.multiversx.com/nfts/asset/bafybeiawuydtvjnlt6qhmgtxdrs2thpi62cnkpflhmw6bedop3o4uzjp3e/item.JPG" alt="Line Up #03" decoding="async" onError={e=>{e.currentTarget.hidden=true}}/>
+     <span className="xa-home-artwork-caption"><span>Line Up #03</span><Icon name="diagonal" size={15}/></span>
+    </a>
+   </div><Link to="/wallet" className="xa-home-personal"><Icon name="wallet" size={30}/><strong>{c('navWallet')}</strong><span>{c('navWalletDesc')}</span><span className="xa-text-link">{c('open')}<Icon name="arrow" size={17}/></span></Link></section>
   <section className="xa-first-journeys" aria-labelledby="xa-first-what"><div className="xa-first-heading"><h2 id="xa-first-what">{c('navHomeChoose')}</h2><Link to="/guide" className="xa-text-link">{c('help')}<Icon name="arrow" size={16}/></Link></div>
    <ul className="xa-first-tiles">{PRIMARY_AREAS.map((area,i)=><li key={area.id}><Link className="xa-first-tile" to={area.to}><span className="xa-first-tile-top"><Icon name={area.icon} size={24}/><span>0{i+1}</span></span><strong>{c(area.label)}</strong><span className="xa-first-tile-desc">{c(area.description)}</span><span className="xa-first-tile-bottom">{c('open')}<Icon name="arrow" size={17}/></span></Link></li>)}</ul>
   </section>
@@ -70,7 +79,7 @@ export function ModulePage({module:m}:{module:Module}){
  const navLink=(x:Module)=><Link to={x.path} key={x.id} className={activeId===x.id?'active':''} aria-current={activeId===x.id?'page':undefined} onClick={()=>setNavOpen(false)}><Icon name={x.icon} size={17}/>{c(moduleLabel(x))}</Link>
  return <div className="xa-container xa-module-page" data-module={m.id}><div className="xa-breadcrumb"><Link to="/">xArtists</Link><Icon name="chevron" size={12}/><Link to={area.to}>{c(area.label)}</Link><Icon name="chevron" size={12}/><span>{c(moduleLabel(m))}</span>{publicStage(m.id)!=='browse'&&<StageBadge stage={publicStage(m.id)}/>}</div>
   <div className="xa-module-layout"><aside className={`xa-module-sidebar ${navOpen?'is-open':''}`}><button className="xa-sidebar-toggle" onClick={()=>setNavOpen(!navOpen)} aria-expanded={navOpen} aria-controls="xa-context-navigation"><Icon name={area.icon} size={18}/>{c(area.label)}<Icon name="chevron" size={14}/></button><nav id="xa-context-navigation" aria-label={c(area.label)}><p className="xa-context-caption">{c('navContext')}</p>{siblings.map(navLink)}{additional.length>0&&<details key={m.id} className="xa-context-more" open={additional.some(x=>x.id===m.id)||undefined}><summary>{c('navMore')}<Icon name="chevron" size={14}/></summary>{additional.map(navLink)}</details>}<div className="xa-sidebar-bottom"><Link to={`/directory?area=${area.id}`}><Icon name="search" size={17}/>{c('directory')}</Link></div></nav></aside>
-   <div className="xa-module-content">{['analytics','tip'].includes(m.id)&&<header className="xa-module-heading"><h1>{c(moduleLabel(m))}</h1></header>}<section className="xa-module-body" aria-label={c(moduleLabel(m))}><Suspense fallback={<Loader/>}><RouteErrorBoundary key={m.id} label={c(moduleLabel(m))}>{(m.id==='hatom'||m.id==='tip')?<MultiversXProvider><Page/></MultiversXProvider>:<Page/>}</RouteErrorBoundary></Suspense></section></div>
+   <div className="xa-module-content">{['analytics'].includes(m.id)&&<header className="xa-module-heading"><h1>{c(moduleLabel(m))}</h1></header>}<section className="xa-module-body" aria-label={c(moduleLabel(m))}><Suspense fallback={<Loader/>}><RouteErrorBoundary key={m.id} label={c(moduleLabel(m))}>{m.id==='hatom'?<MultiversXProvider><Page/></MultiversXProvider>:<Page/>}</RouteErrorBoundary></Suspense></section></div>
   </div>
  </div>
 }

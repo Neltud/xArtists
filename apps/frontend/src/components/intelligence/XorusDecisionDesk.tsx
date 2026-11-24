@@ -10,6 +10,7 @@ import { interpretXorusSnapshot, parseMultiversxEconomics } from '../../lib/xoru
 import { interpretXorusAnalysisReport } from '../../lib/xorusAnalysisReadout.mjs'
 import XorusAnalysisReport from './XorusAnalysisReport'
 import XorusSignalCatalog from './XorusSignalCatalog'
+import {useNetworkCopy} from '../../experience/networkCopy'
 
 const MVX_ECONOMICS='https://api.multiversx.com/economics?fields=price,marketCap,volume24h'
 
@@ -48,6 +49,7 @@ const fmtUsd=(v:number)=>new Intl.NumberFormat('fr-FR',{style:'currency',currenc
 
 export default function XorusDecisionDesk(){
   const {lang}=useI18n()
+  const n=useNetworkCopy()
   const fr=lang==='fr'
   const [board,setBoard]=useState<unknown>(null)
   const [economics,setEconomics]=useState<unknown>(null)
@@ -128,9 +130,6 @@ export default function XorusDecisionDesk(){
         <div className="min-w-0">
           <p className="xa-intelligence-eyebrow">{fr?'Moteur d’analyse et de décision':'Analysis and decision engine'}</p>
           <h2 className="mt-2 text-xl font-bold sm:text-2xl">{fr?'Décision xOrus':'xOrus decision'}</h2>
-          <p>{fr
-            ? 'Le résultat repose sur les observations et leurs preuves, pas sur une animation ou un agent fictif.'
-            : 'The result depends on observations and evidence, not on animations or fictional agents.'}</p>
         </div>
         <button type="button" className="xa-button secondary min-h-[44px]" disabled={busy} onClick={refresh}>
           {fr?'Actualiser les sources':'Check sources'}
@@ -153,6 +152,8 @@ export default function XorusDecisionDesk(){
       </p>
     </div>
 
+    <XorusAnalysisReport report={report} />
+    <details className="xa-task-details xa-intelligence-evidence"><summary>{n('data')}</summary><div>
     <div className="xa-intelligence-cards" aria-label={fr?'Couverture et preuves':'Coverage and evidence'}>
       <article className="xa-intelligence-card">
         <h3>{fr?'Catalogue':'Catalogue'}</h3>
@@ -200,8 +201,9 @@ export default function XorusDecisionDesk(){
       </article>
     </div>
 
-    <XorusAnalysisReport report={report} />
     <XorusSignalCatalog />
+    </div></details>
+
     <nav className="flex flex-wrap gap-3" aria-label={fr?'Poursuivre l’analyse':'More analysis'}>
       <Link to="/explore/analytics" className="xa-button secondary">{fr?'Analyse des marchés':'Market analysis'}</Link>
       <Link to="/intelligence/agents" className="xa-button secondary">{fr?'Comprendre les agents':'Understand agents'}</Link>

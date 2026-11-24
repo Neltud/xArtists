@@ -1,9 +1,9 @@
 /**
- * xArtists OpenSea discovery adapter — Polygon + supported Solana collections.
+ * xArtists OpenSea discovery adapter — supported Solana collections.
  * GET/read-only only; never constructs orders, routes payments, or requests signatures.
  * API key belongs exclusively to Render (OPEN_SEA_API_KEY), not VITE_*.
  */
-export const OPENSEA_NETWORKS = Object.freeze(['polygon', 'solana'])
+export const OPENSEA_NETWORKS = Object.freeze(['solana'])
 const HOST = 'https://api.opensea.io'
 const MAX_ITEMS = 20
 const MAX_CACHE_ENTRIES = 32
