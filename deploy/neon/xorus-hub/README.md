@@ -63,6 +63,10 @@ Ce journal **paper** ne remplace pas le futur registre de risque live, les vrais
 
 `GET /v1/xorus/risk-policy` décrit un **pilote générique plafonné à 100 USD**, sans lecture de compte, attribution de fonds ou modification des grants PayBox. Ce profil n'est ni un dépôt demandé ni une autorisation de trading. Le capital dédié et les soldes n'étant pas vérifiés, `actual_capital_allocation` et `live_budget_cents` restent à **zéro**.
 
+### Quotes de référence — schéma seulement
+
+`GET /v1/xorus/reference-quotes` publie l'univers et les règles d'admission d'un futur flux sous licence. **Aucun prix n'est collecté.** `quotes` reste `[]`, `feed` reste `null`, `independently_verified_market_signals` reste 0. Un POST est refusé (405). Une quote marquée exécutable, trop vieille (plus de 15 s), sans URL HTTPS, ou hors univers est rejetée par `assessReferenceQuote` et ne peut jamais servir de fill. Cette route n'est pas déployée tant que le bundle Neon n'est pas remplacé ; le runtime public reste celui du reçu paper tant qu'un nouveau reçu n'est pas écrit.
+
 | Affectation | Plafond de capital de référence | Arrêt pertes sur 24 h glissantes | Arrêt pertes cumulées du pilote |
 | --- | --- | --- | --- |
 | MultiversX mainnet | 40 USD | 1 USD | 2,50 USD |
