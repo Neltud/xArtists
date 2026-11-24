@@ -274,16 +274,18 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
     test(`optional TRO and RWA detail opens by keyboard at ${width}px`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 })
       await page.emulateMedia({ reducedMotion: 'reduce' })
-      await visit(page, '/finance/tro/sale/')
+      await visit(page, '/finance/tro/sale/?lang=fr')
       const roadmap = page.locator('#tro-roadmap-details-trigger')
-      await expect(roadmap).toHaveAttribute('aria-expanded', 'false')
-      await expect(page.getByText(/Bridge Solana : désactivé/)).toBeVisible()
-      await expect(page.getByRole('button', { name: 'Bridge non disponible', exact: true })).toBeDisabled()
-      await roadmap.press('Enter')
-      await expect(roadmap).toHaveAttribute('aria-expanded', 'true')
-      await expect(page.locator('#tro-roadmap-details')).toBeVisible()
-      await roadmap.press('Space')
-      await expect(page.locator('#tro-roadmap-details')).toBeHidden()
+      const summary = roadmap.locator(':scope > summary')
+      await expect(roadmap).not.toHaveAttribute('open', '')
+      await expect(page.locator('.tro-portal__availability')).toHaveText('Bridge et vente directe fermés')
+      await expect(page.getByRole('button', { name: /bridge|acheter|déposer/i })).toHaveCount(0)
+      await summary.press('Enter')
+      await expect(roadmap).toHaveAttribute('open', '')
+      await expect(page.locator('#tro-transparency')).toBeVisible()
+      await expect(page.locator('#tro-transparency')).toContainText('Aucun achat, transfert ou dépôt')
+      await summary.press('Space')
+      await expect(page.locator('#tro-transparency')).toBeHidden()
 
       await visit(page, '/explore/rwa/')
       await expect(page.locator('.rwa-public__card')).toHaveCount(3)
@@ -634,7 +636,7 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
     await page.setViewportSize({ width: 390, height: 844 })
     for (const [path, label] of [
       ['/finance/hatom/', /Hatom Protocol/i],
-      ['/finance/support/', /Soutenir LIA|Support LIA|Tips & services/i],
+      ['/finance/support/', /Soutenir xArtists|Support xArtists/i],
     ] as const) {
       await visit(page, path)
       await expect(page.getByRole('heading', { name: label }).last()).toBeVisible()
@@ -645,9 +647,11 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
 
   test('TRO/Solana informational portal loads directly and never exposes a deposit', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 })
-    await visit(page, '/finance/tro/sale/')
-    await expect(page.locator('.tro-portal__hero')).toBeVisible()
-    await expect(page.getByText(/Bridge Solana : désactivé/)).toBeVisible()
+    await visit(page, '/finance/tro/sale/?lang=fr')
+    await expect(page.locator('#tro-hero-title')).toBeVisible()
+    await expect(page.locator('.tro-portal__availability')).toHaveText('Bridge et vente directe fermés')
+    await expect(page.locator('.xa-token-networks .xa-token-network')).toHaveCount(2)
+    await expect(page.getByRole('button', { name: /bridge|acheter|déposer/i })).toHaveCount(0)
     await expect(page.getByText('Page unavailable')).toHaveCount(0)
     await page.screenshot({ animations: 'disabled', fullPage: true, path: 'artifacts/ux-mobile/tro-sale-390.png' })
   })
@@ -729,7 +733,7 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
       await expect(page).toHaveURL(/#rwa-tools$/)
       await expect(page.locator('#rwa-preparation-trigger')).toHaveAttribute('aria-expanded','false')
       expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth),'RWA overflow '+width).toBeLessThanOrEqual(12)
-      await visit(page,'/finance/tro/sale/')
+      await visit(page,'/finance/tro/sale/?lang=fr')
       await expect(page.locator('.xa-token-networks .xa-token-network')).toHaveCount(2)
       await expect(page.locator('.tro-portal__availability')).toContainText('Bridge et vente directe fermés')
       const details=page.locator('#tro-roadmap-details-trigger')
@@ -1034,7 +1038,7 @@ test('focused support, DAO and token pages keep the initial mobile view concise'
  await page.locator('.xa-task-tabs').getByRole('button',{name:'Règles',exact:true}).click()
  const practice=page.locator('.xa-dao-practice')
  await expect(practice).not.toHaveAttribute('open','')
- await practice.locator('summary').press('Enter')
+ await practice.locator(':scope > summary').press('Enter')
  await expect(page.getByRole('button',{name:'Essayer « Pour »',exact:true}).first()).toBeVisible()
 })
 
