@@ -26,13 +26,22 @@ export function NetworkStrip(){
 export function Home(){
  const c=useCopy()
  return <div className="xa-container xa-first-visit xa-workspace-home">
-  <section className="xa-first-hero" aria-labelledby="xa-first-title"><div>
+  <section className="xa-first-hero xa-home-editorial" aria-labelledby="xa-first-title"><div className="xa-home-editorial-copy">
    <p className="xa-eyebrow">xArtists · Art × Web3</p>
    <h1 id="xa-first-title">{c('navHomeTitle')}</h1>
    <p className="xa-first-lead">{c('navHomeIntro')}</p>
    <div className="xa-first-actions"><Link className="xa-button primary" to="/marketplace">{c('welcomeExplore')}<Icon name="arrow" size={17}/></Link><Link className="xa-button secondary" to="/studio">{c('navStudio')}<Icon name="create" size={17}/></Link></div>
    <p className="xa-first-privacy">{c('optional')}</p>
-  </div><Link to="/wallet" className="xa-home-personal"><Icon name="wallet" size={30}/><strong>{c('navWallet')}</strong><span>{c('navWalletDesc')}</span><span className="xa-text-link">{c('open')}<Icon name="arrow" size={17}/></span></Link></section>
+  </div><div className="xa-home-editorial-art">
+    <a className="xa-home-artwork" href="https://explorer.multiversx.com/nfts/ALISTOR-a646bc-03" target="_blank" rel="noopener noreferrer" aria-label={c('editorialViewOnExplorer')+' : TRANSMUNDO 03'}>
+     <img src="https://media.multiversx.com/nfts/asset/bafybeibimkykepq73n3wqajjjlc4yzhflkzyaxqhxw4qn364htfbxuf6te/item.jpg" alt="TRANSMUNDO 03" decoding="async" onError={e=>{e.currentTarget.hidden=true}}/>
+     <span className="xa-home-artwork-caption"><span>TRANSMUNDO 03</span><Icon name="diagonal" size={15}/></span>
+    </a>
+    <a className="xa-home-artwork" href="https://explorer.multiversx.com/nfts/BGG-2b627c-05" target="_blank" rel="noopener noreferrer" aria-label={c('editorialViewOnExplorer')+' : Line Up #03'}>
+     <img src="https://media.multiversx.com/nfts/asset/bafybeiawuydtvjnlt6qhmgtxdrs2thpi62cnkpflhmw6bedop3o4uzjp3e/item.JPG" alt="Line Up #03" decoding="async" onError={e=>{e.currentTarget.hidden=true}}/>
+     <span className="xa-home-artwork-caption"><span>Line Up #03</span><Icon name="diagonal" size={15}/></span>
+    </a>
+   </div><Link to="/wallet" className="xa-home-personal"><Icon name="wallet" size={30}/><strong>{c('navWallet')}</strong><span>{c('navWalletDesc')}</span><span className="xa-text-link">{c('open')}<Icon name="arrow" size={17}/></span></Link></section>
   <section className="xa-first-journeys" aria-labelledby="xa-first-what"><div className="xa-first-heading"><h2 id="xa-first-what">{c('navHomeChoose')}</h2><Link to="/guide" className="xa-text-link">{c('help')}<Icon name="arrow" size={16}/></Link></div>
    <ul className="xa-first-tiles">{PRIMARY_AREAS.map((area,i)=><li key={area.id}><Link className="xa-first-tile" to={area.to}><span className="xa-first-tile-top"><Icon name={area.icon} size={24}/><span>0{i+1}</span></span><strong>{c(area.label)}</strong><span className="xa-first-tile-desc">{c(area.description)}</span><span className="xa-first-tile-bottom">{c('open')}<Icon name="arrow" size={17}/></span></Link></li>)}</ul>
   </section>
