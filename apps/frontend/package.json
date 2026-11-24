@@ -17,7 +17,7 @@
     "@multiversx/sdk-core": "13.17.2",
     "@multiversx/sdk-dapp": "^3.0.0",
     "@multiversx/sdk-network-providers": "^2.0.0",
-    "@multiversx/sdk-wallet-connect-provider": "^5.0.0",
+    "@multiversx/sdk-wallet-connect-provider": "^6.1.5",
     "@solana/web3.js": "1.98.4",
     "@tanstack/react-virtual": "^3.13.0",
     "@wallet-standard/app": "1.1.1",
