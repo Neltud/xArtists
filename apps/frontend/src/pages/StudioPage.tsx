@@ -1,6 +1,6 @@
 import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as xaUsePhraseLocale} from '../i18n/phraseRuntime'
 /** Creator Studio — collections + mint + list + certification phygital. */
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useWallet } from '../context/WalletContext'
 import { useUserAccount } from '../hooks/useUserAccount'
@@ -15,9 +15,17 @@ import MainnetJourney from '../components/MainnetJourney'
 import { useToast } from '../components/ui/Toast'
 import { asText } from '../lib/safeRender'
 import { saveStudioCollection } from '../lib/studioOnChainMint'
+import {useCopy} from '../experience/state'
 
 export default function StudioPage() {
   xaUsePhraseLocale()
+  const c=useCopy()
+  const advancedRef=useRef<HTMLDetailsElement>(null)
+  useEffect(()=>{
+    const reveal=()=>{if(/^#xa-studio-(mint|turntable)$/.test(window.location.hash))advancedRef.current?.setAttribute('open','')}
+    reveal();window.addEventListener('hashchange',reveal)
+    return()=>window.removeEventListener('hashchange',reveal)
+  },[])
 
   const [params] = useSearchParams()
   const sculptureMode = params.get('mode') === 'sculpture'
@@ -123,7 +131,9 @@ export default function StudioPage() {
 
   return (
     <div className="xa-creator-studio xa-creator-studio-v2 animate-fade-in mx-auto max-w-3xl space-y-8 px-4 pb-28 pt-6 sm:px-7">
-      <StudioVisualWorkspace title={nftName} onTitle={setNftName}/>
+      <StudioVisualWorkspace title={nftName} onTitle={setNftName} onAdvanced={()=>advancedRef.current?.setAttribute('open','' )}/>
+      <details className="xa-studio-advanced" ref={advancedRef}>
+        <summary><strong>{c('simpleStudioAdvancedTitle')}</strong><span>{c('simpleStudioAdvancedDesc')}</span></summary>
       <div className="xa-studio-technical">
       <header className="space-y-1">
         <p className="section-label">{xaRender("Création")}</p>
@@ -349,6 +359,7 @@ export default function StudioPage() {
         </Link>
       </section>
       </div>
+      </details>
     </div>
   )
 }

@@ -1,0 +1,83 @@
+/* Clarity-first UX layer — preserve the approved violet/light art / dark wallet system.
+   Default shows the next human task; technical data remains one deliberate click away. */
+.xa-studio-advanced,
+.xa-market-depth,
+.xa-simple-evidence,
+.xa-home-more {
+  min-width:0;
+  border:1px solid var(--xa-border, #ddd4e7);
+  border-radius:14px;
+  background:var(--xa-panel, #fff);
+  color:var(--xa-text, #29143e);
+}
+.xa-studio-advanced>summary,
+.xa-market-depth>summary,
+.xa-simple-evidence>summary,
+.xa-home-more>summary {
+  list-style:none;cursor:pointer;
+  display:flex;flex-wrap:wrap;align-items:center;gap:6px 20px;
+  min-height:68px;padding:19px 24px;
+  border-radius:inherit;
+  color:var(--xa-text, #29143e);
+  position:relative;
+}
+.xa-studio-advanced>summary::-webkit-details-marker,
+.xa-market-depth>summary::-webkit-details-marker,
+.xa-simple-evidence>summary::-webkit-details-marker,
+.xa-home-more>summary::-webkit-details-marker {display:none}
+.xa-studio-advanced>summary:after,
+.xa-market-depth>summary:after,
+.xa-simple-evidence>summary:after,
+.xa-home-more>summary:after {
+  content:'+';font-size:28px;font-weight:400;line-height:1;
+  color:var(--xa-accent, #7732d6);margin-inline-start:auto
+}
+.xa-studio-advanced[open]>summary:after,
+.xa-market-depth[open]>summary:after,
+.xa-simple-evidence[open]>summary:after,
+.xa-home-more[open]>summary:after {content:'−'}
+.xa-studio-advanced>summary strong,
+.xa-market-depth>summary strong,
+.xa-simple-evidence>summary strong {font-size:16px;font-weight:700;letter-spacing:-.012em}
+.xa-studio-advanced>summary span,
+.xa-market-depth>summary small,
+.xa-simple-evidence>summary span {
+  color:var(--xa-muted, #756781);line-height:1.5;
+  font-size:12px;flex-basis:100%;max-width:700px
+}
+.xa-studio-advanced>summary:focus-visible,
+.xa-market-depth>summary:focus-visible,
+.xa-simple-evidence>summary:focus-visible,
+.xa-home-more>summary:focus-visible {outline:3px solid var(--xa-accent, #7732d6);outline-offset:3px}
+.xa-studio-advanced[open]>summary,
+.xa-market-depth[open]>summary,
+.xa-simple-evidence[open]>summary,
+.xa-home-more[open]>summary {border-bottom:1px solid var(--xa-border, #ddd4e7);border-radius:14px 14px 0 0}
+.xa-ref-v2[data-area="studio"] .xa-studio-advanced {
+  margin:40px 0 0;background:#fbf8fe;border-color:#e4dbee;
+}
+.xa-ref-v2[data-area="studio"] .xa-studio-advanced .xa-studio-technical{
+  max-width:980px;margin:0 auto;padding:28px 24px 30px;border:0
+}
+.xa-ref-v2[data-area="studio"] .xa-studio-advanced>summary strong {color:#39204e}
+.xa-ref-v2[data-area="art"] .xa-market-depth {
+  margin:22px 0 34px;background:#fbf9fd;border-color:#e1d6e9;scroll-margin-top:100px
+}
+.xa-ref-v2[data-area="art"] .xa-market-depth>summary {padding:17px 24px}
+.xa-market-depth-content {padding:22px 20px 24px;min-width:0}
+.xa-ref-v2[data-area="art"] .xa-market-depth .xa-market-grid {margin-top:0}
+.xa-ref-v2[data-area="art"] .xa-market-depth .xa-marketplace-status {margin-top:16px}
+.xa-simple-evidence {margin:10px 0 20px}
+.xa-simple-evidence>section {padding:20px 18px}
+.xa-simple-evidence>summary {min-height:66px}
+.xa-home-more {margin-top:18px;background:transparent}
+.xa-home-more>summary {font-size:14px;font-weight:650;min-height:56px;padding:13px 18px}
+.xa-home-more .xa-home-workflow {border:0;padding:22px 18px;margin:0;box-shadow:none}
+@media (max-width:720px){
+  .xa-studio-advanced>summary,.xa-market-depth>summary,.xa-simple-evidence>summary {padding:16px;min-height:64px}
+  .xa-market-depth-content{padding:18px 12px}
+  .xa-ref-v2[data-area="studio"] .xa-studio-advanced .xa-studio-technical {padding:20px 12px}
+}
+@media(prefers-reduced-motion:reduce){
+  .xa-studio-advanced>summary,.xa-market-depth>summary,.xa-simple-evidence>summary,.xa-home-more>summary{scroll-behavior:auto}
+}

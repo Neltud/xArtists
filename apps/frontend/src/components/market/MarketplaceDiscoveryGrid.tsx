@@ -123,7 +123,7 @@ export default function MarketplaceDiscoveryGrid({
     <div className="xa-market-grid__heading">
       <div>
         <p className="xa-market-grid__eyebrow">xArtists / NFT / ART</p>
-        <h1 id="xa-market-grid-title">{c('marketGridTitle')}</h1>
+        <h2 id="xa-market-grid-title">{c('marketGridTitle')}</h2>
         <p>{c('marketGridDescription')}</p>
         <p className="xa-market-grid__drive-mint">
           <Link to="/studio#xa-studio-mint">{c('marketGridDriveMint')}</Link>

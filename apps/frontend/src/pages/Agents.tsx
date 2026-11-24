@@ -41,9 +41,8 @@ export default function Agents() {
       <header className="xa-intelligence-hero">
         <p className="xa-intelligence-eyebrow">{fr ? '02 · Qui fait quoi ?' : '02 · Who does what?'}</p>
         <h1>{fr ? 'Les agents xOrus, simplement' : 'xOrus agents, made clear'}</h1>
-        <p>{fr
-          ? 'Pulse analyse les marchés, Yield étudie les scénarios DeFi et Sentinel évalue les risques. Leur travail produit nos analyses : synthèses argumentées, scénarios conditionnels et explications des limites.'
-          : 'Pulse analyses markets, Yield studies DeFi scenarios, and Sentinel assesses risk. Their work produces our analysis: reasoned syntheses, conditional scenarios and explanations of limitations.'}</p>
+        <p>{fr ? 'Trois rôles : analyser les marchés, comparer les scénarios et signaler les risques.'
+          : 'Three roles: analyse markets, compare scenarios and flag risks.'}</p>
         <p>{fr
           ? 'Nous vendons nos analyses. Les données collectées restent des entrées internes, sans revente de flux fournisseurs.'
           : 'We sell our analysis. Collected data remain internal inputs; provider feeds are not resold.'}</p>
@@ -51,7 +50,6 @@ export default function Agents() {
           ? 'Mode lecture et simulation. Aucun trading automatique, aucun rendement, aucun achat requis.'
           : 'Read-only and simulation mode. No automated trades, promised returns or purchase required.'}</p>
       </header>
-      <XorusAgentEvidence />
       <section className="space-y-4" aria-label={fr ? 'Les trois rôles' : 'Three agent roles'}>
         <h2 className="text-xl font-semibold">{fr ? 'Que pouvez-vous découvrir ?' : 'What can you explore?'}</h2>
         <div className="xa-intelligence-cards">
@@ -75,6 +73,12 @@ export default function Agents() {
           </article>
         </div>
       </section>
+      <details className="xa-simple-evidence">
+        <summary><strong>{fr?'Voir les résultats de l’analyse':'See analysis results'}</strong>
+          <span>{fr?'État du serveur, date des observations et limites.':'Server status, observation dates and limits.'}</span>
+        </summary>
+        <XorusAgentEvidence />
+      </details>
       <details ref={genesisRef} className="xa-intelligence-advanced" onToggle={event=>setShowPacks(event.currentTarget.open)}>
         <summary>{fr ? 'Catalogue Genesis NFT (distinct des agents)' : 'Genesis NFT catalogue (separate from the agents)'}</summary>
         <p className="xa-intelligence-note mt-3 mb-4">{fr

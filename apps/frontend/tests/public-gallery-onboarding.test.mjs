@@ -30,7 +30,8 @@ test('guide exposes private gallery and owner listing paths without implying com
 })
 
 test('gallery aliases select Studio consistently across navigation',()=>{
-  assert.match(market,/<Link to="\/create\/gallery"/)
+  assert.match(guide, /to: '\/create\/gallery'/)
+  assert.doesNotMatch(market, /<Link to="\/create\/gallery"/, 'avoid redundant creation CTA in artwork browsing')
   for(const path of ['/create/gallery','/gallery/create','/exposition'])assert.equal(n.currentPrimarySection(path,catalogue),'studio')
   assert.match(shell,/currentPrimarySection\(location.pathname,modules\)/)
   assert.match(css,/\.xa-guide-owner a:focus-visible/)
