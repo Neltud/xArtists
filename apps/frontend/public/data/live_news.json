@@ -1,21 +1,91 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-23T23:25:05.346Z",
+  "updatedAt": "2026-11-24T08:33:48.193Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1795509227886",
+      "timestamp": "08:33",
+      "source": "EGLD",
+      "title": "Cotation publique · $2.23 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1795506110000",
+      "timestamp": "07:41",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin ETFs keep bleeding as BlackRock’s IBIT shares gain nearly 5%",
+      "link": "https://cointelegraph.com/markets/bitcoin-etfs-bleed-ibit-shares-gain?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1795500000000",
+      "timestamp": "06:00",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1795496850000",
+      "timestamp": "05:07",
+      "source": "CoinTelegraph",
+      "title": "Why 42 Macro says it’s waiting to buy the Bitcoin dip",
+      "link": "https://cointelegraph.com/markets/why-42-macro-says-its-waiting-to-buy-the-bitcoin-dip?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1795490002000",
+      "timestamp": "03:13",
+      "source": "CoinTelegraph",
+      "title": "Google wants to make you the star of your own AI slop movies",
+      "link": "https://cointelegraph.com/news/google-wants-make-you-star-your-own-ai-slop-movies?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1795480586000",
+      "timestamp": "00:36",
+      "source": "CoinTelegraph",
+      "title": "Ethereum Foundation doubles protocol security team ahead of overhaul",
+      "link": "https://cointelegraph.com/news/ethereum-foundation-doubles-protocol-security-team-amid-ai-quantum-overhaul?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1795477414000",
+      "timestamp": "23:43",
+      "source": "CoinTelegraph",
+      "title": "CFTC staff say exchanges can count Bitcoin toward operating reserves",
+      "link": "https://cointelegraph.com/news/cftc-staff-say-exchanges-can-count-bitcoin-toward-operating-reserves?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1795479904000",
+      "timestamp": "00:25",
+      "source": "CoinDesk",
+      "title": "U.S. CFTC sets policies on event contract data, using crypto to check financial boxes",
+      "link": "https://www.coindesk.com/policy/2026/11/23/u-s-cftc-sets-policies-on-event-contract-data-using-crypto-to-check-financial-boxes"
+    },
+    {
+      "id": "rss-CoinDesk-1-1795458123000",
+      "timestamp": "18:22",
+      "source": "CoinDesk",
+      "title": "New York judge declines to block Kalshi from operating in the state for now",
+      "link": "https://www.coindesk.com/policy/2026/11/23/new-york-judge-declines-to-block-kalshi-from-operating-in-the-state-for-now"
+    },
+    {
+      "id": "rss-CoinDesk-2-1795457525000",
+      "timestamp": "18:12",
+      "source": "CoinDesk",
+      "title": "Nvidia's Jensen Huang faces Senate scrutiny despite Trump-backed return as CEO",
+      "link": "https://www.coindesk.com/business/2026/11/23/nvidia-s-jensen-huang-faces-senate-scrutiny-despite-trump-backed-return-as-ceo"
+    },
+    {
+      "id": "rss-CoinDesk-3-1795455087000",
+      "timestamp": "17:31",
+      "source": "CoinDesk",
+      "title": "Bitcoin rebound already losing steam as AI trade returns with a bang",
+      "link": "https://www.coindesk.com/markets/2026/11/23/bitcoin-rebound-already-losing-steam-as-ai-trade-returns-with-a-bank"
+    },
     {
       "id": "egld-1795476304843",
       "timestamp": "23:25",
       "source": "EGLD",
       "title": "Cotation publique · $2.24 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1795470044000",
-      "timestamp": "21:40",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "rss-CoinTelegraph-1-1795467843000",
@@ -51,27 +121,6 @@
       "source": "CoinTelegraph",
       "title": "Cuomo says rivals urged companies to opt out of OKXICE tokenized stocks",
       "link": "https://cointelegraph.com/news/cuomo-rivals-urged-companies-reject-okx-ice-tokenized-stocks?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1795458123000",
-      "timestamp": "18:22",
-      "source": "CoinDesk",
-      "title": "New York judge declines to block Kalshi from operating in the state for now",
-      "link": "https://www.coindesk.com/policy/2026/11/23/new-york-judge-declines-to-block-kalshi-from-operating-in-the-state-for-now"
-    },
-    {
-      "id": "rss-CoinDesk-1-1795457525000",
-      "timestamp": "18:12",
-      "source": "CoinDesk",
-      "title": "Nvidia's Jensen Huang faces Senate scrutiny despite Trump-backed return as CEO",
-      "link": "https://www.coindesk.com/business/2026/11/23/nvidia-s-jensen-huang-faces-senate-scrutiny-despite-trump-backed-return-as-ceo"
-    },
-    {
-      "id": "rss-CoinDesk-2-1795455087000",
-      "timestamp": "17:31",
-      "source": "CoinDesk",
-      "title": "Bitcoin rebound already losing steam as AI trade returns with a bang",
-      "link": "https://www.coindesk.com/markets/2026/11/23/bitcoin-rebound-already-losing-steam-as-ai-trade-returns-with-a-bank"
     },
     {
       "id": "rss-CoinDesk-3-1795451943000",
@@ -149,55 +198,6 @@
       "source": "CoinDesk",
       "title": "Bitcoin sold for $17,000 on Kraken's Canadian dollar market, and the trades stand",
       "link": "https://www.coindesk.com/markets/2026/11/23/bitcoin-sold-for-usd17-000-on-kraken-s-canadian-dollar-market-and-the-trades-stand"
-    },
-    {
-      "id": "egld-1795397091372",
-      "timestamp": "01:24",
-      "source": "EGLD",
-      "title": "Cotation publique · $2.29 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1795395229000",
-      "timestamp": "00:53",
-      "source": "CoinTelegraph",
-      "title": "Half of wallets on Trump’s dinner list got tokens from non-US exchanges",
-      "link": "https://cointelegraph.com/news/half-wallets-trumps-dinner-list-got-tokens-from-non-us-exchanges?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1795387629000",
-      "timestamp": "22:47",
-      "source": "CoinTelegraph",
-      "title": "Will Bitcoin’s big rebound hold? More tampered Ledgers found: Hodler’s Digest",
-      "link": "https://cointelegraph.com/magazine/will-bitcoins-big-rebound-hold-more-tampered-ledgers-found-hodlers-digest?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1795357800000",
-      "timestamp": "14:30",
-      "source": "CoinTelegraph",
-      "title": "The future of onchain FX could start with users, not institutional liquidity",
-      "link": "https://cointelegraph.com/opinion/future-onchain-fx-could-start-with-users-not-institutional-liquidity?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1795339986000",
-      "timestamp": "09:33",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin briefly drops to $17K on Kraken, exchange upholds trades",
-      "link": "https://cointelegraph.com/news/bitcoin-17k-kraken-canadian-dollar-market-trades-stand?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1795332245000",
-      "timestamp": "07:24",
-      "source": "CoinTelegraph",
-      "title": "South Korean exchanges halt CYBER transfers amid suspected bridge exploit",
-      "link": "https://cointelegraph.com/news/upbit-bithumb-suspend-cyber-transfers-bridge-exploit?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1795375800000",
-      "timestamp": "19:30",
-      "source": "CoinDesk",
-      "title": "More on the pending oversight hearings: State of Crypto",
-      "link": "https://www.coindesk.com/"
     }
   ]
 }
