@@ -1,5 +1,16 @@
 # ACTIVE_CONTEXT — xArtists / xOrus
 
+## Sonde et suite — 25 novembre 2026 (~05:40 UTC)
+
+- Lecture publique seulement. Pages **0.139.0** sert `c051d986` (workspaces MultiversX/Solana, build `2026-11-24T16:26:50Z`, `lia_live_trading=false`, 140 routes). Le tip `main` a ensuite reçu des commits data ; ils ne sont pas le SHA Pages.
+- API Render `8b6fae84` : HTTP 200. Checkout, mint live, enchères, upload et pont $TRO **off**. PayBox configuré en prod, checkout **désactivé**. Studio store **503**, `table_ready=false`. `api.xartists.art` **NXDOMAIN**.
+- Hub Neon inchangé : `e580388b`, exécution fermée, budget live implicite 0, 0 wallet, stance **ABSTAIN**. `GET /v1/xorus/reference-quotes` répond **404**. Le schéma est dans le code, pas dans le bundle servi. Aucun reçu de remplacement n’est écrit par ce correctif.
+- Correctif public, **pas un GO** : le bureau xOrus affiche l’univers d’admission en local (`quotes=[]`, aucun appel réseau). Une ligne d’univers n’est pas un swap. Le pairing xPortal ferme le relais abandonné avant le relais suivant ; cela ne prouve pas l’allowlist [#506](https://github.com/Neltud/xArtists/issues/506).
+- Bloquants humains inchangés : [#506](https://github.com/Neltud/xArtists/issues/506), puis [#428](https://github.com/Neltud/xArtists/issues/428), [#341](https://github.com/Neltud/xArtists/issues/341), migrations Studio après backup.
+- Interdit : `LIA_LIVE_TRADING`, `paybox_checkout_enabled`, mint public, assisted POST, annonce de commerce ouvert. Le provider WalletConnect reste en 5.0.2 ; le correctif upstream 6.2.0 n’est pas mergé ici.
+
+Preuve : [`docs/ops/PROBE_PUBLIC_2026-11-25.md`](docs/ops/PROBE_PUBLIC_2026-11-25.md).
+
 ## Sonde et suite quotes — 24 novembre 2026 (05:33 UTC)
 
 - Lecture publique seulement. Pages **0.139.0** sert `5271cefe` (cockpit V2, build `2026-11-23T17:19:23Z`, `lia_live_trading=false`). API Render reste `8b6fae84` : checkout, mint live, enchères, upload et pont $TRO **off**. PayBox est configuré en prod et le checkout est **désactivé**. Studio store **503**, schéma absent. `api.xartists.art` non résolu.

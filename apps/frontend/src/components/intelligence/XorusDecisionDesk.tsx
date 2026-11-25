@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom'
 import { useI18n } from '../../i18n/I18nContext'
 import { interpretXorusSnapshot, parseMultiversxEconomics } from '../../lib/xorusDecisionReadout.mjs'
 import { interpretXorusAnalysisReport } from '../../lib/xorusAnalysisReadout.mjs'
+import { referenceQuoteManifest } from '../../lib/xorusReferenceAdmission.mjs'
 import XorusAnalysisReport from './XorusAnalysisReport'
 import XorusSignalCatalog from './XorusSignalCatalog'
 import {useNetworkCopy} from '../../experience/networkCopy'
@@ -95,6 +96,7 @@ export default function XorusDecisionDesk(){
   const status=useMemo(()=>interpretXorusSnapshot(board,clockNow),[board,clockNow])
   const market=useMemo(()=>parseMultiversxEconomics(economics),[economics])
   const report=useMemo(()=>interpretXorusAnalysisReport(analysis,clockNow),[analysis,clockNow])
+  const admission=useMemo(()=>referenceQuoteManifest(checkedAt),[checkedAt])
   const sourceTs=apiBase?report?.sourceTs:status.sourceTs
   const fromSource=sourceTs
     ? new Date(sourceTs).toLocaleString(fr?'fr-FR':'en-GB',{dateStyle:'medium',timeStyle:'short'})
@@ -151,6 +153,21 @@ export default function XorusDecisionDesk(){
         {(apiBase?report?.stale:status.isStale)?' · '+(fr?'PÉRIMÉ':'STALE'):''}
       </p>
     </div>
+
+    <article className="xa-intelligence-card" data-testid="xorus-reference-admission">
+      <h3>{fr?'Quotes de référence':'Reference quotes'}</h3>
+      <p className="mt-2">{fr
+        ? 'Schéma d’admission seulement. Aucun prix n’est collecté ici, et aucune requête n’est envoyée au hub.'
+        : 'Admission schema only. No price is collected here, and no request is sent to the hub.'}</p>
+      <p className="xa-intelligence-note">{fr
+        ? `Runtime public : route absente (${admission.published_runtime}). ${admission.quotes.length} quote. Une ligne ci-dessous n’est ni un fill, ni une preuve de swap.`
+        : `Public runtime: route absent (${admission.published_runtime}). ${admission.quotes.length} quotes. A row below is neither a fill nor proof of a swap.`}</p>
+      <ul className="mt-2 space-y-1 text-sm">
+        {admission.universe.map(row=>(
+          <li key={`${row.network}:${row.symbol}`}>{row.symbol} · {row.network} · {fr?'swap non prouvé':'swap not proven'}</li>
+        ))}
+      </ul>
+    </article>
 
     <XorusAnalysisReport report={report} />
     <details className="xa-task-details xa-intelligence-evidence"><summary>{n('data')}</summary><div>

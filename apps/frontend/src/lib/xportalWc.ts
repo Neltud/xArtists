@@ -287,6 +287,18 @@ export function installXPortalVisibilityHooks(): () => void {
   }
 }
 
+async function retireRelayCandidate(provider: XcProvider | null){
+  if(!provider)return
+  // Provider 5.x does not coalesce overlapping init() calls (fixed upstream in
+  // WalletConnect provider 6.2). Log the abandoned relay out before the next
+  // official relay starts. A logout failure is not authentication.
+  try{
+    await withDeadline(Promise.resolve(provider.logout?.()),4000,'Fermeture du relais précédent.')
+  }catch{
+    /* A dead relay must not block the fallback relay. */
+  }
+}
+
 export async function loginWithXPortalMainnet(
   onProgress?: (p: XPortalLoginProgress) => void,
 ): Promise<{ ok: true; address: string } | { ok: false; error: string }> {
@@ -337,8 +349,10 @@ export async function loginWithXPortalMainnet(
       // Public progress is deliberately coarse; never expose pairing URI or project ID.
       onProgress?.({phase:'init',message:`Relais WalletConnect ${n+1}/${relayUrls.length} : initialisation…`})
       let relayPhase:'init'|'pairing'='init'
+      let candidate: XcProvider | null = null
+      let accepted=false
       try {
-        const candidate=makeProvider(WalletConnectV2Provider,projectId,relayUrls[n])
+        candidate=makeProvider(WalletConnectV2Provider,projectId,relayUrls[n])
         const initialized=await withDeadline(candidate.init(),12000,'Relais WalletConnect indisponible.',signal)
         if(!initialized)throw new Error('Initialisation WalletConnect impossible.')
         relayPhase='pairing'
@@ -349,7 +363,7 @@ export async function loginWithXPortalMainnet(
         provider=candidate
         uri=session.uri
         approval=session.approval
-        break
+        accepted=true
       }catch(err){
         if(signal.aborted)throw new Error('Connexion annulée.')
         const message=err instanceof Error?err.message:String(err)
@@ -358,7 +372,10 @@ export async function loginWithXPortalMainnet(
         if(n===relayUrls.length-1)throw new Error(
           `WalletConnect bloqué avant QR (${relayPhase==='init'?'initialisation du relais':'création du pairing'} sur deux relais). Ouvre xartists.art dans Chrome, vérifie le réseau puis réessaie.`
         )
+      }finally{
+        if(!accepted)await retireRelayCandidate(candidate)
       }
+      if(accepted)break
     }
     if(!provider||!uri||!approval)throw new Error('Connexion WalletConnect indisponible.')
 

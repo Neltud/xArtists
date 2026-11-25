@@ -21,6 +21,8 @@ test('xPortal uses two official WalletConnect relays and never auto-authenticate
   assert.match(wallet,/if\(!provider\|\|!uri\|\|!approval\)throw new Error/)
   assert.match(wallet,/await activateWalletSession\(provider,approval,signal\)/)
   assert.match(wallet,/if\(\/unauthorized\|forbidden\|origin\|project\.\?id\|401\|403\/i\.test\(message\)\)throw err/)
+  assert.match(wallet,/await retireRelayCandidate\(candidate\)/)
+  assert.match(wallet,/await withDeadline\(Promise\.resolve\(provider\.logout\?\.\(\)\),4000/)
 })
 test('user can explicitly cancel the stuck xPortal flow; no read-only wallet can sign',()=>{
   assert.match(modal,/const cancelCurrent = \(\) =>/)

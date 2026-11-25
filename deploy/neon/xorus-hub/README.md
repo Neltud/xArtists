@@ -65,7 +65,7 @@ Ce journal **paper** ne remplace pas le futur registre de risque live, les vrais
 
 ### Quotes de référence — schéma seulement
 
-`GET /v1/xorus/reference-quotes` publie l'univers et les règles d'admission d'un futur flux sous licence. **Aucun prix n'est collecté.** `quotes` reste `[]`, `feed` reste `null`, `independently_verified_market_signals` reste 0. Un POST est refusé (405). Une quote marquée exécutable, trop vieille (plus de 15 s), sans URL HTTPS, ou hors univers est rejetée par `assessReferenceQuote` et ne peut jamais servir de fill. Cette route n'est pas déployée tant que le bundle Neon n'est pas remplacé ; le runtime public reste celui du reçu paper tant qu'un nouveau reçu n'est pas écrit.
+`GET /v1/xorus/reference-quotes` publie l'univers et les règles d'admission d'un futur flux sous licence. **Aucun prix n'est collecté.** `quotes` reste `[]`, `feed` reste `null`, `independently_verified_market_signals` reste 0. Un POST est refusé (405). Une quote marquée exécutable, trop vieille (plus de 15 s), sans URL HTTPS, ou hors univers est rejetée par `assessReferenceQuote` et ne peut jamais servir de fill. Cette route n'est pas déployée tant que le bundle Neon n'est pas remplacé ; le runtime public reste celui du reçu paper tant qu'un nouveau reçu n'est pas écrit. Sonde du 25 novembre 2026 : le GET public répond **404**. Le bureau xOrus affiche le même schéma en local et n'appelle pas cette route.
 
 | Affectation | Plafond de capital de référence | Arrêt pertes sur 24 h glissantes | Arrêt pertes cumulées du pilote |
 | --- | --- | --- | --- |
