@@ -1,21 +1,91 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-24T19:56:40.593Z",
+  "updatedAt": "2026-11-25T03:56:57.543Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1795579017192",
+      "timestamp": "03:56",
+      "source": "EGLD",
+      "title": "Cotation publique · $2.18 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1795570859000",
+      "timestamp": "01:40",
+      "source": "CoinTelegraph",
+      "title": "CleanSpark weighs selling more Bitcoin than it mines to de-risk books",
+      "link": "https://cointelegraph.com/news/cleanspark-weighs-selling-more-bitcoin-than-it-mines-to-de-risk-books?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1795564096000",
+      "timestamp": "23:48",
+      "source": "CoinTelegraph",
+      "title": "Hackers breach CIA intelligence network in latest US cyberattack",
+      "link": "https://cointelegraph.com/news/hackers-breach-cia-intelligence-network-in-latest-us-cyberattack?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1795558330000",
+      "timestamp": "22:12",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1795557025000",
+      "timestamp": "21:50",
+      "source": "CoinTelegraph",
+      "title": "Europol follows $28.5M crypto trail in streaming piracy crackdown",
+      "link": "https://cointelegraph.com/news/europol-crypto-trail-streaming-piracy-crackdown?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1795553307000",
+      "timestamp": "20:48",
+      "source": "CoinTelegraph",
+      "title": "Utah moves to dismiss criminal charges against Kalshi after trading halt",
+      "link": "https://cointelegraph.com/news/utah-moves-to-dismiss-criminal-charges-against-kalshi-after-trading-halt?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1795549463000",
+      "timestamp": "19:44",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin sell-off driven by weak demand, forced liquidations: 21Shares",
+      "link": "https://cointelegraph.com/news/bitcoin-selloff-weak-demand-forced-liquidations-21shares?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1795542608000",
+      "timestamp": "17:50",
+      "source": "CoinDesk",
+      "title": "Utah moves to drop criminal pursuit of Kalshi after the firm halted services there",
+      "link": "https://www.coindesk.com/policy/2026/11/24/utah-moves-to-drop-criminal-pursuit-of-kalshi-after-the-firm-halted-services-there"
+    },
+    {
+      "id": "rss-CoinDesk-1-1795536025000",
+      "timestamp": "16:00",
+      "source": "CoinDesk",
+      "title": "'AI trade never died': Traders see room for market recovery, but bitcoin's participation is another story",
+      "link": "https://www.coindesk.com/markets/2026/11/24/ai-trade-never-died-traders-see-room-for-market-recovery-despite-bitcoin-s-weakness"
+    },
+    {
+      "id": "rss-CoinDesk-2-1795532792000",
+      "timestamp": "15:06",
+      "source": "CoinDesk",
+      "title": "Anchorage Digital to unveil new asset-management subsidiary",
+      "link": "https://www.coindesk.com/business/2026/11/24/anchorage-digital-to-unveil-new-asset-management-subsidiary"
+    },
+    {
+      "id": "rss-CoinDesk-3-1795531253000",
+      "timestamp": "14:40",
+      "source": "CoinDesk",
+      "title": "South Korea proposes ending 2017 ICO ban to boost jobs and onshore crypto investment",
+      "link": "https://www.coindesk.com/policy/2026/11/24/south-korea-proposes-ending-2017-ico-ban-to-boost-jobs-and-onshore-crypto-investment"
+    },
     {
       "id": "egld-1795550200324",
       "timestamp": "19:56",
       "source": "EGLD",
       "title": "Cotation publique · $2.20 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1795549463000",
-      "timestamp": "19:44",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin sell-off driven by weak demand, forced liquidations: 21Shares",
-      "link": "https://cointelegraph.com/news/bitcoin-selloff-weak-demand-forced-liquidations-21shares?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "rss-CoinTelegraph-1-1795547066000",
@@ -53,34 +123,6 @@
       "link": "https://cointelegraph.com/news/how-south-koreas-proposed-20-cap-could-change-who-runs-upbit?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinDesk-0-1795542608000",
-      "timestamp": "17:50",
-      "source": "CoinDesk",
-      "title": "Utah moves to drop criminal pursuit of Kalshi after the firm halted services there",
-      "link": "https://www.coindesk.com/policy/2026/11/24/utah-moves-to-drop-criminal-pursuit-of-kalshi-after-the-firm-halted-services-there"
-    },
-    {
-      "id": "rss-CoinDesk-1-1795536025000",
-      "timestamp": "16:00",
-      "source": "CoinDesk",
-      "title": "'AI trade never died': Traders see room for market recovery, but bitcoin's participation is another story",
-      "link": "https://www.coindesk.com/markets/2026/11/24/ai-trade-never-died-traders-see-room-for-market-recovery-despite-bitcoin-s-weakness"
-    },
-    {
-      "id": "rss-CoinDesk-2-1795532792000",
-      "timestamp": "15:06",
-      "source": "CoinDesk",
-      "title": "Anchorage Digital to unveil new asset-management subsidiary",
-      "link": "https://www.coindesk.com/business/2026/11/24/anchorage-digital-to-unveil-new-asset-management-subsidiary"
-    },
-    {
-      "id": "rss-CoinDesk-3-1795531253000",
-      "timestamp": "14:40",
-      "source": "CoinDesk",
-      "title": "South Korea proposes ending 2017 ICO ban to boost jobs and onshore crypto investment",
-      "link": "https://www.coindesk.com/policy/2026/11/24/south-korea-proposes-ending-2017-ico-ban-to-boost-jobs-and-onshore-crypto-investment"
-    },
-    {
       "id": "egld-1795509227886",
       "timestamp": "08:33",
       "source": "EGLD",
@@ -93,13 +135,6 @@
       "source": "CoinTelegraph",
       "title": "Bitcoin ETFs keep bleeding as BlackRock’s IBIT shares gain nearly 5%",
       "link": "https://cointelegraph.com/markets/bitcoin-etfs-bleed-ibit-shares-gain?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1795500000000",
-      "timestamp": "06:00",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "rss-CoinTelegraph-2-1795496850000",
@@ -163,41 +198,6 @@
       "source": "EGLD",
       "title": "Cotation publique · $2.24 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1795467843000",
-      "timestamp": "21:04",
-      "source": "CoinTelegraph",
-      "title": "US seeks to recover $1.1B in crypto stolen in North Korea-linked Binance hack",
-      "link": "https://cointelegraph.com/news/us-seeks-11b-crypto-stolen-north-korea-binance-hack?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1795466323000",
-      "timestamp": "20:38",
-      "source": "CoinTelegraph",
-      "title": "Kalshi secures temporary win in New York gambling law dispute",
-      "link": "https://cointelegraph.com/news/kalshi-temporary-win-new-york-gambling-law-dispute?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1795462506000",
-      "timestamp": "19:35",
-      "source": "CoinTelegraph",
-      "title": "BTCS offloads $44M in ETH to reduce DeFi debt amid market downturn",
-      "link": "https://cointelegraph.com/news/btcs-offloads-44m-eth-reduce-defi-debt-market-downturn?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1795461406000",
-      "timestamp": "19:16",
-      "source": "CoinTelegraph",
-      "title": "Base makes quantum security a 2027 priority as regulators warn of risks",
-      "link": "https://cointelegraph.com/interview/base-quantum-security-2027-priority-regulators-warn-risks?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1795455738000",
-      "timestamp": "17:42",
-      "source": "CoinTelegraph",
-      "title": "Cuomo says rivals urged companies to opt out of OKXICE tokenized stocks",
-      "link": "https://cointelegraph.com/news/cuomo-rivals-urged-companies-reject-okx-ice-tokenized-stocks?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
