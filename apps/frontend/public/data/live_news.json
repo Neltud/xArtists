@@ -1,8 +1,85 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-25T03:56:57.543Z",
+  "updatedAt": "2026-11-25T16:51:09.778Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1795625469395",
+      "timestamp": "16:51",
+      "source": "EGLD",
+      "title": "Cotation publique · $2.17 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1795616496000",
+      "timestamp": "14:21",
+      "source": "CoinTelegraph",
+      "title": "Ex-FTX COO calls out Netflix over CZ’s ‘Asian mafia’ portrayal",
+      "link": "https://cointelegraph.com/news/ftx-coo-netflix-portrayal-binance-founder-racist?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1795613165000",
+      "timestamp": "13:26",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1795611729000",
+      "timestamp": "13:02",
+      "source": "CoinTelegraph",
+      "title": "Ukraine passes bill to legalize crypto and tax profits at 23%",
+      "link": "https://cointelegraph.com/news/ukraine-passes-bill-crypto-regulation-tax?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1795607394000",
+      "timestamp": "11:49",
+      "source": "CoinTelegraph",
+      "title": "Japan’s SBI, SMFG launch Solana venture for stablecoins, tokenization",
+      "link": "https://cointelegraph.com/news/sbi-smfg-solana-global-stablecoin-tokenization?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1795606270000",
+      "timestamp": "11:31",
+      "source": "CoinTelegraph",
+      "title": "Hong Kong launches tokenized debt platform with 24-hour settlement",
+      "link": "https://cointelegraph.com/news/hong-kong-central-bank-platform-tokenized-debt-securities?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1795605146000",
+      "timestamp": "11:12",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin ETFs near $5B in record monthly outflows amid AI stock rout",
+      "link": "https://cointelegraph.com/markets/bitcoin-etfs-near-record-5-billion-monthly-outflows?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1795622551000",
+      "timestamp": "16:02",
+      "source": "CoinDesk",
+      "title": "EU bank watchdog seeks European Commission rules for crypto firms offering DeFi lending",
+      "link": "https://www.coindesk.com/policy/2026/11/25/eu-bank-watchdog-seeks-european-commission-rules-for-crypto-firms-offering-defi-lending"
+    },
+    {
+      "id": "rss-CoinDesk-1-1795622527000",
+      "timestamp": "16:02",
+      "source": "CoinDesk",
+      "title": "Ukrainian lawmakers pass crypto tax and regulation bill expected to bring in $330 million",
+      "link": "https://www.coindesk.com/business/2026/11/25/ukrainian-lawmakers-pass-crypto-tax-and-regulation-bill-expected-to-bring-in-usd330-million"
+    },
+    {
+      "id": "rss-CoinDesk-2-1795622384000",
+      "timestamp": "15:59",
+      "source": "CoinDesk",
+      "title": "Crypto Long & Short: Bitcoin investors can’t keep ignoring Japan",
+      "link": "https://www.coindesk.com/coindesk-indices/2026/11/25/crypto-long-and-short-bitcoin-investors-can-t-keep-ignoring-japan"
+    },
+    {
+      "id": "rss-CoinDesk-3-1795618037000",
+      "timestamp": "14:47",
+      "source": "CoinDesk",
+      "title": "South Korean crypto exchange Bithumb warns of phishing after deeper October breach probe",
+      "link": "https://www.coindesk.com/tech/2026/11/25/south-korean-crypto-exchange-bithumb-warns-of-phishing-after-deeper-october-breach-probe"
+    },
     {
       "id": "egld-1795579017192",
       "timestamp": "03:56",
@@ -23,13 +100,6 @@
       "source": "CoinTelegraph",
       "title": "Hackers breach CIA intelligence network in latest US cyberattack",
       "link": "https://cointelegraph.com/news/hackers-breach-cia-intelligence-network-in-latest-us-cyberattack?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1795558330000",
-      "timestamp": "22:12",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "rss-CoinTelegraph-3-1795557025000",
@@ -127,76 +197,6 @@
       "timestamp": "08:33",
       "source": "EGLD",
       "title": "Cotation publique · $2.23 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1795506110000",
-      "timestamp": "07:41",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin ETFs keep bleeding as BlackRock’s IBIT shares gain nearly 5%",
-      "link": "https://cointelegraph.com/markets/bitcoin-etfs-bleed-ibit-shares-gain?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1795496850000",
-      "timestamp": "05:07",
-      "source": "CoinTelegraph",
-      "title": "Why 42 Macro says it’s waiting to buy the Bitcoin dip",
-      "link": "https://cointelegraph.com/markets/why-42-macro-says-its-waiting-to-buy-the-bitcoin-dip?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1795490002000",
-      "timestamp": "03:13",
-      "source": "CoinTelegraph",
-      "title": "Google wants to make you the star of your own AI slop movies",
-      "link": "https://cointelegraph.com/news/google-wants-make-you-star-your-own-ai-slop-movies?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1795480586000",
-      "timestamp": "00:36",
-      "source": "CoinTelegraph",
-      "title": "Ethereum Foundation doubles protocol security team ahead of overhaul",
-      "link": "https://cointelegraph.com/news/ethereum-foundation-doubles-protocol-security-team-amid-ai-quantum-overhaul?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1795477414000",
-      "timestamp": "23:43",
-      "source": "CoinTelegraph",
-      "title": "CFTC staff say exchanges can count Bitcoin toward operating reserves",
-      "link": "https://cointelegraph.com/news/cftc-staff-say-exchanges-can-count-bitcoin-toward-operating-reserves?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1795479904000",
-      "timestamp": "00:25",
-      "source": "CoinDesk",
-      "title": "U.S. CFTC sets policies on event contract data, using crypto to check financial boxes",
-      "link": "https://www.coindesk.com/policy/2026/11/23/u-s-cftc-sets-policies-on-event-contract-data-using-crypto-to-check-financial-boxes"
-    },
-    {
-      "id": "rss-CoinDesk-1-1795458123000",
-      "timestamp": "18:22",
-      "source": "CoinDesk",
-      "title": "New York judge declines to block Kalshi from operating in the state for now",
-      "link": "https://www.coindesk.com/policy/2026/11/23/new-york-judge-declines-to-block-kalshi-from-operating-in-the-state-for-now"
-    },
-    {
-      "id": "rss-CoinDesk-2-1795457525000",
-      "timestamp": "18:12",
-      "source": "CoinDesk",
-      "title": "Nvidia's Jensen Huang faces Senate scrutiny despite Trump-backed return as CEO",
-      "link": "https://www.coindesk.com/business/2026/11/23/nvidia-s-jensen-huang-faces-senate-scrutiny-despite-trump-backed-return-as-ceo"
-    },
-    {
-      "id": "rss-CoinDesk-3-1795455087000",
-      "timestamp": "17:31",
-      "source": "CoinDesk",
-      "title": "Bitcoin rebound already losing steam as AI trade returns with a bang",
-      "link": "https://www.coindesk.com/markets/2026/11/23/bitcoin-rebound-already-losing-steam-as-ai-trade-returns-with-a-bank"
-    },
-    {
-      "id": "egld-1795476304843",
-      "timestamp": "23:25",
-      "source": "EGLD",
-      "title": "Cotation publique · $2.24 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     }
   ]
