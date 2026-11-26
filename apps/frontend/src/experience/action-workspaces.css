@@ -136,3 +136,25 @@
 .xa-art-world-stage .xa-museum-joystick{background:#2b1648c9;border-color:#cda8ff88}
 .xa-art-world-stage .xa-museum-joystick-knob{background:radial-gradient(circle at 30% 20%,#ead5ff,#9d64df);border-color:#e4caff}
 @media(max-width:600px){.xa-direct-nft-sale{grid-template-columns:minmax(0,1fr);padding:10px}.xa-direct-nft-media{display:grid;grid-template-columns:90px minmax(0,1fr);align-items:center}.xa-direct-nft-media img{grid-row:span 2}.xa-direct-nft-media h2{font-size:17px}.xa-direct-nft-media a{font-size:10px}}
+
+.xa-market-live-shelf{padding:16px;border:1px solid #936ac8;border-radius:16px;background:linear-gradient(145deg,#241338,#462170);color:#fff;margin:12px 0}
+.xa-market-live-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.xa-market-live-heading h2{color:#fff;font-size:22px;margin:2px 0}
+.xa-market-live-heading p,.xa-market-live-shelf>small,.xa-market-live-items small{font-size:11px;color:#e8d5ff}
+.xa-market-live-shelf>p{font-size:13px;color:#f5ebff;margin:12px 0}
+.xa-market-live-shelf .xa-button.secondary{background:#ffffff15;color:#fff;border-color:#bb96e7;min-height:44px}
+.xa-market-live-shelf .xa-button.primary{background:#fff;color:#3f1b65;border-color:#fff;min-height:44px}
+.xa-market-live-items{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:12px 0}
+.xa-market-live-items article{border:1px solid #aa85d6;border-radius:12px;background:#ffffff0b;padding:12px;min-width:0;display:grid;gap:8px}
+.xa-market-live-items img{width:100%;aspect-ratio:1;object-fit:contain;background:#170c28;border-radius:8px}
+.xa-market-live-items h3{margin:0;color:white;font-size:16px}
+.xa-market-live-items a{font-size:12px;color:#ead6ff;overflow-wrap:anywhere}
+.xa-market-live-items strong{color:#fff;font-size:19px;overflow-wrap:anywhere}
+.xa-market-live-receipt{display:grid;gap:8px;margin:10px 0}
+.xa-market-live-receipt input{min-width:0;width:100%;padding:10px;border:1px solid #bca0e0;border-radius:8px;background:#fff;color:#211334}
+.xa-historical-sale>summary{cursor:pointer;min-height:44px;display:flex;align-items:center;padding:8px 10px;color:var(--xa-text-secondary);font-size:13px}
+.xa-art-world-mission{color:#e9d8fa;font-size:12px;margin:4px 0 10px}
+.xa-home-world-launch{display:flex;justify-content:space-between;align-items:center;gap:12px;border-radius:16px;padding:15px 18px;background:linear-gradient(115deg,#251339,#6230a2);color:white}
+.xa-home-world-launch strong{display:block;color:white;font-size:20px}
+.xa-home-world-launch small{color:#e7d2ff;font-size:12px}
+.xa-home-world-launch a{color:white;min-height:44px;display:flex;align-items:center;gap:8px}
