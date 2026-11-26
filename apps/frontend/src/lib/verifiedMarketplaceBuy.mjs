@@ -121,3 +121,66 @@ export function addressHex(address) {
   }
   return out.length===32?hex(out):null
 }
+
+/** General art sale read: exact contract, active ID, current escrow, exact atomic price.
+ * A listing index or local wallet record never authorizes payment.
+ */
+export function listingIdHex(id){
+ if(!Number.isSafeInteger(id)||id<1)fail()
+ const hex=id.toString(16)
+ return hex.length%2?'0'+hex:hex
+}
+const ART_TOKEN=/^[A-Za-z0-9]{3,20}-[a-f0-9]{6}$/
+const EXCLUDED=/^(?:XMEX|XAIPLS|XAIYLD|XAISNT)-/i
+function quoteFromListing(listing,nfts,feeBps){
+ if(!listing?.active||!ART_TOKEN.test(listing.token)||EXCLUDED.test(listing.token)||
+    !Number.isSafeInteger(listing.nonce)||listing.nonce<=0||feeBps+listing.royaltyBps>1000)return null
+ const identifier=listing.token+'-'+listingIdHex(listing.nonce)
+ const nft=nfts.find(n=>n?.identifier===identifier&&n.collection===listing.token&&
+   (n.nonce===undefined||Number(n.nonce)===listing.nonce)&&
+   /^[1-9][0-9]*$/.test(String(n.balance))&&BigInt(n.balance)>=1n)
+ if(!nft)return null
+ const amount=BigInt(listing.priceAtomic)
+ if(amount<=0n)return null
+ const fraction=(amount%1000000000000000000n).toString().padStart(18,'0').replace(/0+$/,'')
+ const priceEgld=(amount/1000000000000000000n).toString()+(fraction?'.'+fraction:'')
+ return Object.freeze({listingId:listing.id,identifier,priceAtomic:listing.priceAtomic,priceEgld,
+   receiver:VERIFIED_MARKET_SALE.marketplace,sellerHex:listing.sellerHex,royaltyBps:listing.royaltyBps,feeBps,checkedAt:Date.now()})
+}
+async function liveMarketContext(request){
+ const market=VERIFIED_MARKET_SALE.marketplace
+ const account=await readJson(request,API+'/accounts/'+market)
+ if(account?.address!==market||account.codeHash!==VERIFIED_MARKET_SALE.codeHash||account.isPayable!==true||
+    typeof account.code!=='string'||!account.code)fail()
+ const [paused,fee,nfts]=await Promise.all([view(request,'isPaused'),view(request,'getFeeBps'),
+   readJson(request,API+'/accounts/'+market+'/nfts?size=100')])
+ if(paused.length!==1||smallUint(paused[0],1)!==0||fee.length!==1||!Array.isArray(nfts))fail()
+ return {feeBps:smallUint(fee[0],1000),nfts}
+}
+export async function readVerifiedListing(id,{request=fetch}={}){
+ const arg=listingIdHex(id)
+ const context=await liveMarketContext(request)
+ const raw=await view(request,'getListing',[arg])
+ const quote=raw.length===1?quoteFromListing(decodeMarketplaceListing(raw[0],id),context.nfts,context.feeBps):null
+ if(!quote)fail()
+ return quote
+}
+/** Bounded discovery: only query explicit IDs, never guess from NFT order.
+ * An empty escrow ends discovery immediately; unscanned IDs remain unknown.
+ */
+export async function readLiveMarketplaceListings({request=fetch}={}){
+ const context=await liveMarketContext(request)
+ if(!context.nfts.length)return {listings:[],limited:false}
+ const listings=[]
+ let limited=false
+ for(let id=1;id<=12;id++){
+   let raw
+   try{raw=await view(request,'getListing',[listingIdHex(id)])}catch{limited=true;break}
+   const listing=raw.length===1?decodeMarketplaceListing(raw[0],id):null
+   if(!listing){limited=true;break}
+   const quote=quoteFromListing(listing,context.nfts,context.feeBps)
+   if(quote)listings.push(quote)
+   if(id===12)limited=true
+ }
+ return {listings,limited}
+}
