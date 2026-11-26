@@ -60,7 +60,11 @@ export default function XorusDecisionDesk(){
   const [busy,setBusy]=useState(true)
   const [revision,setRevision]=useState(0)
   const source=`${import.meta.env.BASE_URL || '/'}data/xorus_board.json`
-  const apiBase=((import.meta.env.VITE_ACCESS_API_BASE as string|undefined)||'').trim().replace(/\/+$/,'')
+  // A separately enabled public analysis reader never configures the general
+  // Access API, wallet, checkout, mint or assisted-swap clients.
+  const generalApi=((import.meta.env.VITE_ACCESS_API_BASE as string|undefined)||'').trim().replace(/\/+$/,'')
+  const analysisApi=((import.meta.env.VITE_XORUS_ANALYSIS_BASE as string|undefined)||'').trim().replace(/\/+$/,'')
+  const apiBase=generalApi||(analysisApi==='https://xartists-access-api.onrender.com'?analysisApi:'')
   const analysisSource=apiBase?`${apiBase}/v1/xorus/analysis`:`${import.meta.env.BASE_URL || '/'}data/xorus_analysis_preview.json`
   const refresh=useCallback(()=>setRevision(v=>v+1),[])
   useEffect(()=>{
