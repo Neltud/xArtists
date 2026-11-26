@@ -10,6 +10,7 @@ import {useSearchParams} from 'react-router-dom'
 import {useNetworkCopy} from '../experience/networkCopy'
 import { Link } from 'react-router-dom'
 import XorusDecisionDesk from '../components/intelligence/XorusDecisionDesk'
+import XorusNetworkStatus from '../components/intelligence/XorusNetworkStatus'
 import { useI18n } from '../i18n/I18nContext'
 import DailySignalWidget from '../components/DailySignalWidget'
 import LiveAssetTape from '../components/LiveAssetTape'
@@ -41,6 +42,7 @@ export default function XorusPage() {
       <header className="xa-task-header"><div><p className="xa-task-kicker">Agents & IA</p><h1>{n('analysis')}</h1><p>{n('analysisIntro')}</p></div><Link to="/agents" className="xa-button secondary">{n('agents')} →</Link></header>
       <nav className="xa-task-tabs" aria-label={n('analysis')}><button type="button" aria-current={view==='analysis'?'page':undefined} onClick={()=>choose('analysis')}>{n('analysis')}</button><button type="button" aria-current={view==='simulation'?'page':undefined} onClick={()=>choose('simulation')}>{n('simulation')}</button></nav>
       <p className="xa-task-status">{n('paper')}</p>
+      {view==='analysis'&&<XorusNetworkStatus/>}
       {view==='simulation'?<PaperTradingPanel/>:<section aria-label="xOrus decision"><XorusDecisionDesk /></section>}
       <details className="xa-task-details"><summary>{n('research')}</summary><p>{fr?'xOrus observe, compare et s’abstient quand les preuves manquent. Aucun ordre n’est envoyé depuis cette page.':'xOrus observes, compares and abstains when evidence is thin. This page sends no order.'}</p><p>{XORUS_BADGE}</p><button type="button" className="xa-button secondary" aria-expanded={showAdvanced} onClick={()=>setShowAdvanced(v=>!v)}>{showAdvanced?(fr?'Masquer les outils avancés':'Hide advanced tools'):(fr?'Afficher les outils avancés':'Show advanced tools')}</button></details>
 
