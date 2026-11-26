@@ -1,21 +1,84 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-26T01:36:12.318Z",
+  "updatedAt": "2026-11-26T11:55:42.536Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1795656971761",
-      "timestamp": "01:36",
+      "id": "egld-1795694142153",
+      "timestamp": "11:55",
       "source": "EGLD",
       "title": "Cotation publique · $2.33 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
-      "id": "rss-CoinTelegraph-0-1795645993000",
-      "timestamp": "22:33",
+      "id": "rss-CoinTelegraph-0-1795692179000",
+      "timestamp": "11:22",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin price eyes $61K as Talos warns of thin Thanksgiving liquidity",
+      "link": "https://cointelegraph.com/markets/bitcoin-price-talos-warns-thin-thanksgiving-liquidity?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1795688128000",
+      "timestamp": "10:15",
+      "source": "CoinTelegraph",
+      "title": "Zcash devs urge users to migrate 2% of ZEC supply to accelerate Sapling pool retirement",
+      "link": "https://cointelegraph.com/news/zcash-users-migrate-zec-supply-sapling-pool-retirement?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1795686154000",
+      "timestamp": "09:42",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin ETF November outflows top $5B, Morgan Stanley bucks trend",
+      "link": "https://cointelegraph.com/markets/morgan-stanley-bitcoin-etf-trend-outflows-november?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1795684695000",
+      "timestamp": "09:18",
+      "source": "CoinTelegraph",
+      "title": "Switzerland’s first spot Bitcoin ETF ticks up 0.6% in opening hour",
+      "link": "https://cointelegraph.com/markets/bit-debuts-switzerlands-first-spot-bitcoin-etf?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1795672800000",
+      "timestamp": "06:00",
       "source": "CoinTelegraph",
       "title": "Here’s what happened in crypto today",
       "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1795672388000",
+      "timestamp": "05:53",
+      "source": "CoinTelegraph",
+      "title": "UK regulator plans tighter DeFi rules, citing $6.3B Binance hack: Report",
+      "link": "https://cointelegraph.com/news/uk-fca-defi-regulation-binance-hack?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1795692470000",
+      "timestamp": "11:27",
+      "source": "CoinDesk",
+      "title": "Major crypto trading firm Auros is winding down operations: Sources",
+      "link": "https://www.coindesk.com/markets/2026/11/26/major-crypto-trading-firm-auros-is-winding-down-operations-sources"
+    },
+    {
+      "id": "rss-CoinDesk-1-1795691842000",
+      "timestamp": "11:17",
+      "source": "CoinDesk",
+      "title": "Bitcoin little changed, DeFi tokens lead the bounce as U.S. marks Thanksgiving",
+      "link": "https://www.coindesk.com/markets/2026/11/26/bitcoin-little-changed-defi-tokens-lead-the-bounce-as-u-s-marks-thanksgiving"
+    },
+    {
+      "id": "rss-CoinDesk-2-1795690568000",
+      "timestamp": "10:56",
+      "source": "CoinDesk",
+      "title": "Nvidia shipment freeze and U.S. chip curbs put AI stocks under pressure",
+      "link": "https://www.coindesk.com/markets/2026/11/26/nvidia-shipment-freeze-and-u-s-chip-curbs-put-ai-stocks-under-pressure"
+    },
+    {
+      "id": "rss-CoinDesk-3-1795689633000",
+      "timestamp": "10:40",
+      "source": "CoinDesk",
+      "title": "New York Attorney General wins $1.4 billion ruling against founders of crypto trading firm NovaTech",
+      "link": "https://www.coindesk.com/policy/2026/11/26/new-york-attorney-general-wins-usd1-4-billion-ruling-against-founders-of-crypto-trading-firm-novatech"
     },
     {
       "id": "rss-CoinTelegraph-1-1795643618000",
@@ -135,69 +198,6 @@
       "source": "CoinDesk",
       "title": "South Korean crypto exchange Bithumb warns of phishing after deeper October breach probe",
       "link": "https://www.coindesk.com/tech/2026/11/25/south-korean-crypto-exchange-bithumb-warns-of-phishing-after-deeper-october-breach-probe"
-    },
-    {
-      "id": "egld-1795579017192",
-      "timestamp": "03:56",
-      "source": "EGLD",
-      "title": "Cotation publique · $2.18 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1795570859000",
-      "timestamp": "01:40",
-      "source": "CoinTelegraph",
-      "title": "CleanSpark weighs selling more Bitcoin than it mines to de-risk books",
-      "link": "https://cointelegraph.com/news/cleanspark-weighs-selling-more-bitcoin-than-it-mines-to-de-risk-books?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1795564096000",
-      "timestamp": "23:48",
-      "source": "CoinTelegraph",
-      "title": "Hackers breach CIA intelligence network in latest US cyberattack",
-      "link": "https://cointelegraph.com/news/hackers-breach-cia-intelligence-network-in-latest-us-cyberattack?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1795557025000",
-      "timestamp": "21:50",
-      "source": "CoinTelegraph",
-      "title": "Europol follows $28.5M crypto trail in streaming piracy crackdown",
-      "link": "https://cointelegraph.com/news/europol-crypto-trail-streaming-piracy-crackdown?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1795553307000",
-      "timestamp": "20:48",
-      "source": "CoinTelegraph",
-      "title": "Utah moves to dismiss criminal charges against Kalshi after trading halt",
-      "link": "https://cointelegraph.com/news/utah-moves-to-dismiss-criminal-charges-against-kalshi-after-trading-halt?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1795549463000",
-      "timestamp": "19:44",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin sell-off driven by weak demand, forced liquidations: 21Shares",
-      "link": "https://cointelegraph.com/news/bitcoin-selloff-weak-demand-forced-liquidations-21shares?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1795542608000",
-      "timestamp": "17:50",
-      "source": "CoinDesk",
-      "title": "Utah moves to drop criminal pursuit of Kalshi after the firm halted services there",
-      "link": "https://www.coindesk.com/policy/2026/11/24/utah-moves-to-drop-criminal-pursuit-of-kalshi-after-the-firm-halted-services-there"
-    },
-    {
-      "id": "rss-CoinDesk-1-1795536025000",
-      "timestamp": "16:00",
-      "source": "CoinDesk",
-      "title": "'AI trade never died': Traders see room for market recovery, but bitcoin's participation is another story",
-      "link": "https://www.coindesk.com/markets/2026/11/24/ai-trade-never-died-traders-see-room-for-market-recovery-despite-bitcoin-s-weakness"
-    },
-    {
-      "id": "rss-CoinDesk-2-1795532792000",
-      "timestamp": "15:06",
-      "source": "CoinDesk",
-      "title": "Anchorage Digital to unveil new asset-management subsidiary",
-      "link": "https://www.coindesk.com/business/2026/11/24/anchorage-digital-to-unveil-new-asset-management-subsidiary"
     }
   ]
 }
