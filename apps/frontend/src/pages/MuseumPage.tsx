@@ -305,6 +305,13 @@ export default function MuseumPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- venueRevision triggers wall remap
   }, [museumId, louvreFrames, visitFrames, myFrames, venueRevision])
 
+  const worldFrames=useMemo(()=>{
+    if(museumId!=='xartists'||progress.space==='museum'||!hallFrames.length)return hallFrames
+    const index=ART_WORLD_SPACES.findIndex(space=>space.id===progress.space)
+    const offset=(index*5)%hallFrames.length
+    return [...hallFrames.slice(offset),...hallFrames.slice(0,offset)].slice(0,16)
+  },[hallFrames,museumId,progress.space])
+
   return (
     <div className="xa-museum-page space-y-5">
       <header className="xa-art-world-title">
@@ -316,7 +323,7 @@ export default function MuseumPage() {
           key={museumId==='xartists'?progress.space:museumId+':'+louvreRoomId}
           blueprint={museumId==='xartists'&&progress.space!=='museum'?artWorldBlueprint(progress.space):blueprint}
           roomTitle={museumId==='xartists'?(fr?ART_WORLD_SPACES.find(x=>x.id===progress.space)!.fr:ART_WORLD_SPACES.find(x=>x.id===progress.space)!.en):museumId==='louvre'?louvreRoomById(louvreRoomId).label:(museum?.name||'xArtists')}
-          frames={hallFrames}
+          frames={worldFrames}
           room={museumId==='xartists'?ART_WORLD_SPACES.find(x=>x.id===progress.space)!.theme: museum?.room||'stone'}
           allowBuy={false}
           onInspect={museumId==='xartists'?inspectWorld:undefined}
@@ -325,8 +332,9 @@ export default function MuseumPage() {
       {mode==='explore'&&museumId==='xartists'&&<section className="xa-art-world-control" aria-label="Art World" data-testid="art-world-progress">
         <div className="xa-art-world-score"><div><strong>{fr?'Carnet d’exploration':'Exploration journal'}</strong><small>{saved?(fr?'Sauvegardé sur cet appareil':'Saved on this device'):(fr?'Sauvegarde locale indisponible':'Local save unavailable')}</small></div><div><b>{progress.visited.length}/7</b><small>{fr?'Lieux':'Places'}</small></div><div><b>{progress.inspected.length}</b><small>{fr?'Œuvres ouvertes':'Artworks opened'}</small></div></div>
         <progress value={progress.visited.length} max={7} aria-label={fr?'Lieux visités':'Places visited'}/>
+        <p className="xa-art-world-mission">{progress.visited.length===7&&progress.inspected.length>=7?(fr?'Parcours terminé ! Continue à explorer.':'Tour complete! Keep exploring.'):(fr?'Défi : ouvre les 7 lieux et découvre 7 œuvres.':'Challenge: open all 7 places and discover 7 artworks.')} · {Math.min(progress.inspected.length,7)}/7</p>
         <div className="xa-art-world-spaces">{ART_WORLD_SPACES.map((space,index)=><button type="button" key={space.id} aria-pressed={progress.space===space.id} onClick={()=>setProgress(p=>enterSpace(p,space.id))}><span>{String(index+1).padStart(2,'0')}</span><strong>{fr?space.fr:space.en}</strong><small>{progress.visited.includes(space.id)?(fr?'Visité':'Visited'):(fr?'Explorer':'Explore')}</small></button>)}</div>
-        <Link to="/marketplace?buy=2#xa-market-buy-2" className="xa-button primary">{fr?'Voir les NFT disponibles à l’achat':'See NFTs available to buy'} →</Link>
+        <Link to="/marketplace?network=multiversx&buy=2#xa-market-buy-2" className="xa-button primary">{fr?'Voir les NFT disponibles à l’achat':'See NFTs available to buy'} →</Link>
       </section>}
       <div id="museum-visit" tabIndex={-1} role="group" aria-label="Parcours du musée" className="flex flex-wrap gap-2 scroll-mt-28">
         {xaRender((['explore', 'venue', 'map', 'mine', 'pulse'] as Mode[]).map(m => (
@@ -352,7 +360,7 @@ export default function MuseumPage() {
           <div className="xa-museum-select-row"><label><Icon name="museum" size={20}/><span className="sr-only">{c('museumChoose')}</span><select value={museumId} aria-label={c('museumChoose')} onChange={e=>{const id=e.target.value;setMuseumId(id);setParams(p=>{const next=new URLSearchParams(p);next.set('museum',id);next.delete('city');return next},{replace:true})}}>{museums.map(m=><option key={m.id} value={m.id}>{m.name} · {m.city}</option>)}</select></label><span>{c('museumTouchHelp')}</span></div>
           {travelBanner&&<p>{xaRender(travelBanner)}</p>}
           {catalogLoading&&<p role="status">{fr?'Catalogue en cours de chargement…':'Loading catalogue…'}</p>}
-          <ArtworkGrid frames={hallFrames} title={xaLocalize("Œuvres de la salle")} wallCount={museumId==='xartists'&&progress.space!=='museum'?artWorldBlueprint(progress.space).walls.length:wallCount} />
+          <ArtworkGrid frames={worldFrames} title={xaLocalize("Œuvres de la salle")} wallCount={museumId==='xartists'&&progress.space!=='museum'?artWorldBlueprint(progress.space).walls.length:wallCount} />
           {museumId === 'xartists' && <DriveNftDistributor />}
         </>
       ))}
