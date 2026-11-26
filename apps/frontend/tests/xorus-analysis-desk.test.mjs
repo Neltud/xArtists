@@ -17,11 +17,11 @@ const fixture=JSON.parse(readFileSync(new URL('../public/data/xorus_analysis_pre
 const paper=JSON.parse(readFileSync(new URL('../public/data/xorus_board.json',import.meta.url),'utf8'))
 const collected=JSON.parse(readFileSync(new URL('../../../tests/fixtures/xorus_analysis_collected.json',import.meta.url),'utf8'))
 const response=data=>({ok:true,json:async()=>data})
-function compileDesk(apiBase=''){
+function compileDesk(apiBase='',analysisBase=''){
 const compiled=buildSync({
   entryPoints:[new URL('../src/components/intelligence/XorusDecisionDesk.tsx',import.meta.url).pathname],
   bundle:true,write:false,platform:'node',format:'cjs',jsx:'automatic',logLevel:'silent',
-  define:{'import.meta.env':JSON.stringify({BASE_URL:'/',VITE_ACCESS_API_BASE:apiBase})},
+  define:{'import.meta.env':JSON.stringify({BASE_URL:'/',VITE_ACCESS_API_BASE:apiBase,VITE_XORUS_ANALYSIS_BASE:analysisBase})},
   external:['react','react/jsx-runtime','react-router-dom','../../i18n/I18nContext','../../experience/networkCopy'],
 })
 const module={exports:{}}
@@ -33,8 +33,10 @@ return module.exports.default
 }
 const Desk=compileDesk()
 const ServerDesk=compileDesk('https://analysis-api.test')
+const DedicatedDesk=compileDesk('','https://xartists-access-api.onrender.com')
+const RejectedDesk=compileDesk('','https://unapproved.invalid')
 
-async function harness(report=fixture,{server=false,transientOnce=false,deniedStatus=null}={}){
+async function harness(report=fixture,{server=false,transientOnce=false,deniedStatus=null,dedicated=false,rejected=false}={}){
   const originalFetch=globalThis.fetch,originalTimer=window.setTimeout,originalInterval=window.setInterval
   let expire,ageTick,unavailable=false,resolveEconomics,firstTransient=transientOnce
   const economics=new Promise(resolve=>{resolveEconomics=resolve})
@@ -46,7 +48,7 @@ async function harness(report=fixture,{server=false,transientOnce=false,deniedSt
     if(url.includes('/economics'))return economics
     if(url.endsWith('xorus_board.json'))return response(paper)
     if(url.endsWith('xorus_analysis_preview.json'))return unavailable?{ok:false}:response(report)
-    if(url==='https://analysis-api.test/v1/xorus/analysis'){
+    if(url==='https://analysis-api.test/v1/xorus/analysis'||url==='https://xartists-access-api.onrender.com/v1/xorus/analysis'){
       if(firstTransient){firstTransient=false;return {ok:false,status:503}}
       if(deniedStatus!==null)return {ok:false,status:deniedStatus}
       return unavailable?{ok:false,status:403}:response({ok:true,report})
@@ -55,7 +57,7 @@ async function harness(report=fixture,{server=false,transientOnce=false,deniedSt
   }
   const host=document.createElement('div');document.body.append(host)
   const root=createRoot(host)
-  await React.act(async()=>root.render(React.createElement(server?ServerDesk:Desk)))
+  await React.act(async()=>root.render(React.createElement(dedicated?DedicatedDesk:rejected?RejectedDesk:server?ServerDesk:Desk)))
   return {host,requested,
     panel:()=>host.querySelector('[data-testid=xorus-analysis-report]'),
     button:()=>host.querySelector('button'),
@@ -192,4 +194,24 @@ test('aging an analysis never pretends the quote provider was consulted again',a
     assert.equal(h.host.querySelector('[data-testid=xorus-quote-checked-at]').textContent,checked)
     assert.equal(h.requested.length,requests)
   }finally{await h.close();Date.now=originalNow}
+})
+
+test('dedicated public analysis endpoint works with general access API unset and never substitutes static report',async()=>{
+  const report=structuredClone(collected)
+  report.generated_at=new Date().toISOString().slice(0,19)+'Z'
+  report.collection.received_at=report.generated_at
+  report.source_ts=new Date(Math.floor(Date.now()/3600000)*3600000-1000).toISOString().slice(0,19)+'Z'
+  const h=await harness(report,{dedicated:true})
+  try{
+    assert.match(h.host.textContent,/Analyse calculée sur 6 indicateurs/)
+    assert.ok(h.requested.includes('https://xartists-access-api.onrender.com/v1/xorus/analysis'))
+    assert.equal(h.requested.some(url=>url.includes('xorus_analysis_preview.json')),false)
+    await h.expire();h.removeReport();await React.act(async()=>h.button().click())
+    assert.match(h.panel().textContent,/Rapport indisponible ou non conforme/)
+    assert.equal(h.requested.some(url=>url.includes('xorus_analysis_preview.json')),false)
+  }finally{await h.close()}
+})
+test('unapproved dedicated analysis origin never receives a request',async()=>{
+  const h=await harness(fixture,{rejected:true})
+  try{assert.ok(h.requested.some(url=>url.includes('xorus_analysis_preview.json')));assert.equal(h.requested.some(url=>url.includes('unapproved.invalid')),false)}finally{await h.close()}
 })
