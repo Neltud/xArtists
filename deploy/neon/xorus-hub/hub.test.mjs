@@ -214,3 +214,39 @@ test('agent reports require operator auth and an actual fresh agent receipt', as
     assert.equal((await call(hub, '/v1/xorus/agents/reports', { headers: auth })).status, 503)
   }
 })
+
+test('public network status projects only finalized mainnet observations and caches reads', async () => {
+  let now=NOW, reads=0
+  const stamp=new Date(NOW).toISOString()
+  const common={status:'observed',identity_verified:true,executable:false,execution_authorized:false,signing_authorized:false,checked_at:stamp,source_data_at:stamp,private_payload:'must-not-leak'}
+  const snapshot={checked_at:stamp,source_sha:'2'.repeat(40),private_payload:'must-not-leak',network_agents:[
+    {...common,network:'multiversx',network_id:'1',observations:{scope:'metachain_only',highest_final_nonce:123}},
+    {...common,network:'solana',network_id:'5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpKuc147dw2N9d',observations:{commitment:'finalized',absolute_slot:456}}
+  ]}
+  const hub=make({clock:()=>now,store:{read:async()=>{reads++;return snapshot}},fetchImpl:()=>assert.fail('no public collection')})
+  const path='/v1/xorus/network-status'
+  const response=await call(hub,path,{headers:{origin:'https://xartists.art'}})
+  assert.equal(response.status,200)
+  assert.equal(response.headers.get('access-control-allow-origin'),'https://xartists.art')
+  const body=await response.json()
+  assert.equal(body.schema,'xorus_network_status/v1')
+  assert.deepEqual(body.agents.map(a=>a.finalized_height),[123,456])
+  assert.equal(body.execution_authorized,false)
+  assert.equal(body.independently_verified_market_signals,0)
+  assert.equal(JSON.stringify(body).includes('must-not-leak'),false)
+  assert.equal((await call(hub,path)).status,200)
+  assert.equal(reads,1)
+  assert.equal((await call(hub,path,{method:'POST'})).status,405)
+  assert.equal((await call(hub,'/v1/xorus/agents/reports')).status,401)
+  now+=1_800_001
+  assert.equal((await call(hub,path)).status,503)
+  assert.equal(reads,2)
+})
+
+test('public network status does not elevate an invalid identity or missing receipt',async()=>{
+  const stamp=new Date(NOW).toISOString()
+  const hub=make({store:{read:async()=>({checked_at:stamp,source_sha:'2'.repeat(40),network_agents:[{network:'multiversx',status:'observed',network_id:'D'},{network:'solana',status:'observed'}]})}})
+  const body=await (await call(hub,'/v1/xorus/network-status')).json()
+  assert.ok(body.agents.every(a=>a.status==='unavailable'&&a.finalized_height===null))
+  assert.equal((await call(make(),'/v1/xorus/network-status')).status,503)
+})
