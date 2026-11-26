@@ -1,6 +1,8 @@
 export type VerifiedMarketplaceQuote = Readonly<{
   listingId: number
   identifier: string
+  title?: string
+  image?: string|null
   priceAtomic: string
   priceEgld: string
   receiver: string
