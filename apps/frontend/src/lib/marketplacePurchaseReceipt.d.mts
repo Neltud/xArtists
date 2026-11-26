@@ -10,3 +10,5 @@ export declare function verifyMarketplacePurchaseReceipt(args?: {
   address?: string
   request?: typeof fetch
 }): Promise<MarketplaceReceiptResult>
+
+export declare function verifyLiveListingReceipt(options:{hash:string;address:string;quote:import('./verifiedMarketplaceBuy.mjs').VerifiedMarketplaceQuote;request?:typeof fetch}):Promise<{status:MarketplaceReceiptStatus;hash?:string}>
