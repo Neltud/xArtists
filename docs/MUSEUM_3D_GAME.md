@@ -8,14 +8,14 @@ noIndex: true
 ## Réponse courte
 
 **Oui** — [`blend-glade-wolf-grove`](https://github.com/Neltud/blend-glade-wolf-grove) construit **chaque bâtiment** (plan + volume).\
-**xArtists** charge le plan, **place les œuvres**, gère **déplacement + interaction** (inspect / achat paper).
+**xArtists** charge le plan, **place les œuvres**, gère **déplacement + interaction** (inspection ; achat sur la Marketplace après vérification mainnet).
 
 ```
 Studio (plans uniques)
    ↓ Export JSON (RoomBlueprint + artAnchors)
 public/blueprints/*.json
    ↓ loadBlueprint(museumId)
-Galerie 3D (CSS v1 · R3F v2) + œuvres + WASD/touch
+Galerie 3D (Three.js · secours CSS) + œuvres + WASD/touch
 ```
 
 ## Rôles
@@ -23,7 +23,7 @@ Galerie 3D (CSS v1 · R3F v2) + œuvres + WASD/touch
 | Repo                       | Responsabilité                                                                 |
 | -------------------------- | ------------------------------------------------------------------------------ |
 | **blend-glade-wolf-grove** | Dessin murs/portes/fenêtres, volume R3F, samples musée, **Export JSON**        |
-| **xArtists**               | Carte monde, catalogue œuvres, wallet, déplacement, inspect, intention d’achat |
+| **xArtists**               | Carte monde, catalogue œuvres, wallet, déplacement, inspect, accès Marketplace |
 
 ## Workflow pour un musée
 
@@ -45,9 +45,9 @@ Galerie 3D (CSS v1 · R3F v2) + œuvres + WASD/touch
 
 ## Interaction (déjà / à venir)
 
-* **Déjà** : WASD / pad tactile, regard, inspect œuvre, intention d’achat paper, preload images.
-* **V2** : collision sur polygone `rooms`, ancrages `artAnchors` pour position mur exacte, rendu R3F optionnel du même `FloorPlan`.
-* **V3 jeu** : missions, score, multi-salles dans un même plan.
+* **Déjà** : WASD / pad tactile, regard, inspect œuvre, accès Marketplace, preload images.
+* **Moteur actif** : `MuseumWebGLHallLive.tsx` (Three.js) et `MuseumBlueprintRoom.tsx` (secours CSS).
+* **Art World (PR #639)** : sept espaces distincts, défi de découverte, carnet sauvegardé localement. Pas de monde ouvert continu ni de synchronisation serveur.
 
 ## Fichiers clés
 
@@ -62,4 +62,7 @@ Galerie 3D (CSS v1 · R3F v2) + œuvres + WASD/touch
 * `apps/frontend/src/lib/roomBlueprint.ts`
 * `apps/frontend/src/lib/loadBlueprint.ts`
 * `apps/frontend/src/lib/museumLayouts.ts` (fallback CSS)
-* `MuseumGameHall.tsx` — gameplay visite
+* `MuseumHall.tsx` — sélection du moteur et repli
+* `MuseumWebGLHallLive.tsx` — déplacement et rendu WebGL
+* `MuseumBlueprintRoom.tsx` — secours CSS
+* `artWorldProgress.mjs` — progression locale sans valeur financière
