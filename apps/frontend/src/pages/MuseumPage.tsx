@@ -334,7 +334,7 @@ export default function MuseumPage() {
         <progress value={progress.visited.length} max={7} aria-label={fr?'Lieux visités':'Places visited'}/>
         <p className="xa-art-world-mission">{progress.visited.length===7&&progress.inspected.length>=7?(fr?'Parcours terminé ! Continue à explorer.':'Tour complete! Keep exploring.'):(fr?'Défi : ouvre les 7 lieux et découvre 7 œuvres.':'Challenge: open all 7 places and discover 7 artworks.')} · {Math.min(progress.inspected.length,7)}/7</p>
         <div className="xa-art-world-spaces">{ART_WORLD_SPACES.map((space,index)=><button type="button" key={space.id} aria-pressed={progress.space===space.id} onClick={()=>setProgress(p=>enterSpace(p,space.id))}><span>{String(index+1).padStart(2,'0')}</span><strong>{fr?space.fr:space.en}</strong><small>{progress.visited.includes(space.id)?(fr?'Visité':'Visited'):(fr?'Explorer':'Explore')}</small></button>)}</div>
-        <Link to="/marketplace?network=multiversx&buy=2#xa-market-buy-2" className="xa-button primary">{fr?'Voir les NFT disponibles à l’achat':'See NFTs available to buy'} →</Link>
+        <Link to="/marketplace?network=multiversx" className="xa-button primary">{fr?'Voir les NFT disponibles à l’achat':'See NFTs available to buy'} →</Link>
       </section>}
       <div id="museum-visit" tabIndex={-1} role="group" aria-label="Parcours du musée" className="flex flex-wrap gap-2 scroll-mt-28">
         {xaRender((['explore', 'venue', 'map', 'mine', 'pulse'] as Mode[]).map(m => (
