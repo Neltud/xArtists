@@ -95,3 +95,28 @@
  .xa-ref-v2 .xa-module-page:is([data-module="dao"],[data-module="tip"],[data-module="tro"],[data-module="tro-crosschain"]){width:calc(100% - 32px);padding-top:22px}
  .xa-task-page{padding-bottom:75px}
 }
+
+/* Art World — the scene is the hero, not the administrative shell. */
+.xa-art-world-title{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0}
+.xa-art-world-title p{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--xa-accent);margin:0}
+.xa-art-world-title h1{font-size:clamp(22px,4vw,36px);line-height:1.1;margin:4px 0 0}
+.xa-art-world-title .xa-button{font-size:12px;min-height:44px;text-align:center;max-width:48%}
+.xa-art-world-stage .xa-museum-engine{display:flex;flex-direction:column;gap:6px}
+.xa-art-world-stage .xa-museum-engine-controls{order:2;display:flex;justify-content:flex-end}
+.xa-art-world-stage .xa-museum-engine-switch{font-size:11px;min-height:44px;padding:6px 12px;width:auto;max-width:100%}
+.xa-art-world-stage .xa-museum-stage:not(.is-fullscreen){min-height:350px;height:clamp(350px,60svh,650px);border:1px solid #6f4a9e;border-radius:16px}
+.xa-art-world-control{padding:16px;border:1px solid #7850b3;border-radius:17px;color:#fff;background:linear-gradient(140deg,#20102f,#50237d)}
+.xa-art-world-score{display:flex;align-items:center;gap:12px;justify-content:space-between}
+.xa-art-world-score>div{min-width:0}
+.xa-art-world-score strong,.xa-art-world-score b{display:block;color:white;line-height:1.2}
+.xa-art-world-score b{font-size:22px;font-variant-numeric:tabular-nums}
+.xa-art-world-score small{display:block;font-size:11px;color:#e5d3fa;line-height:1.3}
+.xa-art-world-control progress{width:100%;height:7px;accent-color:#d6b3ff;margin:12px 0}
+.xa-art-world-spaces{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:8px;margin:6px 0 14px}
+.xa-art-world-spaces button{min-width:0;min-height:78px;text-align:left;border:1px solid #aa84d6;background:#ffffff0c;padding:9px;border-radius:10px;color:#fff}
+.xa-art-world-spaces button[aria-pressed=true]{background:#e8d6ff;color:#361351;border-color:#fff}
+.xa-art-world-spaces button span,.xa-art-world-spaces button small{display:block;font-size:10px;opacity:.85}
+.xa-art-world-spaces button strong{display:block;font-size:14px;line-height:1.2}
+.xa-art-world-control .xa-button.primary{background:#fff;color:#431870;border-color:white;min-height:44px;width:100%;justify-content:center;text-align:center}
+.xa-art-world-control button:focus-visible{outline:2px solid white;outline-offset:3px}
+@media(max-width:600px){.xa-art-world-title{gap:7px}.xa-art-world-title h1{font-size:23px}.xa-art-world-spaces{grid-template-columns:repeat(2,minmax(0,1fr))}.xa-art-world-control{padding:12px}.xa-art-world-score{gap:7px}.xa-art-world-score strong{font-size:13px}}
