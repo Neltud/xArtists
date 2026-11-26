@@ -25,7 +25,6 @@ import { nftImageUrl, type NFT } from '../types/nft'
 import { requestOpenConnect } from '../lib/walletEvents'
 import { consumeTravelDestination } from '../lib/travelBridge'
 import {
-  buildMuseumNetwork,
   loadMuseumNetwork,
   museumIdForCity,
   VIRTUAL_MUSEUMS,
