@@ -1,14 +1,84 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-26T11:55:42.536Z",
+  "updatedAt": "2026-11-26T20:59:56.691Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1795694142153",
-      "timestamp": "11:55",
+      "id": "egld-1795726796335",
+      "timestamp": "20:59",
       "source": "EGLD",
       "title": "Cotation publique · $2.33 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1795723518000",
+      "timestamp": "20:05",
+      "source": "CoinTelegraph",
+      "title": "Japan weighs tighter oversight of DeFi, self-custodial wallets",
+      "link": "https://cointelegraph.com/news/japan-tighter-oversight-defi-self-custodial-wallets?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1795717591000",
+      "timestamp": "18:26",
+      "source": "CoinTelegraph",
+      "title": "Spain moves to grant financial watchdog power to freeze crypto accounts",
+      "link": "https://cointelegraph.com/news/spain-moves-grant-financial-watchdog-power-freeze-crypto-accounts?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1795714793000",
+      "timestamp": "17:39",
+      "source": "CoinTelegraph",
+      "title": "Crypto on notice as hawkish Fed risks December ‘meltdown’",
+      "link": "https://cointelegraph.com/markets/crypto-hawkish-fed-risks-december-meltdown?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1795711244000",
+      "timestamp": "16:40",
+      "source": "CoinTelegraph",
+      "title": "BIS chief Pablo Hernández de Cos set to become next ECB president: FT",
+      "link": "https://cointelegraph.com/news/bis-chief-pablo-hernndez-de-cos-next-ecb-president?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1795707907000",
+      "timestamp": "15:45",
+      "source": "CoinTelegraph",
+      "title": "How EU brokers could lose access to Kyrgyz crypto exchanges",
+      "link": "https://cointelegraph.com/news/how-eu-brokers-could-lose-access-to-kyrgyz-crypto-exchanges?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1795700876000",
+      "timestamp": "13:47",
+      "source": "CoinTelegraph",
+      "title": "Nasdaq exec pushes for common EU rules on tokenized securities",
+      "link": "https://cointelegraph.com/news/nasdaq-exec-eu-wide-legal-framework-tokenized-securities?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1795714200000",
+      "timestamp": "17:30",
+      "source": "CoinDesk",
+      "title": "A tiny payment can expose the IP address behind a bitcoin wallet, developer finds",
+      "link": "https://www.coindesk.com/tech/2026/11/26/a-tiny-payment-can-expose-the-ip-address-behind-a-bitcoin-wallet-developer-finds"
+    },
+    {
+      "id": "rss-CoinDesk-1-1795711823000",
+      "timestamp": "16:50",
+      "source": "CoinDesk",
+      "title": "Bitcoin’s dormant supply rises, a behavior seen during previous bear-market bottoming phases",
+      "link": "https://www.coindesk.com/markets/2026/11/26/bitcoin-s-dormant-supply-rises-a-behavior-seen-during-previous-bear-market-bottoming-phases"
+    },
+    {
+      "id": "rss-CoinDesk-2-1795707763000",
+      "timestamp": "15:42",
+      "source": "CoinDesk",
+      "title": "Crypto for Advisors: Four questions to ask before trusting a crypto exchange",
+      "link": "https://www.coindesk.com/coindesk-indices/2026/11/26/crypto-for-advisors-four-questions-to-ask-before-trusting-a-crypto-exchange"
+    },
+    {
+      "id": "rss-CoinDesk-3-1795701958000",
+      "timestamp": "14:05",
+      "source": "CoinDesk",
+      "title": "Spain gives anti-laundering unit power to freeze crypto accounts without a judge",
+      "link": "https://www.coindesk.com/business/2026/11/26/spain-gives-anti-laundering-unit-power-to-freeze-crypto-accounts-without-a-judge"
     },
     {
       "id": "rss-CoinTelegraph-0-1795692179000",
@@ -128,76 +198,6 @@
       "source": "CoinDesk",
       "title": "'This time actually seems different': Crypto veterans brace for more pain as bitcoin tumbles",
       "link": "https://www.coindesk.com/markets/2026/11/25/this-time-actually-seems-different-crypto-veterans-brace-for-more-pain-as-bitcoin-tumbles"
-    },
-    {
-      "id": "rss-CoinDesk-2-1795622551000",
-      "timestamp": "16:02",
-      "source": "CoinDesk",
-      "title": "EU bank watchdog seeks European Commission rules for crypto firms offering DeFi lending",
-      "link": "https://www.coindesk.com/policy/2026/11/25/eu-bank-watchdog-seeks-european-commission-rules-for-crypto-firms-offering-defi-lending"
-    },
-    {
-      "id": "rss-CoinDesk-3-1795622527000",
-      "timestamp": "16:02",
-      "source": "CoinDesk",
-      "title": "Ukrainian lawmakers pass crypto tax and regulation bill expected to bring in $330 million",
-      "link": "https://www.coindesk.com/business/2026/11/25/ukrainian-lawmakers-pass-crypto-tax-and-regulation-bill-expected-to-bring-in-usd330-million"
-    },
-    {
-      "id": "egld-1795625469395",
-      "timestamp": "16:51",
-      "source": "EGLD",
-      "title": "Cotation publique · $2.17 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1795616496000",
-      "timestamp": "14:21",
-      "source": "CoinTelegraph",
-      "title": "Ex-FTX COO calls out Netflix over CZ’s ‘Asian mafia’ portrayal",
-      "link": "https://cointelegraph.com/news/ftx-coo-netflix-portrayal-binance-founder-racist?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1795611729000",
-      "timestamp": "13:02",
-      "source": "CoinTelegraph",
-      "title": "Ukraine passes bill to legalize crypto and tax profits at 23%",
-      "link": "https://cointelegraph.com/news/ukraine-passes-bill-crypto-regulation-tax?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1795607394000",
-      "timestamp": "11:49",
-      "source": "CoinTelegraph",
-      "title": "Japan’s SBI, SMFG launch Solana venture for stablecoins, tokenization",
-      "link": "https://cointelegraph.com/news/sbi-smfg-solana-global-stablecoin-tokenization?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1795606270000",
-      "timestamp": "11:31",
-      "source": "CoinTelegraph",
-      "title": "Hong Kong launches tokenized debt platform with 24-hour settlement",
-      "link": "https://cointelegraph.com/news/hong-kong-central-bank-platform-tokenized-debt-securities?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1795605146000",
-      "timestamp": "11:12",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin ETFs near $5B in record monthly outflows amid AI stock rout",
-      "link": "https://cointelegraph.com/markets/bitcoin-etfs-near-record-5-billion-monthly-outflows?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-2-1795622384000",
-      "timestamp": "15:59",
-      "source": "CoinDesk",
-      "title": "Crypto Long & Short: Bitcoin investors can’t keep ignoring Japan",
-      "link": "https://www.coindesk.com/coindesk-indices/2026/11/25/crypto-long-and-short-bitcoin-investors-can-t-keep-ignoring-japan"
-    },
-    {
-      "id": "rss-CoinDesk-3-1795618037000",
-      "timestamp": "14:47",
-      "source": "CoinDesk",
-      "title": "South Korean crypto exchange Bithumb warns of phishing after deeper October breach probe",
-      "link": "https://www.coindesk.com/tech/2026/11/25/south-korean-crypto-exchange-bithumb-warns-of-phishing-after-deeper-october-breach-probe"
     }
   ]
 }
