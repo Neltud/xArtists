@@ -11,6 +11,7 @@ import ArtpriceOfficialPanel from '../components/market/ArtpriceOfficialPanel'
 import ExistingNftReadiness from '../components/market/ExistingNftReadiness'
 import LiaAndEscrowNfts from '../components/market/LiaAndEscrowNfts'
 import MarketplaceDiscoveryGrid from '../components/market/MarketplaceDiscoveryGrid'
+import MarketplaceVerifiedBuy from '../components/market/MarketplaceVerifiedBuy'
 import FeaturedArtGallery from '../components/market/FeaturedArtGallery'
 import NetworkSelector from '../components/NetworkSelector'
 import SolanaMarketplace from '../components/market/SolanaMarketplace'
@@ -60,6 +61,7 @@ function MultiversxMarketplace(){
   const [showTech,setShowTech]=useState(false)
   const [showMarketData,setShowMarketData]=useState(false)
   const [query,setQuery]=useState('')
+  const [verifiedSaleStatus,setVerifiedSaleStatus]=useState<'pending'|'verified'|'unavailable'>('pending')
   const [sort,setSort]=useState<'recent'|'price_asc'|'price_desc'>('recent')
 
   const refresh=useCallback(async()=>{
@@ -135,7 +137,7 @@ function MultiversxMarketplace(){
 
 
 
-    {selected==='art'&&<FeaturedArtGallery/>}
+    {selected==='art'&&<><FeaturedArtGallery/><section className="xa-direct-nft-sale" aria-label="MultiversX mainnet NFT"><div><h2>ASFT-a6273a-01</h2><a href="https://explorer.multiversx.com/nfts/ASFT-a6273a-01" target="_blank" rel="noopener noreferrer">MultiversX ↗</a></div><MarketplaceVerifiedBuy onQuoteStatus={setVerifiedSaleStatus}/></section></>}
 
     <section className="xa-marketplace-categories" id="xa-market-categories" aria-labelledby="xa-market-categories-title">
       <div className="xa-marketplace-categories__heading">
@@ -156,7 +158,7 @@ function MultiversxMarketplace(){
     {selected==='art'&&<details className="xa-market-depth" ref={marketDepthRef}>
       <summary><strong>{c('simpleMarketAll')}</strong><small>{c('simpleMarketAllDesc')}</small></summary>
       <div className="xa-market-depth-content"><MarketplaceDiscoveryGrid
-      listings={items} sourceReady={sourceReady} loading={loading} query={query} sort={sort}
+      listings={items} sourceReady={sourceReady} loading={loading} query={query} sort={sort} verifiedSaleStatus={verifiedSaleStatus}
       onQuery={setQuery} onSort={setSort} onRefresh={()=>void refresh()}
     />
 
