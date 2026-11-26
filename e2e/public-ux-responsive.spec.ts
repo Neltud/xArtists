@@ -1157,3 +1157,30 @@ for (const width of [390,1440]) {
   })
  }
 }
+
+test('xOrus mainnet readout presents a recent receipt then clears it on a failed refresh', async({page})=>{
+  await page.setViewportSize({width:390,height:844})
+  const stamp=new Date(Date.now()-1000).toISOString()
+  let unavailable=false
+  await page.route('https://br-steep-sun-bab7l93p-xorushub.compute.c-8.eu-central-1.aws.neon.tech/v1/xorus/network-status',route=>route.fulfill({
+    status:unavailable?503:200,headers:{'access-control-allow-origin':'*'},json:unavailable?{ok:false}:{
+      ok:true,schema:'xorus_network_status/v1',mode:'read_only',execution_authorized:false,trading_enabled:false,
+      signing_authorized:false,executable:false,independently_verified_market_signals:0,
+      checked_at:stamp,receipt_source_sha:'1'.repeat(40),
+      agents:[{network:'multiversx',status:'observed',source_data_at:stamp,finalized_height:123456},
+        {network:'solana',status:'observed',source_data_at:stamp,finalized_height:654321}]
+    }
+  }))
+  await page.goto('/intelligence/xorus/?lang=fr',{waitUntil:'domcontentloaded'})
+  const readout=page.getByTestId('xorus-network-status')
+  await expect(readout).toBeVisible()
+  await expect(readout.locator('strong')).toHaveCount(2)
+  await expect(readout).toContainText('Dernier cycle')
+  await expect(readout).toContainText('lecture seule')
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(12)
+  await page.screenshot({animations:'disabled',path:'artifacts/ux-mobile/xorus-mainnet-receipt-390.png'})
+  unavailable=true
+  await readout.getByRole('button',{name:'Actualiser les réseaux'}).click()
+  await expect(readout).toContainText('Aucun reçu récent disponible')
+  await expect(readout.locator('strong')).toHaveCount(0)
+})
