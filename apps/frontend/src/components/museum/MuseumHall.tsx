@@ -19,6 +19,7 @@ export default function MuseumHall({
   allowBuy = true,
   emptyLabel = 'Aucune œuvre',
   roomTitle='xArtists',
+  onInspect,
 }: {
   blueprint: RoomBlueprint
   frames: FrameItem[]
@@ -26,6 +27,7 @@ export default function MuseumHall({
   allowBuy?: boolean
   emptyLabel?: string
   roomTitle?: string
+  onInspect?: (frame:FrameItem)=>void
 }) {
   const webgl = useMemo(() => isWebGLAvailable(), [])
   const [compatible, setCompatible] = useState(false)
@@ -55,6 +57,7 @@ export default function MuseumHall({
             room={room}
             allowBuy={allowBuy}
             emptyLabel={emptyLabel}
+            onInspect={onInspect}
           />
         : <Suspense
             fallback={
@@ -70,6 +73,7 @@ export default function MuseumHall({
               allowBuy={allowBuy}
               emptyLabel={emptyLabel}
               roomTitle={roomTitle}
+              onInspect={onInspect}
             />
           </Suspense>}
     </div>
