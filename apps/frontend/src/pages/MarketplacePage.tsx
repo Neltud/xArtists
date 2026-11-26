@@ -12,6 +12,7 @@ import ExistingNftReadiness from '../components/market/ExistingNftReadiness'
 import LiaAndEscrowNfts from '../components/market/LiaAndEscrowNfts'
 import MarketplaceDiscoveryGrid from '../components/market/MarketplaceDiscoveryGrid'
 import MarketplaceVerifiedBuy from '../components/market/MarketplaceVerifiedBuy'
+import MarketplaceLiveShelf from '../components/market/MarketplaceLiveShelf'
 import FeaturedArtGallery from '../components/market/FeaturedArtGallery'
 import NetworkSelector from '../components/NetworkSelector'
 import SolanaMarketplace from '../components/market/SolanaMarketplace'
@@ -137,7 +138,7 @@ function MultiversxMarketplace(){
 
 
 
-    {selected==='art'&&<FeaturedArtGallery><section className="xa-direct-nft-sale" aria-label="MultiversX mainnet NFT"><div className="xa-direct-nft-media"><img src="https://media.multiversx.com/nfts/asset/QmTHS7wWXdTrLWbJUNoZy3u88ENX3K9rLY71G2LaagUg6Q" alt="BlackArtPass" decoding="async" onError={e=>{e.currentTarget.hidden=true}}/><h2>BlackArtPass</h2><a href="https://explorer.multiversx.com/nfts/ASFT-a6273a-01" target="_blank" rel="noopener noreferrer">ASFT-a6273a-01 ↗</a></div><MarketplaceVerifiedBuy onQuoteStatus={setVerifiedSaleStatus}/></section></FeaturedArtGallery>}
+    {selected==='art'&&<FeaturedArtGallery><MarketplaceLiveShelf/><details className="xa-historical-sale" open={params.get('buy')==='2'||undefined}><summary>BlackArtPass · ASFT-a6273a-01 · reçu / receipt</summary><section className="xa-direct-nft-sale" aria-label="MultiversX mainnet NFT"><div className="xa-direct-nft-media"><img src="https://media.multiversx.com/nfts/asset/QmTHS7wWXdTrLWbJUNoZy3u88ENX3K9rLY71G2LaagUg6Q" alt="BlackArtPass" decoding="async" onError={e=>{e.currentTarget.hidden=true}}/><h2>BlackArtPass</h2><a href="https://explorer.multiversx.com/nfts/ASFT-a6273a-01" target="_blank" rel="noopener noreferrer">ASFT-a6273a-01 ↗</a></div><MarketplaceVerifiedBuy onQuoteStatus={setVerifiedSaleStatus}/></section></details></FeaturedArtGallery>}
 
     <section className="xa-marketplace-categories" id="xa-market-categories" aria-labelledby="xa-market-categories-title">
       <div className="xa-marketplace-categories__heading">
