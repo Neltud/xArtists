@@ -137,7 +137,7 @@ function MultiversxMarketplace(){
 
 
 
-    {selected==='art'&&<><FeaturedArtGallery/><section className="xa-direct-nft-sale" aria-label="MultiversX mainnet NFT"><div><h2>ASFT-a6273a-01</h2><a href="https://explorer.multiversx.com/nfts/ASFT-a6273a-01" target="_blank" rel="noopener noreferrer">MultiversX ↗</a></div><MarketplaceVerifiedBuy onQuoteStatus={setVerifiedSaleStatus}/></section></>}
+    {selected==='art'&&<FeaturedArtGallery><section className="xa-direct-nft-sale" aria-label="MultiversX mainnet NFT"><div className="xa-direct-nft-media"><img src="https://media.multiversx.com/nfts/asset/QmTHS7wWXdTrLWbJUNoZy3u88ENX3K9rLY71G2LaagUg6Q" alt="BlackArtPass" decoding="async" onError={e=>{e.currentTarget.hidden=true}}/><h2>BlackArtPass</h2><a href="https://explorer.multiversx.com/nfts/ASFT-a6273a-01" target="_blank" rel="noopener noreferrer">ASFT-a6273a-01 ↗</a></div><MarketplaceVerifiedBuy onQuoteStatus={setVerifiedSaleStatus}/></section></FeaturedArtGallery>}
 
     <section className="xa-marketplace-categories" id="xa-market-categories" aria-labelledby="xa-market-categories-title">
       <div className="xa-marketplace-categories__heading">
