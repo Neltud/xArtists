@@ -1,8 +1,85 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-25T16:51:09.778Z",
+  "updatedAt": "2026-11-26T01:36:12.318Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1795656971761",
+      "timestamp": "01:36",
+      "source": "EGLD",
+      "title": "Cotation publique · $2.33 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1795645993000",
+      "timestamp": "22:33",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1795643618000",
+      "timestamp": "21:53",
+      "source": "CoinTelegraph",
+      "title": "Switzerland clears 57 jurisdictions for crypto tax data sharing",
+      "link": "https://cointelegraph.com/news/switzerland-clears-57-jurisdictions-crypto-tax-data-sharing?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1795641739000",
+      "timestamp": "21:22",
+      "source": "CoinTelegraph",
+      "title": "Braiins warns of Bitcoin mining attacks affecting over 1,000 sites",
+      "link": "https://cointelegraph.com/news/braiins-warns-bitcoin-mining-attacks-affecting-1000-sites?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1795641099000",
+      "timestamp": "21:11",
+      "source": "CoinTelegraph",
+      "title": "Why ECB collateral eligibility could boost demand for tokenized bonds",
+      "link": "https://cointelegraph.com/news/why-ecb-collateral-eligibility-could-boost-demand-tokenized-bonds?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1795632891000",
+      "timestamp": "18:54",
+      "source": "CoinTelegraph",
+      "title": "Ethereum Foundation backs Keccak-256 to counter quantum, AI threats",
+      "link": "https://cointelegraph.com/news/ethereum-foundation-keccak-256-counter-quantum-ai-threats?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1795629190000",
+      "timestamp": "17:53",
+      "source": "CoinTelegraph",
+      "title": "US inflation rises to 3.8% ahead of December Fed meeting, clouding crypto outlook",
+      "link": "https://cointelegraph.com/news/us-inflation-rises-december-fed-meeting-clouding-crypto-outlook?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1795631087000",
+      "timestamp": "18:24",
+      "source": "CoinDesk",
+      "title": "French Senate blocks new crypto tax and wallet list critics called a kidnapping risk",
+      "link": "https://www.coindesk.com/business/2026/11/25/french-senate-blocks-new-crypto-tax-and-wallet-list-critics-called-a-kidnapping-risk"
+    },
+    {
+      "id": "rss-CoinDesk-1-1795628313000",
+      "timestamp": "17:38",
+      "source": "CoinDesk",
+      "title": "'This time actually seems different': Crypto veterans brace for more pain as bitcoin tumbles",
+      "link": "https://www.coindesk.com/markets/2026/11/25/this-time-actually-seems-different-crypto-veterans-brace-for-more-pain-as-bitcoin-tumbles"
+    },
+    {
+      "id": "rss-CoinDesk-2-1795622551000",
+      "timestamp": "16:02",
+      "source": "CoinDesk",
+      "title": "EU bank watchdog seeks European Commission rules for crypto firms offering DeFi lending",
+      "link": "https://www.coindesk.com/policy/2026/11/25/eu-bank-watchdog-seeks-european-commission-rules-for-crypto-firms-offering-defi-lending"
+    },
+    {
+      "id": "rss-CoinDesk-3-1795622527000",
+      "timestamp": "16:02",
+      "source": "CoinDesk",
+      "title": "Ukrainian lawmakers pass crypto tax and regulation bill expected to bring in $330 million",
+      "link": "https://www.coindesk.com/business/2026/11/25/ukrainian-lawmakers-pass-crypto-tax-and-regulation-bill-expected-to-bring-in-usd330-million"
+    },
     {
       "id": "egld-1795625469395",
       "timestamp": "16:51",
@@ -16,13 +93,6 @@
       "source": "CoinTelegraph",
       "title": "Ex-FTX COO calls out Netflix over CZ’s ‘Asian mafia’ portrayal",
       "link": "https://cointelegraph.com/news/ftx-coo-netflix-portrayal-binance-founder-racist?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1795613165000",
-      "timestamp": "13:26",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "rss-CoinTelegraph-2-1795611729000",
@@ -51,20 +121,6 @@
       "source": "CoinTelegraph",
       "title": "Bitcoin ETFs near $5B in record monthly outflows amid AI stock rout",
       "link": "https://cointelegraph.com/markets/bitcoin-etfs-near-record-5-billion-monthly-outflows?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1795622551000",
-      "timestamp": "16:02",
-      "source": "CoinDesk",
-      "title": "EU bank watchdog seeks European Commission rules for crypto firms offering DeFi lending",
-      "link": "https://www.coindesk.com/policy/2026/11/25/eu-bank-watchdog-seeks-european-commission-rules-for-crypto-firms-offering-defi-lending"
-    },
-    {
-      "id": "rss-CoinDesk-1-1795622527000",
-      "timestamp": "16:02",
-      "source": "CoinDesk",
-      "title": "Ukrainian lawmakers pass crypto tax and regulation bill expected to bring in $330 million",
-      "link": "https://www.coindesk.com/business/2026/11/25/ukrainian-lawmakers-pass-crypto-tax-and-regulation-bill-expected-to-bring-in-usd330-million"
     },
     {
       "id": "rss-CoinDesk-2-1795622384000",
@@ -142,62 +198,6 @@
       "source": "CoinDesk",
       "title": "Anchorage Digital to unveil new asset-management subsidiary",
       "link": "https://www.coindesk.com/business/2026/11/24/anchorage-digital-to-unveil-new-asset-management-subsidiary"
-    },
-    {
-      "id": "rss-CoinDesk-3-1795531253000",
-      "timestamp": "14:40",
-      "source": "CoinDesk",
-      "title": "South Korea proposes ending 2017 ICO ban to boost jobs and onshore crypto investment",
-      "link": "https://www.coindesk.com/policy/2026/11/24/south-korea-proposes-ending-2017-ico-ban-to-boost-jobs-and-onshore-crypto-investment"
-    },
-    {
-      "id": "egld-1795550200324",
-      "timestamp": "19:56",
-      "source": "EGLD",
-      "title": "Cotation publique · $2.20 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1795547066000",
-      "timestamp": "19:04",
-      "source": "CoinTelegraph",
-      "title": "Coldcard reveals how Bitcoin wallet flaw went undetected for over 5 years",
-      "link": "https://cointelegraph.com/news/coldcard-how-security-reviews-missed-bitcoin-wallet-flaw-years?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1795545102000",
-      "timestamp": "18:31",
-      "source": "CoinTelegraph",
-      "title": "CFTC sets new prediction market rules as more firms seek US entry",
-      "link": "https://cointelegraph.com/news/cftc-new-prediction-market-rules-firms-seek-us-entry?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1795543642000",
-      "timestamp": "18:07",
-      "source": "CoinTelegraph",
-      "title": "BlackRock launches tokenized money market fund accepting stablecoins in Hong Kong",
-      "link": "https://cointelegraph.com/news/blackrock-launches-tokenized-money-market-fund-stablecoins-hong-kong?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1795540151000",
-      "timestamp": "17:09",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin slides amid US tariff nerves as Anthropic falls below IPO price",
-      "link": "https://cointelegraph.com/markets/bitcoin-slides-us-tariff-nerves-anthropic-falls-ipo-price?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1795538006000",
-      "timestamp": "16:33",
-      "source": "CoinTelegraph",
-      "title": "How South Korea’s proposed 20% cap could change who runs Upbit",
-      "link": "https://cointelegraph.com/news/how-south-koreas-proposed-20-cap-could-change-who-runs-upbit?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "egld-1795509227886",
-      "timestamp": "08:33",
-      "source": "EGLD",
-      "title": "Cotation publique · $2.23 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
     }
   ]
 }
