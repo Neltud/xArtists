@@ -120,3 +120,19 @@
 .xa-art-world-control .xa-button.primary{background:#fff;color:#431870;border-color:white;min-height:44px;width:100%;justify-content:center;text-align:center}
 .xa-art-world-control button:focus-visible{outline:2px solid white;outline-offset:3px}
 @media(max-width:600px){.xa-art-world-title{gap:7px}.xa-art-world-title h1{font-size:23px}.xa-art-world-spaces{grid-template-columns:repeat(2,minmax(0,1fr))}.xa-art-world-control{padding:12px}.xa-art-world-score{gap:7px}.xa-art-world-score strong{font-size:13px}}
+
+.xa-direct-nft-sale{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.7fr);gap:14px;padding:14px;margin:12px 0;border-radius:16px;border:1px solid #9a76c7;background:var(--xa-panel)}
+.xa-direct-nft-media{min-width:0;display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.xa-direct-nft-media img{width:100%;aspect-ratio:1;object-fit:contain;max-height:210px;border-radius:12px;background:#2c173f}
+.xa-direct-nft-media h2{font-size:20px;margin:0}
+.xa-direct-nft-media a{font-size:12px;overflow-wrap:anywhere}
+.xa-direct-nft-sale .xa-live-buy{min-width:0;margin:0}
+.xa-solana-watch{display:grid;gap:8px;margin-top:12px;text-align:left;width:100%;min-width:0}
+.xa-solana-watch label{font-size:13px;font-weight:600}
+.xa-solana-watch input{width:100%;min-width:0;padding:10px;border:1px solid var(--xa-border);border-radius:8px;background:var(--xa-panel);color:var(--xa-text)}
+.xa-art-world-stage .xa-museum-hud{background:linear-gradient(#1b102ed9,transparent)}
+.xa-art-world-stage .xa-museum-hud button,.xa-art-world-stage .xa-museum-art-tour,.xa-art-world-stage .xa-museum-inspect{background:#28183de8;border-color:#c5a5ef66;color:#fff}
+.xa-art-world-stage .xa-museum-hud .xa-museum-fullscreen{background:#d9b4ff;color:#2d124a}
+.xa-art-world-stage .xa-museum-joystick{background:#2b1648c9;border-color:#cda8ff88}
+.xa-art-world-stage .xa-museum-joystick-knob{background:radial-gradient(circle at 30% 20%,#ead5ff,#9d64df);border-color:#e4caff}
+@media(max-width:600px){.xa-direct-nft-sale{grid-template-columns:minmax(0,1fr);padding:10px}.xa-direct-nft-media{display:grid;grid-template-columns:90px minmax(0,1fr);align-items:center}.xa-direct-nft-media img{grid-row:span 2}.xa-direct-nft-media h2{font-size:17px}.xa-direct-nft-media a{font-size:10px}}
