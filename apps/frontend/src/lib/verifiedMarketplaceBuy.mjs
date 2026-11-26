@@ -140,11 +140,15 @@ function quoteFromListing(listing,nfts,feeBps){
    (n.nonce===undefined||Number(n.nonce)===listing.nonce)&&
    /^[1-9][0-9]*$/.test(String(n.balance))&&BigInt(n.balance)>=1n)
  if(!nft)return null
+ const rawImage=nft.media?.[0]?.thumbnailUrl||nft.media?.[0]?.url||nft.url
+ let image=null
+ if(typeof rawImage==='string'&&rawImage.length<=2048){try{const u=new URL(rawImage);if(u.protocol==='https:'&&!u.username&&!u.password)image=u.href}catch{}}
+ const title=typeof nft.name==='string'&&nft.name.trim()?nft.name.trim().slice(0,120):identifier
  const amount=BigInt(listing.priceAtomic)
  if(amount<=0n)return null
  const fraction=(amount%1000000000000000000n).toString().padStart(18,'0').replace(/0+$/,'')
  const priceEgld=(amount/1000000000000000000n).toString()+(fraction?'.'+fraction:'')
- return Object.freeze({listingId:listing.id,identifier,priceAtomic:listing.priceAtomic,priceEgld,
+ return Object.freeze({listingId:listing.id,identifier,title,image,priceAtomic:listing.priceAtomic,priceEgld,
    receiver:VERIFIED_MARKET_SALE.marketplace,sellerHex:listing.sellerHex,royaltyBps:listing.royaltyBps,feeBps,checkedAt:Date.now()})
 }
 async function liveMarketContext(request){
