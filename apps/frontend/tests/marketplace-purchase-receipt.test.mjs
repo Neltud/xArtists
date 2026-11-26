@@ -69,6 +69,7 @@ test('success without exact NFT delivery is still not success',async()=>{
 test('frontend never marks wallet-hook / SDK submitted prompt as chain transaction',()=>{
   const src=readFileSync(new URL('../src/components/market/MarketplaceVerifiedBuy.tsx',import.meta.url),'utf8')
   const grid=readFileSync(new URL('../src/components/market/MarketplaceDiscoveryGrid.tsx',import.meta.url),'utf8')
+ const marketPage=readFileSync(new URL('../src/pages/MarketplacePage.tsx',import.meta.url),'utf8')
   const locale=readFileSync(new URL('../src/experience/locale.ts',import.meta.url),'utf8')
   assert.match(src,/result\.sessionId&&\/\^\[a-f0-9\]\{64\}\$\/i\.test\(result\.sessionId\)/)
   assert.match(src,/setTxHash\(result\.sessionId\)/)
@@ -78,7 +79,8 @@ test('frontend never marks wallet-hook / SDK submitted prompt as chain transacti
   assert.match(src,/receiptSequence\.current\+=1/)
   assert.match(src,/\},\[address\]\)/)
   assert.match(src,/getXPortalSession\(\)\?\.address\?\.toLowerCase\(\)/)
-  assert.match(grid,/onQuoteStatus=\{setVerifiedSaleStatus\}/)
+  assert.match(marketPage,/onQuoteStatus=\{setVerifiedSaleStatus\}/)
+  assert.match(marketPage,/verifiedSaleStatus=\{verifiedSaleStatus\}/)
   assert.match(grid,/verifiedSaleStatus==='verified'/)
   assert.match(locale,/marketGridVerifiedSale:/)
   assert.match(locale,/marketStatusOff: \["Ventes générales désactivées/)
