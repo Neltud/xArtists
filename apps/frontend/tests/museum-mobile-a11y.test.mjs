@@ -24,8 +24,8 @@ test('the WebGL museum HUD has readable scoped mobile styles and visible keyboar
   assert.match(css, /prefers-reduced-motion: reduce/)
 })
 
-test('both CSS fallback gallery engines name artwork buttons and allow keyboard movement', () => {
-  for (const path of ['components/museum/MuseumBlueprintRoom.tsx', 'components/museum/MuseumGameHall.tsx']) {
+test('the active CSS fallback gallery names artwork buttons and allow keyboard movement', () => {
+  for (const path of ['components/museum/MuseumBlueprintRoom.tsx']) {
     const source = src(path)
     assert.match(source, /onKeyDown=\{e => \{ if \(e\.key === ' '/)
     assert.match(source, /onKeyUp=\{e => \{ if \(e\.key === ' '/)
