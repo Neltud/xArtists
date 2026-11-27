@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useWallet } from '../context/WalletContext'
 import { signAccessMessage } from '../lib/signAccessMessage'
 import { getAccessApiBase } from '../lib/stripe'
+import {selectStudioApiBase,STUDIO_CANDIDATE_ORIGIN,pilotConfigReady,pilotAcceptsFile} from '../lib/studioApi'
 import StudioGlbPreview from './StudioGlbPreview'
 
 type Pinned={mediaUri:string;metadataUri:string;attributes:string;title:string}
@@ -16,7 +17,7 @@ const allowed:Record<string,number>={
   'model/gltf-binary':32*1024*1024,
 }
 async function postJson(base:string,path:string,body:unknown,token?:string){
-  const r=await fetch(base+path,{method:'POST',headers:{'Content-Type':'application/json',
+  const r=await fetch(base+path,{method:'POST',redirect:'error',headers:{'Content-Type':'application/json',
     ...(token?{Authorization:'Bearer '+token}:{})},body:JSON.stringify(body)})
   const j=await r.json().catch(()=>({error:'server_response_invalid'}))
   if(!r.ok)throw new Error(String(j.error||'HTTP '+r.status))
@@ -27,6 +28,8 @@ const studioMediaErrors:Record<string,string>={
   metadata_pinning_in_progress:'Une publication des métadonnées est déjà en cours. Réessayez après vérification de son état.',
   metadata_pinning_in_progress_or_complete:'La publication est en cours ou déjà terminée. Vérifiez son état avant de recommencer.',
   metadata_pin_result_unknown_reconcile:'Réponse IPFS incertaine : les métadonnées peuvent déjà être publiques. Ne recommencez pas l’upload avant une vérification de l’opérateur.',
+  studio_free_capacity_reached:'La capacité du service est atteinte. Réessayez après réouverture des envois.',
+  studio_challenge_quota_reached:'Limite de connexions atteinte. Réessayez ultérieurement.',
   daily_upload_quota_exhausted:'Quota de huit publications sur 24 heures atteint pour ce wallet.',
   pinata_service_unavailable:'Pinata ne répond pas actuellement. Aucun mint n’a été créé.',
   kubo_service_unavailable:'Le nœud IPFS privé ne répond pas. Aucun mint n’a été créé.',
@@ -48,7 +51,8 @@ const explainStudioMediaError=(error:unknown)=>{
 }
 export default function CreatorMediaUpload({title,onReady,selection}:Props){
   const {connected,address,method}=useWallet()
-  const base=getAccessApiBase()
+  const base=selectStudioApiBase(import.meta.env?.VITE_STUDIO_API_BASE,getAccessApiBase())
+  const pilot=base===STUDIO_CANDIDATE_ORIGIN
   const [enabled,setEnabled]=useState<boolean|null>(null)
   const [statusRetry,setStatusRetry]=useState(0)
   const [modelEnabled,setModelEnabled]=useState(false)
@@ -94,13 +98,13 @@ export default function CreatorMediaUpload({title,onReady,selection}:Props){
     setEnabled(null)
     setModelEnabled(false)
     setProvider(null)
-    fetch(base+'/v1/studio/media/config',{signal:c.signal,cache:'no-store'})
+    fetch(base+'/v1/studio/media/config',{signal:c.signal,cache:'no-store',redirect:'error'})
       .then(async r=>r.ok?r.json():null)
-      .then(j=>{if(!c.signal.aborted){setEnabled(j?.enabled===true);setModelEnabled(j?.modelEnabled===true);setProvider(j?.enabled===true&&['pinata_ipfs','kubo_ipfs'].includes(j?.provider)?j.provider:null)}})
+      .then(j=>{if(!c.signal.aborted){const ready=pilot?pilotConfigReady(j):j?.enabled===true;setEnabled(ready);setModelEnabled(!pilot&&j?.modelEnabled===true);setProvider(ready&&['pinata_ipfs','kubo_ipfs'].includes(j?.provider)?j.provider:null)}})
       .catch(()=>{if(!c.signal.aborted){setEnabled(false);setModelEnabled(false)}})
       .finally(()=>{window.clearTimeout(timeout);if(active && c.signal.aborted)setEnabled(false)})
     return ()=>{active=false;window.clearTimeout(timeout);c.abort()}
-  },[base,statusRetry])
+  },[base,statusRetry,pilot])
   const pick=(next:File|null)=>{
     // File providers may return an empty/generic MIME. The server still verifies file bytes.
     const inferred = next && (next.type==='' || next.type==='application/octet-stream')
@@ -133,6 +137,7 @@ export default function CreatorMediaUpload({title,onReady,selection}:Props){
   const pin=async()=>{
     if(pending||needsReconciliation)return
     setError('')
+    if(pilot&&file&&!pilotAcceptsFile(file)){setError('Le pilote accepte les images JPG, PNG ou WebP de 2 Mo maximum.');return}
     if(!file||!allowed[file.type]){setError('Choisissez une image, une vidéo ou une musique (ou un modèle 3D GLB).');return}
     if(file.type==='model/gltf-binary' && (!posterFile || !['image/jpeg','image/png','image/webp'].includes(posterFile.type) || posterFile.size<1 || posterFile.size>16*1024*1024)) {
       setError('Choisissez une image de couverture JPG, PNG ou WebP de 16 Mio maximum pour ce GLB.');return
@@ -158,7 +163,7 @@ export default function CreatorMediaUpload({title,onReady,selection}:Props){
       if(!stillCurrent())return
       if(!session.token)throw new Error('Session artiste non créée.')
       const uploadResponse=await fetch(base+'/v1/studio/media/upload',{
-        method:'POST',headers:{Authorization:'Bearer '+session.token,'Content-Type':chosenFile.type},
+        method:'POST',redirect:'error',headers:{Authorization:'Bearer '+session.token,'Content-Type':chosenFile.type,...(pilot?{'X-Studio-Rights':'accepted'}:{})},
         body:chosenFile,
       })
       const data=await uploadResponse.json().catch(()=>({error:'upload_response_invalid'}))
@@ -169,7 +174,7 @@ export default function CreatorMediaUpload({title,onReady,selection}:Props){
       if(chosenFile.type==='model/gltf-binary') {
         if(!chosenPoster)throw new Error('Image de couverture manquante.')
         const posterResponse=await fetch(base+'/v1/studio/media/upload',{
-          method:'POST',headers:{Authorization:'Bearer '+session.token,'Content-Type':chosenPoster.type},
+          method:'POST',redirect:'error',headers:{Authorization:'Bearer '+session.token,'Content-Type':chosenPoster.type},
           body:chosenPoster,
         })
         const poster=await posterResponse.json().catch(()=>({error:'upload_response_invalid'}))
@@ -216,6 +221,8 @@ export default function CreatorMediaUpload({title,onReady,selection}:Props){
         Pour préparer une œuvre, utilisez une URI IPFS/HTTPS que vous hébergez vous-même ;
         ne signez aucune transaction avant d’avoir vérifié le média, les droits et la collection.
       </p>}
+      {pilot&&<p role="status" className="text-xs text-zinc-300">Pilote : images JPG, PNG et WebP jusqu’à 2 Mo. Vidéo, musique et 3D seront ouvertes après validation.</p>}
+      {pilot&&file&&!pilotAcceptsFile(file)&&<p role="alert" className="text-xs text-amber-200">Choisissez une image compatible de 2 Mo maximum pour continuer.</p>}
       <label className="block text-xs text-zinc-300">
         {file?'Remplacer le fichier':'Image, vidéo ou musique (ou fichier 3D)'}
         <input type="file" accept=".jpg,.jpeg,.png,.webp,.mp4,.mp3,.wav,.flac,.glb,image/jpeg,image/png,image/webp,video/mp4,audio/mpeg,audio/wav,audio/flac,model/gltf-binary"
@@ -262,7 +269,7 @@ export default function CreatorMediaUpload({title,onReady,selection}:Props){
         IPFS et un NFT ne sont pas automatiquement supprimables.
       </label>
       <button type="button" className="btn-primary text-sm min-h-[44px] disabled:opacity-50"
-        disabled={!enabled||pending||needsReconciliation||!file||!rights||!connected||method!=='xportal'||(file.type==='model/gltf-binary'&&(!modelEnabled||!posterFile))}
+        disabled={!enabled||pending||needsReconciliation||!file||!rights||!connected||method!=='xportal'||(pilot&&!!file&&!pilotAcceptsFile(file))||(file.type==='model/gltf-binary'&&(!modelEnabled||!posterFile))}
         onClick={()=>void pin()}>
         {pending?'Publication média + métadonnées IPFS…':'Publier sur IPFS et préparer le mint'}
       </button>
