@@ -65,3 +65,44 @@ jobs:
           }))
           if(result.paused)throw Error('Marketplace paused — NO GO')
           NODE
+
+      - name: Observe actual seller preflight on two public project-associated NFT samples (no signature)
+        run: |
+          node --input-type=module <<'NODE'
+          import {verifyUserNftListPreflight} from './apps/frontend/src/lib/marketplaceUserListing.mjs'
+          import {inspectMarketplace} from './scripts/ops/inspect-marketplace-mainnet.mjs'
+          import {readFileSync} from 'node:fs'
+          const registry=JSON.parse(readFileSync('data/contracts.json','utf8'))
+          const market=await inspectMarketplace({registry,maxListings:2})
+          // Public historical seller address, documented in #428. No keys or wallet session.
+          const address='erd1mmh2j5y8esv2tmmyeau3hr4xa2u2te3zc3j9wumn3v5vm8uvsczqnucj5l'
+          for(const [identifier,collection,nonce] of [
+            ['AGR-9bd53e-02','AGR-9bd53e',2],
+            ['ALISTOR-a646bc-01','ALISTOR-a646bc',1],
+          ]){
+            const url='https://api.multiversx.com/accounts/'+address+'/nfts/'+identifier
+            const res=await fetch(url,{signal:AbortSignal.timeout(10000),cache:'no-store',redirect:'error'})
+            if(res.status===404){console.log(JSON.stringify({identifier,status:'skipped_ownership_changed'}));continue}
+            if(!res.ok)throw Error('Live sample ownership HTTP '+res.status)
+            const owned=await res.json()
+            if(!owned||owned.identifier!==identifier||!/^\d+$/.test(String(owned.balance))||BigInt(owned.balance)<1n){
+              console.log(JSON.stringify({identifier,status:'skipped_ownership_changed'}));continue
+            }
+            const metaRes=await fetch('https://api.multiversx.com/nfts/'+identifier,{signal:AbortSignal.timeout(10000),cache:'no-store',redirect:'error'})
+            if(!metaRes.ok)throw Error('Live sample metadata HTTP '+metaRes.status)
+            const meta=await metaRes.json()
+            const royaltyBps=Math.round(Number(meta.royalties)*100)
+            if(!Number.isInteger(royaltyBps)||royaltyBps<0||royaltyBps>10000)throw Error('Invalid live sample royalty')
+            const blocked=market.feeBps+royaltyBps>1000
+            let proof
+            try{proof=await verifyUserNftListPreflight({address,identifier,collection,nonce})}
+            catch(err){
+              if(blocked&&String(err.message).includes('Le contrat limite le total à 10 %')){
+                console.log(JSON.stringify({identifier,status:'correctly_blocked_by_cap',feeBps:market.feeBps,royaltyBps}));continue
+              }
+              throw err
+            }
+            if(blocked||proof.feeBps!==market.feeBps||proof.royaltyBps!==royaltyBps)throw Error('Live sample preflight mismatch')
+            console.log(JSON.stringify({identifier,status:'preflight_verified_read_only',feeBps:proof.feeBps,royaltyBps:proof.royaltyBps}))
+          }
+          NODE

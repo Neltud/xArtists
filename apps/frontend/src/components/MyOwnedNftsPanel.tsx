@@ -52,7 +52,14 @@ export default function MyOwnedNftsPanel() {
     const key=address+':'+id
     if(openedFor.current===key)return
     const nft=account.nfts.find(n=>n.identifier===id && isOwnedNftListCandidate(n))
-    if(!nft)return
+    if(!nft){
+      // A real deep link outside the loaded page must not silently do nothing.
+      if(/^([A-Za-z0-9]{3,20}-[a-z0-9]{6})-([a-f0-9]{2,16})$/.test(id)){
+        openedFor.current=key
+        setSearch(id)
+      }
+      return
+    }
     openedFor.current=key
     const nonce=typeof nft.nonce==='number'?nft.nonce:parseInt(id.split('-').pop()||'',16)
     if(!Number.isSafeInteger(nonce)||nonce<=0)return

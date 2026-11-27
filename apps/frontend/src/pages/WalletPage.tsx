@@ -77,9 +77,9 @@ function MultiversxWalletWorkspace(){
     {selection==='overview'?<div className="xa-cockpit-action-row">
      <p>{account.error?c('walletUnavailable'):c('walletIntro')}</p>
      <div><Link to="/workspace/account" className="xa-button secondary">{c('account')}</Link><MoonPayBuyButton amountEur={30}/></div>
-    </div>:<WalletAssets account={account} section={selection==='tokens'?'tokens':selection==='nft'?'nfts':'all'} />}
+    </div>:<WalletAssets key={address||''} account={account} section={selection==='tokens'?'tokens':selection==='nft'?'nfts':'all'} />}
    </>}
   </div>
-  <nav className="xa-wallet-quick-links" aria-label={c('navMyAccess')}><Link className="xa-button secondary" to="/marketplace?network=multiversx&list=1#xa-market-sell">{c('simpleMarketSellTitle')} →</Link><Link className="xa-button secondary" to="/workspace/agents">{c('navMyAccess')} →</Link></nav>
+  <nav className="xa-wallet-quick-links" aria-label={c('navMyAccess')}><Link className="xa-button secondary" to="/explore/market?network=multiversx#xa-market-sell">{c('simpleMarketSellTitle')} →</Link><Link className="xa-button secondary" to="/workspace/agents">{c('navMyAccess')} →</Link></nav>
  </div>
 }

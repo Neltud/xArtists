@@ -259,3 +259,37 @@ test('seller may resolve an exact NFT identifier beyond the first 100 loaded ass
     assert.equal(h.listed.length,0)
   }finally{await h.close()}
 })
+
+test('French decimal entry is normalized before the explicit listing signature',async()=>{
+  const h=await ui()
+  try{
+    await h.price('0,25')
+    assert.equal(h.host.querySelector('input[inputmode=decimal]').value,'0.25')
+    await h.click(h.button('Vérifier frais et royalties'))
+    assert.equal(h.listed.length,0)
+    await h.click(h.button('Signer listNft'))
+    assert.equal(h.listed.length,1)
+    assert.equal(h.listed[0].priceEgld,'0.25')
+  }finally{await h.close()}
+})
+test('read-only wallet exposes an explicit reconnect path and cannot list',async()=>{
+  const h=await ui({canAttemptSign:false})
+  try{
+    assert.ok(h.button('Reconnecter mon wallet'))
+    assert.equal(h.button('Vérifier frais et royalties').disabled,true)
+    assert.equal(h.listed.length,0)
+  }finally{await h.close()}
+})
+
+test('deep link outside loaded NFT inventory surfaces exact lookup instead of silent reload',async()=>{
+  const h=await ui({panel:true,live:false,canAttemptSign:false})
+  try{
+    const id=nft(150).identifier
+    await h.render({search:'?list='+id})
+    assert.equal(h.host.querySelector('input[type=search]').value,id)
+    assert.ok(h.button('Vérifier cet identifiant NFT'))
+    assert.equal(h.dialog(),null)
+    assert.equal(h.listed.length,0)
+    assert.equal(h.checks.length,0)
+  }finally{await h.close()}
+})

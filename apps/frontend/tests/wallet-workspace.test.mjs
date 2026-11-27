@@ -20,13 +20,14 @@ async function ui({connected=true,error=false,path='/workspace/wallet'}={}){
  const push=(...args)=>toasts.push(args)
  globalThis.fetch=async url=>{
   requests.push(String(url))
-  return {ok:!error,status:error?503:200,json:async()=>String(url).includes('/nfts?')?[{identifier:'ART-abcdef-01',name:'Test artwork',collection:'ART-abcdef',nonce:1,type:'NonFungibleESDT',balance:'1'}]:String(url).includes('/tokens?')?[{identifier:'TEST-abcdef',ticker:'TEST',balance:'2000000',decimals:6}]:{balance:'3000000000000000000',nonce:1}}
+  return {ok:!error,status:error?503:200,json:async()=>String(url).includes('/nfts?')?[{identifier:'ART-abcdef-01',name:'Test artwork',collection:'ART-abcdef',nonce:1,type:'NonFungibleESDT',balance:'1',uris:['ipfs://Qm'+'a'.repeat(44)]}]:String(url).includes('/tokens?')?[{identifier:'TEST-abcdef',ticker:'TEST',balance:'2000000',decimals:6}]:{balance:'3000000000000000000',nonce:1}}
  }
  const Wallet=compile('pages/WalletPage.tsx',{
   '../context/WalletContext':{useWallet:()=>({connected,address:connected?A:null,method:'paste_readonly',canAttemptSign:false,sessionLive:false,disconnect:()=>disconnects.push(true)})},
   '../experience/state':{useCopy:()=>key=>key},
   '../experience/networkCopy':{useNetworkCopy:()=>key=>key},
-  '../i18n/phraseRuntime':{renderChild:value=>value},
+  '../i18n/phraseRuntime':{renderChild:value=>value,localizeChild:value=>value,usePhraseLocale:()=>{}},
+  '../hooks/useMarketplaceReadiness':{useMarketplaceReadiness:()=>false},
   '../i18n/I18nContext':{useI18n:()=>({lang:'fr',t:key=>key,dir:'ltr'})},
   '../lib/walletEvents':{requestOpenConnect:()=>connects.push(true)},
   '../lib/xportalWc':{clearXPortalSession:()=>{}},
@@ -55,7 +56,14 @@ test('overview and assets share one account request set while real data survive 
   await h.click(h.button('NFT'))
   assert.equal(h.requests.length,3)
   assert.match(h.host.textContent,/Test artwork/)
+  assert.equal(h.host.querySelector('[role="dialog"]'),null)
+  await h.click(h.button('Mettre en vente'))
+  assert.ok(h.host.querySelector('[role="dialog"]'))
+  assert.ok(h.button('Reconnecter mon wallet'))
+  assert.equal(h.button('Vérifier frais et royalties').disabled,true)
+  assert.equal(h.connects.length,0)
   await h.click(h.button('walletOverview'))
+  assert.equal(h.host.querySelector('[role="dialog"]'),null)
   assert.equal(h.requests.length,3)
   assert.equal(h.connects.length,0)
  }finally{await h.close()}
