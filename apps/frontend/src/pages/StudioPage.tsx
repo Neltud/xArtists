@@ -190,16 +190,18 @@ export default function StudioPage() {
           setPinnedMedia(pin)
           setNftMediaUri(pin?.mediaUri || '')
         }} />
+        <details className="text-sm"><summary>Options avancées : utiliser un fichier déjà hébergé</summary>
         <label className="block text-sm text-[color:var(--xa-text-secondary)]">
-          Adresse IPFS/HTTPS (remplie après publication, ou saisie manuelle)
+          Adresse IPFS/HTTPS (facultative)
           <input
             value={nftMediaUri}
             onChange={e => {setNftMediaUri(e.target.value);setPinnedMedia(null)}}
             className="mt-1 w-full rounded-lg border border-[color:var(--xa-border)] bg-[color:var(--xa-bg-elevated)] px-3 py-2 text-xs text-[color:var(--xa-text)]"
             placeholder="ipfs://bafy.../artwork.png"
           />
-        </label>
-        <p className="text-xs text-amber-900 dark:text-amber-100">Un fichier sélectionné seul ne suffit pas : le mint exige un upload IPFS confirmé ou une URL déjà hébergée. Vérifie la collection, le rôle NFTCreate et les détails dans xPortal avant la signature.</p>
+        </label></details>
+        <p className="text-sm text-[color:var(--xa-text-secondary)]">Pour créer votre NFT, envoyez votre œuvre, choisissez votre collection puis confirmez dans xPortal.</p>
+        {!activeCollectionId&&<a href="#xa-studio-collections" className="btn-secondary text-sm">Choisir ou créer ma collection</a>}
         <button
           type="button"
           className="btn-secondary text-sm"
@@ -235,11 +237,11 @@ export default function StudioPage() {
       <ol className="xa-studio-steps" aria-label="Étapes pour créer un NFT artiste">
         <li><strong>1 · Wallet</strong><span>Connecte ton compte artiste.</span></li>
         <li><strong>2 · Collection</strong><span>Choisis une collection et vérifie ton rôle.</span></li>
-        <li><strong>3 · IPFS</strong><span>Prépare et publie les médias avec leurs droits.</span></li>
+        <li><strong>3 · Œuvre</strong><span>Envoie ton fichier et confirme tes droits.</span></li>
         <li><strong>4 · Signature</strong><span>Contrôle les frais et confirme dans ton wallet.</span></li>
       </ol>
 
-      <section className="card xa-studio-workflow space-y-4">
+      <section id="xa-studio-collections" className="card xa-studio-workflow space-y-4">
         <h2 className="text-sm font-semibold text-[color:var(--xa-text)]">
           {xaRender("Mes collections (")}{xaRender(ownedCollections.length)})
         </h2>
