@@ -18,7 +18,7 @@ test('museum visitors can switch to artwork-filled CSS 3D without WebGL',()=>{
   assert.match(hall,/<MuseumBlueprintRoom/)
   assert.match(hall,/<MuseumWebGLHall/)
   assert.match(page,/title=\{xaLocalize\("Œuvres de la salle"\)\}/)
-  assert.doesNotMatch(hall,/requestOpenConnect|sendTransaction|buyNft|LIA_LIVE_TRADING/)
+  assert.doesNotMatch(hall,/requestOpenConnect|sendTransaction|buyNft|XORUS_LIVE_TRADING/)
 })
 test('Three.js only declares success after a frame and gracefully recovers from GPU draw failure',()=>{
   assert.match(webgl,/let firstFrame = true/)

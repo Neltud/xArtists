@@ -1,10 +1,10 @@
 /**
  * Journal d’intents · paper ou LIVE user-sign (xPortal).
- * VITE_LIA_LIVE_TRADING=1 → parcours signé explicitement dans xPortal.
+ * VITE_XORUS_LIVE_TRADING=1 → parcours signé explicitement dans xPortal.
  */
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { LIA_BADGE, LIA_GUARDS, LIA_LIVE_TRADING } from '../config/liaConfig'
+import { LIA_BADGE, LIA_GUARDS, XORUS_LIVE_TRADING } from '../config/liaConfig'
 import {
   attachUserTxHash,
   ensureBootstrapIntent,
@@ -40,7 +40,7 @@ export default function IntentXPortalPanel() {
   const isLiaOps = !!address && address.toLowerCase() === LIA_WALLET.toLowerCase()
 
   const refresh = useCallback(() => {
-    if (LIA_LIVE_TRADING) ensureBootstrapIntent()
+    if (XORUS_LIVE_TRADING) ensureBootstrapIntent()
     setRows(loadJournal(12))
   }, [])
 
@@ -75,9 +75,9 @@ export default function IntentXPortalPanel() {
     }
     const draft = prepared.draft
     setToast(
-      LIA_LIVE_TRADING
+      XORUS_LIVE_TRADING
         ? `Prêt à signer · ${describeTx(draft)} · wallet protocole historique via xPortal`
-        : 'Suivi ouvert (paper). Active VITE_LIA_LIVE_TRADING=1 pour broadcaster une TX.',
+        : 'Suivi ouvert (paper). Active VITE_XORUS_LIVE_TRADING=1 pour broadcaster une TX.',
     )
     refresh()
   }
@@ -89,8 +89,8 @@ export default function IntentXPortalPanel() {
       setToast('Connecte le wallet protocole historique dans xPortal.')
       return
     }
-    if (!LIA_LIVE_TRADING) {
-      setToast('LIA_LIVE_TRADING=0 — rebuild avec VITE_LIA_LIVE_TRADING=1.')
+    if (!XORUS_LIVE_TRADING) {
+      setToast('XORUS_LIVE_TRADING=0 — rebuild avec VITE_XORUS_LIVE_TRADING=1.')
       return
     }
     if (!isLiaOps) {
@@ -164,7 +164,7 @@ export default function IntentXPortalPanel() {
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
           <p className="text-[10px] uppercase tracking-[0.18em] text-cyan-300/80 font-tech">
-            Intent journal · {LIA_LIVE_TRADING ? 'LIVE user-sign' : 'paper'}
+            Intent journal · {XORUS_LIVE_TRADING ? 'LIVE user-sign' : 'paper'}
           </p>
           <h3 className="text-sm font-semibold text-white">Signaux → signature xPortal</h3>
         </div>
@@ -174,15 +174,15 @@ export default function IntentXPortalPanel() {
       </div>
 
       <p className="text-[11px] text-zinc-500 leading-relaxed">
-        Signature xPortal {LIA_LIVE_TRADING ? 'active' : 'désactivée'} · dépôt {LIA_GUARDS.bootstrapEgld} EGLD ·
+        Signature xPortal {XORUS_LIVE_TRADING ? 'active' : 'désactivée'} · dépôt {LIA_GUARDS.bootstrapEgld} EGLD ·
         plafond pré-signature {LIA_GUARDS.maxUsdPerTrade} $/opération.
         Univers visé : EGLD + ESDT fongibles. Chaque swap exige une cotation et une transaction vérifiées.
-        {LIA_LIVE_TRADING
+        {XORUS_LIVE_TRADING
           ? ' Connecte le wallet protocole historique ops dans xPortal puis « Signer xPortal ».'
-          : ' Mode paper : colle un hash après signature manuelle, ou rebuild avec VITE_LIA_LIVE_TRADING=1.'}
+          : ' Mode paper : colle un hash après signature manuelle, ou rebuild avec VITE_XORUS_LIVE_TRADING=1.'}
       </p>
 
-      {LIA_LIVE_TRADING && (
+      {XORUS_LIVE_TRADING && (
         <p className="text-[11px] text-amber-100/90 rounded-lg border border-amber-500/25 bg-amber-500/10 px-3 py-2 mono break-all">
           Wallet protocole historique ops attendu : {LIA_WALLET}
           {isLiaOps ? ' · ✅ connecté' : connected ? ' · ⚠️ autre adresse' : ' · non connecté'}
@@ -198,7 +198,7 @@ export default function IntentXPortalPanel() {
       {rows.length === 0 ? (
         <div className="space-y-2">
           <p className="text-[12px] text-zinc-500">Aucun intent. En live, un bootstrap est injecté auto.</p>
-          {LIA_LIVE_TRADING && (
+          {XORUS_LIVE_TRADING && (
             <button
               type="button"
               className="btn-secondary text-xs min-h-[44px]"
@@ -258,7 +258,7 @@ export default function IntentXPortalPanel() {
                     >
                       Préparer TX
                     </button>
-                    {LIA_LIVE_TRADING && (
+                    {XORUS_LIVE_TRADING && (
                       <button
                         type="button"
                         className="btn-primary text-xs min-h-[44px]"

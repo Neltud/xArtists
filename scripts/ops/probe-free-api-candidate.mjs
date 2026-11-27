@@ -1,3 +1,4 @@
+import {isTradingDisabled} from '../../packages/core/tradingStatus.mjs'
 /**
  * Read-only preflight for an independently hosted xArtists Access API.
  * Does not update DNS, deploy, migrate, authorize payments, send mail,
@@ -33,7 +34,7 @@ export function evaluateCandidate({health,build,studio,orders,expectedSha}){
     'walletless_account_session_enabled','xorus_private_analysis_enabled',
   ]
   if(forbidden.some(key=>health[key]!==false)||
-    health.lia_live_trading!=='0'||
+    !isTradingDisabled(health)||
     health.mint_dry_run!==true||
     health.require_siwx!==true||
     health.studio_media_upload!=='off'||

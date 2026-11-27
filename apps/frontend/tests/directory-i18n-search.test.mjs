@@ -65,7 +65,7 @@ test('filter controls are keyboard accessible and fit 360px width',()=>{
   assert.match(css,/\.xa-directory-reset:focus-visible/)
   assert.match(css,/@media \(max-width: 560px\)/)
   assert.match(directory,/input type="search"/)
-  assert.doesNotMatch(directory+guide,/sendTransaction\(|placeOrder\(|VITE_LIA_LIVE_TRADING\s*=\s*1/)
+  assert.doesNotMatch(directory+guide,/sendTransaction\(|placeOrder\(|VITE_XORUS_LIVE_TRADING\s*=\s*1/)
 })
 
 // Group search must share the accent-insensitive, alias-aware matcher with the directory.

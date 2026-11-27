@@ -3,8 +3,8 @@
  * All live flags forced false. Prefer import from config/xorusConfig.
  */
 
-/** Always false — LIA retired 2026-11-17. VITE_LIA_LIVE_TRADING is ignored. */
-export const LIA_LIVE_TRADING = false
+/** Always false — LIA retired 2026-11-17. VITE_XORUS_LIVE_TRADING is ignored. */
+export { XORUS_LIVE_TRADING } from './xorusConfig'
 
 export const LIA_MODE = 'paper' as const
 

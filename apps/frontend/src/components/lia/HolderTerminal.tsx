@@ -1,7 +1,7 @@
 import {localizeChild as xaLocalize, renderChild as xaRender} from '../../i18n/phraseRuntime'
 /**
  * P4 Holder terminal — Shadow (default) + Live on-chain display toggle.
- * Live = balances/TX display only. Does not enable LIA_LIVE_TRADING.
+ * Live = balances/TX display only. Does not enable XORUS_LIVE_TRADING.
  */
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -237,7 +237,7 @@ export default function HolderTerminal() {
               <p className="tabular-nums text-white">{xaRender(asText(live?.egld_usd))}</p>
             </div>
           </div>
-          <p className="text-[10px] text-zinc-500">{xaRender("Display only · trading remains gated (LIA_LIVE_TRADING=0)")}</p>
+          <p className="text-[10px] text-zinc-500">{xaRender("Display only · trading remains gated (XORUS_LIVE_TRADING=0)")}</p>
           <ul className="text-[11px] space-y-1 max-h-28 overflow-y-auto">
             {xaRender((live?.deployer?.txs || []).slice(0, 5).map(t => (
               <li key={asText(t.txHash)} className="flex gap-2">
@@ -307,7 +307,7 @@ export default function HolderTerminal() {
       <p className="text-[10px] text-zinc-600 border-t border-white/[0.04] pt-3">
         {xaRender(isLive
           ? 'LIVE DISPLAY — balances & TX from chain · execution still gated · switch to Shadow anytime'
-          : 'SHADOW MODE / SIMULATED DATA · LIA_LIVE_TRADING=0 · Beta toggle locked')}
+          : 'SHADOW MODE / SIMULATED DATA · XORUS_LIVE_TRADING=0 · Beta toggle locked')}
       </p>
     </section>
   )

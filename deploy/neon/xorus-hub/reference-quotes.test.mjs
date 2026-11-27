@@ -59,7 +59,7 @@ test('GET reference-quotes does no I/O and POST cannot sneak in an order', async
     fetchImpl: fail,
     store: { read: fail, claim: fail },
     paperStore: { read: fail, command: fail },
-    env: { LIA_LIVE_TRADING: '1', XORUS_ASSISTED_SWAP_ENABLED: '1' },
+    env: { XORUS_LIVE_TRADING: '1', XORUS_ASSISTED_SWAP_ENABLED: '1' },
     clock: () => NOW,
   })
   const response = await hub.fetch(new Request('https://hub.invalid/v1/xorus/reference-quotes'))

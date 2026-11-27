@@ -70,6 +70,12 @@ def check_cors(headers: dict[str, str], origin: str, *, allowed: bool) -> None:
     require("access-control-allow-credentials" not in headers, "Unexpected credentialed CORS")
 
 
+def trading_closed(doc: dict) -> bool:
+    # During migration an older deployed API may still publish the retired key.
+    flags = [doc[k] for k in ("xorus_live_trading", "lia_live_trading") if k in doc]
+    return bool(flags) and all(v is False or type(v) is int and v == 0 or v in ("0", "false") for v in flags)
+
+
 def check_health(doc: dict) -> None:
     require(doc.get("ok") is True and doc.get("service") == "access-api", "Wrong API health service")
     expected = {
@@ -78,7 +84,6 @@ def check_health(doc: dict) -> None:
         "mint_dry_run": True,
         "mint_live_enabled": False,
         "mint_micro_price": False,
-        "lia_live_trading": "0",
         "tro_solana_bridge": "off",
         "studio_media_upload": "off",
         "physical_works": "off",
@@ -86,6 +91,7 @@ def check_health(doc: dict) -> None:
     for field, value in expected.items():
         require(type(doc.get(field)) is type(value) and doc.get(field) == value,
                 f"Unsafe or unknown commercial flag: {field}")
+    require(trading_closed(doc), "Unsafe or unknown commercial flag: xorus_live_trading")
     require(doc.get("orders_backend") == "postgres", "Expected PostgreSQL backend")
 
 

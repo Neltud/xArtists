@@ -32,7 +32,7 @@ describe('upbitPosture', () => {
     expect(row.day).toBe(2)
     expect(row.label).toMatch(/Prolongation/)
     expect(row.label).toMatch(/207379109/)
-    expect(row.label).toMatch(/VITE_LIA_LIVE_TRADING/)
+    expect(row.label).toMatch(/VITE_XORUS_LIVE_TRADING/)
     expect(row.label).toMatch(/Pas de swap/)
   })
 

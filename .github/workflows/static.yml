@@ -58,8 +58,8 @@ jobs:
           npm run test:release
           node --test ../../services/access-api/tests/*.test.mjs
           cd ../..
-          LIA_LIVE_TRADING=0 python -m unittest discover -s tests/regression -p test_paybox_release.py -v
-          LIA_LIVE_TRADING=0 python tests/regression/test_trading_stack_gates.py
+          XORUS_LIVE_TRADING=0 python -m unittest discover -s tests/regression -p test_paybox_release.py -v
+          XORUS_LIVE_TRADING=0 python tests/regression/test_trading_stack_gates.py
 
       - name: Verify V3 routes and translations
         run: |
@@ -96,7 +96,7 @@ jobs:
           VITE_CATALOG_API: https://kc7hfr7tb9aqreaqtst0834c2c.ingress.hurricane.akash.pub
           VITE_APP_BUILD: "sites-v3-release-paper"
           # Fail-closed paper default. Repo var =1 only after explicit GO.
-          VITE_LIA_LIVE_TRADING: ${{ vars.VITE_LIA_LIVE_TRADING || '0' }}
+          VITE_XORUS_LIVE_TRADING: ${{ vars.VITE_XORUS_LIVE_TRADING || '0' }}
           # Only the independently verified self-managed API is eligible. Unknown/Render URLs fail closed.
           VITE_ACCESS_API_BASE: ${{ vars.VITE_ACCESS_API_BASE == 'https://api.xartists.art' && vars.VITE_ACCESS_API_BASE || '' }}
           # Public Neon Auth URL, deliberately unset until production identity and DB preflight.

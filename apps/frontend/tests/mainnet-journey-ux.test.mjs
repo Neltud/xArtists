@@ -68,7 +68,7 @@ test('marketplace transactions retain fresh on-chain codehash and build gate',()
   assert.match(marketGrid, /c\('marketGridVerify'\)/)
   assert.match(marketLocale, /Vérifier sur Explorer/)
   assert.match(marketGrid, /href=\{card.href\} target="_blank" rel="noopener noreferrer"/)
-  assert.doesNotMatch(journey+home+styles, /VITE_LIA_LIVE_TRADING\s*=\s*1|mint_live_enabled\s*:\s*true|paybox_checkout_enabled\s*:\s*true/)
+  assert.doesNotMatch(journey+home+styles, /VITE_XORUS_LIVE_TRADING\s*=\s*1|mint_live_enabled\s*:\s*true|paybox_checkout_enabled\s*:\s*true/)
 })
 
 test('entry journeys never require a wallet to browse',()=>{

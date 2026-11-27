@@ -12,7 +12,7 @@ type GuardSnap = {
 
 type StatusDoc = {
   updated?: string
-  LIA_LIVE_TRADING?: number | string
+  XORUS_LIVE_TRADING?: number | string
   orchestrator?: {
     live_trading?: boolean
     agent_action?: string
@@ -60,7 +60,7 @@ export default function GuardianStatusPanel({ compact = false }: { compact?: boo
   const g = doc?.orchestrator?.guardian
   const live =
     doc?.orchestrator?.live_trading === true ||
-    String(doc?.LIA_LIVE_TRADING ?? '0') === '1'
+    String(doc?.XORUS_LIVE_TRADING ?? '0') === '1'
   const allow = g?.allow !== false
   const reason = g?.reason || (doc?.market?.guard_status === 'OK' ? 'ok' : 'unknown')
 

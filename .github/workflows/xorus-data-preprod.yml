@@ -26,7 +26,7 @@ jobs:
       - name: Verify retired gate, paper seal and provenance guards
         env:
           PYTHONPATH: ${{ github.workspace }}
-          LIA_LIVE_TRADING: '0'
+          XORUS_LIVE_TRADING: '0'
         run: |
           python -m unittest discover -s tests -p 'test_xorus_preprod_gate.py' -v
           python -m unittest discover -s tests -p 'test_xorus_data_rewards.py' -v

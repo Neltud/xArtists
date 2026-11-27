@@ -3,7 +3,7 @@ import { test } from 'node:test'
 import { loadSource } from './load-source.mjs'
 import { accessApiCspPlugin } from '../scripts/accessApiCsp.mjs'
 
-const env = { VITE_LIA_LIVE_TRADING: '1' }
+const env = { VITE_XORUS_LIVE_TRADING: '1' }
 const bootstrap = { id: 'bootstrap-live-test', strategy: 'LIVE_BOOTSTRAP', action: 'BOOTSTRAP_LIVE_1', assetId: 'EGLD', amount: 0.001 }
 
 test('CORS candidates use fallback hosts without nesting existing image proxies', () => {
@@ -47,7 +47,7 @@ test('legacy live env cannot re-enable a retired bootstrap transfer', () => {
   const xorus = loadSource('src/config/xorusConfig.ts', env)
   const { buildTxFromIntent, prepareIntentTx } = loadSource('src/lia/buildIntentTx.ts', env)
   assert.equal(config.LIA_MODE, 'paper')
-  assert.equal(config.LIA_LIVE_TRADING, false)
+  assert.equal(config.XORUS_LIVE_TRADING, false)
   assert.equal(xorus.XORUS_LIVE_TRADING, false)
   assert.throws(() => buildTxFromIntent(bootstrap), /Montant bootstrap invalide/)
   assert.equal(prepareIntentTx(bootstrap).ok, false)

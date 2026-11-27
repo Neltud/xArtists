@@ -81,7 +81,7 @@ export default function PendingActions() {
       {xaRender(pending.map(p => {
         const id = String(p.id || '')
         const localOk = approved.has(id)
-        const cmd = `LIA_LIVE_TRADING=1 PYTHONPATH=. python -m lia.guardian.strike_deployer --execute-proposal ${id}`
+        const cmd = `XORUS_LIVE_TRADING=1 PYTHONPATH=. python -m lia.guardian.strike_deployer --execute-proposal ${id}`
         return (
           <div key={id} className="rounded-lg bg-black/40 border border-white/5 p-2 space-y-1">
             <div className="flex flex-wrap items-center gap-2">
@@ -105,7 +105,7 @@ export default function PendingActions() {
               </button>
             </div>
             <p className="text-[9px] text-zinc-600">
-              {xaRender("Pages is static — UI approval records intent + copies ops command. Broadcast still needs LIA_LIVE_TRADING=1 + executor. ")}</p>
+              {xaRender("Pages is static — UI approval records intent + copies ops command. Broadcast still needs XORUS_LIVE_TRADING=1 + executor. ")}</p>
           </div>
         )
       }))}

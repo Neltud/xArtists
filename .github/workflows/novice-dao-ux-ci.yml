@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 16
     env:
-      VITE_LIA_LIVE_TRADING: '0'
+      VITE_XORUS_LIVE_TRADING: '0'
       VITE_GENESIS_COMMERCIAL_GO: '0'
       MINT_LIVE_ENABLED: 'false'
       PAYBOX_CHECKOUT_ENABLED: '0'

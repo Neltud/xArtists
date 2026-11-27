@@ -148,7 +148,7 @@ const LIA_SIMPLE = createSimpleIntentService({
     if (!rate) throw new Error('missing_egld_eur_rate')
     return buildPackQuote({ pack_id: packTier, rate_eur_per_egld: rate, now: nowMs })
   },
-  guardian: () => ({ mode: 'paper', paused: process.env.LIA_LIVE_TRADING === '1' }),
+  guardian: () => ({ mode: 'paper', paused: process.env.XORUS_LIVE_TRADING === '1' }),
 })
 
 function liaSimpleOriginAllowed(origin) {
@@ -339,7 +339,7 @@ async function handleRequest(req, res) {
       paybox_auth_inbound: 'rsa_sha256_2048',
       paybox_ipn_policy: IPN_POLICY,
       fx_env_configured: envFxRate() != null,
-      lia_live_trading: process.env.LIA_LIVE_TRADING === '1' ? '1' : '0',
+      xorus_live_trading: process.env.XORUS_LIVE_TRADING === '1' ? '1' : '0',
       mint_dispatch_enabled: MINT_CFG.enabled,
       mint_oidc_pull_enabled: oidcMintPullEnabled(),
       mint_dry_run: MINT_CFG.dryRun,

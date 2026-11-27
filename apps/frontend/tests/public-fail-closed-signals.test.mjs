@@ -46,14 +46,14 @@ test('Command Center cards, tape and meters do not imply verified agent activity
   assert.match(wall, /Aucune mesure certifiée/)
 })
 
-test('light loads before React and keeps the dark-mode choice', () => {
+test('dark loads before React and keeps an explicit light-mode choice', () => {
   const page = html()
   const state = frontend('experience/state.tsx')
   const css = frontend('experience/public-finish.css')
-  assert.match(page, /<html lang="fr" data-theme="light">/)
-  assert.match(page, /localStorage\.getItem\("xa-theme"\) === "dark" \? "dark" : "light"/)
+  assert.match(page, /<html lang="fr" data-theme="dark">/)
+  assert.match(page, /localStorage\.getItem\("xa-theme"\) === "light" \? "light" : "dark"/)
   assert.match(page, /Prevent a light\/dark flash/)
-  assert.match(page, /html\[data-theme="dark"\] body \{ background: #141019/)
+  assert.match(page, /html\[data-theme="dark"\] body \{ background: #080911/)
   assert.match(state, /classList\.toggle\('dark',theme==='dark'\)/)
   assert.match(state, /xa-theme-ready/)
   assert.match(css, /html\[data-theme="light"\] \.xa-first-hero/)

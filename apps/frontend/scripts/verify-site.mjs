@@ -17,5 +17,5 @@ if(fs.existsSync('dist/dapp-release.json')){
  const manifest=JSON.parse(fs.readFileSync('dist/manifest.webmanifest','utf8'));
  for(const icon of manifest.icons){const bytes=fs.readFileSync(path.join('dist',icon.src.replace(publicBase,'')));assert.equal(bytes.subarray(0,8).toString('hex'),'89504e470d0a1a0a');assert.equal(`${bytes.readUInt32BE(16)}x${bytes.readUInt32BE(20)}`,icon.sizes)}
  assert(fs.existsSync('dist/og-image.png'),'missing social sharing image');
- console.log(`Verified ${release.routes.length} static route entries, Pages fallback and install icons; compiled LIA live flag: ${release.lia_live_trading}.`)
+ console.log(`Verified ${release.routes.length} static route entries, Pages fallback and install icons; compiled xOrus live flag: ${release.xorus_live_trading}.`)
 }

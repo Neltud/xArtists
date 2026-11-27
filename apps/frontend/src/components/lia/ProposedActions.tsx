@@ -1,5 +1,5 @@
 import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as xaUsePhraseLocale} from '../../i18n/phraseRuntime'
-/** Decision-chain proposals — SIGN disabled while LIA_LIVE_TRADING=0. */
+/** Decision-chain proposals — SIGN disabled while XORUS_LIVE_TRADING=0. */
 import { useEffect, useState } from 'react'
 import { asText } from '../../lib/safeRender'
 
@@ -51,7 +51,7 @@ export default function ProposedActions() {
   }, [])
 
   // Locked on purpose: this button has no signer. A static page must not look like it broadcasts,
-  // even when VITE_LIA_LIVE_TRADING arms the separate xPortal user-sign path.
+  // even when VITE_XORUS_LIVE_TRADING arms the separate xPortal user-sign path.
   const live = false
 
   return (
@@ -90,7 +90,7 @@ export default function ProposedActions() {
                 ? 'border-emerald-500/40 text-emerald-300'
                 : 'border-white/10 text-zinc-600 cursor-not-allowed'
             }`}
-            title={xaLocalize("Requires LIA_LIVE_TRADING=1 + ops executor")}
+            title={xaLocalize("Requires XORUS_LIVE_TRADING=1 + ops executor")}
           >
             {xaRender("Sign & broadcast (locked) ")}</button>
         </div>

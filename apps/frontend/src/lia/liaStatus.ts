@@ -7,7 +7,7 @@ export type LiaStatusV1 = {
   schema?: string
   ts?: string
   paper?: boolean
-  LIA_LIVE_TRADING?: number
+  XORUS_LIVE_TRADING?: number
   onchain?: {
     address?: string
     egld?: number | null

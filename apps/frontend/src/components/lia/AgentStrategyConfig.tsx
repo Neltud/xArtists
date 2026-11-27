@@ -14,7 +14,7 @@ import { useWallet } from '../../context/WalletContext'
 import { useUserAccount } from '../../hooks/useUserAccount'
 import { holderStatus } from '../../lib/holderAccess'
 import { requestOpenConnect } from '../../lib/walletEvents'
-import { LIA_LIVE_TRADING } from '../../config/liaConfig'
+import { XORUS_LIVE_TRADING } from '../../config/liaConfig'
 import { useI18n } from '../../i18n/I18nContext'
 
 const REGIMES: AgentRegime[] = ['soft', 'balanced', 'aggressive']
@@ -92,7 +92,7 @@ export default function AgentStrategyConfigPanel() {
         <p className="text-[11px] text-zinc-500 mt-1 leading-relaxed">
           {xaRender(t('cc.strategy.token'))}{xaRender(' ')}
           <span className="mono text-zinc-400">{xaRender(tokenId.slice(0, 18))}…</span>
-          {xaRender(' · ')}{xaRender("LIVE_TRADING=")}{xaRender(LIA_LIVE_TRADING ? 1 : 0)}
+          {xaRender(' · ')}{xaRender("LIVE_TRADING=")}{xaRender(XORUS_LIVE_TRADING ? 1 : 0)}
         </p>
       </div>
 

@@ -91,7 +91,7 @@ export default function BurnifyPage() {
           </div>
         </div>
         <p className="text-[11px] text-zinc-500 leading-relaxed">
-          {xaRender("Agent ")}<code>python -m lia.burnify.agent</code> · <code>data/burnify_lia_state.json</code> {xaRender(" · live si ")}<code>LIA_LIVE_TRADING=1</code> + <code>LIA_BURNIFY_LIVE=1</code>
+          {xaRender("Agent ")}<code>python -m lia.burnify.agent</code> · <code>data/burnify_lia_state.json</code> {xaRender(" · live si ")}<code>XORUS_LIVE_TRADING=1</code> + <code>LIA_BURNIFY_LIVE=1</code>
         </p>
         <div className="flex flex-wrap gap-3 text-sm">
           <a href="https://burnify.app" target="_blank" rel="noreferrer" className="text-orange-300 hover:underline">

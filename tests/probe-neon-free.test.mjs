@@ -6,7 +6,7 @@ const service='xartists-neon-readonly-staging'
 const health={service,source_sha:SHA,backend_compatible_with_access_api:false,execution_authorized:false,
   accounts_enabled:false,mail_connected:false,database_connected:false,studio_media_upload:'off',
   mint_live_enabled:false,paybox_checkout_enabled:false,stripe_live_checkout_enabled:false,
-  auction_enabled:false,lia_live_trading:'0',mint_dry_run:true}
+  auction_enabled:false,xorus_live_trading:'0',mint_dry_run:true}
 const fake=async url=>({
   status:/store\/status|media\/config/.test(url)?503:200,
   headers:new Headers({'content-type':'application/json','access-control-allow-origin':'https://xartists.art'}),

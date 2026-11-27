@@ -409,15 +409,15 @@
     "各链已公布的 Controller / sToken 地址",
     "عناوين Controller / sToken منشورة لكل سلسلة"
   ],
-  "SOUL_ENABLED=mainnet + LIA_LIVE_TRADING gates séparés": [
-    "Verrous SOUL_ENABLED=mainnet et LIA_LIVE_TRADING séparés",
-    "Separate SOUL_ENABLED=mainnet + LIA_LIVE_TRADING gates",
-    "Bloqueos SOUL_ENABLED=mainnet + LIA_LIVE_TRADING separados",
-    "Getrennte Freigaben für SOUL_ENABLED=mainnet + LIA_LIVE_TRADING",
-    "Отдельные ограничения SOUL_ENABLED=mainnet + LIA_LIVE_TRADING",
-    "Окремі обмеження SOUL_ENABLED=mainnet + LIA_LIVE_TRADING",
-    "SOUL_ENABLED=mainnet + LIA_LIVE_TRADING 分别控制",
-    "قيود منفصلة لـ SOUL_ENABLED=mainnet + LIA_LIVE_TRADING"
+  "SOUL_ENABLED=mainnet + XORUS_LIVE_TRADING gates séparés": [
+    "Verrous SOUL_ENABLED=mainnet et XORUS_LIVE_TRADING séparés",
+    "Separate SOUL_ENABLED=mainnet + XORUS_LIVE_TRADING gates",
+    "Bloqueos SOUL_ENABLED=mainnet + XORUS_LIVE_TRADING separados",
+    "Getrennte Freigaben für SOUL_ENABLED=mainnet + XORUS_LIVE_TRADING",
+    "Отдельные ограничения SOUL_ENABLED=mainnet + XORUS_LIVE_TRADING",
+    "Окремі обмеження SOUL_ENABLED=mainnet + XORUS_LIVE_TRADING",
+    "SOUL_ENABLED=mainnet + XORUS_LIVE_TRADING 分别控制",
+    "قيود منفصلة لـ SOUL_ENABLED=mainnet + XORUS_LIVE_TRADING"
   ],
   "OneDex TRO/EGLD": [
     "OneDex TRO/EGLD",
@@ -489,15 +489,15 @@
     "3 个月",
     "3 أشهر"
   ],
-  "LIA_LIVE_TRADING=0 par défaut. Les trades affichés sont paper / simulation jusqu’à micro-preuve + signature validée.": [
-    "LIA_LIVE_TRADING=0 par défaut. Les transactions affichées sont simulées jusqu’à une micro-preuve et une signature validée.",
-    "LIA_LIVE_TRADING=0 by default. Displayed trades are paper / simulated until micro-proof + validated signature.",
-    "LIA_LIVE_TRADING=0 por defecto. Las operaciones mostradas son simuladas hasta contar con microprueba + firma validada.",
-    "Standardmäßig LIA_LIVE_TRADING=0. Angezeigte Trades sind simuliert, bis Mikronachweis + bestätigte Signatur vorliegen.",
-    "По умолчанию LIA_LIVE_TRADING=0. Показанные сделки — симуляция до микроподтверждения и проверенной подписи.",
-    "Типово LIA_LIVE_TRADING=0. Показані угоди — симуляція до мікропідтвердження та перевіреного підпису.",
-    "默认 LIA_LIVE_TRADING=0。通过微量验证并完成签名验证之前，所显示交易均为模拟。",
-    "القيمة الافتراضية LIA_LIVE_TRADING=0. الصفقات المعروضة محاكاة حتى إثبات مصغّر + توقيع معتمد."
+  "XORUS_LIVE_TRADING=0 par défaut. Les trades affichés sont paper / simulation jusqu’à micro-preuve + signature validée.": [
+    "XORUS_LIVE_TRADING=0 par défaut. Les transactions affichées sont simulées jusqu’à une micro-preuve et une signature validée.",
+    "XORUS_LIVE_TRADING=0 by default. Displayed trades are paper / simulated until micro-proof + validated signature.",
+    "XORUS_LIVE_TRADING=0 por defecto. Las operaciones mostradas son simuladas hasta contar con microprueba + firma validada.",
+    "Standardmäßig XORUS_LIVE_TRADING=0. Angezeigte Trades sind simuliert, bis Mikronachweis + bestätigte Signatur vorliegen.",
+    "По умолчанию XORUS_LIVE_TRADING=0. Показанные сделки — симуляция до микроподтверждения и проверенной подписи.",
+    "Типово XORUS_LIVE_TRADING=0. Показані угоди — симуляція до мікропідтвердження та перевіреного підпису.",
+    "默认 XORUS_LIVE_TRADING=0。通过微量验证并完成签名验证之前，所显示交易均为模拟。",
+    "القيمة الافتراضية XORUS_LIVE_TRADING=0. الصفقات المعروضة محاكاة حتى إثبات مصغّر + توقيع معتمد."
   ],
   "Marketplace NFT et Agents : code source prêt. List/Buy bloqués tant que codeHash OK absent.": [
     "Marketplace NFT et Agents : code source prêt. Vente/achat bloqués tant que le codeHash n’est pas validé.",
@@ -989,15 +989,15 @@
     "通过 NFT API 读取链上系列（NFTUDURI、TRO SFT、MAS…）。参观与工作室铸造分开进行。",
     "تُقرأ المجموعات على السلسلة عبر NFT API ‏(NFTUDURI، TRO SFT، MAS…). الزيارة والسكّ في الاستوديو منفصلان."
   ],
-  "Paper compounding. LIA_LIVE_TRADING=0. Aucun mouvement auto de fonds.": [
-    "Capitalisation simulée. LIA_LIVE_TRADING=0. Aucun mouvement automatique de fonds.",
-    "Paper compounding. LIA_LIVE_TRADING=0. No automatic fund movements.",
-    "Reinversión simulada. LIA_LIVE_TRADING=0. Sin movimientos automáticos de fondos.",
-    "Simulierte Wiederanlage. LIA_LIVE_TRADING=0. Keine automatischen Geldbewegungen.",
-    "Симуляция реинвестирования. LIA_LIVE_TRADING=0. Без автоматического перемещения средств.",
-    "Симуляція реінвестування. LIA_LIVE_TRADING=0. Без автоматичного переміщення коштів.",
-    "模拟复投。LIA_LIVE_TRADING=0。不自动转移资金。",
-    "إعادة استثمار محاكاة. LIA_LIVE_TRADING=0. دون تحريك تلقائي للأموال."
+  "Paper compounding. XORUS_LIVE_TRADING=0. Aucun mouvement auto de fonds.": [
+    "Capitalisation simulée. XORUS_LIVE_TRADING=0. Aucun mouvement automatique de fonds.",
+    "Paper compounding. XORUS_LIVE_TRADING=0. No automatic fund movements.",
+    "Reinversión simulada. XORUS_LIVE_TRADING=0. Sin movimientos automáticos de fondos.",
+    "Simulierte Wiederanlage. XORUS_LIVE_TRADING=0. Keine automatischen Geldbewegungen.",
+    "Симуляция реинвестирования. XORUS_LIVE_TRADING=0. Без автоматического перемещения средств.",
+    "Симуляція реінвестування. XORUS_LIVE_TRADING=0. Без автоматичного переміщення коштів.",
+    "模拟复投。XORUS_LIVE_TRADING=0。不自动转移资金。",
+    "إعادة استثمار محاكاة. XORUS_LIVE_TRADING=0. دون تحريك تلقائي للأموال."
   ],
   "API /stats": [
     "API /stats",

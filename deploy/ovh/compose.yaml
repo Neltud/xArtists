@@ -19,7 +19,7 @@ services:
       STUDIO_GLB_UPLOAD_ENABLED: "0"
       STRIPE_LIVE_CHECKOUT_ENABLED: "0"
       PAYBOX_CHECKOUT_ENABLED: "0"
-      LIA_LIVE_TRADING: "0"
+      XORUS_LIVE_TRADING: "0"
     expose:
       - "8787"
     networks:

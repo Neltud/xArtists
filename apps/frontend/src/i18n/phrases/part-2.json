@@ -49,15 +49,15 @@
     "信号 → xPortal 签名",
     "الإشارات → توقيع xPortal"
   ],
-  "Mode paper : colle un hash après signature manuelle, ou rebuild avec VITE_LIA_LIVE_TRADING=1.": [
-    "Mode simulation : colle un hash après signature manuelle, ou recompile avec VITE_LIA_LIVE_TRADING=1.",
-    "Paper mode: paste a hash after manual signing, or rebuild with VITE_LIA_LIVE_TRADING=1.",
-    "Modo simulado: pega un hash tras firmar manualmente o recompila con VITE_LIA_LIVE_TRADING=1.",
-    "Simulationsmodus: Hash nach manueller Signatur einfügen oder mit VITE_LIA_LIVE_TRADING=1 neu bauen.",
-    "Режим симуляции: вставьте хеш после ручной подписи или пересоберите с VITE_LIA_LIVE_TRADING=1.",
-    "Режим симуляції: вставте хеш після ручного підпису або перебудуйте з VITE_LIA_LIVE_TRADING=1.",
-    "模拟模式：手动签名后粘贴哈希，或使用 VITE_LIA_LIVE_TRADING=1 重新构建。",
-    "وضع المحاكاة: الصق التجزئة بعد التوقيع اليدوي، أو أعد البناء باستخدام VITE_LIA_LIVE_TRADING=1."
+  "Mode paper : colle un hash après signature manuelle, ou rebuild avec VITE_XORUS_LIVE_TRADING=1.": [
+    "Mode simulation : colle un hash après signature manuelle, ou recompile avec VITE_XORUS_LIVE_TRADING=1.",
+    "Paper mode: paste a hash after manual signing, or rebuild with VITE_XORUS_LIVE_TRADING=1.",
+    "Modo simulado: pega un hash tras firmar manualmente o recompila con VITE_XORUS_LIVE_TRADING=1.",
+    "Simulationsmodus: Hash nach manueller Signatur einfügen oder mit VITE_XORUS_LIVE_TRADING=1 neu bauen.",
+    "Режим симуляции: вставьте хеш после ручной подписи или пересоберите с VITE_XORUS_LIVE_TRADING=1.",
+    "Режим симуляції: вставте хеш після ручного підпису або перебудуйте з VITE_XORUS_LIVE_TRADING=1.",
+    "模拟模式：手动签名后粘贴哈希，或使用 VITE_XORUS_LIVE_TRADING=1 重新构建。",
+    "وضع المحاكاة: الصق التجزئة بعد التوقيع اليدوي، أو أعد البناء باستخدام VITE_XORUS_LIVE_TRADING=1."
   ],
   "Créer intent bootstrap live=1": [
     "Créer une intention d’amorçage live=1",

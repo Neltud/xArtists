@@ -1,3 +1,4 @@
+import {isTradingDisabled} from '../../packages/core/tradingStatus.mjs'
 /**
  * Public, read-only xArtists mint-store and browse-only release watchdog.
  * All probes are GET requests to public endpoints. No wallets, PSP actions,
@@ -26,7 +27,7 @@ export function evaluatePublicMintReadiness({ health, orders, mint, frontend } =
     'mint_dispatch_closed': health?.mint_dispatch_enabled === false,
     'mint_live_closed': health?.mint_live_enabled === false,
     'mint_dry_run_only': health?.mint_dry_run === true,
-    'trading_closed': String(health?.lia_live_trading ?? '') === '0',
+    'trading_closed': isTradingDisabled(health),
     'bridge_closed': health?.tro_solana_bridge === 'off',
     'auction_closed': health?.auction_enabled === false &&
       health?.auction_settle === false,
@@ -35,7 +36,7 @@ export function evaluatePublicMintReadiness({ health, orders, mint, frontend } =
       frontend?.base_url === '/xArtists/',
     'frontend_routes_present': Number.isInteger(frontend?.public_route_count) &&
       frontend.public_route_count >= 116,
-    'frontend_trading_closed': frontend?.lia_live_trading === false,
+    'frontend_trading_closed': isTradingDisabled(frontend),
   }
   return {
     ok: Object.values(checks).every(Boolean),

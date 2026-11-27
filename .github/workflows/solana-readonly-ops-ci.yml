@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:
-      LIA_LIVE_TRADING: '0'
+      XORUS_LIVE_TRADING: '0'
       LIA_SOL_LIVE: '1'
     steps:
       - uses: actions/checkout@v4

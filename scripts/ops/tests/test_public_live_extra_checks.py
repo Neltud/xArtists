@@ -53,7 +53,7 @@ class PublicLiveChecksTests(unittest.TestCase):
             "ok": True, "service": "access-api", "orders_backend": "postgres",
             "paybox_checkout_enabled": False, "mint_dispatch_enabled": False,
             "mint_dry_run": True, "mint_live_enabled": False,
-            "mint_micro_price": False, "lia_live_trading": "0",
+            "mint_micro_price": False, "xorus_live_trading": "0",
             "tro_solana_bridge": "off", "studio_media_upload": "off",
             "physical_works": "off",
         }
@@ -62,7 +62,7 @@ class PublicLiveChecksTests(unittest.TestCase):
                          ("mint_live_enabled", True),
                          ("mint_dispatch_enabled", True),
                          ("mint_micro_price", True),
-                         ("lia_live_trading", "1"),
+                         ("xorus_live_trading", "1"),
                          ("mint_dry_run", False),
                          ("orders_backend", "file")]:
             with self.subTest(key=key), self.assertRaises(AssertionError):
@@ -138,7 +138,7 @@ class PublicLiveChecksTests(unittest.TestCase):
             b'{"ok":true,"service":"access-api","orders_backend":"postgres",'
             b'"paybox_checkout_enabled":true,"mint_dispatch_enabled":false,'
             b'"mint_dry_run":true,"mint_live_enabled":false,"mint_micro_price":false,'
-            b'"lia_live_trading":"0","tro_solana_bridge":"off",'
+            b'"xorus_live_trading":"0","tro_solana_bridge":"off",'
             b'"studio_media_upload":"off","physical_works":"off"}'
         )
         with patch.object(

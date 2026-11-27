@@ -50,5 +50,5 @@ test('new beginner copy is complete in all eight supported languages', () => {
     assert.ok(values.every(value => typeof value === 'string' && value.trim().length > 0), key)
   }
   assert.doesNotMatch(pages + guide + shell + market,
-    /VITE_LIA_LIVE_TRADING\s*=\s*1|mint_live_enabled\s*=\s*true|paybox_checkout_enabled\s*=\s*true/)
+    /VITE_XORUS_LIVE_TRADING\s*=\s*1|mint_live_enabled\s*=\s*true|paybox_checkout_enabled\s*=\s*true/)
 })

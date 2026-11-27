@@ -24,7 +24,7 @@ jobs:
       - name: Validate public candidate references and never-send invariants
         env:
           PYTHONPATH: ${{ github.workspace }}
-          LIA_LIVE_TRADING: '0'
+          XORUS_LIVE_TRADING: '0'
         run: |
           python -m unittest discover -s tests -p 'test_xorus_paybox_wallet_source.py' -v
           python -m unittest discover -s tests -p 'test_xorus_alias.py' -v

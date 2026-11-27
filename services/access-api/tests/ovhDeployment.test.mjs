@@ -32,7 +32,7 @@ test('public edge exposes HTTPS, not the Access API port',()=>{
 test('a parallel probe cannot enable financial, IPFS or trading actions',()=>{
   for(const flag of ['MINT_LIVE_ENABLED',
     'STUDIO_GLB_UPLOAD_ENABLED','STRIPE_LIVE_CHECKOUT_ENABLED',
-    'PAYBOX_CHECKOUT_ENABLED','LIA_LIVE_TRADING']){
+    'PAYBOX_CHECKOUT_ENABLED','XORUS_LIVE_TRADING']){
     assert.ok(compose.includes(flag+': "0"'),flag)
   }
   assert.match(compose,/CREATOR_MEDIA_UPLOAD_ENABLED: "\$\{XARTISTS_STUDIO_UPLOAD_APPROVED:-0\}"/)

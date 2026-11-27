@@ -57,7 +57,7 @@ export function createReadOnlyHandler({env=process.env}={}) {
     paybox_checkout_enabled:false,
     stripe_live_checkout_enabled:false,
     auction_enabled:false,
-    lia_live_trading:'0',
+    xorus_live_trading:'0',
   })
   return {
     async fetch(request) {

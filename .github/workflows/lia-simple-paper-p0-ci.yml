@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 8
     env:
-      LIA_LIVE_TRADING: '0'
+      XORUS_LIVE_TRADING: '0'
       PAYBOX_CHECKOUT_ENABLED: '0'
       MINT_LIVE_ENABLED: 'false'
       REQUIRE_SIWX: '1'

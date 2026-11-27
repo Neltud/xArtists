@@ -10,7 +10,7 @@ export const HELP = {
   },
   paperFirst: {
     title: 'Paper-first',
-    body: 'LIA_LIVE_TRADING=0 par défaut. Les trades affichés sont paper / simulation jusqu’à micro-preuve + signature validée.',
+    body: 'XORUS_LIVE_TRADING=0 par défaut. Les trades affichés sont paper / simulation jusqu’à micro-preuve + signature validée.',
   },
   guardianFirst: {
     title: 'Guardian avant Brain',

@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom'
 type V6 = {
   updated?: string
   status?: string
-  LIA_LIVE_TRADING?: number
+  XORUS_LIVE_TRADING?: number
   orchestrator?: {
     agent_action?: string
     live_trading?: boolean
@@ -22,7 +22,7 @@ type Board = {
   updated?: string
   arb?: { actionable?: boolean; note?: string }
   series?: { series?: unknown[]; horizon_days?: number }
-  trading_stack?: { LIA_LIVE_TRADING?: number }
+  trading_stack?: { XORUS_LIVE_TRADING?: number }
 }
 
 const V6_URLS = [
@@ -77,7 +77,7 @@ export default function LiaRunStrip() {
     }
   }, [])
 
-  const live = v6?.LIA_LIVE_TRADING === 1 || v6?.orchestrator?.live_trading === true
+  const live = v6?.XORUS_LIVE_TRADING === 1 || v6?.orchestrator?.live_trading === true
   const action = v6?.orchestrator?.agent_action || 'WAIT'
   const gAllow = v6?.orchestrator?.guardian?.allow
   const seriesN = board?.series?.series?.length ?? 0

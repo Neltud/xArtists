@@ -31,7 +31,7 @@ test('korean review stays paper through the official extension', () => {
   assert.equal(morning.daysUntilDecisionWeek, 22)
   assert.equal(morning.daysUntilHardEnd, 27)
   assert.match(morning.label, /207379109/)
-  assert.match(morning.label, /VITE_LIA_LIVE_TRADING/)
+  assert.match(morning.label, /VITE_XORUS_LIVE_TRADING/)
   assert.match(morning.label, /pas un go-live trading/)
   assert.equal(upbitPosture(Date.parse('2026-11-16T00:00:00Z')).daysUntilDecisionWeek, 0)
   assert.equal(upbitPosture(Date.parse('2026-11-21T00:00:00Z')).phase, 'after')

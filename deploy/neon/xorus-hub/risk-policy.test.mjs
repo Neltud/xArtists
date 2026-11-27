@@ -59,7 +59,7 @@ test('a broad token universe is not a wildcard signing grant or proof of support
 test('policy reads use no wallets, network or database, and cannot enable execution even with old live flags', async () => {
   const fail = () => assert.fail('policy read attempted external access')
   const hub = createHub({ fetchImpl: fail, store: { read: fail, claim: fail },
-    env: { LIA_LIVE_TRADING: '1', XORUS_ASSISTED_SWAP_ENABLED: '1' } })
+    env: { XORUS_LIVE_TRADING: '1', XORUS_ASSISTED_SWAP_ENABLED: '1' } })
   const response = await hub.fetch(new Request('https://hub.invalid/v1/xorus/risk-policy'))
   assert.equal(response.status, 200)
   const policy = await response.json()

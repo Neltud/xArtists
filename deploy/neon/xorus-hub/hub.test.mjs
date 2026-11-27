@@ -10,7 +10,7 @@ const NOW = Date.parse('2026-11-21T18:17:00Z')
 const TOKEN = 'test_only_' + 'a'.repeat(48)
 const env = { NEON_BRANCH_ID: 'br-steep-sun-bab7l93p',
   XORUS_HUB_TARGET_CONFIRMED: 'orange-dust-23862418', XORUS_HUB_OPERATOR_TOKEN: TOKEN,
-  XARTISTS_SOURCE_SHA: '1'.repeat(40), XORUS_ASSISTED_SWAP_ENABLED: '1', LIA_LIVE_TRADING: '1' }
+  XARTISTS_SOURCE_SHA: '1'.repeat(40), XORUS_ASSISTED_SWAP_ENABLED: '1', XORUS_LIVE_TRADING: '1' }
 const call = (hub, path, options) => hub.fetch(new Request('https://hub.invalid' + path, options))
 const auth = { authorization: 'Bearer ' + TOKEN }
 const happyFetch = async url => {

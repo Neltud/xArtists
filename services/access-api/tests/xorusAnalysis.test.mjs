@@ -124,12 +124,12 @@ function fakeChild(){
 test('worker uses a fixed command, bounded output and a credential-free environment',async()=>{
   const child=fakeChild()
   const result=runPythonAnalysis({env:{PATH:'/usr/bin',ACCESS_JWT_SECRET:'private-secret',
-    DATABASE_URL:'private-db',BINANCE_API_KEY:'private-api',LIA_LIVE_TRADING:'1'},
+    DATABASE_URL:'private-db',BINANCE_API_KEY:'private-api',XORUS_LIVE_TRADING:'1'},
     spawnImpl:(command,args,options)=>{
       assert.equal(command,'python3')
       assert.deepEqual(args,['-S','-B','-m','lia.xorus.analysis_cycle'])
       assert.equal(options.shell,false)
-      assert.deepEqual(options.env,{PATH:'/usr/bin',LIA_LIVE_TRADING:'0',PYTHONDONTWRITEBYTECODE:'1'})
+      assert.deepEqual(options.env,{PATH:'/usr/bin',XORUS_LIVE_TRADING:'0',PYTHONDONTWRITEBYTECODE:'1'})
       queueMicrotask(()=>{child.stdout.write(JSON.stringify(fixture));child.emit('close',0)})
       return child
     }})

@@ -73,7 +73,7 @@ export const PRIMARY_ACTIONS: UserAction[] = [
     label: 'Board LIA paper',
     path: '/trading',
     status: 'paper',
-    note: 'Prix live lecture · LIA_LIVE_TRADING=0',
+    note: 'Prix live lecture · XORUS_LIVE_TRADING=0',
   },
   {
     id: 'tip',

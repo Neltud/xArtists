@@ -1,3 +1,4 @@
+import {isTradingDisabled} from '../../packages/core/tradingStatus.mjs'
 /** No secrets, no redirects, no writes. Probe only Neon's pinned public staging function. */
 const EXPECTED_ORIGIN='https://br-steep-sun-bab7l93p-xartistsfree.compute.c-8.eu-central-1.aws.neon.tech'
 const EXPECTED_SHA='07d7574da70d3ddd49b6c64d128e154aed1539cf'
@@ -33,7 +34,7 @@ export async function probeNeonFree(fetchFn=fetch){
     h.accounts_enabled!==false||h.mail_connected!==false||h.database_connected!==false||
     h.studio_media_upload!=='off'||h.mint_live_enabled!==false||
     h.paybox_checkout_enabled!==false||h.stripe_live_checkout_enabled!==false||
-    h.auction_enabled!==false||h.lia_live_trading!=='0'||h.mint_dry_run!==true)
+    h.auction_enabled!==false||!isTradingDisabled(h)||h.mint_dry_run!==true)
     throw Error('identity_or_safety_not_verified')
   for(const blocked of [studio,orders,media]){
     if(blocked.status!==503||blocked.body.ok!==false||

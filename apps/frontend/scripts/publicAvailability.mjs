@@ -81,7 +81,8 @@ export function publicAvailabilityPlugin() {
       await fs.writeFile(path.join(output, '404.html'), fallbackHtml(config.base))
       await fs.writeFile(path.join(output, 'dapp-release.json'), JSON.stringify({
         schema_version: 1, base_path: config.base,
-        lia_live_trading: config.env.VITE_LIA_LIVE_TRADING === '1', routes,
+        // Matches config/xorusConfig: a build variable cannot create an executor.
+        xorus_live_trading: false, routes,
       }, null, 2) + '\n')
     },
   }

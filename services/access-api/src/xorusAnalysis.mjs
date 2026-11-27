@@ -22,7 +22,7 @@ function workerEnvironment(env){
   const allowed=['PATH','LANG','LC_ALL','HTTP_PROXY','HTTPS_PROXY','ALL_PROXY','NO_PROXY',
     'http_proxy','https_proxy','all_proxy','no_proxy','SSL_CERT_FILE','SSL_CERT_DIR']
   return {...Object.fromEntries(allowed.filter(key=>typeof env[key]==='string').map(key=>[key,env[key]])),
-    LIA_LIVE_TRADING:'0',PYTHONDONTWRITEBYTECODE:'1'}
+    XORUS_LIVE_TRADING:'0',PYTHONDONTWRITEBYTECODE:'1'}
 }
 
 export function runPythonAnalysis({spawnImpl=spawn,env=process.env,timeoutMs=8000}={}){
