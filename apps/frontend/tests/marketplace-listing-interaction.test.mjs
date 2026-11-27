@@ -280,3 +280,16 @@ test('read-only wallet exposes an explicit reconnect path and cannot list',async
     assert.equal(h.listed.length,0)
   }finally{await h.close()}
 })
+
+test('deep link outside loaded NFT inventory surfaces exact lookup instead of silent reload',async()=>{
+  const h=await ui({panel:true,live:false,canAttemptSign:false})
+  try{
+    const id=nft(150).identifier
+    await h.render({search:'?list='+id})
+    assert.equal(h.host.querySelector('input[type=search]').value,id)
+    assert.ok(h.button('Vérifier cet identifiant NFT'))
+    assert.equal(h.dialog(),null)
+    assert.equal(h.listed.length,0)
+    assert.equal(h.checks.length,0)
+  }finally{await h.close()}
+})
