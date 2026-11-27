@@ -99,6 +99,12 @@ function MultiversxMarketplace(){
     else v.set('tab',next)
     setParams(v)
   }
+  const openSeller=()=>{
+    if(marketDepthRef.current)marketDepthRef.current.open=true
+    const seller=document.getElementById('xa-market-sell')
+    seller?.scrollIntoView({block:'start',behavior:'instant'})
+    seller?.focus({preventScroll:true})
+  }
   // Preserve deep links into verified listings and personal selling when the
   // editorial gallery is otherwise the simple default experience.
   useEffect(()=>{
@@ -138,7 +144,7 @@ function MultiversxMarketplace(){
 
 
 
-    {selected==='art'&&<FeaturedArtGallery><MarketplaceLiveShelf/><details className="xa-historical-sale" open={params.get('buy')==='2'||undefined}><summary>BlackArtPass · ASFT-a6273a-01 · reçu / receipt</summary><section className="xa-direct-nft-sale" aria-label="MultiversX mainnet NFT"><div className="xa-direct-nft-media"><img src="https://media.multiversx.com/nfts/asset/QmTHS7wWXdTrLWbJUNoZy3u88ENX3K9rLY71G2LaagUg6Q" alt="BlackArtPass" decoding="async" onError={e=>{e.currentTarget.hidden=true}}/><h2>BlackArtPass</h2><a href="https://explorer.multiversx.com/nfts/ASFT-a6273a-01" target="_blank" rel="noopener noreferrer">ASFT-a6273a-01 ↗</a></div><MarketplaceVerifiedBuy onQuoteStatus={setVerifiedSaleStatus}/></section></details></FeaturedArtGallery>}
+    {selected==='art'&&<FeaturedArtGallery><MarketplaceLiveShelf onList={openSeller}/><details className="xa-historical-sale" open={params.get('buy')==='2'||undefined}><summary>BlackArtPass · ASFT-a6273a-01 · reçu / receipt</summary><section className="xa-direct-nft-sale" aria-label="MultiversX mainnet NFT"><div className="xa-direct-nft-media"><img src="https://media.multiversx.com/nfts/asset/QmTHS7wWXdTrLWbJUNoZy3u88ENX3K9rLY71G2LaagUg6Q" alt="BlackArtPass" decoding="async" onError={e=>{e.currentTarget.hidden=true}}/><h2>BlackArtPass</h2><a href="https://explorer.multiversx.com/nfts/ASFT-a6273a-01" target="_blank" rel="noopener noreferrer">ASFT-a6273a-01 ↗</a></div><MarketplaceVerifiedBuy onQuoteStatus={setVerifiedSaleStatus}/></section></details></FeaturedArtGallery>}
 
     <section className="xa-marketplace-categories" id="xa-market-categories" aria-labelledby="xa-market-categories-title">
       <div className="xa-marketplace-categories__heading">
@@ -163,7 +169,7 @@ function MultiversxMarketplace(){
       onQuery={setQuery} onSort={setSort} onRefresh={()=>void refresh()}
     />
 
-    <section id="xa-market-sell" className="space-y-3 rounded-2xl border border-white/10 p-3 sm:p-5" aria-label={c('simpleMarketSellTitle')}>
+    <section id="xa-market-sell" tabIndex={-1} className="space-y-3 rounded-2xl border border-white/10 p-3 sm:p-5" aria-label={c('simpleMarketSellTitle')}>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div><h2 className="text-lg font-semibold">{c('simpleMarketSellTitle')}</h2>
           <p className="text-sm text-zinc-400">{c('simpleMarketSellDesc')}</p></div>
