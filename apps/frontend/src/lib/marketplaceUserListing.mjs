@@ -57,14 +57,29 @@ export function isOwnedNftListCandidate(nft) {
 }
 async function read(request,url,options={},signal) {
   if(signal?.aborted)fail('Vérification de mise en vente annulée.')
-  let response
+  // AbortController works on older iOS/WebViews without AbortSignal.any/timeout.
+  const controller=new AbortController()
+  const abort=()=>controller.abort()
+  signal?.addEventListener('abort',abort,{once:true})
+  const timeout=setTimeout(abort,10000)
   try {
-    const timeout=AbortSignal.timeout(10000)
-    response=await request(url,{...options,cache:'no-store',redirect:'error',
-      signal:signal?AbortSignal.any([signal,timeout]):timeout})
-  } catch { fail('Lecture MultiversX impossible. Aucune transaction préparée.') }
-  if (!response?.ok) fail('API MultiversX indisponible. Réessaie ultérieurement.')
-  try { return await response.json() } catch { fail('Réponse MultiversX invalide.') }
+    let response
+    try {
+      response=await request(url,{...options,cache:'no-store',redirect:'error',signal:controller.signal})
+    } catch {
+      if(signal?.aborted)fail('Vérification de mise en vente annulée.')
+      fail('Lecture MultiversX impossible ou expirée. Aucune transaction préparée.')
+    }
+    if (!response?.ok) {
+      if(response?.status===404&&url.includes('/accounts/')&&url.includes('/nfts/'))
+        fail('Ce NFT est introuvable dans le wallet connecté. Vérifie son identifiant et le compte.')
+      fail('API MultiversX indisponible. Réessaie ultérieurement.')
+    }
+    try { return await response.json() } catch { fail('Réponse MultiversX invalide.') }
+  } finally {
+    clearTimeout(timeout)
+    signal?.removeEventListener('abort',abort)
+  }
 }
 function integerFromView(value) {
   if (typeof value!=='string' || !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(value)) fail('Vue du contrat invalide.')
@@ -113,8 +128,11 @@ export async function verifyUserNftListPreflight({
       !Number.isSafeInteger(royaltyBps)||royaltyBps<0||royaltyBps>10000||
       typeof royaltyReceiver!=='string'||!ACCOUNT.test(royaltyReceiver))
     fail('Royalties ou identité du créateur non vérifiables sur la chaîne.')
-  if (paused!==0 || !Number.isInteger(fee)||fee<0||fee>1000||fee+royaltyBps>1000)
-    fail('Marketplace pausée ou royalties NFT incompatibles avec le plafond contractuel.')
+  if (paused!==0) fail('Marketplace en pause. Aucune mise en vente possible.')
+  if (!Number.isInteger(fee)||fee<0||fee>1000)
+    fail('Frais marketplace non valides. Mise en vente bloquée.')
+  if (fee+royaltyBps>1000)
+    fail(`Royalties du NFT : ${royaltyBps/100} % + frais marketplace : ${fee/100} % = ${(fee+royaltyBps)/100} %. Le contrat limite le total à 10 %. Choisis un NFT dont les royalties ne dépassent pas ${(1000-fee)/100} %. Aucune transaction préparée.`)
   return Object.freeze({owner:address,identifier,collection,nonce,feeBps:fee,
     royaltyBps,royaltyReceiver,checkedAt:Date.now(),escrowReceiver:MARKETPLACE_MAINNET})
 }
