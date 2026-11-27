@@ -50,7 +50,7 @@ test('static deployment prepares and verifies actual public market and auction U
 })
 
 test('Studio preflight warns before selecting files when uploads are disabled', () => {
-  const warning = media.indexOf('Publication IPFS indisponible')
+  const warning = media.indexOf('L’envoi de fichiers est momentanément indisponible')
   const selector = media.indexOf('Image, vidéo ou musique (ou fichier 3D)')
   assert.ok(warning > 0 && selector > warning, 'warning must be before chooser')
   assert.match(media, /enabled===false/)
