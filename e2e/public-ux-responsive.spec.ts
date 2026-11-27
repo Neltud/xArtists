@@ -951,11 +951,13 @@ for(const theme of ['light','dark'] as const){
    await page.emulateMedia({reducedMotion:'reduce'})
    await visit(page,'/wallet/?lang=fr')
    await expect(page.locator('.xa-cockpit-hero')).toBeVisible()
+   await expect(page.locator('.xa-cockpit-ai,.xa-cockpit-discover')).toHaveCount(0)
+   await expect(page.locator('.xa-wallet-quick-links a')).toHaveCount(2)
    await expect(page.locator('html')).toHaveAttribute('data-theme',theme)
    await expect(page.locator('main')).toHaveCSS('background-color','rgb(13, 9, 21)')
    const colors=await page.evaluate(()=>[
-    '.xa-cockpit-title-row h1','.xa-cockpit-ai h2','.xa-cockpit-agent-text strong',
-    '.xa-cockpit-agent-text small','.xa-cockpit-notice','.xa-wallet-views button',
+    '.xa-cockpit-title-row h1',
+    '.xa-cockpit-notice','.xa-wallet-views button','.xa-wallet-quick-links a',
    ].map(selector=>{
     const element=document.querySelector(selector)!
     let surface:Element|null=element,background=''
@@ -1006,7 +1008,15 @@ test('approved art gallery uses source-linked pieces and studio preview remains 
  await expect(page.locator('.xa-visual-studio-preview-label')).toContainText('local')
  await expect(page.locator('.xa-visual-studio-media-row')).toHaveCount(1)
  await page.locator('#xa-visual-work-title').fill('Ma création test')
- await expect(page.locator('.xa-visual-studio-publication button')).toBeDisabled()
+ const requests:string[]=[]
+ page.on('request',req=>{if(req.method()!=='GET'&&req.url().includes('/v1/studio/media/'))requests.push(req.url())})
+ await expect(page.locator('.xa-visual-studio-publication button')).toBeEnabled()
+ await page.locator('.xa-visual-studio-publication button').click()
+ await expect(page.locator('.xa-studio-advanced')).toHaveAttribute('open','')
+ await expect(page.locator('#xa-studio-mint')).toContainText('test-art.png')
+ await expect(page.locator('#xa-studio-mint input[type="checkbox"]')).not.toBeChecked()
+ await expect(page.getByRole('button',{name:'Publier sur IPFS et préparer le mint'})).toBeDisabled()
+ expect(requests).toEqual([])
  await page.reload()
  await expect(page.locator('#xa-visual-work-title')).toHaveValue('Ma création test')
  await expect(page.locator('.xa-visual-studio-media-row')).toHaveCount(0)
