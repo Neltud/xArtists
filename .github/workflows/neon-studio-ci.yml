@@ -1,0 +1,51 @@
+name: Neon Studio isolated — tests and package (NO DEPLOY)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'deploy/neon/studio/**'
+      - 'services/access-api/src/creatorMedia.mjs'
+      - 'scripts/ops/package-neon-studio.py'
+      - '.github/workflows/neon-studio-ci.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  studio:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: ci-only
+          POSTGRES_DB: studio
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      TEST_STUDIO_DATABASE_URL: postgresql://postgres:ci-only@127.0.0.1:5432/studio
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+      - run: npm ci --omit=dev --prefix services/access-api
+      - run: psql "$TEST_STUDIO_DATABASE_URL" -v ON_ERROR_STOP=1 -f deploy/neon/studio/schema.sql
+      - run: node --test deploy/neon/studio/handler.test.mjs
+      - run: python3 scripts/ops/package-neon-studio.py
+      - name: Smoke packaged entrypoint with all mutations disabled
+        run: |
+          mkdir -p /tmp/studio-package
+          unzip -q dist/neon-studio.zip -d /tmp/studio-package
+          cd /tmp/studio-package
+          node --input-type=module -e "import app from './index.mjs';const r=await app.fetch(new Request('https://studio.example/v1/studio/media/config'));if((await r.json()).enabled!==false)process.exit(1)"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: neon-studio-candidate
+          path: dist/neon-studio.zip
+          retention-days: 7
