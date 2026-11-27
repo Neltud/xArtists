@@ -92,7 +92,8 @@ pub trait NftStaking {
 
     #[endpoint(unstakeNft)]
     fn unstake_nft(&self, stake_id: u64) {
-        require!(!self.paused().get(), "paused");
+        // Pause stops new deposits, not recovery of the owner's principal.
+
         require!(!self.stakes(stake_id).is_empty(), "unknown stake");
         let mut entry = self.stakes(stake_id).get();
         require!(entry.active, "inactive");
