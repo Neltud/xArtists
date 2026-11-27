@@ -31,7 +31,7 @@ test('Agents leads with real understandable paper roles; historical NFT packs ar
   assert.match(agents,/Analyser les marchés/)
   assert.match(agents,/Étudier les scénarios DeFi/)
   assert.match(agents,/Identifier les risques/)
-  assert.match(agents,/Nous vendons nos analyses/)
+  assert.match(agents,/Aucune vente d’analyse n’est actuellement ouverte/)
   assert.match(agents,/données collectées restent des entrées internes/)
   assert.match(agents,/Catalogue Genesis NFT \(distinct des agents\)/)
   assert.match(agents,/<details ref=\{genesisRef\}/)

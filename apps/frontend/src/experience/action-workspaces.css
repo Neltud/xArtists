@@ -171,3 +171,25 @@
 .xa-xorus-network-card p,.xa-xorus-network-card small{display:block;color:#e9dbfa;font-size:11px;line-height:1.4;margin:5px 0}
 .xa-xorus-network-card strong{display:block;color:#fff;font-variant-numeric:tabular-nums;font-size:clamp(16px,4vw,25px)}
 @media(max-width:480px){.xa-xorus-network-status{padding:12px}.xa-xorus-network-card{padding:9px}.xa-xorus-network-head{gap:6px}}
+
+/* Compact wallet and participation workspaces: real assets first. */
+.xa-ref-v2[data-area="wallet"] .xa-wallet-cockpit .xa-cockpit-overview-grid{grid-template-columns:minmax(0,1fr);gap:10px}
+.xa-ref-v2[data-area="wallet"] .xa-wallet-cockpit .xa-cockpit-hero{min-height:0;padding:20px;gap:6px;border-radius:16px}
+.xa-ref-v2[data-area="wallet"] .xa-wallet-cockpit .xa-cockpit-hero>svg{width:26px;height:26px;margin:0}
+.xa-ref-v2[data-area="wallet"] .xa-wallet-cockpit .xa-cockpit-hero>p{margin:2px 0 8px;font-size:13px}
+.xa-wallet-quick-links{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}
+.xa-wallet-quick-links>a{min-height:44px;white-space:normal;text-align:center;flex:1}
+.xa-dao-page .xa-task-empty{min-height:0;padding:20px;gap:9px;align-items:flex-start;text-align:start}
+.xa-dao-page .xa-task-empty>svg{width:26px;height:26px;margin:0}
+.xa-dao-page .xa-task-empty h2{max-width:none}
+.xa-dao-page .xa-task-header{margin-bottom:10px}
+.xa-dao-page .xa-task-tabs,.xa-dao-page .xa-task-status{margin-bottom:10px}
+.xa-group-ecosystem .xa-module-grid{gap:12px}
+.xa-group-ecosystem .xa-module-grid .xa-module-card{min-height:145px;padding:17px;background:linear-gradient(130deg,#251439,#45266e)!important;border-color:#8056ad!important;box-shadow:none!important;color:#fff}
+.xa-group-ecosystem .xa-module-grid .xa-module-card h3,.xa-group-ecosystem .xa-module-grid .xa-module-card .xa-module-icon,.xa-group-ecosystem .xa-module-grid .xa-module-card .xa-card-top,.xa-group-ecosystem .xa-module-grid .xa-module-card .xa-module-status{color:#fff!important}
+.xa-group-ecosystem .xa-module-grid .xa-module-card .xa-card-tags,.xa-group-ecosystem .xa-module-grid .xa-module-card .xa-card-number{color:#e5d2fa!important}
+.xa-group-ecosystem .xa-module-grid .xa-module-card .xa-module-status{background:#ffffff16;border-color:#b996e1}
+.xa-agents-discovery>.xa-intelligence-hero{padding:18px;border-radius:16px;background:linear-gradient(130deg,#251439,#45266e);color:#fff;border:1px solid #8056ad}
+.xa-agents-discovery>.xa-intelligence-hero h1,.xa-agents-discovery>.xa-intelligence-hero p{color:#fff}
+.xa-agents-discovery>.xa-intelligence-hero .xa-intelligence-status{background:#ffffff15;color:#fff;border-color:#b996e1}
+@media(max-width:600px){.xa-ref-v2[data-area="wallet"] .xa-wallet-cockpit .xa-cockpit-hero{padding:14px}.xa-group-ecosystem .xa-module-grid .xa-module-card{min-height:116px;padding:14px}.xa-dao-page .xa-task-empty{padding:15px}.xa-agents-discovery>.xa-intelligence-hero{padding:14px}}

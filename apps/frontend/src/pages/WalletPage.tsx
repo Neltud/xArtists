@@ -8,7 +8,6 @@ import {clearXPortalSession} from '../lib/xportalWc'
 import {useToast} from '../components/ui/Toast'
 import MoonPayBuyButton from '../components/MoonPayBuyButton'
 import WalletAssets,{formatWalletBalance} from '../components/WalletAssets'
-import {ArtworkGrid} from '../experience/Pages'
 import {useCopy} from '../experience/state'
 import Icon from '../experience/Icon'
 import NetworkSelector from '../components/NetworkSelector'
@@ -16,15 +15,7 @@ import SolanaWalletWorkspace from '../components/SolanaWalletWorkspace'
 import {useWalletNetwork} from '../context/NetworkContext'
 
 type WalletView='overview'|'tokens'|'nft'|'assets'
-const AGENT_PREVIEWS=[
- {id:'pulse',name:'Pulse',icon:'chart',description:'cockpitPulse'},
- {id:'yield',name:'Yield',icon:'layers',description:'cockpitYield'},
- {id:'sentinel',name:'Sentinel',icon:'shield',description:'cockpitSentinel'},
-] as const
-
-/** Reference #2: wallet-first cockpit. All account values come from one verified,
- * address-scoped read; agent previews are links, NOT entitlement claims.
- */
+/** Address-scoped wallet overview. No promotional catalogue or agent claims. */
 export default function WalletPage(){
  const {network}=useWalletNetwork()
  return network==='solana'?<SolanaWalletWorkspace/>:<MultiversxWalletWorkspace/>
@@ -74,16 +65,6 @@ function MultiversxWalletWorkspace(){
      <button type="button" onClick={()=>setView('nft')}><span>NFT</span><strong>{figure(account.nfts.length)}</strong></button>
     </section>
    </div>
-   <aside className="xa-cockpit-ai" aria-labelledby="xa-cockpit-ai-heading">
-    <h2 id="xa-cockpit-ai-heading">{c('navAgents')}</h2>
-    <p className="xa-cockpit-ai-caption">{c('cockpitAiPreview')}</p>
-    {AGENT_PREVIEWS.map(agent=><Link className="xa-cockpit-agent" key={agent.id} to={`/intelligence/agents?pack=${agent.id}`}>
-     <span className="xa-cockpit-agent-icon"><Icon name={agent.icon} size={23}/></span>
-     <span className="xa-cockpit-agent-text"><strong>{agent.name}</strong><small>{c(agent.description)}</small></span>
-     <Icon name="arrow" size={18}/>
-    </Link>)}
-    <Link to="/workspace/agents" className="xa-cockpit-access-link">{c('navMyAccess')}<Icon name="arrow" size={16}/></Link>
-   </aside>
   </div>
   <div className="xa-cockpit-tabs-block">
    <nav className="xa-wallet-views" aria-label={c('wallet')}>
@@ -99,6 +80,6 @@ function MultiversxWalletWorkspace(){
     </div>:<WalletAssets account={account} section={selection==='tokens'?'tokens':selection==='nft'?'nfts':'all'} />}
    </>}
   </div>
-  <div className="xa-cockpit-discover"><ArtworkGrid limit={3}/></div>
+  <nav className="xa-wallet-quick-links" aria-label={c('navMyAccess')}><Link className="xa-button secondary" to="/marketplace?network=multiversx&list=1#xa-market-sell">{c('simpleMarketSellTitle')} →</Link><Link className="xa-button secondary" to="/workspace/agents">{c('navMyAccess')} →</Link></nav>
  </div>
 }

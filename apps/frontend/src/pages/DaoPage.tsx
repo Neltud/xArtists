@@ -14,7 +14,7 @@ export default function DaoPage(){
   <header className="xa-task-header"><div><p className="xa-task-kicker">xArtists</p><h1>DAO</h1></div><NetworkSelector/></header>
   <nav className="xa-task-tabs" aria-label={n('governance')}>{(['proposals','treasury','rules'] as const).map(v=><button type="button" key={v} aria-current={view===v?'page':undefined} onClick={()=>setView(v)}>{n(v)}</button>)}</nav>
   <p className="xa-task-status" role="status">{c('daoGovernanceUnavailable')}</p>
-  {view==='proposals'&&<section className="xa-task-surface xa-task-empty"><Icon name="network" size={46}/><h2>{n('noProposals')}</h2><p>{n('registeredOnly')}</p><Link className="xa-button primary" to={'/wallet?network='+network}>{n('connect')}</Link></section>}
+  {view==='proposals'&&<section className="xa-task-surface xa-task-empty"><Icon name="network" size={46}/><h2>{n('noProposals')}</h2><p>{n('registeredOnly')}</p><button type="button" className="xa-button secondary" onClick={()=>setView('rules')}>{n('method')}</button></section>}
   {view==='treasury'&&<section className="xa-task-surface xa-task-empty"><Icon name="wallet" size={46}/><h2>{n('noTreasury')}</h2><Link className="xa-button secondary" to="/finance/support">{n('supportDetails')}</Link></section>}
   {view==='rules'&&<section className="xa-task-surface xa-task-rules"><h2>{n('method')}</h2><p>{c('daoIntroPlain')}</p><p>{n('programStage')}</p><a className="xa-button secondary" href={'https://github.com/Neltud/xArtists/tree/main/contracts/'+code} target="_blank" rel="noopener noreferrer">{n('viewCode')}</a>
    {network==='multiversx'&&<details className="xa-task-details xa-dao-practice"><summary>{n('practice')}</summary><p>{c('daoDemoWarning')}</p><DaoGovernance/></details>}

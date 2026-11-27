@@ -8,7 +8,7 @@ import { getAccessApiBase } from '../lib/stripe'
 import StudioGlbPreview from './StudioGlbPreview'
 
 type Pinned={mediaUri:string;metadataUri:string;attributes:string;title:string}
-type Props={title:string;onReady:(pin:Pinned|null)=>void}
+type Props={title:string;onReady:(pin:Pinned|null)=>void;selection?:{file:File;description:string}|null}
 const allowed:Record<string,number>={
   'image/jpeg':16*1024*1024,'image/png':16*1024*1024,
   'image/webp':16*1024*1024,'video/mp4':48*1024*1024,
@@ -46,7 +46,7 @@ const explainStudioMediaError=(error:unknown)=>{
   const code=error instanceof Error?error.message:'media_upload_unavailable'
   return studioMediaErrors[code]||code
 }
-export default function CreatorMediaUpload({title,onReady}:Props){
+export default function CreatorMediaUpload({title,onReady,selection}:Props){
   const {connected,address,method}=useWallet()
   const base=getAccessApiBase()
   const [enabled,setEnabled]=useState<boolean|null>(null)
@@ -120,6 +120,16 @@ export default function CreatorMediaUpload({title,onReady}:Props){
       setError('Formats : images JPG/PNG/WebP, vidéo MP4, musique MP3/WAV/FLAC ou modèle 3D GLB.')
     }
   }
+  // Explicit handoff from the local editor. Never starts an upload or grants rights.
+  const lastSelection=useRef<typeof selection>(null)
+  useEffect(()=>{
+    if(!selection||lastSelection.current===selection)return
+    lastSelection.current=selection
+    if(needsReconciliation&&file===selection.file)return
+    pick(selection.file)
+    setDescription(selection.description.slice(0,800))
+    setRights(false)
+  },[selection])
   const pin=async()=>{
     if(pending||needsReconciliation)return
     setError('')
@@ -207,7 +217,7 @@ export default function CreatorMediaUpload({title,onReady}:Props){
         ne signez aucune transaction avant d’avoir vérifié le média, les droits et la collection.
       </p>}
       <label className="block text-xs text-zinc-300">
-        Image, vidéo ou musique (ou fichier 3D)
+        {file?'Remplacer le fichier':'Image, vidéo ou musique (ou fichier 3D)'}
         <input type="file" accept=".jpg,.jpeg,.png,.webp,.mp4,.mp3,.wav,.flac,.glb,image/jpeg,image/png,image/webp,video/mp4,audio/mpeg,audio/wav,audio/flac,model/gltf-binary"
           className="mt-1 block w-full rounded-lg border border-white/10 p-2 text-xs text-white"
           onChange={e=>pick(e.target.files?.[0]||null)}/>

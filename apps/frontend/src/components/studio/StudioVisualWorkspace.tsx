@@ -12,7 +12,7 @@ const MAX_FILES=12
 const MAX_BYTES=30*1024*1024
 const SAMPLE='https://media.multiversx.com/nfts/asset/bafybeibimkykepq73n3wqajjjlc4yzhflkzyaxqhxw4qn364htfbxuf6te/item.jpg'
 type Kind='image'|'video'|'audio'
-type LocalMedia={id:string;url:string;name:string;kind:Kind}
+type LocalMedia={id:string;url:string;name:string;kind:Kind;file:File}
 type Draft={title:string;description:string;rights:string}
 const DEFAULT_DRAFT:Draft={title:'',description:'',rights:'all'}
 
@@ -37,7 +37,7 @@ function mediaKind(file:File):Kind|null{
  if(file.type.startsWith('audio/'))return 'audio'
  return null
 }
-export default function StudioVisualWorkspace({title,onTitle,onAdvanced}:{title:string;onTitle:(value:string)=>void;onAdvanced:()=>void}){
+export default function StudioVisualWorkspace({title,onTitle,onAdvanced,onPrepare}:{title:string;onTitle:(value:string)=>void;onAdvanced:()=>void;onPrepare:(file:File,description:string)=>void}){
  const c=useCopy()
  const fileInput=useRef<HTMLInputElement>(null)
  const sequence=useRef(0)
@@ -67,7 +67,7 @@ export default function StudioVisualWorkspace({title,onTitle,onAdvanced}:{title:
    if(!kind||file.size>MAX_BYTES||file.size===0||items.length+next.length>=MAX_FILES){rejected++;continue}
    const url=URL.createObjectURL(file)
    ownedUrls.current.add(url)
-   next.push({id:'media-'+(++sequence.current),url,name:file.name.slice(0,150),kind})
+   next.push({id:'media-'+(++sequence.current),url,name:file.name.slice(0,150),kind,file})
   }
   if(next.length){
    setItems(previous=>[...previous,...next].slice(0,MAX_FILES))
@@ -156,8 +156,8 @@ export default function StudioVisualWorkspace({title,onTitle,onAdvanced}:{title:
      <small>{c('studioRightsNotVerified')}</small>
     </details>
     <div className="xa-visual-studio-publication">
-     <button type="button" className="xa-button primary" disabled>{c('studioPublish')}</button>
-     <small role="note">{c('studioPublishUnavailable')}</small>
+     <button type="button" className="xa-button primary" disabled={!active} onClick={()=>{if(active)onPrepare(active.file,description)}}>{c('studioPrepareSelectedNft')}</button>
+     <small role="note">{c('studioPreviewLocal')}</small>
      <Link to="/create/gallery" className="xa-button secondary">{c('studioPrepareExhibition')}</Link>
      <a href="#xa-studio-mint" onClick={onAdvanced} className="xa-visual-studio-advanced-link">{c('simpleStudioAdvancedLink')}</a>
     </div>
