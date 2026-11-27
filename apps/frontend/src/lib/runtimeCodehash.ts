@@ -68,14 +68,19 @@ async function fetchAccount(
   addr: string,
 ): Promise<{ address?: string; codeHash?: string; code?: string; balance?: string; isPayable?: boolean } | null> {
   if (!addr?.startsWith('erd1')) return null
+  // Older mobile WebViews support AbortController but not AbortSignal.timeout.
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), 8000)
   try {
-    const r = await fetch(`https://api.multiversx.com/accounts/${addr}`, { cache: 'no-store', redirect: 'error', signal: AbortSignal.timeout(8000) })
+    const r = await fetch(`https://api.multiversx.com/accounts/${addr}`, { cache: 'no-store', redirect: 'error', signal: controller.signal })
     if (!r.ok) return null
     const account = await r.json()
     if (!account || account.address !== addr || typeof account.code !== 'string' || !account.code) return null
     return account
   } catch {
     return null
+  } finally {
+    clearTimeout(timer)
   }
 }
 
