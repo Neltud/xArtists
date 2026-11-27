@@ -6,7 +6,7 @@ import zipfile
 
 root = Path(__file__).resolve().parents[2]
 source = root / 'deploy/neon/xorus-hub'
-modules = ['index.mjs', 'hub.mjs', 'registry.mjs', 'probes.mjs', 'postgres.mjs', 'network-agents.mjs', 'risk-policy.mjs', 'paper-store.mjs', 'shared/paper-ledger.mjs', 'shared/pilotCeilings.mjs', 'package.json']
+modules = ['index.mjs', 'hub.mjs', 'registry.mjs', 'probes.mjs', 'postgres.mjs', 'network-agents.mjs', 'risk-policy.mjs', 'reference-quotes.mjs', 'paper-store.mjs', 'shared/paper-ledger.mjs', 'shared/pilotCeilings.mjs', 'package.json']
 # Repo re-exports stay for local tests. The image must contain the canonical modules, not paths outside the zip.
 canonical = {
     'shared/paper-ledger.mjs': root / 'packages/core/src/paper-ledger.mjs',
