@@ -23,6 +23,6 @@ export default function WalletAssets({account,section='all'}:{account:UserAccoun
    const src=media?.thumbnailUrl||nft.url||media?.url
    return <article key={nft.identifier}>{src?<img src={src} alt={nft.name||nft.identifier} loading="lazy" onError={e=>{e.currentTarget.hidden=true}}/>:<Icon name="cube" size={28}/>}<h3>{nft.name||nft.identifier}</h3><small>{nft.identifier}</small><button type="button" className="xa-button secondary" disabled={!isOwnedNftListCandidate(nft)} onClick={()=>setListTarget({identifier:nft.identifier,collection:nft.collection,nonce:nft.nonce,name:nft.name||nft.identifier,imageUrl:src})}>{xaRender('Mettre en vente')}</button></article>
   })}</div>}{nftVisible<account.nfts.length&&<button className="xa-button secondary" onClick={()=>setNftVisible(n=>n+12)}>{xaRender('Voir plus')}</button>}</section>}
-  <ListNftSheet target={listTarget} onClose={()=>setListTarget(null)}/>
+  {listTarget&&<ListNftSheet target={listTarget} onClose={()=>setListTarget(null)}/>}
  </div>
 }

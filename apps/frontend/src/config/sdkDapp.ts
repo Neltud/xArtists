@@ -19,7 +19,7 @@ export const WALLET_CONNECT_V2_FALLBACK_RELAY_URL = 'wss://relay.walletconnect.o
 /** Site origin for WC callback / deep link return */
 export const DAPP_CALLBACK_BASE =
   (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_DAPP_URL) ||
-  new URL(import.meta.env.BASE_URL, typeof window !== 'undefined' ? window.location.origin : 'https://neltud.github.io').href
+  new URL(import.meta.env?.BASE_URL || '/', typeof window !== 'undefined' ? window.location.origin : 'https://neltud.github.io').href
 
 /** Verified native WalletConnect schemes. App switching is initiated by a user tap. */
 export const XPORTAL_DEEP_LINKS={
