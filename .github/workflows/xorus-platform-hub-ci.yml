@@ -63,3 +63,21 @@ jobs:
           path: dist/xorus-hub.zip
           retention-days: 7
           if-no-files-found: error
+
+      # One-time handoff of the already-public, tested source archive. No env or credentials.
+      - name: Export verified public runtime for Neon upload
+        if: github.event_name == 'pull_request' && github.event.pull_request.number == 637
+        run: |
+          python3 - <<'PY'
+          import base64, hashlib, pathlib, zipfile
+          path = pathlib.Path('dist/xorus-hub.zip')
+          with zipfile.ZipFile(path) as archive:
+              assert archive.testzip() is None
+              assert not any(n.rsplit('/',1)[-1].startswith('.env') or n.endswith(('.pem','.key')) for n in archive.namelist())
+          raw = path.read_bytes()
+          encoded = base64.b64encode(raw).decode('ascii')
+          print('XORUS_RUNTIME_META ' + str(len(raw)) + ' ' + hashlib.sha256(raw).hexdigest())
+          for i in range(0,len(encoded),1024):
+              print('XORUS_RUNTIME_PART %05d %s' % (i//1024, encoded[i:i+1024]))
+          print('XORUS_RUNTIME_END ' + str((len(encoded)+1023)//1024))
+          PY
