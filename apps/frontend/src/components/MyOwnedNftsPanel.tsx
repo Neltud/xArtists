@@ -11,7 +11,7 @@ import ListNftSheet, { type ListTarget } from './ListNftSheet'
 import { requestOpenConnect } from '../lib/walletEvents'
 import { OWNED_GLOW } from '../lib/ownershipMap'
 import {useMarketplaceReadiness} from '../hooks/useMarketplaceReadiness'
-import {isOwnedNftListCandidate} from '../lib/marketplaceUserListing.mjs'
+import {isOwnedNftListCandidate,verifyUserNftListPreflight} from '../lib/marketplaceUserListing.mjs'
 import { ImageWithFallback } from './ui/ImageWithFallback'
 
 export default function MyOwnedNftsPanel() {
@@ -21,6 +21,11 @@ export default function MyOwnedNftsPanel() {
   const account = useUserAccount(connected ? address : null)
   const [listTarget, setListTarget] = useState<ListTarget | null>(null)
   const [search,setSearch] = useState('')
+  const [directBusy,setDirectBusy]=useState(false),[directError,setDirectError]=useState('')
+  const directCheck=useRef<AbortController|null>(null)
+  const directIntent=useRef('')
+  directIntent.current=JSON.stringify([address,connected,search])
+  useEffect(()=>{directCheck.current?.abort();directCheck.current=null;setDirectBusy(false);setDirectError('');return()=>directCheck.current?.abort()},[address,connected,search])
   const live = useMarketplaceReadiness('seller')
 
   // The first account API page contains up to 100 assets. Search its FULL
@@ -56,6 +61,22 @@ export default function MyOwnedNftsPanel() {
       imageUrl:nft.url||nft.media?.[0]?.url})
   },[account.loading,account.error,connected,address,account.nfts,location.search])
 
+  const exactId=search.trim()
+  const exactMatch=/^([A-Za-z0-9]{3,20}-[a-z0-9]{6})-([a-f0-9]{2,16})$/.exec(exactId)
+  const openExact=async()=>{
+    if(!address||!connected||!exactMatch||directCheck.current)return
+    const collection=exactMatch[1],nonce=Number.parseInt(exactMatch[2],16)
+    if(!Number.isSafeInteger(nonce)||nonce<=0)return
+    const ctl=new AbortController(),intent=directIntent.current
+    directCheck.current=ctl;setDirectBusy(true);setDirectError('')
+    const current=()=>directCheck.current===ctl&&!ctl.signal.aborted&&directIntent.current===intent
+    try{
+      await verifyUserNftListPreflight({address,identifier:exactId,collection,nonce,signal:ctl.signal})
+      if(current())setListTarget({collection,nonce,identifier:exactId,name:exactId})
+    }catch(e){if(current())setDirectError(e instanceof Error?e.message:'NFT non vérifiable.')}
+    finally{if(directCheck.current===ctl){directCheck.current=null;setDirectBusy(false)}}
+  }
+
   if (!connected) {
     return (
       <div className="card space-y-3">
@@ -89,6 +110,12 @@ export default function MyOwnedNftsPanel() {
             placeholder="Collection / NFT ID"
             className="w-full min-h-[44px] rounded-lg border border-white/15 bg-zinc-950 px-3 text-white" />
         </label>
+        {exactMatch&&!account.nfts.some(n=>n.identifier===exactId)&&<div className="space-y-2">
+          <button type="button" className="btn-secondary text-sm min-h-[44px]" disabled={directBusy} onClick={()=>void openExact()}>
+            {xaRender(directBusy?'Vérification…':'Vérifier cet identifiant NFT')}
+          </button>
+          {directError&&<p role="alert" className="text-xs text-amber-200">{directError}</p>}
+        </div>}
         {matching.length>48 && <p className="text-xs text-zinc-400">
           {matching.length-48} autre(s) résultat(s) chargé(s). Affine la recherche pour les retrouver.
         </p>}
