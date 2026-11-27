@@ -9,6 +9,7 @@ import {verifyUserNftListPreflight, type UserNftListProof} from '../lib/marketpl
 import { requestOpenConnect } from '../lib/walletEvents'
 import { useWallet } from '../context/WalletContext'
 import { egldTextToWei } from '../lib/egldExactAmount.mjs'
+import {verifySellerListingReceipt} from '../lib/marketplacePurchaseReceipt.mjs'
 
 export type ListTarget = {
   collection: string
@@ -30,6 +31,11 @@ export default function ListNftSheet({ target, onClose }: Props) {
   const latestAddress = useRef(address)
   latestAddress.current = address
   const [checking, setChecking] = useState(false)
+  const [submitted,setSubmitted]=useState<{address:string;identifier:string;priceAtomic:string}|null>(null)
+  const [receiptHash,setReceiptHash]=useState('')
+  const [receiptBusy,setReceiptBusy]=useState(false)
+  const receiptEpoch=useRef(0)
+  useEffect(()=>{receiptEpoch.current++;setSubmitted(null);setReceiptHash('');setReceiptBusy(false);return()=>{receiptEpoch.current++}},[target?.identifier,address,connected])
   const { listNft, pending, error, lastTx, marketplaceListLive } = useMarketplaceTx()
   const [price, setPrice] = useState('')
   const [msg, setMsg] = useState<string | null>(null)
@@ -45,7 +51,7 @@ export default function ListNftSheet({ target, onClose }: Props) {
     activeCheck.current?.abort()
     activeCheck.current=null
   }
-  const close=()=>{cancelCheck();onClose()}
+  const close=()=>{cancelCheck();receiptEpoch.current++;onClose()}
   useEffect(()=>{
     cancelCheck()
     setChecking(false)
@@ -67,7 +73,7 @@ export default function ListNftSheet({ target, onClose }: Props) {
 
   const onSubmit = async () => {
     // A synchronous lock also blocks same-frame clicks before React rerenders.
-    if(activeCheck.current||pending)return
+    if(activeCheck.current||pending||submitted)return
     setMsg(null)
     try { egldTextToWei(price) } catch {
       setMsg('Prix EGLD invalide (18 décimales maximum, supérieur à zéro).')
@@ -106,13 +112,15 @@ export default function ListNftSheet({ target, onClose }: Props) {
           fresh.royaltyReceiver!==currentQuote.royaltyReceiver ||
           fresh.escrowReceiver!==currentQuote.escrowReceiver)
         throw new Error('Les frais ou royalties ont changé. Recommence la vérification.')
-      await listNft({
+      const result=await listNft({
         tokenId: target.collection, nonce: target.nonce, priceEgld: price,
         royaltyBps:fresh.royaltyBps, royaltyReceiver:fresh.royaltyReceiver,
         signal:ctl.signal,
       })
       if(!stillCurrent())return
       setQuote(null)
+      setSubmitted({address,identifier:target.identifier,priceAtomic:egldTextToWei(price)})
+      setReceiptHash(result.sessionId&&/^[a-f0-9]{64}$/i.test(result.sessionId)?result.sessionId:'')
       setMsg('Transaction soumise — vérifier la confirmation et la garde NFT sur Explorer')
       // Submission is not confirmed custody. Refresh only after independent Explorer proof.
     } catch (e) {
@@ -124,11 +132,26 @@ export default function ListNftSheet({ target, onClose }: Props) {
     }
   }
 
+  const checkReceipt=async()=>{
+    if(!submitted||receiptBusy||submitted.address!==address||submitted.identifier!==target.identifier||!receiptHash)return
+    const generation=++receiptEpoch.current
+    setReceiptBusy(true)
+    try{
+      const result=await verifySellerListingReceipt({...submitted,hash:receiptHash})
+      if(generation!==receiptEpoch.current)return
+      if(result.status==='verified'){
+        setMsg('Annonce active vérifiée sur MultiversX · #'+result.listingId)
+        window.dispatchEvent(new Event('xa-market-listing-confirmed'))
+      }else setMsg('Annonce non encore attestée : '+result.status+' · vérifie Explorer avant de réessayer.')
+    }catch{if(generation===receiptEpoch.current)setMsg('Reçu indisponible.')}
+    finally{if(generation===receiptEpoch.current)setReceiptBusy(false)}
+  }
+
   return (
     <div className="fixed inset-0 z-[80] flex items-end sm:items-center justify-center p-3">
       <button type="button" className="absolute inset-0 bg-black/70" onClick={close} aria-label={xaLocalize("Fermer")} />
       <div role="dialog" aria-modal="true" aria-labelledby="xa-list-nft-title"
-        className="relative z-10 w-full max-w-md rounded-2xl border border-violet-500/30 bg-[#12121a] p-5 space-y-4 shadow-2xl">
+        className="relative z-10 w-full max-w-md max-h-[90dvh] overflow-y-auto rounded-2xl border border-violet-500/30 bg-[#12121a] p-5 space-y-4 shadow-2xl">
         <div className="flex gap-3">
           <div className="h-16 w-16 rounded-xl bg-black/40 overflow-hidden shrink-0">
             {xaRender(target.imageUrl ? (
@@ -150,7 +173,7 @@ export default function ListNftSheet({ target, onClose }: Props) {
             inputMode="decimal"
             value={price}
             placeholder="Saisir un prix en EGLD"
-            disabled={pending}
+            disabled={pending||!!submitted}
             onChange={e => {cancelCheck();setChecking(false);setPrice(e.target.value);setQuote(null);setMsg(null)}}
             className="mt-1 w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2.5 text-white"
           />
@@ -177,7 +200,7 @@ export default function ListNftSheet({ target, onClose }: Props) {
           <button
             type="button"
             className="btn-primary flex-1 text-sm"
-            disabled={pending || checking || !live || !connected || !canAttemptSign}
+            disabled={pending || checking || !live || !connected || !canAttemptSign || !!submitted}
             onClick={() => void onSubmit()}
           >
             {xaRender(pending || checking ? 'Vérification…' : currentQuote ? 'Signer listNft' : 'Vérifier frais et royalties')}
@@ -187,6 +210,12 @@ export default function ListNftSheet({ target, onClose }: Props) {
         {xaRender((msg || error) && (
           <p className={`text-xs ${error ? 'text-rose-300' : 'text-emerald-300'}`}>{xaRender(msg || error)}</p>
         ))}
+        {submitted&&<div className="space-y-2" data-testid="seller-listing-receipt">
+          <label htmlFor="xa-list-receipt-hash" className="block text-xs text-zinc-300">Hash de la transaction</label>
+          <input id="xa-list-receipt-hash" value={receiptHash} maxLength={64} onChange={e=>{receiptEpoch.current++;setReceiptBusy(false);setReceiptHash(e.target.value.trim())}} className="w-full rounded-lg border border-white/10 bg-black/40 p-2 text-white"/>
+          <button type="button" className="btn-secondary w-full min-h-[44px]" disabled={receiptBusy||!/^[a-f0-9]{64}$/i.test(receiptHash)} onClick={()=>void checkReceipt()}>Vérifier mon annonce</button>
+          {/^[a-f0-9]{64}$/i.test(receiptHash)&&<a target="_blank" rel="noopener noreferrer" href={'https://explorer.multiversx.com/transactions/'+receiptHash} className="text-xs underline text-violet-300">Explorer ↗</a>}
+        </div>}
         {xaRender(lastTx && (
           <p className="text-[10px] mono text-zinc-500 break-all">TX {xaRender(lastTx)}</p>
         ))}

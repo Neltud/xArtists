@@ -13,6 +13,7 @@ export default function MarketplaceLiveShelf(){
  const {lang}=useI18n(),fr=lang==='fr'
  const {address,connected,method,canAttemptSign,isLiaAddress}=useWallet(),{send}=useSendTransaction()
  const [rows,setRows]=useState<VerifiedMarketplaceQuote[]>([]),[loading,setLoading]=useState(true),[error,setError]=useState(false),[limited,setLimited]=useState(false)
+ const [nextFrom,setNextFrom]=useState<number|null>(null)
  const [pending,setPending]=useState<number|null>(null),[status,setStatus]=useState(''),[receipt,setReceipt]=useState<{quote:VerifiedMarketplaceQuote;address:string;hash:string}|null>(null)
  const [hash,setHash]=useState(''),[checking,setChecking]=useState(false)
  const current=useRef({address,connected,method,canAttemptSign,isLiaAddress,generation:0,mounted:false})
@@ -21,18 +22,19 @@ export default function MarketplaceLiveShelf(){
    current.current={address,connected,method,canAttemptSign,isLiaAddress,generation:now.generation+1,mounted:now.mounted}
  const attempt=useRef<symbol|null>(null),readSequence=useRef(0),receiptSequence=useRef(0)
  const controller=useRef<AbortController|null>(null)
- const refresh=useCallback(async()=>{
+ const refresh=useCallback(async(from=0)=>{
    const seq=++readSequence.current
    controller.current?.abort()
    const ctl=new AbortController();controller.current=ctl
-   setLoading(true);setError(false);setRows([]);setLimited(false)
+   setLoading(true);setError(false);if(from===0){setRows([]);setLimited(false);setNextFrom(null)}
    const request:typeof fetch=(url,options)=>fetch(url,{...options,signal:options?.signal?AbortSignal.any([ctl.signal,options.signal]):ctl.signal})
-   try{const result=await readLiveMarketplaceListings({request});if(!ctl.signal.aborted&&seq===readSequence.current){setRows(result.listings);setLimited(result.limited)}}
+   try{const result=await readLiveMarketplaceListings({request,from});if(!ctl.signal.aborted&&seq===readSequence.current){setRows(previous=>from===0?result.listings:[...new Map([...previous,...result.listings].map(row=>[row.listingId,row])).values()]);setLimited(result.limited);setNextFrom(result.nextFrom)}}
    catch{if(!ctl.signal.aborted&&seq===readSequence.current)setError(true)}
    finally{if(!ctl.signal.aborted&&seq===readSequence.current)setLoading(false)}
  },[])
  useEffect(()=>{current.current.mounted=true;void refresh();return()=>{current.current.mounted=false;controller.current?.abort();readSequence.current++;receiptSequence.current++;current.current.generation++;attempt.current=null}},[refresh])
  useEffect(()=>{receiptSequence.current++;setReceipt(null);setHash('');setChecking(false);setStatus('')},[address,connected,method,canAttemptSign])
+ useEffect(()=>{const onConfirmed=()=>{if(!attempt.current)void refresh()};window.addEventListener('xa-market-listing-confirmed',onConfirmed);return()=>window.removeEventListener('xa-market-listing-confirmed',onConfirmed)},[refresh])
  const walletHex=addressHex(address)
  const buy=async(quote:VerifiedMarketplaceQuote)=>{
    if(attempt.current||!connected||!canAttemptSign||isLiaAddress||!walletHex||quote.sellerHex===walletHex)return
@@ -72,9 +74,10 @@ export default function MarketplaceLiveShelf(){
    {loading?<p role="status">{fr?'Vérification des dépôts et annonces…':'Checking escrow and listings…'}</p>:error?<p role="status">{fr?'Marché momentanément non vérifiable. Aucun achat autorisé.':'Market unavailable. No purchase authorized.'}</p>:rows.length===0?<p role="status">{fr?'Aucune annonce vérifiée disponible pour le moment.':'No verified listing is currently available.'}</p>:
    <div className="xa-market-live-items">{rows.map(row=><article key={row.listingId}>{row.image&&<img src={row.image} alt={row.title||row.identifier} loading="lazy" onError={e=>{e.currentTarget.hidden=true}}/>}<h3>{row.title||row.identifier}</h3><a target="_blank" rel="noopener noreferrer" href={'https://explorer.multiversx.com/nfts/'+row.identifier}>{row.identifier} ↗</a><strong>{row.priceEgld} EGLD</strong><small>#{row.listingId} · {fr?'Frais réseau en sus':'Network fees extra'}</small>
    {!connected?<button type="button" className="xa-button primary" onClick={requestOpenConnect}>{fr?'Connecter pour acheter':'Connect to buy'}</button>:<button type="button" className="xa-button primary" disabled={pending!==null||!canAttemptSign||isLiaAddress||!walletHex||row.sellerHex===walletHex} onClick={()=>void buy(row)}>{pending===row.listingId?(fr?'Vérification…':'Checking…'):row.sellerHex===walletHex?(fr?'Ton annonce':'Your listing'):(fr?'Acheter ':'Buy ')+row.priceEgld+' EGLD'}</button>}</article>)}</div>}
-   {limited&&<small>{fr?'Recherche bornée aux 12 premiers identifiants ; des annonces peuvent ne pas être affichées.':'Discovery is limited to the first 12 listing IDs; some listings may be omitted.'}</small>}
+   {limited&&<small>{fr?'Inventaire partiel : certaines annonces peuvent nécessiter une nouvelle lecture.':'Partial inventory: some listings may require another read.'}</small>}
+   {nextFrom!==null&&<button type="button" className="xa-button secondary" disabled={loading||pending!==null} onClick={()=>void refresh(nextFrom)}>{fr?'Voir les annonces précédentes':'Load earlier listings'}</button>}
    {status&&<p role="status">{status}</p>}
    {receipt&&receipt.address===address&&<div className="xa-market-live-receipt"><label htmlFor="xa-live-sale-hash">{fr?'Hash de la transaction':'Transaction hash'}</label><input id="xa-live-sale-hash" value={hash} maxLength={64} onChange={e=>{receiptSequence.current++;setChecking(false);setHash(e.target.value.trim())}}/><button type="button" className="xa-button secondary" disabled={!hash||checking} onClick={()=>void check()}>{fr?'Vérifier la réception NFT':'Verify NFT receipt'}</button></div>}
-   <Link to="/marketplace?network=multiversx&list=1#xa-market-sell" className="xa-button secondary">{fr?'Mettre un NFT en vente':'List an NFT'} →</Link>
+   <Link to="/marketplace?network=multiversx&list=1#xa-market-sell" className="xa-button primary">{fr?'Mettre un NFT en vente':'List an NFT'} →</Link>
  </section>
 }

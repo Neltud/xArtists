@@ -48,6 +48,7 @@ async function ui({panel=false,live=true,canAttemptSign=true,initialTarget=targe
     '../lib/marketplaceUserListing.mjs':{isOwnedNftListCandidate,
       verifyUserNftListPreflight:opts=>{checks.push(opts);return state.preflight(opts)}},
     '../lib/walletEvents':{requestOpenConnect:()=>{}},
+    '../lib/marketplacePurchaseReceipt.mjs':{verifySellerListingReceipt:async opts=>({status:'verified',hash:opts.hash,listingId:250})},
     '../lib/ownershipMap':{OWNED_GLOW:''},
     './ui/ImageWithFallback':{ImageWithFallback:({src,alt})=>React.createElement('img',{src,alt})},
   }
@@ -164,6 +165,8 @@ test('only explicit second confirmation after unchanged fresh fees invokes the l
     assert.equal(h.listed[0].nonce,75)
     assert.equal(h.listed[0].priceEgld,'1.25')
     assert.match(h.dialog().textContent,/Transaction soumise/)
+    assert.equal(h.button('Vérifier frais et royalties').disabled,true)
+    assert.equal(h.host.querySelector('#xa-list-receipt-hash').value,'a'.repeat(64))
   }finally{await h.close()}
 })
 
@@ -242,5 +245,17 @@ test('actual transaction hook coalesces no clicks: a concurrent listing is rejec
     assert.equal(h.sent[0][0].receiver,A)
     assert.equal(h.sent[0][0].value,'0')
     assert.equal(h.sent[0][0].chainID,'1')
+  }finally{await h.close()}
+})
+
+test('seller may resolve an exact NFT identifier beyond the first 100 loaded assets without signing',async()=>{
+  const h=await ui({panel:true})
+  try{
+    await h.input(h.host.querySelector('input[type=search]'),nft(250).identifier)
+    await h.click(h.button('Vérifier cet identifiant NFT'))
+    assert.match(h.dialog().textContent,/ART-abcdef-fa/)
+    assert.equal(h.checks.length,1)
+    assert.equal(h.checks[0].identifier,nft(250).identifier)
+    assert.equal(h.listed.length,0)
   }finally{await h.close()}
 })

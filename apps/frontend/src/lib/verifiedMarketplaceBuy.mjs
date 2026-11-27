@@ -169,22 +169,52 @@ export async function readVerifiedListing(id,{request=fetch}={}){
  if(!quote)fail()
  return quote
 }
-/** Bounded discovery: only query explicit IDs, never guess from NFT order.
- * An empty escrow ends discovery immediately; unscanned IDs remain unknown.
- */
-export async function readLiveMarketplaceListings({request=fetch}={}){
- const context=await liveMarketContext(request)
- if(!context.nfts.length)return {listings:[],limited:false}
- const listings=[]
- let limited=false
- for(let id=1;id<=12;id++){
-   let raw
-   try{raw=await view(request,'getListing',[listingIdHex(id)])}catch{limited=true;break}
-   const listing=raw.length===1?decodeMarketplaceListing(raw[0],id):null
-   if(!listing){limited=true;break}
-   const quote=quoteFromListing(listing,context.nfts,context.feeBps)
-   if(quote)listings.push(quote)
-   if(id===12)limited=true
+/** Listing event is discovery only. Every returned ID requires a fresh contract view. */
+export function listingIdsFromEvents(transactions){
+ if(!Array.isArray(transactions))fail()
+ const ids=new Set()
+ for(const tx of transactions){
+   if(tx?.status!=='success'||tx.function!=='listNft'||!Array.isArray(tx.logs?.events))continue
+   const seller=addressHex(tx.sender)
+   if(!seller)continue
+   for(const event of tx.logs.events){
+     if(event?.address!==VERIFIED_MARKET_SALE.marketplace||event.identifier!=='listNft'||
+        !Array.isArray(event.topics)||event.topics.length!==3||event.topics[0]!=='bGlzdA==')continue
+     try{
+       const raw=bytes(event.topics[1]),owner=bytes(event.topics[2])
+       if(raw.length<1||raw.length>8||owner.length!==32||hex(owner)!==seller)continue
+       const id=raw.reduce((v,n)=>(v<<8n)+BigInt(n),0n)
+       if(id>0n&&id<=BigInt(Number.MAX_SAFE_INTEGER))ids.add(Number(id))
+     }catch{/* malformed index entry is not a listing */}
+   }
  }
- return {listings,limited}
+ return [...ids]
+}
+/** Bounded paginated discovery, newest first. No upper limit on listing ID.
+ * A failed or partial index is explicitly marked incomplete; no synthetic stock.
+ */
+export async function readLiveMarketplaceListings({request=fetch,from=0}={}){
+ if(!Number.isSafeInteger(from)||from<0||from>1000000||from%20!==0)fail()
+ const context=await liveMarketContext(request)
+ if(!context.nfts.length)return {listings:[],limited:false,nextFrom:null}
+ const history=await readJson(request,API+'/accounts/'+VERIFIED_MARKET_SALE.marketplace+'/transactions?function=listNft&size=20&from='+from+'&withLogs=true')
+ if(!Array.isArray(history)||history.length>20)fail()
+ const ids=listingIdsFromEvents(history)
+ const listings=[]
+ let limited=context.nfts.length>=100||history.length===20
+ // Limit concurrent VM calls. A failure on one ID must not hide a later one.
+ for(let i=0;i<ids.length;i+=4){
+   const batch=await Promise.allSettled(ids.slice(i,i+4).map(async id=>{
+     const raw=await view(request,'getListing',[listingIdHex(id)])
+     if(raw.length!==1)throw Error('listing_read_unavailable')
+     const decoded=decodeMarketplaceListing(raw[0],id)
+     if(!decoded)throw Error('listing_decode_unavailable')
+     return quoteFromListing(decoded,context.nfts,context.feeBps)
+   }))
+   for(const result of batch){
+     if(result.status==='rejected')limited=true
+     else if(result.value)listings.push(result.value)
+   }
+ }
+ return {listings,limited,nextFrom:history.length===20?from+20:null}
 }
