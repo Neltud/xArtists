@@ -1,5 +1,5 @@
 import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as xaUsePhraseLocale} from '../i18n/phraseRuntime'
-/** Creator Studio — collections + mint + list + certification phygital. */
+/** Creator Studio — collections + mint + list + certification for physical artwork. */
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useWallet } from '../context/WalletContext'
@@ -17,7 +17,23 @@ import { asText } from '../lib/safeRender'
 import { saveStudioCollection } from '../lib/studioOnChainMint'
 import {useCopy} from '../experience/state'
 
+const NFT_PREPARATION_TIERS = [[1, 90], [10, 500], [100, 2500], [1000, 10000], [5000, 30000], [10000, 50000]]
+
+function estimateNftPreparationCents(quantity: number): number | null {
+  if (!Number.isInteger(quantity) || quantity < 1 || quantity > 10000) return null
+  for (let index = 1; index < NFT_PREPARATION_TIERS.length; index++) {
+    const [upperQuantity, upperCents] = NFT_PREPARATION_TIERS[index]
+    if (quantity <= upperQuantity) {
+      const [lowerQuantity, lowerCents] = NFT_PREPARATION_TIERS[index - 1]
+      return lowerCents + Math.round((quantity - lowerQuantity) * (upperCents - lowerCents) / (upperQuantity - lowerQuantity))
+    }
+  }
+  return null
+}
+
 export default function StudioPage() {
+  const [estimateQuantity, setEstimateQuantity] = useState('1')
+  const estimateCents = estimateNftPreparationCents(Number(estimateQuantity))
   xaUsePhraseLocale()
   const c=useCopy()
   const advancedRef=useRef<HTMLDetailsElement>(null)
@@ -133,6 +149,20 @@ export default function StudioPage() {
   return (
     <div className="xa-creator-studio xa-creator-studio-v2 animate-fade-in mx-auto max-w-3xl space-y-8 px-4 pb-28 pt-6 sm:px-7">
       <StudioVisualWorkspace title={nftName} onTitle={setNftName} onAdvanced={()=>advancedRef.current?.setAttribute('open','' )} onPrepare={(file,description)=>{setMediaSelection({file,description});advancedRef.current?.setAttribute('open','');window.requestAnimationFrame(()=>document.getElementById('xa-studio-mint')?.scrollIntoView({block:'start'}))}}/>
+      <section aria-labelledby="xa-studio-estimate-title" className="card space-y-3">
+        <h2 id="xa-studio-estimate-title" className="section-title text-xl">{xaRender("Estimer la préparation de mes NFT")}</h2>
+        <p>{xaRender("Une œuvre physique photographiée ou un fichier numérique, à l’unité ou en collection. Même tarif xArtists sur Solana et MultiversX.")}</p>
+        <label className="block" htmlFor="xa-studio-estimate-quantity">{xaRender("Nombre de NFT (1 à 10 000)")}</label>
+        <input id="xa-studio-estimate-quantity" type="number" min={1} max={10000} step={1}
+          className="w-full rounded-lg border border-[color:var(--xa-border)] bg-[color:var(--xa-bg-elevated)] px-3 py-2"
+          value={estimateQuantity} onChange={event => setEstimateQuantity(event.target.value)} />
+        <p role="status">
+          {estimateCents === null ? xaRender("Saisis un nombre entier entre 1 et 10 000.") : (
+            <>{xaRender("Préparation xArtists estimée (HT)")} <strong>{new Intl.NumberFormat(undefined, { style: 'currency', currency: 'EUR' }).format(estimateCents / 100)}</strong></>
+          )}
+        </p>
+        <p className="text-sm">{xaRender("Estimation indicative pour des fichiers prêts à importer. Frais réseau et stockage en supplément. Les gros lots nécessitent une validation préalable.")}</p>
+      </section>
       <details className="xa-studio-advanced" ref={advancedRef}>
         <summary><strong>{c('simpleStudioAdvancedTitle')}</strong><span>{c('simpleStudioAdvancedDesc')}</span></summary>
       <div className="xa-studio-technical">
