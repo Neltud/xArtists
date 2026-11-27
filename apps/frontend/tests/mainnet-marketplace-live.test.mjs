@@ -1,22 +1,22 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import {VERIFIED_MARKET_SALE as market,readVerifiedListing,readLiveMarketplaceListings,listingIdHex,listingIdsFromEvents} from '../src/lib/verifiedMarketplaceBuy.mjs'
-import {verifyLiveListingReceipt} from '../src/lib/marketplacePurchaseReceipt.mjs'
+import {verifyLiveListingReceipt,verifySellerListingReceipt} from '../src/lib/marketplacePurchaseReceipt.mjs'
 const token='ART-abcdef',identifier=token+'-01',price='250000000000000001'
 const uint=(n,size)=>{const b=Buffer.alloc(size);let v=BigInt(n);for(let i=size-1;i>=0;i--){b[i]=Number(v&255n);v>>=8n}return b}
-function fixture(active=true){const t=Buffer.from(token),p=uint(price,8);return Buffer.concat([Buffer.alloc(32,1),uint(t.length,4),t,uint(1,8),uint(p.length,4),p,uint(200,2),Buffer.alloc(32),uint(active?1:0,1)]).toString('base64')}
+function fixture(active=true,sellerBytes=Buffer.alloc(32,1)){const t=Buffer.from(token),p=uint(price,8);return Buffer.concat([sellerBytes,uint(t.length,4),t,uint(1,8),uint(p.length,4),p,uint(200,2),Buffer.alloc(32),uint(active?1:0,1)]).toString('base64')}
 const response=value=>({ok:true,json:async()=>value})
 const seller='erd1'+'q'.repeat(58)
 const listingTx=(id,changes={})=>({status:'success',function:'listNft',sender:seller,
  logs:{events:[{address:market.marketplace,identifier:'listNft',topics:['bGlzdA==',uint(id,8).toString('base64'),Buffer.alloc(32).toString('base64')]}]},...changes})
-function rpc({escrow=true,active=true,id=1,history=[listingTx(id)]}={}){
+function rpc({escrow=true,active=true,id=1,history=[listingTx(id)],sellerBytes=Buffer.alloc(32,1)}={}){
  const calls=[]
  const request=async(url,opts)=>{
   if(url.endsWith('/nfts?size=100'))return response(escrow?[{identifier,collection:token,balance:'1',nonce:1}]:[])
   if(url.endsWith('/accounts/'+market.marketplace))return response({address:market.marketplace,codeHash:market.codeHash,isPayable:true,code:'abcd'})
   if(url.includes('/transactions?function=listNft'))return response(history)
   const q=JSON.parse(opts.body);calls.push(q)
-  const data=q.funcName==='isPaused'?['']:q.funcName==='getFeeBps'?['ZA==']:q.args[0]===listingIdHex(id)?[fixture(active)]:[]
+  const data=q.funcName==='isPaused'?['']:q.funcName==='getFeeBps'?['ZA==']:q.args[0]===listingIdHex(id)?[fixture(active,sellerBytes)]:[]
   return response({code:'successful',data:{data:{ReturnCode:0,ReturnData:data}}})
  }
  return {request,calls}
@@ -57,4 +57,19 @@ test('permissionless listing discovery uses authenticated contract event identit
  assert.equal(page.limited,true)
  assert.equal(page.listings.length,1)
  await assert.rejects(readLiveMarketplaceListings({...rpc(),from:-20}))
+})
+
+test('seller receipt requires the exact successful deposit event and matching active quote',async()=>{
+ const hash='b'.repeat(64),id=250
+ const tx={...listingTx(id),txHash:hash,receiver:seller,value:'0',action:{arguments:{receiver:market.marketplace,functionName:'listNft',transfers:[{identifier,value:'1'}]}}}
+ const verify=(changes={},opts={})=>{
+   const base=rpc({id,sellerBytes:Buffer.alloc(32),...opts}).request
+   return verifySellerListingReceipt({hash,address:seller,identifier,priceAtomic:price,request:async(url,options)=>url.includes('/transactions/'+hash)?response({...tx,...changes}):base(url,options)})
+ }
+ assert.deepEqual(await verify(),{status:'verified',hash,listingId:id})
+ assert.equal((await verify({status:'pending'})).status,'pending')
+ assert.equal((await verify({sender:'wrong'})).status,'mismatch')
+ assert.equal((await verify({logs:{events:[]}})).status,'delivery_unverified')
+ assert.equal((await verify({},{active:false})).status,'delivery_unverified')
+ assert.equal((await verify({},{escrow:false})).status,'delivery_unverified')
 })
