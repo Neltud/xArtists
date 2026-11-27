@@ -156,7 +156,7 @@ export default function StudioVisualWorkspace({title,onTitle,onAdvanced,onPrepar
      <small>{c('studioRightsNotVerified')}</small>
     </details>
     <div className="xa-visual-studio-publication">
-     <button type="button" className="xa-button primary" disabled={!active} onClick={()=>{if(active)onPrepare(active.file,description)}}>{c('simpleStudioAdvancedLink')}</button>
+     <button type="button" className="xa-button primary" disabled={!active} onClick={()=>{if(active)onPrepare(active.file,description)}}>{c('studioPrepareSelectedNft')}</button>
      <small role="note">{c('studioPreviewLocal')}</small>
      <Link to="/create/gallery" className="xa-button secondary">{c('studioPrepareExhibition')}</Link>
      <a href="#xa-studio-mint" onClick={onAdvanced} className="xa-visual-studio-advanced-link">{c('simpleStudioAdvancedLink')}</a>
