@@ -14,6 +14,7 @@ RUN npm install --legacy-peer-deps || true
 COPY apps/frontend ./apps/frontend
 COPY data ./data
 COPY packages/core/src/xorusAnalysisContract.mjs ./packages/core/src/xorusAnalysisContract.mjs
+COPY packages/core/tradingStatus.mjs ./packages/core/tradingStatus.mjs
 WORKDIR /app/apps/frontend
 # Render still serves the SPA below /xArtists/. Pages uses the origin root.
 RUN npm install --legacy-peer-deps && VITE_ACCESS_API_BASE="$VITE_ACCESS_API_BASE" npm run build -- --base=/xArtists/
@@ -37,6 +38,7 @@ COPY --from=build /app/apps/frontend/dist /usr/share/nginx/html/xArtists
 COPY --from=api /opt/xartists/access-api /opt/xartists/access-api
 # Relative imports from access-api/src resolve to /opt in this legacy layout.
 COPY packages/core/src/xorusAnalysisContract.mjs /opt/packages/core/src/xorusAnalysisContract.mjs
+COPY xorus /opt/xorus/
 COPY lia/chorus/__init__.py lia/chorus/catalog.py lia/chorus/swarm.py /opt/lia/chorus/
 COPY lia/xorus/__init__.py lia/xorus/catalog.py lia/xorus/data_feed.py lia/xorus/swarm.py lia/xorus/decision_agent.py lia/xorus/analysis_report.py lia/xorus/analysis_cycle.py /opt/lia/xorus/
 COPY ops/write-render-build-info.mjs /usr/local/lib/xartists/write-render-build-info.mjs

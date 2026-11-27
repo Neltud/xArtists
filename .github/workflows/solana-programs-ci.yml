@@ -21,13 +21,14 @@ jobs:
     timeout-minutes: 30
     env:
       RUST_LOG: error
-      SOLANA_PLATFORM_TOOLS_DIR: ${{ runner.temp }}/solana-platform-tools
       BPF_OUT_DIR: ${{ github.workspace }}/contracts/solana/target/deploy
       XORUS_LIVE_TRADING: '0'
       PAYBOX_CHECKOUT_ENABLED: '0'
       MINT_LIVE_ENABLED: 'false'
     steps:
       - uses: actions/checkout@v7
+      - name: Set runner-local build directory
+        run: echo "SOLANA_PLATFORM_TOOLS_DIR=$RUNNER_TEMP/solana-platform-tools" >> "$GITHUB_ENV"
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt
