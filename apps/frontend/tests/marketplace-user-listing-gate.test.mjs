@@ -155,3 +155,30 @@ test('cancelling during chain reads aborts every request and rejects a late proo
   release()
   await assert.rejects(pending,/annulée/)
 })
+
+test('realistic 10% creator royalty with 3% market fee is blocked with an actionable diagnostic',async()=>{
+  const opts={address:addr,identifier:nft.identifier,collection:nft.collection,nonce:1}
+  await assert.rejects(verifyUserNftListPreflight({...opts,request:requestFor(nft,{nft:{royalties:10}})}),
+    /10 % \+ frais marketplace : 3 % = 13 %.*ne dépassent pas 7 %/)
+  const allowed=await verifyUserNftListPreflight({...opts,request:requestFor(nft,{nft:{royalties:5}})})
+  assert.equal(allowed.royaltyBps,500)
+  assert.equal(allowed.feeBps,300)
+  await assert.rejects(verifyUserNftListPreflight({...opts,request:requestFor(nft,{paused:'AQ=='})}),/en pause/)
+})
+test('preflight works in mobile browsers without AbortSignal.any or AbortSignal.timeout',async()=>{
+  const descriptors=['any','timeout'].map(key=>[key,Object.getOwnPropertyDescriptor(AbortSignal,key)])
+  try{
+    for(const [key] of descriptors)Object.defineProperty(AbortSignal,key,{value:undefined,configurable:true})
+    const proof=await verifyUserNftListPreflight({address:addr,identifier:nft.identifier,collection:nft.collection,
+      nonce:1,signal:new AbortController().signal,request:requestFor()})
+    assert.equal(proof.feeBps,300)
+  }finally{
+    for(const [key,descriptor] of descriptors)if(descriptor)Object.defineProperty(AbortSignal,key,descriptor);else delete AbortSignal[key]
+  }
+})
+test('missing NFT account endpoint is distinct from a network outage',async()=>{
+  const request=async(url,options)=>url.includes('/accounts/'+addr+'/nfts/')
+    ?{ok:false,status:404}:requestFor()(url,options)
+  await assert.rejects(verifyUserNftListPreflight({address:addr,identifier:nft.identifier,collection:nft.collection,
+    nonce:1,request}),/introuvable dans le wallet connecté/)
+})
