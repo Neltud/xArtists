@@ -80,3 +80,26 @@ test('public GET catalog is no-store, queryless and cannot be used for payment a
     }
   }finally{await server.close()}
 })
+
+test('global payment roadmap cannot enable funds, accounts or cards, even when other services are ready',()=>{
+  const flags={walletlessAccountEnabled:true,privateAnalysisEnabled:true,
+    checkout_enabled:true,transfer_enabled:true,card_issuance_enabled:true}
+  const roadmap=publicCommercialCatalog(flags).global_pay
+  assert.equal(roadmap.mode,'planning_only')
+  assert.equal(roadmap.custody_by_xartists,false)
+  assert.deepEqual(roadmap.supported_display_currencies_target,['EUR','USD','GBP'])
+  assert.deepEqual(roadmap.rails.map(r=>r.id),['service_checkout','artist_payout','crypto_onramp','payment_account','debit_card'])
+  for(const r of roadmap.rails){
+    assert.equal(r.status,'not_released')
+    assert.equal(r.checkout_enabled,false)
+    assert.equal(r.transfer_enabled,false)
+    assert.equal(r.stored_balance_enabled,false)
+    assert.equal(r.card_issuance_enabled,false)
+    assert.ok(r.required_evidence.length>=3)
+  }
+  assert.equal(roadmap.rails[2].purpose,'external_wallet_delivery')
+  assert.deepEqual(roadmap.rails[3].candidates,[])
+  assert.deepEqual(roadmap.rails[4].candidates,[])
+  roadmap.rails[4].card_issuance_enabled=true
+  assert.equal(publicCommercialCatalog().global_pay.rails[4].card_issuance_enabled,false)
+})
