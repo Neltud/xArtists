@@ -41,7 +41,8 @@ test('status page defaults to visitor-first with operator metrics behind an expl
   assert.match(status,/showDiagnostics, setShowDiagnostics.*useState\(false\)/)
   assert.match(status,/aria-expanded=\{showDiagnostics\}/)
   assert.match(status,/\{showDiagnostics && <section id="xa-operator-diagnostics"/)
-  assert.match(status,/Mode découverte et démonstration uniquement/)
+  assert.match(status,/Mainnet MultiversX : mise en vente et achat NFT sous contrôle individuel/)
+  assert.doesNotMatch(status,/Mode découverte et démonstration uniquement|xOrus · Paper/)
 })
 
 test('read-only $TRO portal has no extra CSS/JS lazy preload on direct navigation',()=>{
