@@ -28,4 +28,5 @@ export declare function addressHex(address: string): string | null
 
 export declare function listingIdHex(id:number):string
 export declare function readVerifiedListing(id:number,options?:{request?:typeof fetch}):Promise<VerifiedMarketplaceQuote>
-export declare function readLiveMarketplaceListings(options?:{request?:typeof fetch}):Promise<{listings:VerifiedMarketplaceQuote[];limited:boolean}>
+export declare function listingIdsFromEvents(transactions:unknown):number[]
+export declare function readLiveMarketplaceListings(options?:{request?:typeof fetch;from?:number}):Promise<{listings:VerifiedMarketplaceQuote[];limited:boolean;nextFrom:number|null}>
