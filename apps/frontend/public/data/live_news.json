@@ -1,8 +1,85 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-27T03:35:06.624Z",
+  "updatedAt": "2026-11-27T16:12:46.295Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1795795965835",
+      "timestamp": "16:12",
+      "source": "EGLD",
+      "title": "Cotation publique · $2.29 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1795790454000",
+      "timestamp": "14:40",
+      "source": "CoinTelegraph",
+      "title": "What was Coinbase worth while Nasdaq was closed?",
+      "link": "https://cointelegraph.com/news/what-was-coinbase-worth-while-nasdaq-was-closed?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1795787040000",
+      "timestamp": "13:44",
+      "source": "CoinTelegraph",
+      "title": "Binance to launch tokenized IPO program after regulatory approval: Yi He",
+      "link": "https://cointelegraph.com/news/binance-ipo-program-regulatory-approval-yi-he?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1795786106000",
+      "timestamp": "13:28",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1795783194000",
+      "timestamp": "12:39",
+      "source": "CoinTelegraph",
+      "title": "Brazil’s stock exchange pushes stablecoin launch back to 2027",
+      "link": "https://cointelegraph.com/news/brazil-b3-stablecoin-tokenization-launch-2027?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1795782000000",
+      "timestamp": "12:20",
+      "source": "CoinTelegraph",
+      "title": "Austria-supervised crypto firms report 20.4B euros in H1 trading volume",
+      "link": "https://cointelegraph.com/news/austria-supervised-crypto-firms-report-204b-h1-volume?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1795778068000",
+      "timestamp": "11:14",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin supply metric hits 11-year low as new ‘capitulation’ signal arrives",
+      "link": "https://cointelegraph.com/markets/bitcoin-supply-metric-new-capitulation-signal?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1795785550000",
+      "timestamp": "13:19",
+      "source": "CoinDesk",
+      "title": "Kalshi turns to small businesses as legal battles threaten forecasts on sports",
+      "link": "https://www.coindesk.com/business/2026/11/27/kalshi-turns-to-small-businesses-as-legal-battles-threaten-forecasts-on-sports"
+    },
+    {
+      "id": "rss-CoinDesk-1-1795781767000",
+      "timestamp": "12:16",
+      "source": "CoinDesk",
+      "title": "Bitcoin 'death cross' is coming. Here's what happened after previous 13.",
+      "link": "https://www.coindesk.com/daybook-us/2026/11/27/bitcoin-death-cross-is-coming-here-s-what-happened-after-previous-13"
+    },
+    {
+      "id": "rss-CoinDesk-2-1795779947000",
+      "timestamp": "11:45",
+      "source": "CoinDesk",
+      "title": "Bitcoin on course to end seven-week losing streak while trailing stock rebound",
+      "link": "https://www.coindesk.com/markets/2026/11/27/bitcoin-on-course-to-end-seven-week-losing-streak-while-trailing-stock-rebound"
+    },
+    {
+      "id": "rss-CoinDesk-3-1795779277000",
+      "timestamp": "11:34",
+      "source": "CoinDesk",
+      "title": "Live updates: Bitcoin drops below $60,000 as Nasdaq 100 gives up most of its early gains",
+      "link": "https://www.coindesk.com/tech/2026/11/27/live-news-bitcoin-rebounds-above-usd61-000-as-ai-stocks-lead-premarket-gains"
+    },
     {
       "id": "egld-1795750506045",
       "timestamp": "03:35",
@@ -30,13 +107,6 @@
       "source": "CoinTelegraph",
       "title": "‘Very racist’ Netflix SBF series, BitMart’s $319M shortfall: Asia Express",
       "link": "https://cointelegraph.com/magazine/very-racist-netflix-sbf-series-bitmarts-319m-shortfall-asia-express?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1795731126000",
-      "timestamp": "22:12",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "rss-CoinTelegraph-4-1795729363000",
@@ -128,76 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Nasdaq exec pushes for common EU rules on tokenized securities",
       "link": "https://cointelegraph.com/news/nasdaq-exec-eu-wide-legal-framework-tokenized-securities?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1795692179000",
-      "timestamp": "11:22",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin price eyes $61K as Talos warns of thin Thanksgiving liquidity",
-      "link": "https://cointelegraph.com/markets/bitcoin-price-talos-warns-thin-thanksgiving-liquidity?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1795688128000",
-      "timestamp": "10:15",
-      "source": "CoinTelegraph",
-      "title": "Zcash devs urge users to migrate 2% of ZEC supply to accelerate Sapling pool retirement",
-      "link": "https://cointelegraph.com/news/zcash-users-migrate-zec-supply-sapling-pool-retirement?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1795686154000",
-      "timestamp": "09:42",
-      "source": "CoinTelegraph",
-      "title": "Bitcoin ETF November outflows top $5B, Morgan Stanley bucks trend",
-      "link": "https://cointelegraph.com/markets/morgan-stanley-bitcoin-etf-trend-outflows-november?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1795684695000",
-      "timestamp": "09:18",
-      "source": "CoinTelegraph",
-      "title": "Switzerland’s first spot Bitcoin ETF ticks up 0.6% in opening hour",
-      "link": "https://cointelegraph.com/markets/bit-debuts-switzerlands-first-spot-bitcoin-etf?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1795672388000",
-      "timestamp": "05:53",
-      "source": "CoinTelegraph",
-      "title": "UK regulator plans tighter DeFi rules, citing $6.3B Binance hack: Report",
-      "link": "https://cointelegraph.com/news/uk-fca-defi-regulation-binance-hack?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1795692470000",
-      "timestamp": "11:27",
-      "source": "CoinDesk",
-      "title": "Major crypto trading firm Auros is winding down operations: Sources",
-      "link": "https://www.coindesk.com/markets/2026/11/26/major-crypto-trading-firm-auros-is-winding-down-operations-sources"
-    },
-    {
-      "id": "rss-CoinDesk-1-1795691842000",
-      "timestamp": "11:17",
-      "source": "CoinDesk",
-      "title": "Bitcoin little changed, DeFi tokens lead the bounce as U.S. marks Thanksgiving",
-      "link": "https://www.coindesk.com/markets/2026/11/26/bitcoin-little-changed-defi-tokens-lead-the-bounce-as-u-s-marks-thanksgiving"
-    },
-    {
-      "id": "rss-CoinDesk-2-1795690568000",
-      "timestamp": "10:56",
-      "source": "CoinDesk",
-      "title": "Nvidia shipment freeze and U.S. chip curbs put AI stocks under pressure",
-      "link": "https://www.coindesk.com/markets/2026/11/26/nvidia-shipment-freeze-and-u-s-chip-curbs-put-ai-stocks-under-pressure"
-    },
-    {
-      "id": "rss-CoinDesk-3-1795689633000",
-      "timestamp": "10:40",
-      "source": "CoinDesk",
-      "title": "New York Attorney General wins $1.4 billion ruling against founders of crypto trading firm NovaTech",
-      "link": "https://www.coindesk.com/policy/2026/11/26/new-york-attorney-general-wins-usd1-4-billion-ruling-against-founders-of-crypto-trading-firm-novatech"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1795643618000",
-      "timestamp": "21:53",
-      "source": "CoinTelegraph",
-      "title": "Switzerland clears 57 jurisdictions for crypto tax data sharing",
-      "link": "https://cointelegraph.com/news/switzerland-clears-57-jurisdictions-crypto-tax-data-sharing?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
