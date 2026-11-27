@@ -1,8 +1,85 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-26T20:59:56.691Z",
+  "updatedAt": "2026-11-27T03:35:06.624Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
+    {
+      "id": "egld-1795750506045",
+      "timestamp": "03:35",
+      "source": "EGLD",
+      "title": "Cotation publique · $2.37 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
+    },
+    {
+      "id": "rss-CoinTelegraph-0-1795744058000",
+      "timestamp": "01:47",
+      "source": "CoinTelegraph",
+      "title": "AI is driving a flood of crypto bug reports. Now it’s helping sort them",
+      "link": "https://cointelegraph.com/news/ai-driving-flood-of-crypto-bug-reports-now-helping-sort-them?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1795739739000",
+      "timestamp": "00:35",
+      "source": "CoinTelegraph",
+      "title": "Privacy coins face diverging fortunes as KuCoin moves to drop Monero",
+      "link": "https://cointelegraph.com/news/privacy-coins-kucoin-drop-monero-grayscale-zcash?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1795732786000",
+      "timestamp": "22:39",
+      "source": "CoinTelegraph",
+      "title": "‘Very racist’ Netflix SBF series, BitMart’s $319M shortfall: Asia Express",
+      "link": "https://cointelegraph.com/magazine/very-racist-netflix-sbf-series-bitmarts-319m-shortfall-asia-express?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1795731126000",
+      "timestamp": "22:12",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1795729363000",
+      "timestamp": "21:42",
+      "source": "CoinTelegraph",
+      "title": "BNB Chain details new layer-1 for trading, private finance and AI",
+      "link": "https://cointelegraph.com/news/bnb-chain-details-new-layer-1-trading-private-finance-ai?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1795728827000",
+      "timestamp": "21:33",
+      "source": "CoinTelegraph",
+      "title": "Binance completes withdrawal recovery four weeks after $6.3B hack",
+      "link": "https://cointelegraph.com/news/binance-completes-withdrawal-recovery-four-weeks-after-63b-hack?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1795714200000",
+      "timestamp": "17:30",
+      "source": "CoinDesk",
+      "title": "A tiny payment can expose the IP address behind a bitcoin wallet, developer finds",
+      "link": "https://www.coindesk.com/tech/2026/11/26/a-tiny-payment-can-expose-the-ip-address-behind-a-bitcoin-wallet-developer-finds"
+    },
+    {
+      "id": "rss-CoinDesk-1-1795711823000",
+      "timestamp": "16:50",
+      "source": "CoinDesk",
+      "title": "Bitcoin’s dormant supply rises, a behavior seen during previous bear-market bottoming phases",
+      "link": "https://www.coindesk.com/markets/2026/11/26/bitcoin-s-dormant-supply-rises-a-behavior-seen-during-previous-bear-market-bottoming-phases"
+    },
+    {
+      "id": "rss-CoinDesk-2-1795707763000",
+      "timestamp": "15:42",
+      "source": "CoinDesk",
+      "title": "Crypto for Advisors: Four questions to ask before trusting a crypto exchange",
+      "link": "https://www.coindesk.com/coindesk-indices/2026/11/26/crypto-for-advisors-four-questions-to-ask-before-trusting-a-crypto-exchange"
+    },
+    {
+      "id": "rss-CoinDesk-3-1795701958000",
+      "timestamp": "14:05",
+      "source": "CoinDesk",
+      "title": "Spain gives anti-laundering unit power to freeze crypto accounts without a judge",
+      "link": "https://www.coindesk.com/business/2026/11/26/spain-gives-anti-laundering-unit-power-to-freeze-crypto-accounts-without-a-judge"
+    },
     {
       "id": "egld-1795726796335",
       "timestamp": "20:59",
@@ -53,34 +130,6 @@
       "link": "https://cointelegraph.com/news/nasdaq-exec-eu-wide-legal-framework-tokenized-securities?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinDesk-0-1795714200000",
-      "timestamp": "17:30",
-      "source": "CoinDesk",
-      "title": "A tiny payment can expose the IP address behind a bitcoin wallet, developer finds",
-      "link": "https://www.coindesk.com/tech/2026/11/26/a-tiny-payment-can-expose-the-ip-address-behind-a-bitcoin-wallet-developer-finds"
-    },
-    {
-      "id": "rss-CoinDesk-1-1795711823000",
-      "timestamp": "16:50",
-      "source": "CoinDesk",
-      "title": "Bitcoin’s dormant supply rises, a behavior seen during previous bear-market bottoming phases",
-      "link": "https://www.coindesk.com/markets/2026/11/26/bitcoin-s-dormant-supply-rises-a-behavior-seen-during-previous-bear-market-bottoming-phases"
-    },
-    {
-      "id": "rss-CoinDesk-2-1795707763000",
-      "timestamp": "15:42",
-      "source": "CoinDesk",
-      "title": "Crypto for Advisors: Four questions to ask before trusting a crypto exchange",
-      "link": "https://www.coindesk.com/coindesk-indices/2026/11/26/crypto-for-advisors-four-questions-to-ask-before-trusting-a-crypto-exchange"
-    },
-    {
-      "id": "rss-CoinDesk-3-1795701958000",
-      "timestamp": "14:05",
-      "source": "CoinDesk",
-      "title": "Spain gives anti-laundering unit power to freeze crypto accounts without a judge",
-      "link": "https://www.coindesk.com/business/2026/11/26/spain-gives-anti-laundering-unit-power-to-freeze-crypto-accounts-without-a-judge"
-    },
-    {
       "id": "rss-CoinTelegraph-0-1795692179000",
       "timestamp": "11:22",
       "source": "CoinTelegraph",
@@ -107,13 +156,6 @@
       "source": "CoinTelegraph",
       "title": "Switzerland’s first spot Bitcoin ETF ticks up 0.6% in opening hour",
       "link": "https://cointelegraph.com/markets/bit-debuts-switzerlands-first-spot-bitcoin-etf?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1795672800000",
-      "timestamp": "06:00",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "rss-CoinTelegraph-5-1795672388000",
@@ -156,48 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Switzerland clears 57 jurisdictions for crypto tax data sharing",
       "link": "https://cointelegraph.com/news/switzerland-clears-57-jurisdictions-crypto-tax-data-sharing?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1795641739000",
-      "timestamp": "21:22",
-      "source": "CoinTelegraph",
-      "title": "Braiins warns of Bitcoin mining attacks affecting over 1,000 sites",
-      "link": "https://cointelegraph.com/news/braiins-warns-bitcoin-mining-attacks-affecting-1000-sites?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1795641099000",
-      "timestamp": "21:11",
-      "source": "CoinTelegraph",
-      "title": "Why ECB collateral eligibility could boost demand for tokenized bonds",
-      "link": "https://cointelegraph.com/news/why-ecb-collateral-eligibility-could-boost-demand-tokenized-bonds?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1795632891000",
-      "timestamp": "18:54",
-      "source": "CoinTelegraph",
-      "title": "Ethereum Foundation backs Keccak-256 to counter quantum, AI threats",
-      "link": "https://cointelegraph.com/news/ethereum-foundation-keccak-256-counter-quantum-ai-threats?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1795629190000",
-      "timestamp": "17:53",
-      "source": "CoinTelegraph",
-      "title": "US inflation rises to 3.8% ahead of December Fed meeting, clouding crypto outlook",
-      "link": "https://cointelegraph.com/news/us-inflation-rises-december-fed-meeting-clouding-crypto-outlook?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1795631087000",
-      "timestamp": "18:24",
-      "source": "CoinDesk",
-      "title": "French Senate blocks new crypto tax and wallet list critics called a kidnapping risk",
-      "link": "https://www.coindesk.com/business/2026/11/25/french-senate-blocks-new-crypto-tax-and-wallet-list-critics-called-a-kidnapping-risk"
-    },
-    {
-      "id": "rss-CoinDesk-1-1795628313000",
-      "timestamp": "17:38",
-      "source": "CoinDesk",
-      "title": "'This time actually seems different': Crypto veterans brace for more pain as bitcoin tumbles",
-      "link": "https://www.coindesk.com/markets/2026/11/25/this-time-actually-seems-different-crypto-veterans-brace-for-more-pain-as-bitcoin-tumbles"
     }
   ]
 }
