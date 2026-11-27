@@ -60,7 +60,7 @@ test('public Marketplace surfaces a user seller route but preserves a strict sig
   assert.match(market,/id="xa-market-sell"/)
   assert.match(panel,/disabled=\{!eligible \|\| account.loading \|\| !!account.error\}/)
   assert.match(panel,/live&&canAttemptSign \? 'Mettre en vente' : 'Préparer la mise en vente'/)
-  assert.match(sheet,/disabled=\{pending \|\| checking \|\| !live \|\| !connected \|\| !canAttemptSign\}/)
+  assert.match(sheet,/disabled=\{pending \|\| checking \|\| !live \|\| !connected \|\| !canAttemptSign \|\| !!submitted\}/)
   assert.match(sheet,/await verifyUserNftListPreflight/)
   assert.match(sheet,/Transaction soumise — vérifier la confirmation/)
   assert.match(hook,/if \(!isMarketplaceLive\(\)\)/)
