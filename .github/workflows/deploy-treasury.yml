@@ -44,7 +44,7 @@ jobs:
         with:
           python-version: "3.11"
       - run: pip install multiversx-sdk-cli
-      - uses: dtolnay/rust-toolchain@1.98.0
+      - uses: dtolnay/rust-toolchain@1.120.0
         with:
           targets: wasm32v1-none
       - name: Build+deploy
