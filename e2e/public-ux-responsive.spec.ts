@@ -516,8 +516,11 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
   })
 
   test('phone screenshots: auction and guide disclaimers remain readable in light theme', async ({ page }) => {
+    // Dark is now the default; explicitly select light to test its original contrast contract.
+    await page.addInitScript(() => localStorage.setItem('xa-theme', 'light'))
     await page.setViewportSize({ width: 390, height: 844 })
     await visit(page, '/auction/')
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light')
     await expect(page.locator('.xa-auction-preview')).toBeVisible()
     const preview = await page.locator('.xa-auction-preview').evaluate(el => ({
       background: getComputedStyle(el).backgroundColor,
@@ -529,6 +532,7 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
     expect(warning).not.toBe('rgb(255, 237, 213)')
     await page.screenshot({ animations: 'disabled', path: 'artifacts/ux-mobile/auction-contrast-390.png' })
     await visit(page, '/guide/')
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light')
     const guideNotice = page.locator('header [role="status"]')
     await expect(guideNotice).toBeVisible()
     const guideColors = await guideNotice.evaluate(el => {
