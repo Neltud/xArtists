@@ -90,11 +90,25 @@ function integerFromView(value) {
   return n
 }
 async function view(request,fn,signal) {
-  const result=await read(request,API+'/query',{method:'POST',headers:{'content-type':'application/json'},
-    body:JSON.stringify({scAddress:MARKETPLACE_MAINNET,funcName:fn,args:[]})},signal)
-  if (result?.returnCode!=='ok' || !Array.isArray(result.returnData) ||
-      result.returnData.length!==1) fail('Contrat marketplace non vérifiable.')
-  return integerFromView(result.returnData[0])
+  const options={method:'POST',headers:{'content-type':'application/json'},
+    body:JSON.stringify({scAddress:MARKETPLACE_MAINNET,funcName:fn,args:[]})}
+  const decode=vm=>{
+    const code=vm?.ReturnCode??vm?.returnCode
+    const message=vm?.ReturnMessage??vm?.returnMessage??''
+    const data=vm?.ReturnData??vm?.returnData
+    if((code!==0&&code!=='ok')||message!==''||!Array.isArray(data)||data.length!==1)
+      fail('Contrat marketplace non vérifiable.')
+    return integerFromView(data[0])
+  }
+  try {
+    return decode(await read(request,API+'/query',options,signal))
+  } catch {
+    // Same mainnet read-only VM query, already used by the independent inspector.
+    if(signal?.aborted)fail('Vérification de mise en vente annulée.')
+    const result=await read(request,'https://gateway.multiversx.com/vm-values/query',options,signal)
+    if(result?.code!=='successful')fail('Contrat marketplace non vérifiable.')
+    return decode(result?.data?.data)
+  }
 }
 /** An advisory eligibility check, not a token transfer or a settled listing. */
 export async function verifyUserNftListPreflight({
