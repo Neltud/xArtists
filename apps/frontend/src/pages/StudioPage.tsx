@@ -38,7 +38,7 @@ export default function StudioPage() {
   const c=useCopy()
   const advancedRef=useRef<HTMLDetailsElement>(null)
   useEffect(()=>{
-    const reveal=()=>{if(/^#xa-studio-(mint|turntable)$/.test(window.location.hash))advancedRef.current?.setAttribute('open','')}
+    const reveal=()=>{if(/^#xa-studio-(collections|turntable)$/.test(window.location.hash))advancedRef.current?.setAttribute('open','')}
     reveal();window.addEventListener('hashchange',reveal)
     return()=>window.removeEventListener('hashchange',reveal)
   },[])
@@ -148,35 +148,11 @@ export default function StudioPage() {
 
   return (
     <div className="xa-creator-studio xa-creator-studio-v2 animate-fade-in mx-auto max-w-3xl space-y-8 px-4 pb-28 pt-6 sm:px-7">
-      <StudioVisualWorkspace title={nftName} onTitle={setNftName} onAdvanced={()=>advancedRef.current?.setAttribute('open','' )} onPrepare={(file,description)=>{setMediaSelection({file,description});advancedRef.current?.setAttribute('open','');window.requestAnimationFrame(()=>document.getElementById('xa-studio-mint')?.scrollIntoView({block:'start'}))}}/>
-      <section aria-labelledby="xa-studio-estimate-title" className="card space-y-3">
-        <h2 id="xa-studio-estimate-title" className="section-title text-xl">{xaRender("Estimer la préparation de mes NFT")}</h2>
-        <p>{xaRender("Une œuvre physique photographiée ou un fichier numérique, à l’unité ou en collection. Même tarif xArtists sur Solana et MultiversX.")}</p>
-        <label className="block" htmlFor="xa-studio-estimate-quantity">{xaRender("Nombre de NFT (1 à 10 000)")}</label>
-        <input id="xa-studio-estimate-quantity" type="number" min={1} max={10000} step={1}
-          className="w-full rounded-lg border border-[color:var(--xa-border)] bg-[color:var(--xa-bg-elevated)] px-3 py-2"
-          value={estimateQuantity} onChange={event => setEstimateQuantity(event.target.value)} />
-        <p role="status">
-          {estimateCents === null ? xaRender("Saisis un nombre entier entre 1 et 10 000.") : (
-            <>{xaRender("Préparation xArtists estimée (HT)")} <strong>{new Intl.NumberFormat(undefined, { style: 'currency', currency: 'EUR' }).format(estimateCents / 100)}</strong></>
-          )}
-        </p>
-        <p className="text-sm">{xaRender("Estimation indicative pour des fichiers prêts à importer. Frais réseau et stockage en supplément. Les gros lots nécessitent une validation préalable.")}</p>
-      </section>
-      <details className="xa-studio-advanced" ref={advancedRef}>
-        <summary><strong>{c('simpleStudioAdvancedTitle')}</strong><span>{c('simpleStudioAdvancedDesc')}</span></summary>
-      <div className="xa-studio-technical">
-      <header className="space-y-1">
-        <p className="section-label">{xaRender("Création")}</p>
-        <h2 className="section-title display text-2xl">{xaRender(sculptureMode ? "Créer le NFT de ma sculpture" : "Creator Studio")}</h2>
-        <p className="text-sm leading-7 text-[color:var(--xa-text-secondary)]">
-          {xaRender("Ajoute une image, une vidéo ou une musique depuis ton appareil. La publication et la création NFT demandent ensuite des vérifications et une signature. ")}</p>
-      </header>
-
+      <StudioVisualWorkspace title={nftName} onTitle={setNftName} onAdvanced={()=>advancedRef.current?.setAttribute('open','' )} onPrepare={(file,description)=>{setMediaSelection({file,description});window.requestAnimationFrame(()=>document.getElementById('xa-studio-mint')?.scrollIntoView({block:'start'}))}}/>
       <section id="xa-studio-mint" className="card xa-studio-workflow space-y-3">
-        <h2 className="text-sm font-semibold text-[color:var(--xa-text)]">{xaRender("Importer une image, une vidéo ou une musique")}</h2>
+        <h2 className="text-sm font-semibold text-[color:var(--xa-text)]">{xaRender("Créer mon NFT")}</h2>
         <label className="block text-sm font-medium" htmlFor="xa-studio-nft-name">
-          Nom de l’œuvre à publier
+          Nom de l’œuvre
         </label>
         <input
           id="xa-studio-nft-name"
@@ -201,23 +177,58 @@ export default function StudioPage() {
           />
         </label></details>
         <p className="text-sm text-[color:var(--xa-text-secondary)]">Pour créer votre NFT, envoyez votre œuvre, choisissez votre collection puis confirmez dans xPortal.</p>
-        {!activeCollectionId&&<a href="#xa-studio-collections" className="btn-secondary text-sm">Choisir ou créer ma collection</a>}
+        {!connected?<button type="button" className="btn-primary text-sm" onClick={requestOpenConnect}>Connecter mon wallet</button>:<>
+          <label className="block text-sm">Ma collection
+            <select className="mt-1 w-full rounded-lg border border-[color:var(--xa-border)] bg-[color:var(--xa-bg-elevated)] p-2 text-sm" value={activeCollectionId}
+              onChange={event=>{if(event.target.value)selectExisting(event.target.value)}}>
+              <option value="" disabled>Choisir une collection</option>
+              {activeCollectionId&&!ownedCollections.some(c=>c.id===activeCollectionId)&&<option value={activeCollectionId}>{activeCollectionId}</option>}
+              {ownedCollections.map(c=><option key={c.id} value={c.id}>{c.id}</option>)}
+            </select>
+          </label>
+          <div className="flex flex-wrap gap-2">
+            <a href="#xa-studio-collections" onClick={()=>advancedRef.current?.setAttribute('open','')} className="btn-secondary text-sm">Créer ou gérer ma collection</a>
+            {activeCollectionId&&<button type="button" disabled={mint.pending||!mint.canSign} onClick={()=>void runRole()} className="btn-secondary text-sm">Vérifier mes droits de création</button>}
+          </div>
+        </>}
         <button
           type="button"
-          className="btn-secondary text-sm"
+          className="btn-primary text-sm"
           disabled={mint.pending || !activeCollectionId || !nftMediaUri.trim() || !mint.canSign}
           onClick={() => void runMint()}
         >
           {xaRender(mint.pending ? 'Signature…' : 'Signer la création NFT')}
         </button>
-        {mint.lastTx && <p className="break-all text-xs text-cyan-900 dark:text-cyan-100">Session / Tx : {mint.lastTx}
+        {mint.lastTx && <p className="break-all text-xs text-cyan-900 dark:text-cyan-100">Référence de transaction : {mint.lastTx}
           {/^[a-f0-9]{64}$/i.test(mint.lastTx) && <a
             href={'https://explorer.multiversx.com/transactions/' + mint.lastTx}
             target="_blank" rel="noopener noreferrer" className="ml-2 underline">Voir Explorer</a>}
         </p>}
         {xaRender(mint.error && <p className="text-sm text-amber-900 dark:text-amber-100">{xaRender(asText(mint.error))}</p>)}
       </section>
-
+      <section aria-labelledby="xa-studio-estimate-title" className="card space-y-3">
+        <h2 id="xa-studio-estimate-title" className="section-title text-xl">{xaRender("Estimer la préparation de mes NFT")}</h2>
+        <p>{xaRender("Une œuvre physique photographiée ou un fichier numérique, à l’unité ou en collection. Même tarif xArtists sur Solana et MultiversX.")}</p>
+        <label className="block" htmlFor="xa-studio-estimate-quantity">{xaRender("Nombre de NFT (1 à 10 000)")}</label>
+        <input id="xa-studio-estimate-quantity" type="number" min={1} max={10000} step={1}
+          className="w-full rounded-lg border border-[color:var(--xa-border)] bg-[color:var(--xa-bg-elevated)] px-3 py-2"
+          value={estimateQuantity} onChange={event => setEstimateQuantity(event.target.value)} />
+        <p role="status">
+          {estimateCents === null ? xaRender("Saisis un nombre entier entre 1 et 10 000.") : (
+            <>{xaRender("Préparation xArtists estimée (HT)")} <strong>{new Intl.NumberFormat(undefined, { style: 'currency', currency: 'EUR' }).format(estimateCents / 100)}</strong></>
+          )}
+        </p>
+        <p className="text-sm">{xaRender("Estimation indicative pour des fichiers prêts à importer. Frais réseau et stockage en supplément. Les gros lots nécessitent une validation préalable.")}</p>
+      </section>
+      <details className="xa-studio-advanced" ref={advancedRef}>
+        <summary><strong>{c('simpleStudioAdvancedTitle')}</strong><span>{c('simpleStudioAdvancedDesc')}</span></summary>
+      <div className="xa-studio-technical">
+      <header className="space-y-1">
+        <p className="section-label">{xaRender("Création")}</p>
+        <h2 className="section-title display text-2xl">{xaRender(sculptureMode ? "Créer le NFT de ma sculpture" : "Creator Studio")}</h2>
+        <p className="text-sm leading-7 text-[color:var(--xa-text-secondary)]">
+          {xaRender("Ajoute une image, une vidéo ou une musique depuis ton appareil. La publication et la création NFT demandent ensuite des vérifications et une signature. ")}</p>
+      </header>
 
       <MainnetJourney current="studio" />
       <section aria-label="Parcours création sculpture" className="card space-y-2 border border-cyan-500/25">
@@ -373,7 +384,7 @@ export default function StudioPage() {
       </section>
 
       <section className="card xa-studio-surface space-y-4 border border-[color:var(--xa-border)] bg-[color:var(--xa-surface)]">
-        <h2 className="text-sm font-semibold text-[color:var(--xa-text)]">{xaRender("Certification Phygital")}</h2>
+        <h2 className="text-sm font-semibold text-[color:var(--xa-text)]">{xaRender("Certification d’une œuvre physique")}</h2>
         <p className="text-sm text-[color:var(--xa-text-secondary)] leading-relaxed">
           {xaRender("Photo HD → hash SHA-256 local → certificats CoA / CoP. Réévaluation future via intention xOrus ")}<code className="text-xs text-[color:var(--xa-text-secondary)]"> PHYGITAL_REEVAL</code>.
         </p>
