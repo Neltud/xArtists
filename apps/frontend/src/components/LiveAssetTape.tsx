@@ -40,7 +40,7 @@ export default function LiveAssetTape({compact}:{compact?:boolean}){
     }
     publish()
    }).catch(()=>{})
-   const fx=json('https://api.frankfurter.app/latest?from=USD&to='+FX.join(','),c.signal).then(j=>{
+   const fx=json('https://api.frankfurter.dev/v1/latest?base=USD&symbols='+FX.join(','),c.signal).then(j=>{
     const at=typeof j?.date==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(j.date)?Date.parse(j.date):NaN
     if(j?.base==='USD'&&fresh(at,7*86400000))for(const row of next.filter(v=>v.group==='fx')){
      if(positive(j.rates?.[row.id])){row.usd=j.rates[row.id];row.at=at}

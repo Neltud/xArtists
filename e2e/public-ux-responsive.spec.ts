@@ -112,6 +112,10 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
   for(const [lang,width] of [['fr',390],['en',1440]] as const){
     test(`xOrus analysis product at ${width}px: derived findings and source outage (${lang})`,async({page})=>{
       await page.setViewportSize({width,height:900})
+      await page.route(/^https:\/\/api\.frankfurter\.dev\/v1\/latest\?/,route=>route.fulfill({
+        headers:{'access-control-allow-origin':'*'},
+        json:{base:'USD',date:new Date().toISOString().slice(0,10),rates:{EUR:0.9125,GBP:0.7654,CHF:0.8345,JPY:159.54}},
+      }))
       const report=JSON.parse(readFileSync(new URL('../apps/frontend/public/data/xorus_analysis_preview.json',import.meta.url),'utf8'))
       // Deliberately unverified paper fixture, never a live provider assertion.
       report.coverage.signals_analyzed=1
@@ -132,6 +136,7 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
       const quotes=page.getByTestId('market-quotes-first')
       await expect(quotes).toBeVisible()
       await expect(quotes.getByRole('heading',{name:lang==='fr'?'Cours des marchés':'Market prices'})).toBeVisible()
+      await expect(quotes.getByRole('article').filter({hasText:'USD/EUR'})).toContainText(lang==='fr'?'0,9125':'0.9125')
       expect(await quotes.evaluate(el=>Boolean(el.compareDocumentPosition(document.querySelector('[data-testid="xorus-decision-desk"]')!) & Node.DOCUMENT_POSITION_FOLLOWING))).toBe(true)
       const analysis=page.getByTestId('xorus-analysis-report')
       await expect(analysis).toContainText(lang==='fr'?'Les données collectées servent d’entrées internes':'Collected data are internal inputs')
