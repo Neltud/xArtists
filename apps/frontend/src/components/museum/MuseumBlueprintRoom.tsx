@@ -173,12 +173,14 @@ export default function MuseumBlueprintRoom({
   room = 'stone',
   allowBuy = true,
   emptyLabel = 'Aucune œuvre',
+  onInspect,
 }: {
   blueprint: RoomBlueprint
   frames: FrameItem[]
   room?: Theme
   allowBuy?: boolean
   emptyLabel?: string
+  onInspect?: (frame:FrameItem)=>void
 }) {
   const b = useMemo(() => bounds(blueprint), [blueprint])
   const theme = THEME[room] || THEME.stone
@@ -222,6 +224,7 @@ export default function MuseumBlueprintRoom({
   const visible = useRef(true)
 
   const [inspect, setInspect] = useState<FrameItem | null>(null)
+  useEffect(()=>{if(inspect)onInspect?.(inspect)},[inspect,onInspect])
   const [buyMsg, setBuyMsg] = useState<string | null>(null)
   const [broken, setBroken] = useState<Record<string, boolean>>({})
   const [showDetails, setShowDetails] = useState(false)

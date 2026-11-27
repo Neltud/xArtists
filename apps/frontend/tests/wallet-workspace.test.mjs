@@ -27,6 +27,7 @@ async function ui({connected=true,error=false,path='/workspace/wallet'}={}){
   '../experience/state':{useCopy:()=>key=>key},
   '../experience/networkCopy':{useNetworkCopy:()=>key=>key},
   '../i18n/phraseRuntime':{renderChild:value=>value},
+  '../i18n/I18nContext':{useI18n:()=>({lang:'fr',t:key=>key,dir:'ltr'})},
   '../lib/walletEvents':{requestOpenConnect:()=>connects.push(true)},
   '../lib/xportalWc':{clearXPortalSession:()=>{}},
   '../components/ui/Toast':{useToast:()=>({push})},

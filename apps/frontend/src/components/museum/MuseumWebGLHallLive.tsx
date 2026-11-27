@@ -55,7 +55,7 @@ const PALETTE: Record<
   Theme,
   { wall: number; floor: number; ceil: number; fog: number; frame: number; emissive: number }
 > = {
-  cyber: { wall: 0xb5bdac, floor: 0x68705f, ceil: 0xe5e9dc, fog: 0xd9dfd0, frame: 0x30372c, emissive: 0xcdf58b },
+  cyber: { wall: 0x79658f, floor: 0x342544, ceil: 0xa59ab9, fog: 0x7d6a9c, frame: 0x2a173d, emissive: 0xc9a3ff },
   stone: { wall: 0xc2b9a8, floor: 0x8e8776, ceil: 0xe7e2d4, fog: 0xc5bfae, frame: 0x544c3e, emissive: 0xc4a574 },
   gold: { wall: 0xcabc97, floor: 0x9b8b69, ceil: 0xece2c9, fog: 0xd3c8ac, frame: 0x7a6530, emissive: 0xe0b84a },
   white: { wall: 0xf0ebe3, floor: 0xd4cdc2, ceil: 0xfaf7f2, fog: 0xc8c0b4, frame: 0xe0d8cc, emissive: 0xa09888 },
@@ -108,6 +108,7 @@ export default function MuseumWebGLHallLive({
   room = 'stone',
   allowBuy = true,
   roomTitle = 'xArtists',
+  onInspect,
 }: {
   blueprint: RoomBlueprint
   frames: FrameItem[]
@@ -115,6 +116,7 @@ export default function MuseumWebGLHallLive({
   allowBuy?: boolean
   emptyLabel?: string
   roomTitle?: string
+  onInspect?: (frame:FrameItem)=>void
 }) {
   const mountRef = useRef<HTMLDivElement>(null)
   const axes=useRef({x:0,y:0})
@@ -129,6 +131,7 @@ export default function MuseumWebGLHallLive({
   const [nearTitle, setNearTitle] = useState('')
   const [avatarSkin] = useState<AvatarSkinId>(() => loadAvatarSkin())
   const [inspect, setInspect] = useState<FrameItem | null>(null)
+  useEffect(()=>{if(inspect)onInspect?.(inspect)},[inspect,onInspect])
   const [isCoarse, setIsCoarse] = useState(false)
   const [fullscreen,setFullscreen]=useState(false)
   const [viewMode,setViewMode]=useState<'first'|'third'>('first')
@@ -251,7 +254,7 @@ export default function MuseumWebGLHallLive({
     ceil.rotation.x = Math.PI / 2
     ceil.position.set(b.cx, wallH, b.cy)
     ceil.frustumCulled = true
-    scene.add(ceil)
+    if(blueprint.id!=='art-world-outdoor')scene.add(ceil);else ceil.geometry.dispose()
 
     for (const w of blueprint.walls) {
       const g = wallGeom(w)
@@ -266,7 +269,7 @@ export default function MuseumWebGLHallLive({
     scene.add(new THREE.AmbientLight(0xffffff, AMBIENT_INTENSITY))
     scene.add(new THREE.HemisphereLight(0xf5fff0,0x7f8974,1.7))
     const seams=new THREE.GridHelper(Math.max(floorW,floorD),Math.max(6,Math.round(Math.max(floorW,floorD)/2)),0x6a735e,0x858d7a);seams.position.set(b.cx,.008,b.cy);(seams.material as THREE.Material).transparent=true;(seams.material as THREE.Material).opacity=.15;scene.add(seams)
-    const stripMat=new THREE.MeshBasicMaterial({color:0xfffff3});for(let i=0;i<3;i++){const strip=new THREE.Mesh(new THREE.BoxGeometry(Math.min(floorW*.68,20),.035,.15),stripMat);strip.position.set(b.cx,wallH-.05,b.cy+(i-1)*Math.min(4,floorD*.25));scene.add(strip)}
+    const stripMat=new THREE.MeshBasicMaterial({color:0xfffff3});for(let i=0;i<(blueprint.id==='art-world-outdoor'?0:3);i++){const strip=new THREE.Mesh(new THREE.BoxGeometry(Math.min(floorW*.68,20),.035,.15),stripMat);strip.position.set(b.cx,wallH-.05,b.cy+(i-1)*Math.min(4,floorD*.25));scene.add(strip)}
     const key = new THREE.DirectionalLight(0xfff5e6, KEY_INTENSITY)
     key.position.set(b.cx + 3, wallH - 0.4, b.cy - 2)
     scene.add(key)
@@ -607,7 +610,7 @@ export default function MuseumWebGLHallLive({
     }
   }, [blueprint, paintings, pal, avatarSkin, sceneError])
 
-  if(sceneError)return <div className="xa-museum-fallback"><p>{c('museumFallback')}</p><MuseumBlueprintRoom blueprint={blueprint} frames={frames} room={room} allowBuy={allowBuy}/><button type="button" className="xa-button secondary" onClick={()=>setSceneError(false)}>{c('refresh')}</button></div>
+  if(sceneError)return <div className="xa-museum-fallback"><p>{c('museumFallback')}</p><MuseumBlueprintRoom blueprint={blueprint} frames={frames} room={room} allowBuy={allowBuy} onInspect={onInspect}/><button type="button" className="xa-button secondary" onClick={()=>setSceneError(false)}>{c('refresh')}</button></div>
   return <MuseumStagePortal fullscreen={fullscreen}><div className={`xa-museum-stage ${fullscreen?'is-fullscreen':''}`} aria-label={roomTitle}>
     <div ref={mountRef} className="xa-museum-canvas"/>
     {!ready&&<div className="xa-museum-loading" role="status"><span className="xa-loader"/>{c('museumLoading')}</div>}

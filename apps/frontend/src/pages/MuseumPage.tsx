@@ -5,7 +5,7 @@ import {localizeChild as xaLocalize, renderChild as xaRender, usePhraseLocale as
  * Shell tokens for chrome; immersive canvas unchanged.
  * Louvre M1 : aile multi-salles + frames ALISTOR/BGG/XAUS.
  */
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import {
   framesFromUserNfts,
@@ -13,7 +13,6 @@ import {
 } from '../components/museum/MuseumCorridor'
 import MuseumHall from '../components/museum/MuseumHall'
 import DriveNftDistributor from '../experience/DriveNftDistributor'
-import AdSlot from '../components/AdSlot'
 import {useCopy} from '../experience/state'
 import Icon from '../experience/Icon'
 import HolderPulseTab from '../components/museum/HolderPulseTab'
@@ -26,7 +25,6 @@ import { nftImageUrl, type NFT } from '../types/nft'
 import { requestOpenConnect } from '../lib/walletEvents'
 import { consumeTravelDestination } from '../lib/travelBridge'
 import {
-  buildMuseumNetwork,
   loadMuseumNetwork,
   museumIdForCity,
   VIRTUAL_MUSEUMS,
@@ -40,12 +38,14 @@ import {
   loadLouvreFrames,
   type LouvreRoomId,
 } from '../lib/louvreM1'
-import { builtinBlueprintForMuseum } from '../lib/builtinBlueprints'
+import { ART_WORLD_SPACES, artWorldBlueprint, builtinBlueprintForMuseum } from '../lib/builtinBlueprints'
 import type { RoomBlueprint } from '../lib/roomBlueprint'
 import { TUDURI_WORKS } from '../config/tuduriAtelier'
 import { loadFullCatalog } from '../lib/loadFullCatalog'
 import { loadDailyMuseumCatalog, dailyWorksToFrames } from '../lib/loadDailyMuseumCatalog'
 import { mergeVenueFrames } from '../lib/venueWallSlots'
+import {enterSpace,inspectArt,normalizeProgress,readProgress,saveProgress} from '../lib/artWorldProgress.mjs'
+import {useI18n} from '../i18n/I18nContext'
 
 type Mode = 'explore' | 'mine' | 'map' | 'pulse' | 'venue'
 
@@ -138,7 +138,11 @@ function ArtworkGrid({
 export default function MuseumPage() {
   xaUsePhraseLocale()
 
-  const c=useCopy()
+  const c=useCopy(), {lang}=useI18n(),fr=lang==='fr'
+  const [progress,setProgress]=useState(()=>{try{const p=readProgress(window.localStorage);return enterSpace(p,p.space)}catch{return enterSpace(normalizeProgress(null),'museum')}})
+  const [saved,setSaved]=useState(false)
+  useEffect(()=>{try{setSaved(saveProgress(window.localStorage,progress))}catch{setSaved(false)}},[progress])
+  const inspectWorld=useCallback((frame:FrameItem)=>setProgress(p=>inspectArt(p,frame.id)),[])
   const [params,setParams] = useSearchParams()
   const { connected, address } = useWallet()
   const account = useUserAccount(connected ? address : null)
@@ -300,40 +304,37 @@ export default function MuseumPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- venueRevision triggers wall remap
   }, [museumId, louvreFrames, visitFrames, myFrames, venueRevision])
 
+  const worldFrames=useMemo(()=>{
+    if(museumId!=='xartists'||progress.space==='museum'||!hallFrames.length)return hallFrames
+    const index=ART_WORLD_SPACES.findIndex(space=>space.id===progress.space)
+    const offset=(index*5)%hallFrames.length
+    return [...hallFrames.slice(offset),...hallFrames.slice(0,offset)].slice(0,16)
+  },[hallFrames,museumId,progress.space])
+
   return (
     <div className="xa-museum-page space-y-5">
-      <header className="space-y-2 pt-2">
-        <p className="section-label">{xaRender("Galerie 3D")}</p>
-        <h1 className="section-title display">{xaRender(museum?.name || 'Musée')}</h1>
-        <div className="atelier-title-rule" aria-hidden />
-        <p className="section-lead">
-          {xaRender(museum?.tagline || 'Salles immersives · catalogue quotidien Open Access')}
-          {xaRender(catalogLoading ? ' · catalogue…' : '')}
-        </p>
-        {xaRender(wallCount > 0 && (
-          <p className="text-[13px] text-[color:var(--xa-text-secondary)]">
-            {xaRender("Capacité salle : ")}{xaRender(wallCount)} {xaRender(" murs · jusqu'à ")}{xaRender(MUSEUM_CAPACITY.maxArtworksPerWall)}{xaRender(' ')}
-            {xaRender("œuvres/mur (")}{xaRender(wallCount * MUSEUM_CAPACITY.maxArtworksPerWall)} {xaRender(" slots) · affichage max")}{xaRender(' ')}
-            {xaRender(MUSEUM_CAPACITY.maxArtworksPublic)}
-          </p>
-        ))}
-        {xaRender(travelBanner && (
-          <p className="text-[12px] text-[color:var(--xa-text-secondary)] bg-[color:var(--xa-accent-soft)] border border-[color:var(--xa-border)] rounded-xl px-3 py-2">
-            {xaRender(travelBanner)}
-          </p>
-        ))}
-        <Link to="/create/gallery"
-          className="inline-flex min-h-[44px] items-center rounded-xl border border-[color:var(--xa-accent)] px-4 text-sm font-semibold">
-          Créer mon exposition 3D · artiste / galerie / vendeur
-        </Link>
-        <a
-          href="#museum-visit"
-          className="inline-flex items-center min-h-[44px] rounded-xl border border-[color:var(--xa-border)] bg-[color:var(--xa-panel)] px-4 text-[13px] font-semibold text-[color:var(--xa-text)] hover:bg-[color:var(--xa-panel2)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--xa-accent)]"
-        >
-          {xaRender('Accéder directement à la visite')}
-        </a>
+      <header className="xa-art-world-title">
+        <div><p>xArtists / Art World</p><h1>{xaRender(museum?.name || 'Musée')}</h1></div>
+        <Link to="/create/gallery" className="xa-button secondary">{fr?'Créer mon exposition':'Create exhibition'}</Link>
       </header>
-
+      {mode==='explore'&&<section aria-label={fr?'Visite 3D':'3D visit'} className="xa-art-world-stage">
+        <MuseumHall
+          key={museumId==='xartists'?progress.space:museumId+':'+louvreRoomId}
+          blueprint={museumId==='xartists'&&progress.space!=='museum'?artWorldBlueprint(progress.space):blueprint}
+          roomTitle={museumId==='xartists'?(fr?ART_WORLD_SPACES.find(x=>x.id===progress.space)!.fr:ART_WORLD_SPACES.find(x=>x.id===progress.space)!.en):museumId==='louvre'?louvreRoomById(louvreRoomId).label:(museum?.name||'xArtists')}
+          frames={worldFrames}
+          room={museumId==='xartists'?ART_WORLD_SPACES.find(x=>x.id===progress.space)!.theme: museum?.room||'stone'}
+          allowBuy={false}
+          onInspect={museumId==='xartists'?inspectWorld:undefined}
+        />
+      </section>}
+      {mode==='explore'&&museumId==='xartists'&&<section className="xa-art-world-control" aria-label="Art World" data-testid="art-world-progress">
+        <div className="xa-art-world-score"><div><strong>{fr?'Carnet d’exploration':'Exploration journal'}</strong><small>{saved?(fr?'Sauvegardé sur cet appareil':'Saved on this device'):(fr?'Sauvegarde locale indisponible':'Local save unavailable')}</small></div><div><b>{progress.visited.length}/7</b><small>{fr?'Lieux':'Places'}</small></div><div><b>{progress.inspected.length}</b><small>{fr?'Œuvres ouvertes':'Artworks opened'}</small></div></div>
+        <progress value={progress.visited.length} max={7} aria-label={fr?'Lieux visités':'Places visited'}/>
+        <p className="xa-art-world-mission">{progress.visited.length===7&&progress.inspected.length>=7?(fr?'Parcours terminé ! Continue à explorer.':'Tour complete! Keep exploring.'):(fr?'Défi : ouvre les 7 lieux et découvre 7 œuvres.':'Challenge: open all 7 places and discover 7 artworks.')} · {Math.min(progress.inspected.length,7)}/7</p>
+        <div className="xa-art-world-spaces">{ART_WORLD_SPACES.map((space,index)=><button type="button" key={space.id} aria-pressed={progress.space===space.id} onClick={()=>setProgress(p=>enterSpace(p,space.id))}><span>{String(index+1).padStart(2,'0')}</span><strong>{fr?space.fr:space.en}</strong><small>{progress.visited.includes(space.id)?(fr?'Visité':'Visited'):(fr?'Explorer':'Explore')}</small></button>)}</div>
+        <Link to="/marketplace?network=multiversx" className="xa-button primary">{fr?'Voir les NFT disponibles à l’achat':'See NFTs available to buy'} →</Link>
+      </section>}
       <div id="museum-visit" tabIndex={-1} role="group" aria-label="Parcours du musée" className="flex flex-wrap gap-2 scroll-mt-28">
         {xaRender((['explore', 'venue', 'map', 'mine', 'pulse'] as Mode[]).map(m => (
           <button
@@ -354,23 +355,14 @@ export default function MuseumPage() {
 
       {xaRender(mode === 'explore' && (
         <>
-          {museumId === 'louvre' && (
-            <LouvreWingNav activeId={louvreRoomId} onSelect={setLouvreRoomId} />
-          )}
+          {museumId === 'louvre' && <LouvreWingNav activeId={louvreRoomId} onSelect={setLouvreRoomId} />}
           <div className="xa-museum-select-row"><label><Icon name="museum" size={20}/><span className="sr-only">{c('museumChoose')}</span><select value={museumId} aria-label={c('museumChoose')} onChange={e=>{const id=e.target.value;setMuseumId(id);setParams(p=>{const next=new URLSearchParams(p);next.set('museum',id);next.delete('city');return next},{replace:true})}}>{museums.map(m=><option key={m.id} value={m.id}>{m.name} · {m.city}</option>)}</select></label><span>{c('museumTouchHelp')}</span></div>
-          <MuseumHall
-            blueprint={blueprint}
-            roomTitle={museumId === 'louvre' ? louvreRoomById(louvreRoomId).label : (museum?.name||'xArtists')}
-            frames={hallFrames}
-            room={museum?.room || 'stone'}
-            allowBuy
-          />
-          <ArtworkGrid frames={hallFrames} title={xaLocalize("Œuvres de la salle")} wallCount={wallCount} />
+          {travelBanner&&<p>{xaRender(travelBanner)}</p>}
+          {catalogLoading&&<p role="status">{fr?'Catalogue en cours de chargement…':'Loading catalogue…'}</p>}
+          <ArtworkGrid frames={worldFrames} title={xaLocalize("Œuvres de la salle")} wallCount={museumId==='xartists'&&progress.space!=='museum'?artWorldBlueprint(progress.space).walls.length:wallCount} />
           {museumId === 'xartists' && <DriveNftDistributor />}
-          <AdSlot id="drop_feature" />
         </>
       ))}
-
       {xaRender(mode === 'venue' && (
         <>
           <VenueWallAssign onChanged={() => setVenueRevision(v => v + 1)} />
@@ -414,17 +406,7 @@ export default function MuseumPage() {
         <HolderPulseTab nfts={account.nfts || []} frames={hallFrames} connected={connected} />
       ))}
 
-      <p className="text-[13px] leading-relaxed text-[color:var(--xa-text-secondary)]">
-        <button
-          type="button"
-          className="underline-offset-2 hover:underline"
-          onClick={() => setMode('venue')}
-        >
-          {xaRender("Louer un mur / assigner NFT ")}</button>
-        {xaRender(' · ')}
-        {xaRender("Pack IA = 1 salle privée (")}{xaRender(MUSEUM_CAPACITY.wallsPerPackRoom)} {xaRender(" murs ×")}{xaRender(' ')}
-        {xaRender(MUSEUM_CAPACITY.maxArtworksPerWall)} {xaRender(" œuvres) ")}{xaRender(' · ')}
-        {xaRender("Catalogue Met refresh quotidien (Open Access) ")}</p>
+
     </div>
   )
 }

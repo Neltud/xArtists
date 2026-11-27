@@ -3,6 +3,7 @@
  * Display is illustrative only: ownership, current availability and offers are
  * NOT inferred from a historical record. Live checkout stays elsewhere.
  */
+import type {ReactNode} from 'react'
 import {Link} from 'react-router-dom'
 import {useCopy} from '../../experience/state'
 
@@ -12,7 +13,7 @@ const FEATURED = [
  {id:'BGG-2b627c-05',title:'Line Up #03',image:'https://media.multiversx.com/nfts/asset/bafybeiawuydtvjnlt6qhmgtxdrs2thpi62cnkpflhmw6bedop3o4uzjp3e/item.JPG',collection:'BorisGaranger'},
 ] as const
 
-export default function FeaturedArtGallery(){
+export default function FeaturedArtGallery({children}:{children?:ReactNode}={}){
  const c=useCopy()
  return <section className="xa-featured-gallery" aria-labelledby="xa-featured-title">
   <header className="xa-featured-gallery-header">
@@ -22,6 +23,7 @@ export default function FeaturedArtGallery(){
     <Link to="/museum">{c('navExhibitions')}</Link>
    </nav>
   </header>
+  {children}
   <div className="xa-featured-gallery-grid">
    {FEATURED.map((art,i)=><article key={art.id} className={'xa-featured-work xa-featured-work-'+i}>
     <a className="xa-featured-work-image" href={'https://explorer.multiversx.com/nfts/'+art.id}
