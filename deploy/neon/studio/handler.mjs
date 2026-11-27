@@ -13,6 +13,7 @@ export function targetReady(env){
  return env.NEON_BRANCH_ID===BRANCH&&env.XARTISTS_STUDIO_PROJECT_CONFIRMED===TARGET
   &&env.STUDIO_FREE_PILOT==='1'&&env.STUDIO_IPFS_PROVIDER==='pinata'
   &&env.STUDIO_GLB_UPLOAD_ENABLED!=='1'&&env.PGSSL!=='0'
+  &&typeof env.ACCESS_JWT_SECRET==='string'&&env.ACCESS_JWT_SECRET.length>=32
 }
 function respond(request,body,status=200){
  const headers=new Headers({'content-type':'application/json; charset=utf-8','cache-control':'no-store','x-content-type-options':'nosniff','content-security-policy':"default-src 'none'; frame-ancestors 'none'",vary:'Origin'})
