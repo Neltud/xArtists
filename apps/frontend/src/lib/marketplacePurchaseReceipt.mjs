@@ -2,7 +2,7 @@
  * Read-only receipt verifier for one explicitly approved Marketplace mainnet sale.
  * Never signs, sends, stores keys or equates a wallet prompt with settlement.
  */
-import {VERIFIED_MARKET_SALE,addressHex,listingIdHex} from './verifiedMarketplaceBuy.mjs'
+import {VERIFIED_MARKET_SALE,addressHex,listingIdHex,listingIdsFromEvents,readVerifiedListing} from './verifiedMarketplaceBuy.mjs'
 
 const API='https://api.multiversx.com'
 const TX_HASH=/^[a-f0-9]{64}$/i
@@ -74,4 +74,29 @@ export async function verifyLiveListingReceipt({hash,address,quote,request=fetch
  const nft=await getJson(request,API+'/accounts/'+encodeURIComponent(address)+'/nfts/'+encodeURIComponent(quote.identifier))
  if(!nft||nft.identifier!==quote.identifier||!/^[1-9][0-9]*$/.test(String(nft.balance)))return {status:'delivery_unverified',hash:normalized}
  return {status:'verified',hash:normalized}
+}
+
+/** A successful deposit alone is not proof of an active public listing. */
+export async function verifySellerListingReceipt({hash,address,identifier,priceAtomic,request=fetch}={}){
+ const seller=addressHex(address)
+ if(typeof hash!=='string'||!TX_HASH.test(hash)||!seller||
+    typeof identifier!=='string'||!/^([A-Za-z0-9]{3,20}-[a-f0-9]{6})-[a-f0-9]{2,16}$/.test(identifier)||
+    typeof priceAtomic!=='string'||! /^[1-9][0-9]*$/.test(priceAtomic))return {status:'invalid'}
+ const normalized=hash.toLowerCase(),tx=await getJson(request,API+'/transactions/'+normalized+'?withLogs=true&withResults=true')
+ if(!tx)return {status:'unavailable',hash:normalized}
+ if(tx.status!=='success')return {status:['fail','failed','invalid','rejected'].includes(tx.status)?'failed':'pending',hash:normalized}
+ const action=tx.action?.arguments
+ if(tx.txHash!==normalized||tx.sender!==address||tx.receiver!==address||String(tx.value)!=='0'||
+    tx.function!=='listNft'||action?.receiver!==VERIFIED_MARKET_SALE.marketplace||
+    action.functionName!=='listNft'||!Array.isArray(action.transfers)||action.transfers.length!==1||
+    action.transfers[0]?.identifier!==identifier||String(action.transfers[0]?.value)!=='1')
+   return {status:'mismatch',hash:normalized}
+ const ids=listingIdsFromEvents([tx])
+ if(ids.length!==1)return {status:'delivery_unverified',hash:normalized}
+ try{
+   const quote=await readVerifiedListing(ids[0],{request})
+   if(quote.identifier!==identifier||quote.sellerHex!==seller||quote.priceAtomic!==priceAtomic)
+     return {status:'mismatch',hash:normalized}
+   return {status:'verified',hash:normalized,listingId:ids[0]}
+ }catch{return {status:'delivery_unverified',hash:normalized}}
 }
