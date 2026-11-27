@@ -138,7 +138,7 @@ export default function XorusDecisionDesk(){
         </button>
       </div>
       <div className="xa-intelligence-status" role="status" aria-live="polite">
-        <strong className="block text-lg">{fr?'S’ABSTENIR':'ABSTAIN'} · {fr?'aucun ordre autorisé':'no order authorized'}</strong>
+        <strong className="block text-lg">{fr?'Analyse prudente':'Cautious analysis'} · {fr?'aucun ordre autorisé':'no order authorized'}</strong>
         <p className="mt-1">{busy&&!report
           ? (fr?'Lecture des sources…':'Reading sources…')
           : reason}</p>
@@ -154,7 +154,7 @@ export default function XorusDecisionDesk(){
       </p>
     </div>
 
-    <article className="xa-intelligence-card" data-testid="xorus-reference-admission">
+    <details className="xa-task-details xa-intelligence-evidence"><summary>{fr?'Vérifications techniques des cotations':'Technical quote checks'}</summary><article className="xa-intelligence-card" data-testid="xorus-reference-admission">
       <h3>{fr?'Quotes de référence':'Reference quotes'}</h3>
       <p className="mt-2">{fr
         ? 'Schéma d’admission seulement. Aucun prix n’est collecté ici, et aucune requête n’est envoyée au hub.'
@@ -167,7 +167,7 @@ export default function XorusDecisionDesk(){
           <li key={`${row.network}:${row.symbol}`}>{row.symbol} · {row.network} · {fr?'swap non prouvé':'swap not proven'}</li>
         ))}
       </ul>
-    </article>
+    </article></details>
 
     <XorusAnalysisReport report={report} />
     <details className="xa-task-details xa-intelligence-evidence"><summary>{n('data')}</summary><div>
