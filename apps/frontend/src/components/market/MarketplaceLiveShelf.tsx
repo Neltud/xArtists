@@ -1,5 +1,4 @@
 import {useCallback,useEffect,useRef,useState} from 'react'
-import {Link} from 'react-router-dom'
 import {useWallet} from '../../context/WalletContext'
 import {useI18n} from '../../i18n/I18nContext'
 import {useSendTransaction} from '../../hooks/useSendTransaction'
@@ -9,7 +8,7 @@ import {addressHex,listingIdHex,readLiveMarketplaceListings,readVerifiedListing,
 import {verifyLiveListingReceipt} from '../../lib/marketplacePurchaseReceipt.mjs'
 
 /** One explicit wallet-signed purchase at a time; no automatic orders or custody. */
-export default function MarketplaceLiveShelf(){
+export default function MarketplaceLiveShelf({onList}:{onList:()=>void}){
  const {lang}=useI18n(),fr=lang==='fr'
  const {address,connected,method,canAttemptSign,isLiaAddress}=useWallet(),{send}=useSendTransaction()
  const [rows,setRows]=useState<VerifiedMarketplaceQuote[]>([]),[loading,setLoading]=useState(true),[error,setError]=useState(false),[limited,setLimited]=useState(false)
@@ -78,6 +77,6 @@ export default function MarketplaceLiveShelf(){
    {nextFrom!==null&&<button type="button" className="xa-button secondary" disabled={loading||pending!==null} onClick={()=>void refresh(nextFrom)}>{fr?'Voir les annonces précédentes':'Load earlier listings'}</button>}
    {status&&<p role="status">{status}</p>}
    {receipt&&receipt.address===address&&<div className="xa-market-live-receipt"><label htmlFor="xa-live-sale-hash">{fr?'Hash de la transaction':'Transaction hash'}</label><input id="xa-live-sale-hash" value={hash} maxLength={64} onChange={e=>{receiptSequence.current++;setChecking(false);setHash(e.target.value.trim())}}/><button type="button" className="xa-button secondary" disabled={!hash||checking} onClick={()=>void check()}>{fr?'Vérifier la réception NFT':'Verify NFT receipt'}</button></div>}
-   <Link to="/marketplace?network=multiversx&list=1#xa-market-sell" className="xa-button primary">{fr?'Mettre un NFT en vente':'List an NFT'} →</Link>
+   <button type="button" onClick={onList} className="xa-button primary">{fr?'Mettre un NFT en vente':'List an NFT'} →</button>
  </section>
 }
