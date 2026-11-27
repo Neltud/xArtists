@@ -55,7 +55,7 @@ const LEGACY_GROUP_AREA:Record<Group,AreaId>={explore:'art',create:'studio',inte
 export function GroupPage({group}:{group:Group}){
  const c=useCopy(),area=areaDefinition(LEGACY_GROUP_AREA[group])
  const list=modules.filter(m=>areaFor(m.id)===area.id&&isSoftLaunchVisible(m)).sort((a,b)=>navigationRank(a.id)-navigationRank(b.id))
- return <div className="xa-container xa-group-page"><div className="xa-page-intro"><div><div className="xa-breadcrumb"><Link to="/">xArtists</Link><Icon name="chevron" size={12}/><span>{c(area.label)}</span></div><h1>{c(area.label)}</h1><p>{c(area.description)}</p></div></div><div className="xa-module-grid">{list.map((m,i)=><ModuleCard module={m} index={i} key={m.id}/>)}</div><p className="xa-area-more"><Link className="xa-text-link" to={`/directory?area=${area.id}&lab=1`}>{c('navMore')}<Icon name="arrow" size={17}/></Link></p></div>
+ return <div className={"xa-container xa-group-page xa-group-"+area.id}><div className="xa-page-intro"><div><div className="xa-breadcrumb"><Link to="/">xArtists</Link><Icon name="chevron" size={12}/><span>{c(area.label)}</span></div><h1>{c(area.label)}</h1><p>{c(area.description)}</p></div></div><div className="xa-module-grid">{list.map((m,i)=><ModuleCard module={m} index={i} key={m.id}/>)}</div><p className="xa-area-more"><Link className="xa-text-link" to={`/directory?area=${area.id}&lab=1`}>{c('navMore')}<Icon name="arrow" size={17}/></Link></p></div>
 }
 export function Directory(){
  const c=useCopy(),{lang}=useI18n(),[params,setParams]=useSearchParams()
