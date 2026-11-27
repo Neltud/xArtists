@@ -38,6 +38,7 @@ export default function XorusPage() {
       {view==='simulation'&&<button type="button" className="xa-button secondary" onClick={()=>choose('analysis')}>{n('analysis')} →</button>}
       {view==='analysis'&&<LiveAssetTape/>}
       {view==='simulation'?<PaperTradingPanel/>:<section aria-label="xOrus decision"><XorusDecisionDesk /></section>}
+      {view==='analysis'&&<XorusNetworkStatus/>}
       <details className="xa-task-details"><summary>{n('research')}</summary><p>{fr?'xOrus observe, compare et s’abstient quand les preuves manquent. Aucun ordre n’est envoyé depuis cette page.':'xOrus observes, compares and abstains when evidence is thin. This page sends no order.'}</p><p>{XORUS_BADGE}</p>{view==='analysis'&&<p><button type="button" className="xa-button secondary" onClick={()=>choose('simulation')}>{n('simulation')}</button></p>}<button type="button" className="xa-button secondary" aria-expanded={showAdvanced} onClick={()=>setShowAdvanced(v=>!v)}>{showAdvanced?(fr?'Masquer les outils avancés':'Hide advanced tools'):(fr?'Afficher les outils avancés':'Show advanced tools')}</button></details>
 
       {showAdvanced && (
@@ -46,9 +47,8 @@ export default function XorusPage() {
             <XorusAssistedSwapPanel />
           </section>
 
-          <section className="grid gap-4 md:grid-cols-2" aria-label="Signals and network">
+          <section className="grid gap-4 md:grid-cols-2" aria-label="Signals">
             <DailySignalWidget />
-            <XorusNetworkStatus/>
           </section>
 
           <RceStrip />
