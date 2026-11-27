@@ -13,3 +13,16 @@ Created 27 November 2026: project `xartists-studio` (`shy-tooth-63227941`), Fran
 - A public 200 on /health does not certify publication. Keep the public UI truthful. Video/music/3D support requires an independent load/quotas review before release.
 
 No payment, card, trading, mint, or wallet-key route exists in this service. No secrets included in the repository.
+
+## First disabled deployment — operator workflow
+
+The operator workflow `Studio Neon — deploy disabled (operator only)` builds from main and uses the reviewed multipart Neon API. Configure an environment named `studio-neon` with the secret `NEON_STUDIO_API_KEY` (minimal dedicated operator access where available). Do not put credentials in variables, source files, chat, logs or pull requests. The workflow never runs on a PR or schedule. It refuses to overwrite an existing function and generates a new private session secret. Both upload flags stay at 0 and Pinata is absent until configured separately.
+
+Alternatively, run the reviewed script with the inner candidate ZIP (not the enclosing GitHub artifact):
+
+```sh
+python3 scripts/ops/deploy-neon-studio.py neon-studio.zip --expected-source <verified-checkout-sha>
+python3 scripts/ops/deploy-neon-studio.py neon-studio.zip --expected-source <verified-checkout-sha> --deploy-disabled
+```
+
+The first command is offline, prints only package and target metadata. The second prompts invisibly for the Neon API key when not in the environment. It will only deploy the fixed dedicated project, never a sandbox or xOrus. After completion inspect the exact invocation URL and ensure the config still reports enabled:false. Configure Pinata only in the function's secure environment, then validate storage and the browser before enabling artist uploads. No automatic replay on ambiguous deployment errors.
