@@ -182,3 +182,30 @@ test('missing NFT account endpoint is distinct from a network outage',async()=>{
   await assert.rejects(verifyUserNftListPreflight({address:addr,identifier:nft.identifier,collection:nft.collection,
     nonce:1,request}),/introuvable dans le wallet connecté/)
 })
+
+test('seller preflight uses the independently verified mainnet gateway when REST VM views fail',async()=>{
+  const opts={address:addr,identifier:nft.identifier,collection:nft.collection,nonce:1}
+  let gatewayReads=0
+  const request=async(url,options)=>{
+    if(url.endsWith('/query')&&!url.includes('/vm-values/'))return {ok:false,status:503}
+    if(url==='https://gateway.multiversx.com/vm-values/query'){
+      gatewayReads++
+      const {scAddress,funcName,args}=JSON.parse(options.body)
+      assert.equal(scAddress,MARKETPLACE_MAINNET)
+      assert.deepEqual(args,[])
+      return {ok:true,json:async()=>({code:'successful',data:{data:{
+        ReturnCode:0,ReturnMessage:'',ReturnData:[funcName==='isPaused'?'':'ASw=']
+      }}})}
+    }
+    return requestFor()(url,options)
+  }
+  const proof=await verifyUserNftListPreflight({...opts,request})
+  assert.equal(gatewayReads,2)
+  assert.equal(proof.feeBps,300)
+  await assert.rejects(verifyUserNftListPreflight({...opts,request:async(url,options)=>{
+    if(url.includes('/vm-values/'))return {ok:true,json:async()=>({code:'successful',data:{data:{
+      ReturnCode:4,ReturnMessage:'VM error',ReturnData:['AA==']
+    }}})}
+    return request(url,options)
+  }}),/non vérifiable/)
+})
