@@ -39,16 +39,16 @@ export default function Agents() {
   return (
     <div className="xa-page xa-agents-discovery animate-fade-in mx-auto max-w-4xl space-y-8 px-4 pb-28 pt-6 sm:px-7">
       <header className="xa-intelligence-hero">
-        <p className="xa-intelligence-eyebrow">{fr ? '02 · Qui fait quoi ?' : '02 · Who does what?'}</p>
+        <p className="xa-intelligence-eyebrow">{fr ? 'xOrus' : 'xOrus'}</p>
         <h1>{fr ? 'Les agents xOrus, simplement' : 'xOrus agents, made clear'}</h1>
         <p>{fr ? 'Trois rôles : analyser les marchés, comparer les scénarios et signaler les risques.'
           : 'Three roles: analyse markets, compare scenarios and flag risks.'}</p>
         <p>{fr
-          ? 'Nous vendons nos analyses. Les données collectées restent des entrées internes, sans revente de flux fournisseurs.'
-          : 'We sell our analysis. Collected data remain internal inputs; provider feeds are not resold.'}</p>
+          ? 'Les données collectées restent des entrées internes. Aucune vente d’analyse n’est actuellement ouverte.'
+          : 'Collected data remain internal inputs. Analysis sales are not currently open.'}</p>
         <p role="status" className="xa-intelligence-status">{fr
-          ? 'Mode lecture et simulation. Aucun trading automatique, aucun rendement, aucun achat requis.'
-          : 'Read-only and simulation mode. No automated trades, promised returns or purchase required.'}</p>
+          ? 'Lecture seule · aucun ordre automatique.'
+          : 'Read only · no automated orders.'}</p>
       </header>
       <section className="space-y-4" aria-label={fr ? 'Les trois rôles' : 'Three agent roles'}>
         <h2 className="text-xl font-semibold">{fr ? 'Que pouvez-vous découvrir ?' : 'What can you explore?'}</h2>
@@ -62,7 +62,7 @@ export default function Agents() {
           <article className="xa-intelligence-card">
             <p className="xa-intelligence-eyebrow">Yield · 02</p>
             <h3>{fr ? 'Étudier les scénarios DeFi' : 'Study DeFi scenarios'}</h3>
-            <p>{fr ? 'Comparer les hypothèses de liquidité et les conditions d’un scénario. Les simulations restent identifiées comme telles.' : 'Compare liquidity assumptions and scenario conditions. Simulations remain explicitly labelled.'}</p>
+            <p>{fr ? 'Comparer la liquidité et les conditions d’un scénario.' : 'Compare liquidity and scenario conditions.'}</p>
             <Link to="/lab?view=simulation">{fr ? 'Essayer une simulation' : 'Try a simulation'}</Link>
           </article>
           <article className="xa-intelligence-card">
