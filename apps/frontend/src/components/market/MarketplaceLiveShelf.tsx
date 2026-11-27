@@ -34,6 +34,7 @@ export default function MarketplaceLiveShelf(){
  },[])
  useEffect(()=>{current.current.mounted=true;void refresh();return()=>{current.current.mounted=false;controller.current?.abort();readSequence.current++;receiptSequence.current++;current.current.generation++;attempt.current=null}},[refresh])
  useEffect(()=>{receiptSequence.current++;setReceipt(null);setHash('');setChecking(false);setStatus('')},[address,connected,method,canAttemptSign])
+ useEffect(()=>{const onConfirmed=()=>{if(!attempt.current)void refresh()};window.addEventListener('xa-market-listing-confirmed',onConfirmed);return()=>window.removeEventListener('xa-market-listing-confirmed',onConfirmed)},[refresh])
  const walletHex=addressHex(address)
  const buy=async(quote:VerifiedMarketplaceQuote)=>{
    if(attempt.current||!connected||!canAttemptSign||isLiaAddress||!walletHex||quote.sellerHex===walletHex)return
