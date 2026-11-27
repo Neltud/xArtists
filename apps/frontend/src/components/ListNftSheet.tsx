@@ -174,14 +174,20 @@ export default function ListNftSheet({ target, onClose }: Props) {
             value={price}
             placeholder="Saisir un prix en EGLD"
             disabled={pending||!!submitted}
-            onChange={e => {cancelCheck();setChecking(false);setPrice(e.target.value);setQuote(null);setMsg(null)}}
+            onChange={e => {cancelCheck();setChecking(false);setPrice(e.target.value.replace(',', '.'));setQuote(null);setMsg(null)}}
             className="mt-1 w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2.5 text-white"
           />
         </label>
 
+        {!connected || !canAttemptSign ? (
+          <div className="space-y-2">
+            <p role="status" className="text-xs text-amber-200">Wallet en lecture seule ou session de signature expirée. Reconnecte un wallet signataire pour déposer le NFT.</p>
+            <button type="button" className="btn-secondary w-full min-h-[44px]" onClick={requestOpenConnect}>Reconnecter mon wallet</button>
+          </div>
+        ) : null}
         {xaRender(!live && (
           <p role="status" className="text-xs text-amber-200">
-            {xaRender("Préparation seulement : le contrat ou la connexion n’est pas certifié. Aucune transaction ne peut être signée ni envoyée.")}
+            {xaRender("Contrat marketplace non vérifié ou lecture réseau indisponible. Actualise la page puis réessaie. Aucune transaction ne peut être signée ni envoyée.")}
           </p>
         ))}
 
