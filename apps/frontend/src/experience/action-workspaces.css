@@ -158,3 +158,16 @@
 .xa-home-world-launch strong{display:block;color:white;font-size:20px}
 .xa-home-world-launch small{color:#e7d2ff;font-size:12px}
 .xa-home-world-launch a{color:white;min-height:44px;display:flex;align-items:center;gap:8px}
+
+/* Read-only technical mainnet observations; not a market or trading dashboard. */
+.xa-xorus-network-status{padding:18px;border:1px solid #7946bb;border-radius:16px;background:linear-gradient(130deg,#28123f,#48217a);color:#fff}
+.xa-xorus-network-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.xa-xorus-network-head h2{color:#fff;font-size:19px;font-weight:700;margin:0}
+.xa-xorus-network-head p,.xa-xorus-network-status>p{color:#ead9ff;font-size:12px;line-height:1.5;margin:6px 0}
+.xa-xorus-network-status .xa-xorus-network-head .xa-button{background:#fff;color:#3d1a69;border-color:#fff;min-height:44px;font-size:12px}
+.xa-xorus-network-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0}
+.xa-xorus-network-card{min-width:0;background:#ffffff13;border:1px solid #ba99f070;border-radius:12px;padding:12px;overflow-wrap:anywhere}
+.xa-xorus-network-card h3{color:#fff;margin:0;font-size:14px;font-weight:700}
+.xa-xorus-network-card p,.xa-xorus-network-card small{display:block;color:#e9dbfa;font-size:11px;line-height:1.4;margin:5px 0}
+.xa-xorus-network-card strong{display:block;color:#fff;font-variant-numeric:tabular-nums;font-size:clamp(16px,4vw,25px)}
+@media(max-width:480px){.xa-xorus-network-status{padding:12px}.xa-xorus-network-card{padding:9px}.xa-xorus-network-head{gap:6px}}

@@ -38,6 +38,38 @@ function isOperator(request, env) {
   return actualBytes.length === expectedBytes.length && timingSafeEqual(actualBytes, expectedBytes)
 }
 
+// Public, deliberately narrow projection of an already persisted technical receipt.
+// Never expose operator records, raw provider payloads, wallet data or market quotes.
+function publicNetworkReceipt(snapshot, now) {
+  const checked = Date.parse(snapshot?.checked_at)
+  if (!Number.isFinite(checked) || checked > now || now - checked > RECEIPT_MAX_AGE_MS ||
+      !/^[a-f0-9]{40}$/.test(snapshot?.source_sha || '') ||
+      !Array.isArray(snapshot.network_agents) || snapshot.network_agents.length !== 2) return null
+  const agents = ['multiversx', 'solana'].map(network => {
+    const matches = snapshot.network_agents.filter(agent => agent?.network === network)
+    if (matches.length !== 1) return null
+    const a = matches[0]
+    const observed = Date.parse(a.source_data_at)
+    const sampled = Date.parse(a.checked_at)
+    const identity = network === 'multiversx' ? '1' : '5eykt4UsFv8P8NJdTREpY1vzqKqZKvdpKuc147dw2N9d'
+    const valid = a.status === 'observed' && a.identity_verified === true &&
+      a.network_id === identity && a.executable === false && a.execution_authorized === false &&
+      a.signing_authorized === false && Number.isFinite(observed) && Number.isFinite(sampled) &&
+      sampled <= checked && sampled >= observed - 5000 && sampled - observed <= 120000 &&
+      checked - sampled <= 30000
+    const o = a.observations || {}
+    const height = network === 'multiversx' ? o.highest_final_nonce : o.absolute_slot
+    const correctScope = network === 'multiversx' ? o.scope === 'metachain_only' : o.commitment === 'finalized'
+    if (!valid || !correctScope || !Number.isSafeInteger(height) || height < 1)
+      return { network, status: 'unavailable', source_data_at: null, finalized_height: null }
+    return { network, status: 'observed', source_data_at: new Date(observed).toISOString(),
+      finalized_height: height }
+  })
+  if (agents.some(a => a === null)) return null
+  return { schema: 'xorus_network_status/v1', checked_at: new Date(checked).toISOString(),
+    receipt_source_sha: snapshot.source_sha, agents }
+}
+
 export function createHub({ env = process.env, store = null, parseTrigger = null,
   fetchImpl = fetch, clock = Date.now, sourceSha = null, paperStore = null } = {}) {
   const candidateSha = sourceSha ?? env.XARTISTS_SOURCE_SHA
@@ -45,6 +77,20 @@ export function createHub({ env = process.env, store = null, parseTrigger = null
   const source = { service: 'xorus-platform-hub', organization_id: ORGANIZATION,
     environment: 'sandbox', production_access_api: false, source_sha: sha }
   const correctTarget = env.NEON_BRANCH_ID === 'br-steep-sun-bab7l93p' && env.XORUS_HUB_TARGET_CONFIRMED === 'orange-dust-23862418'
+
+  // Coalesce public requests; a cached receipt is revalidated against the clock.
+  // This route never starts a collection or writes to the database.
+  let publicCache = null, publicExpires = 0, publicPending = null
+  async function readPublicReceipt() {
+    if (clock() < publicExpires) return publicCache
+    if (!publicPending) {
+      publicPending = Promise.resolve().then(() => store.read()).catch(() => null).then(value => {
+        publicCache = value; publicExpires = clock() + 60_000
+        return value
+      }).finally(() => { publicPending = null })
+    }
+    return publicPending
+  }
 
   async function cycle(slot, claimId) {
     if (!correctTarget || !store) throw new Error('hub_store_not_configured')
@@ -138,7 +184,7 @@ export function createHub({ env = process.env, store = null, parseTrigger = null
       if (path === '/' || path === '/health') return reply(request, 200, { ok: true, ...source, ...SAFETY,
         store_target_confirmed: correctTarget, probe_schedule: CYCLE_CRON,
         schedule_state: 'query_provider_trigger_for_actual_state', linked_wallets: 0,
-        endpoints: ['/v1/xorus/platforms', '/v1/xorus/agents', '/v1/xorus/agents/reports', '/v1/xorus/risk-policy', '/v1/xorus/paper', '/v1/xorus/reference-quotes', '/v1/xorus/snapshot', '/v1/xorus/wallet-route'] })
+        endpoints: ['/v1/xorus/platforms', '/v1/xorus/agents', '/v1/xorus/agents/reports', '/v1/xorus/network-status', '/v1/xorus/risk-policy', '/v1/xorus/paper', '/v1/xorus/reference-quotes', '/v1/xorus/snapshot', '/v1/xorus/wallet-route'] })
       if (path === '/v1/xorus/platforms') return reply(request, 200, { ok: true, ...platformRegistry() })
       if (path === '/v1/xorus/reference-quotes') {
         const manifest = referenceQuoteManifest(clock())
@@ -153,6 +199,13 @@ export function createHub({ env = process.env, store = null, parseTrigger = null
       }
       if (path === '/v1/xorus/risk-policy') return reply(request, 200, { ok: true, ...source, ...riskPolicy() })
       if (path === '/v1/xorus/agents') return reply(request, 200, { ok: true, ...source, ...agentManifest() })
+      if (path === '/v1/xorus/network-status') {
+        if (!correctTarget || !store) return reply(request, 503, { ok: false, error: 'network_status_unavailable', ...SAFETY })
+        const receipt = publicNetworkReceipt(await readPublicReceipt(), clock())
+        return receipt
+          ? reply(request, 200, { ok: true, ...source, ...SAFETY, ...receipt })
+          : reply(request, 503, { ok: false, error: 'network_status_unavailable', ...SAFETY })
+      }
       if (path === '/v1/xorus/snapshot' || path === '/v1/xorus/agents/reports') {
         if (!isOperator(request, env)) return reply(request, 401, { ok: false, error: 'operator_required' })
         if (!correctTarget || !store) return reply(request, 503, { ok: false, error: 'hub_store_not_configured' })

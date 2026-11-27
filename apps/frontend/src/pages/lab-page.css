@@ -26,3 +26,17 @@
 .xa-intelligence-step:focus-visible,.xa-intelligence-card a:focus-visible,.xa-intelligence-advanced>summary:focus-visible{outline:3px solid var(--xa-accent);outline-offset:3px}
 @media(max-width:760px){.xa-intelligence-path,.xa-intelligence-cards{grid-template-columns:1fr}.xa-intelligence-step{min-height:64px;padding:10px 14px}.xa-intelligence-layout{padding-bottom:90px}}
 @media(prefers-reduced-motion:reduce){.xa-intelligence-step{transition:none}}
+
+/* xOrus: compact, source-first analysis; no archived-console dashboard. */
+.xa-xorus-page>.xa-task-header{gap:8px 14px;margin-bottom:8px;align-items:center}
+.xa-xorus-page>.xa-task-header .xa-task-kicker{margin-bottom:3px}
+.xa-ref-v2 .xa-module-body .xa-xorus-page>.xa-task-header h1{font-size:clamp(25px,3vw,36px)!important}
+.xa-xorus-page>.xa-task-header .xa-button{min-height:44px;font-size:12px;padding:8px 12px}
+.xa-xorus-page>.xa-task-status{padding:5px 10px;margin-bottom:10px;font-size:12px}
+.xa-xorus-page .xa-xorus-network-status{margin-bottom:12px}
+.xa-xorus-page .xa-intelligence-hero{background:linear-gradient(140deg,#231334,#47236b);border:1px solid #8965b6;color:#fff;padding:16px;border-radius:16px}
+.xa-xorus-page .xa-intelligence-hero h2,.xa-xorus-page .xa-intelligence-hero strong{color:#fff}
+.xa-xorus-page .xa-intelligence-hero .xa-intelligence-status{background:#ffffff12;border:1px solid #bf9ee0;border-radius:10px;color:#fff;padding:12px}
+.xa-xorus-page .xa-intelligence-hero p,.xa-xorus-page .xa-intelligence-hero .xa-intelligence-note{color:#eee2ff}
+.xa-xorus-page .xa-intelligence-hero .xa-button{background:#fff;color:#391b5a;border-color:#fff}
+@media(max-width:600px){.xa-xorus-page>.xa-task-header{margin-bottom:6px;gap:6px}.xa-xorus-page .xa-intelligence-hero{padding:12px}.xa-xorus-page>.xa-task-header .xa-button{font-size:11px;padding:6px 9px}}

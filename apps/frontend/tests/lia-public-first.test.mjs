@@ -33,7 +33,7 @@ test('public status differentiates source age, checking time and simulated perfo
   assert.doesNotMatch(overview, /\{hub\.note\}/)
 })
 
-test('xOrus public page is paper-first with assisted swap separated from autonomous trading', () => {
+test('xOrus defaults to read-only analysis and keeps simulations separate', () => {
   const page = source('pages/XorusPage.tsx')
   assert.match(page, /XORUS_LIVE_TRADING/)
   assert.match(page, /n\('analysis'\)/)
@@ -43,9 +43,9 @@ test('xOrus public page is paper-first with assisted swap separated from autonom
   assert.match(page, /Aucun ordre n’est envoyé depuis cette page/)
   assert.match(page, /<XorusDecisionDesk\s*\/>/)
   assert.match(page, /<XorusAssistedSwapPanel\s*\/>/)
-  assert.match(page, /showArchive &&/)
-  assert.match(page, /Consoles LIA archivées/)
-  assert.match(page, /to="\/studio"/)
+  assert.doesNotMatch(page, /showArchive|Pack3DCockpit|Consoles LIA archivées/)
+  assert.match(page, /view==='simulation'\?n\('paper'\):n\('readOnly'\)/)
+  assert.match(page, /onClick=\{\(\)=>choose\('simulation'\)\}/)
   assert.match(page, /to="\/agents"/)
   assert.doesNotMatch(page, /sendTransaction\(|mintNFT\(|LIVE user-sign xPortal/)
 })

@@ -62,15 +62,15 @@ test('educational simulation never invents a live stream or executes actions',()
   assert.doesNotMatch(simulation,/setInterval|Math\.random|fetch\(|WebSocket|requestOpenConnect|buyPack\(|signWithXPortal|Stream paper|Board réel/)
 })
 
-test('xOrus offers the new paper desk and keeps legacy consoles archived',()=>{
+test('xOrus defaults to analysis without mounting retired consoles',()=>{
   assert.doesNotMatch(xorus,/<IntelligencePath\s*\/>/)
   assert.match(xorus,/<XorusDecisionDesk\s*\/>/)
   assert.match(xorus,/<XorusAssistedSwapPanel\s*\/>/)
   assert.match(xorus,/XORUS_LIVE_TRADING/)
-  assert.match(xorus,/showArchive &&/)
   assert.match(xorus,/showAdvanced &&/)
   assert.match(xorus,/aria-expanded=\{showAdvanced\}/)
   assert.match(xorus,/xOrus observe, compare et s’abstient quand les preuves manquent/)
   assert.match(xorus,/Aucun ordre n’est envoyé depuis cette page/)
-  assert.doesNotMatch(xorus,/LiaHubControlRoomLazy|LIVE user-sign xPortal|sendTransaction\(/)
+  assert.doesNotMatch(xorus,/LiaHubControlRoomLazy|Pack3DCockpit|showArchive|LIVE user-sign xPortal|sendTransaction\(/)
+  assert.match(xorus,/view==='simulation'\?n\('paper'\):n\('readOnly'\)/)
 })
