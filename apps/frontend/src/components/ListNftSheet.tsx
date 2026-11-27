@@ -151,7 +151,7 @@ export default function ListNftSheet({ target, onClose }: Props) {
     <div className="fixed inset-0 z-[80] flex items-end sm:items-center justify-center p-3">
       <button type="button" className="absolute inset-0 bg-black/70" onClick={close} aria-label={xaLocalize("Fermer")} />
       <div role="dialog" aria-modal="true" aria-labelledby="xa-list-nft-title"
-        className="relative z-10 w-full max-w-md rounded-2xl border border-violet-500/30 bg-[#12121a] p-5 space-y-4 shadow-2xl">
+        className="relative z-10 w-full max-w-md max-h-[90dvh] overflow-y-auto rounded-2xl border border-violet-500/30 bg-[#12121a] p-5 space-y-4 shadow-2xl">
         <div className="flex gap-3">
           <div className="h-16 w-16 rounded-xl bg-black/40 overflow-hidden shrink-0">
             {xaRender(target.imageUrl ? (
