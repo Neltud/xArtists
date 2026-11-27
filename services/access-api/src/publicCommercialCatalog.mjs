@@ -3,7 +3,7 @@
  * Three EUR service price tiers and three xOrus analysis tracks are independent
  * until approved SKU-to-scope benefits and signed PSP billing are implemented.
  */
-import {FIAT_SERVICE_TIERS,GENESIS_EGLD_TARGETS,LAST_OBSERVED_MAINNET_EGLD}
+import {FIAT_SERVICE_TIERS,GENESIS_EGLD_TARGETS,LAST_OBSERVED_MAINNET_EGLD,globalPaymentReadiness}
   from './commercialRails.mjs'
 import {XORUS_OFFER_SCOPES} from './xorusEntitlements.mjs'
 
@@ -29,6 +29,7 @@ export function publicCommercialCatalog({
     walletless_account_session_enabled:walletlessAccountEnabled===true,
     xorus_private_analysis_enabled:privateAnalysisEnabled===true,
     currency_pricing:'targets_only_not_quotes',
+    global_pay:globalPaymentReadiness(),
     monthly_services:MONTHLY.map((sku,i)=>({
       sku,
       tier:i+1,
