@@ -148,7 +148,7 @@ export default function StudioPage() {
 
   return (
     <div className="xa-creator-studio xa-creator-studio-v2 animate-fade-in mx-auto max-w-3xl space-y-8 px-4 pb-28 pt-6 sm:px-7">
-      <StudioVisualWorkspace title={nftName} onTitle={setNftName} onAdvanced={()=>advancedRef.current?.setAttribute('open','' )} onPrepare={(file,description)=>{setMediaSelection({file,description});window.requestAnimationFrame(()=>document.getElementById('xa-studio-mint')?.scrollIntoView({block:'start'}))}}/>
+      <header className="space-y-2"><h1 className="section-title display">Studio · Créer un NFT</h1><p className="text-sm text-[color:var(--xa-text-secondary)]">Ajoutez votre œuvre, choisissez votre collection et confirmez dans votre wallet.</p></header>
       <section id="xa-studio-mint" className="card xa-studio-workflow space-y-3">
         <h2 className="text-sm font-semibold text-[color:var(--xa-text)]">{xaRender("Créer mon NFT")}</h2>
         <label className="block text-sm font-medium" htmlFor="xa-studio-nft-name">
@@ -220,6 +220,9 @@ export default function StudioPage() {
         </p>
         <p className="text-sm">{xaRender("Estimation indicative pour des fichiers prêts à importer. Frais réseau et stockage en supplément. Les gros lots nécessitent une validation préalable.")}</p>
       </section>
+      <details className="xa-studio-visual-options card"><summary><strong>Atelier visuel</strong><span>Préparer et prévisualiser mes œuvres</span></summary>
+      <StudioVisualWorkspace title={nftName} onTitle={setNftName} onAdvanced={()=>document.getElementById('xa-studio-mint')?.scrollIntoView({block:'start'})} onPrepare={(file,description)=>{setMediaSelection({file,description});window.requestAnimationFrame(()=>document.getElementById('xa-studio-mint')?.scrollIntoView({block:'start'}))}}/>
+      </details>
       <details className="xa-studio-advanced" ref={advancedRef}>
         <summary><strong>{c('simpleStudioAdvancedTitle')}</strong><span>{c('simpleStudioAdvancedDesc')}</span></summary>
       <div className="xa-studio-technical">
