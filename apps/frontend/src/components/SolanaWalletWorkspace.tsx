@@ -51,13 +51,11 @@ export default function SolanaWalletWorkspace(){
      <button type="button" onClick={()=>setView('nft')}><span>NFT</span><strong>{data?data.nfts.length:'—'}</strong></button>
     </section>
    </div>
-   <aside className="xa-cockpit-ai"><h2>{n('actions')}</h2>
-    {[['/marketplace?network=solana','market',c('navArt')],['/finance/governance?network=solana','network',n('governance')],['/intelligence/agents','agents',c('navAgents')]].map(([to,icon,label])=><Link className="xa-cockpit-agent" to={to} key={to}><span className="xa-cockpit-agent-icon"><Icon name={icon} size={24}/></span><span className="xa-cockpit-agent-text"><strong>{label}</strong></span><Icon name="arrow" size={18}/></Link>)}
-   </aside>
   </div>
   <div className="xa-cockpit-tabs-block"><nav className="xa-wallet-views" aria-label={n('owned')}>{(['tokens','nft'] as const).map(v=><button key={v} type="button" aria-current={view===v?'page':undefined} onClick={()=>setView(v)}>{v==='tokens'?'Tokens':'NFT'}</button>)}</nav>
    {!address?<p className="xa-cockpit-notice">{n('walletEmpty')}</p>:<>{!connectedAddress&&watch&&<p role="status" className="xa-cockpit-notice">{fr?'Adresse publique observée · aucune signature':'Watched public address · no signing'} · {watch}</p>}<div className="xa-wallet-toolbar"><span role="status">{portfolio.loading?n('loading'):portfolio.error?n('unavailable'):data?new Date(data.checkedAt).toLocaleTimeString():'—'}</span><button type="button" className="xa-button secondary" disabled={portfolio.loading} onClick={portfolio.refresh}>{n('refresh')}</button></div>{data&&<SolanaAssetRows data={data} kind={view}/>}</>}
   </div>
+  <nav className="xa-wallet-quick-links" aria-label={n('actions')}><Link className="xa-button secondary" to="/marketplace?network=solana">{c('navArt')} →</Link><Link className="xa-button secondary" to="/finance/governance?network=solana">{n('governance')} →</Link></nav>
   <p className="xa-network-note">{n('networkSeparate')}</p>
  </div>
 }
