@@ -12,3 +12,5 @@ export declare function verifyMarketplacePurchaseReceipt(args?: {
 }): Promise<MarketplaceReceiptResult>
 
 export declare function verifyLiveListingReceipt(options:{hash:string;address:string;quote:import('./verifiedMarketplaceBuy.mjs').VerifiedMarketplaceQuote;request?:typeof fetch}):Promise<{status:MarketplaceReceiptStatus;hash?:string}>
+
+export declare function verifySellerListingReceipt(options:{hash:string;address:string;identifier:string;priceAtomic:string;request?:typeof fetch}):Promise<MarketplaceReceiptResult & {listingId?:number}>
