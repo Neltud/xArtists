@@ -189,3 +189,28 @@ export function builtinBlueprintForMuseum(museumId: string): RoomBlueprint {
   const base = BUILTIN_LAYOUTS[key] || CORRIDOR
   return { ...base, id: `${base.id}:${museumId}`, name: base.name, details: { ...base.details } }
 }
+
+/** Original xArtists exhibition district: independent navigable spaces, not real estate. */
+export const ART_WORLD_SPACES = [
+  {id:'museum',fr:'Musée',en:'Museum',theme:'cyber'},
+  {id:'hall',fr:'Grand hall',en:'Grand hall',theme:'white'},
+  {id:'hangar',fr:'Hangar',en:'Warehouse',theme:'dark'},
+  {id:'garage',fr:'Garage',en:'Garage',theme:'stone'},
+  {id:'boutique',fr:'Boutique de luxe',en:'Luxury boutique',theme:'gold'},
+  {id:'glasshouse',fr:'Verrière',en:'Glasshouse',theme:'white'},
+  {id:'outdoor',fr:'Plein air',en:'Open air',theme:'stone'},
+] as const
+export type ArtWorldSpaceId=typeof ART_WORLD_SPACES[number]['id']
+const worldRect=(id:string,name:string,w:number,d:number,h:number,floor:'stone'|'wood'|'marble'|'concrete',spacing:number)=>makePlan(
+  'art-world-'+id,name,[{x:0,y:0},{x:w,y:0},{x:w,y:d},{x:0,y:d}],h,{description:'xArtists Art World',floor,spacing})
+const worldPlans:Record<Exclude<ArtWorldSpaceId,'museum'>,RoomBlueprint>={
+  hall:worldRect('hall','Grand hall',28,18,6,'marble',4),
+  hangar:worldRect('hangar','Hangar',34,16,8,'concrete',4.5),
+  garage:worldRect('garage','Garage',13,9,3.8,'concrete',2.8),
+  boutique:worldRect('boutique','Boutique',16,10,4.2,'wood',3),
+  glasshouse:worldRect('glasshouse','Verrière',24,12,6.5,'marble',3.6),
+  outdoor:worldRect('outdoor','Plein air',26,19,3.6,'stone',4),
+}
+export function artWorldBlueprint(id:ArtWorldSpaceId):RoomBlueprint{
+  return id==='museum'?CYBER:worldPlans[id]
+}

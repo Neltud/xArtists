@@ -2,7 +2,7 @@
  * Read-only receipt verifier for one explicitly approved Marketplace mainnet sale.
  * Never signs, sends, stores keys or equates a wallet prompt with settlement.
  */
-import {VERIFIED_MARKET_SALE,addressHex} from './verifiedMarketplaceBuy.mjs'
+import {VERIFIED_MARKET_SALE,addressHex,listingIdHex} from './verifiedMarketplaceBuy.mjs'
 
 const API='https://api.multiversx.com'
 const TX_HASH=/^[a-f0-9]{64}$/i
@@ -52,4 +52,26 @@ export async function verifyMarketplacePurchaseReceipt({
       !/^[1-9]\d*$/.test(String(nft.balance))||
       BigInt(nft.balance)<1n) return {status:'delivery_unverified',hash:normalized}
   return {status:'verified',hash:normalized}
+}
+
+/** Verify this exact purchase and its actual NFT transfer, not just a wallet balance. */
+export async function verifyLiveListingReceipt({hash,address,quote,request=fetch}={}){
+ if(typeof hash!=='string'||!TX_HASH.test(hash)||!addressHex(address)||
+    !quote||quote.receiver!==VERIFIED_MARKET_SALE.marketplace||
+    !Number.isSafeInteger(quote.listingId)||quote.listingId<1||
+    typeof quote.identifier!=='string'||!/^([A-Za-z0-9]{3,20}-[a-f0-9]{6})-[a-f0-9]{2,16}$/.test(quote.identifier)||
+    !/^[1-9][0-9]*$/.test(quote.priceAtomic))return {status:'invalid'}
+ const normalized=hash.toLowerCase(),raw='buyNft@'+listingIdHex(quote.listingId)
+ const tx=await getJson(request,API+'/transactions/'+normalized+'?withResults=true&withOperations=true')
+ if(!tx)return {status:'unavailable',hash:normalized}
+ if(tx.status!=='success')return {status:['fail','failed','invalid','rejected'].includes(tx.status)?'failed':'pending',hash:normalized}
+ if(tx.txHash!==normalized||tx.sender!==address||tx.receiver!==quote.receiver||String(tx.value)!==quote.priceAtomic||
+    (tx.data!==raw&&tx.data!==btoa(raw))||(tx.chainID!==undefined&&String(tx.chainID)!=='1'))
+   return {status:'mismatch',hash:normalized}
+ const delivered=Array.isArray(tx.operations)&&tx.operations.some(op=>op?.type==='nft'&&op.action==='transfer'&&
+   op.sender===quote.receiver&&op.receiver===address&&op.identifier===quote.identifier&&String(op.value)==='1')
+ if(!delivered)return {status:'delivery_unverified',hash:normalized}
+ const nft=await getJson(request,API+'/accounts/'+encodeURIComponent(address)+'/nfts/'+encodeURIComponent(quote.identifier))
+ if(!nft||nft.identifier!==quote.identifier||!/^[1-9][0-9]*$/.test(String(nft.balance)))return {status:'delivery_unverified',hash:normalized}
+ return {status:'verified',hash:normalized}
 }

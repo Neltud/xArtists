@@ -30,7 +30,7 @@ test('random distributor is positioned below the 3D museum, not on homepage or a
   assert.match(museum, /import DriveNftDistributor from/)
   assert.doesNotMatch(museum, /DriveArtShowcase/)
   const hall = museum.indexOf('<MuseumHall')
-  const grid = museum.indexOf('<ArtworkGrid frames={hallFrames} title={xaLocalize("Œuvres de la salle")}')
+  const grid = museum.indexOf('<ArtworkGrid frames={worldFrames} title={xaLocalize("Œuvres de la salle")}')
   const draw = museum.indexOf("<DriveNftDistributor />")
   assert.ok(hall >= 0 && grid > hall && draw > grid)
   assert.match(museum, /museumId === 'xartists' && <DriveNftDistributor \/>/)

@@ -11,6 +11,8 @@ import ArtpriceOfficialPanel from '../components/market/ArtpriceOfficialPanel'
 import ExistingNftReadiness from '../components/market/ExistingNftReadiness'
 import LiaAndEscrowNfts from '../components/market/LiaAndEscrowNfts'
 import MarketplaceDiscoveryGrid from '../components/market/MarketplaceDiscoveryGrid'
+import MarketplaceVerifiedBuy from '../components/market/MarketplaceVerifiedBuy'
+import MarketplaceLiveShelf from '../components/market/MarketplaceLiveShelf'
 import FeaturedArtGallery from '../components/market/FeaturedArtGallery'
 import NetworkSelector from '../components/NetworkSelector'
 import SolanaMarketplace from '../components/market/SolanaMarketplace'
@@ -60,6 +62,7 @@ function MultiversxMarketplace(){
   const [showTech,setShowTech]=useState(false)
   const [showMarketData,setShowMarketData]=useState(false)
   const [query,setQuery]=useState('')
+  const [verifiedSaleStatus,setVerifiedSaleStatus]=useState<'pending'|'verified'|'unavailable'>('pending')
   const [sort,setSort]=useState<'recent'|'price_asc'|'price_desc'>('recent')
 
   const refresh=useCallback(async()=>{
@@ -135,7 +138,7 @@ function MultiversxMarketplace(){
 
 
 
-    {selected==='art'&&<FeaturedArtGallery/>}
+    {selected==='art'&&<FeaturedArtGallery><MarketplaceLiveShelf/><details className="xa-historical-sale" open={params.get('buy')==='2'||undefined}><summary>BlackArtPass · ASFT-a6273a-01 · reçu / receipt</summary><section className="xa-direct-nft-sale" aria-label="MultiversX mainnet NFT"><div className="xa-direct-nft-media"><img src="https://media.multiversx.com/nfts/asset/QmTHS7wWXdTrLWbJUNoZy3u88ENX3K9rLY71G2LaagUg6Q" alt="BlackArtPass" decoding="async" onError={e=>{e.currentTarget.hidden=true}}/><h2>BlackArtPass</h2><a href="https://explorer.multiversx.com/nfts/ASFT-a6273a-01" target="_blank" rel="noopener noreferrer">ASFT-a6273a-01 ↗</a></div><MarketplaceVerifiedBuy onQuoteStatus={setVerifiedSaleStatus}/></section></details></FeaturedArtGallery>}
 
     <section className="xa-marketplace-categories" id="xa-market-categories" aria-labelledby="xa-market-categories-title">
       <div className="xa-marketplace-categories__heading">
@@ -156,7 +159,7 @@ function MultiversxMarketplace(){
     {selected==='art'&&<details className="xa-market-depth" ref={marketDepthRef}>
       <summary><strong>{c('simpleMarketAll')}</strong><small>{c('simpleMarketAllDesc')}</small></summary>
       <div className="xa-market-depth-content"><MarketplaceDiscoveryGrid
-      listings={items} sourceReady={sourceReady} loading={loading} query={query} sort={sort}
+      listings={items} sourceReady={sourceReady} loading={loading} query={query} sort={sort} verifiedSaleStatus={verifiedSaleStatus}
       onQuery={setQuery} onSort={setSort} onRefresh={()=>void refresh()}
     />
 

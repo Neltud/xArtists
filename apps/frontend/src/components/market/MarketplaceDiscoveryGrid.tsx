@@ -8,7 +8,6 @@ import {Link} from 'react-router-dom'
 import {useCopy} from '../../experience/state'
 import {LIA_OPS,MAINNET_ADDRESSES} from '../../config/contracts'
 import {isMarketplaceArtwork} from '../../lib/marketplaceArtwork.mjs'
-import MarketplaceVerifiedBuy from './MarketplaceVerifiedBuy'
 
 type ChainNft={identifier?:string;name?:string;collection?:string;balance?:number|string;url?:string;media?:Array<{url?:string;thumbnailUrl?:string}>}
 type IndexListing={
@@ -45,9 +44,10 @@ const fromNft=(n:ChainNft,source:'owned'|'escrow'):GalleryCard=>{
     href:explorer(id),price:null,source}
 }
 export default function MarketplaceDiscoveryGrid({
-  listings,sourceReady,loading,query,sort,onQuery,onSort,onRefresh,
+  listings,sourceReady,loading,query,sort,onQuery,onSort,onRefresh,verifiedSaleStatus='pending',
 }:{
   listings:IndexListing[];sourceReady:boolean;loading:boolean;query:string;sort:Sort;
+  verifiedSaleStatus?:'pending'|'verified'|'unavailable';
   onQuery:(value:string)=>void;onSort:(value:Sort)=>void;onRefresh:()=>void;
 }){
   const c=useCopy()
@@ -56,7 +56,6 @@ export default function MarketplaceDiscoveryGrid({
   const [escrow,setEscrow]=useState<ChainNft[]>([])
   const [chainLoading,setChainLoading]=useState(true)
   const [chainError,setChainError]=useState(false)
-  const [verifiedSaleStatus,setVerifiedSaleStatus]=useState<'pending'|'verified'|'unavailable'>('pending')
   useEffect(()=>{
     const controller=new AbortController()
     const read=async(address:string):Promise<ChainNft[]>=>{
@@ -181,7 +180,7 @@ export default function MarketplaceDiscoveryGrid({
             {card.href?<a href={card.href} target="_blank" rel="noopener noreferrer" className="xa-market-grid__card-action">
               {c('marketGridVerify')} <span aria-hidden="true">↗</span></a>
               :<span className="xa-market-grid__card-inactive">{c('marketGridNoLink')}</span>}
-            {card.key==='escrow:ASFT-a6273a-01'&&<MarketplaceVerifiedBuy onQuoteStatus={setVerifiedSaleStatus}/>}
+            {card.key==='escrow:ASFT-a6273a-01'&&<a href="#xa-market-buy-2" className="xa-market-grid__card-action">{c('marketGridVerify')} ↑</a>}
           </div>
         </li>
       })}
