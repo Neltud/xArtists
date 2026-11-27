@@ -17,3 +17,15 @@ test('Market tape reports unavailable sources rather than a false LIVE price', (
   assert.match(tape, /SOURCES INDISPONIBLES/)
   assert.match(tape, /hasMarketPrices && ts/)
 })
+
+test('market quotes are first in xOrus and Agents; sources are individually dated',()=>{
+ const xorus=readFileSync(new URL('../src/pages/XorusPage.tsx',import.meta.url),'utf8')
+ const agents=readFileSync(new URL('../src/pages/Agents.tsx',import.meta.url),'utf8')
+ assert.ok(xorus.indexOf('<LiveAssetTape/>')<xorus.indexOf('<XorusDecisionDesk />'))
+ assert.ok(agents.indexOf('<LiveAssetTape/>')<agents.indexOf('<XorusAgentEvidence />'))
+ assert.match(tape,/include_last_updated_at=true/)
+ assert.match(tape,/api\.gold-api\.com\/price\//)
+ assert.match(tape,/row\.at\?new Date\(row\.at\)/)
+ assert.match(tape,/PAXG est un jeton/)
+ assert.doesNotMatch(tape,/AbortSignal\.timeout/)
+})
