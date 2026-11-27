@@ -49,3 +49,35 @@ export function previewCommercialOffer({ sku, provider } = {}) {
   if (provider === 'finance_computer') return closed('finance_computer_unverified_partnership')
   return closed('unknown_product_or_provider')
 }
+
+/**
+ * Global Pay roadmap, NOT a provider availability or transaction authorization.
+ * Each rail must obtain independent commercial/regulatory approval and a
+ * verified environment before being promoted. Wallet NFT mainnet gates are
+ * owned by the separate marketplace code, not this fiat catalog.
+ */
+export function globalPaymentReadiness() {
+  const planned = (id, purpose, candidates, currencies, requiredEvidence) => ({
+    id, purpose, candidates, currencies, required_evidence: requiredEvidence,
+    status: 'not_released', checkout_enabled: false, transfer_enabled: false,
+    stored_balance_enabled: false, card_issuance_enabled: false,
+  })
+  return {
+    schema: 'xartists_global_pay_readiness/v1',
+    mode: 'planning_only',
+    custody_by_xartists: false,
+    supported_display_currencies_target: ['EUR','USD','GBP'],
+    rails: [
+      planned('service_checkout','merchant_payment',['stripe','paybox'],['EUR','USD','GBP'],
+        ['merchant_activity_approved','test_checkout_and_signed_webhook','tax_and_refund_policy']),
+      planned('artist_payout','marketplace_settlement',['stripe_connect'],['EUR','USD','GBP'],
+        ['marketplace_activity_approved','seller_onboarding_and_country_eligibility','payout_and_dispute_reconciliation']),
+      planned('crypto_onramp','external_wallet_delivery',['moonpay'],['EUR','USD','GBP'],
+        ['provider_and_country_asset_eligibility','signed_checkout_and_recipient_binding','provider_receipt_and_delivery']),
+      planned('payment_account','regulated_partner_account',[],['EUR','USD','GBP'],
+        ['licensed_partner_contract','kyc_aml_and_jurisdiction_approval','reconciled_partner_balance_and_withdrawal']),
+      planned('debit_card','regulated_partner_card',[],['EUR','USD','GBP'],
+        ['issuer_contract_and_consumer_program_approval','eligible_funding_account','card_lifecycle_disputes_and_limits']),
+    ],
+  }
+}
