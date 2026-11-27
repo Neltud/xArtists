@@ -63,3 +63,21 @@ test('account identity, deployed code, hash and payable metadata are required',a
   assert.equal(api.runtimeCodehashOk('marketplace'),true)
  }finally{globalThis.fetch=oldFetch}
 })
+
+test('readiness stays compatible with WebViews without AbortSignal.timeout',async()=>{
+ const api=fresh(),oldFetch=globalThis.fetch
+ const descriptor=Object.getOwnPropertyDescriptor(AbortSignal,'timeout')
+ let signal
+ try{
+  Object.defineProperty(AbortSignal,'timeout',{configurable:true,value:undefined})
+  globalThis.fetch=async(_url,options)=>{signal=options.signal;return ok()}
+  await api.refreshRuntimeCodehashes()
+  assert.ok(signal instanceof AbortSignal)
+  assert.equal(signal.aborted,false)
+  assert.equal(api.runtimeCodehashOk('marketplace'),true)
+ }finally{
+  if(descriptor)Object.defineProperty(AbortSignal,'timeout',descriptor)
+  else delete AbortSignal.timeout
+  globalThis.fetch=oldFetch
+ }
+})
