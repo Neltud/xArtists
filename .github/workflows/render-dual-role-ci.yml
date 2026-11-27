@@ -18,6 +18,9 @@ on:
       - 'lia/xorus/**'
       - 'lia/chorus/**'
       - 'packages/core/src/xorusAnalysisContract.mjs'
+      - 'packages/core/src/paper-ledger.mjs'
+      - 'packages/core/src/pilotCeilings.mjs'
+      - 'packages/core/tradingStatus.mjs'
   workflow_dispatch:
 
 permissions:

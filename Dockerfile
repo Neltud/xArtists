@@ -15,6 +15,8 @@ COPY apps/frontend ./apps/frontend
 COPY data ./data
 COPY packages/core/src/xorusAnalysisContract.mjs ./packages/core/src/xorusAnalysisContract.mjs
 COPY packages/core/tradingStatus.mjs ./packages/core/tradingStatus.mjs
+COPY packages/core/src/paper-ledger.mjs ./packages/core/src/paper-ledger.mjs
+COPY packages/core/src/pilotCeilings.mjs ./packages/core/src/pilotCeilings.mjs
 WORKDIR /app/apps/frontend
 # Render still serves the SPA below /xArtists/. Pages uses the origin root.
 RUN npm install --legacy-peer-deps && VITE_ACCESS_API_BASE="$VITE_ACCESS_API_BASE" npm run build -- --base=/xArtists/

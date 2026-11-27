@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useI18n } from '../../i18n/I18nContext'
 import { applyPaperCommand, createPaperState, paperLedgerView,
-  type PaperState, type PaperNetwork } from '../../../../../deploy/neon/xorus-hub/shared/paper-ledger.mjs'
+  type PaperState, type PaperNetwork } from '../../../../../packages/core/src/paper-ledger.mjs'
 
 const KEY = 'xartists-xorus-paper-ledger-v1'
 const USDC = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
