@@ -434,18 +434,18 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
     await page.screenshot({ animations: 'disabled', path: 'artifacts/ux-mobile/home-desktop-1440.png' })
   })
 
-  test('light-first theme toggle is visible and dark preference survives reload', async ({ page }) => {
+  test('cyberpunk starts dark and an explicit light preference survives reload', async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 })
     await visit(page, '/')
-    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light')
-    await expect.poll(()=>page.locator('.xa-connect').evaluate(el=>getComputedStyle(el).backgroundColor)).toBe('rgb(113, 56, 200)')
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
+    await expect.poll(()=>page.locator('.xa-connect').evaluate(el=>getComputedStyle(el).backgroundImage)).toContain('linear-gradient')
     const toggle = page.locator('.xa-theme-toggle')
     await expect(toggle).toBeVisible()
     await toggle.click()
-    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
-    await expect.poll(()=>page.locator('.xa-connect').evaluate(el=>getComputedStyle(el).backgroundColor)).toBe('rgb(198, 162, 250)')
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light')
+    await expect.poll(()=>page.locator('.xa-connect').evaluate(el=>getComputedStyle(el).backgroundColor)).toBe('rgb(113, 56, 200)')
     await page.reload()
-    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light')
   })
 
   test('reduced motion requests a lightweight static Home, even on desktop', async ({ page }) => {
@@ -570,6 +570,7 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
   })
 
   test('phone screenshot: staking pool cards use readable light surfaces', async ({ page }) => {
+    await page.addInitScript(()=>localStorage.setItem('xa-theme','light'))
     await page.setViewportSize({ width: 390, height: 844 })
     await visit(page, '/staking/')
     const card = page.locator('.xa-staking-pool-card').first()
@@ -693,7 +694,8 @@ test.describe('xArtists public accessibility, local built frontend only', () => 
     await expect(page.getByRole('button', { name: /Terms of use|Conditions d’utilisation/ })).toBeVisible()
     await page.screenshot({ animations: 'disabled', fullPage: true, path: 'artifacts/ux-mobile/legal-390.png' })
   })
-  test('RWA and $TRO headings contrast with default light and optional dark theme',async ({page})=>{
+  test('RWA and $TRO headings contrast in both selectable themes',async ({page})=>{
+    await page.addInitScript(()=>localStorage.setItem('xa-theme','light'))
     await page.setViewportSize({width:390,height:844})
     for(const [path,selector] of [['/explore/rwa/','.rwa-public__lead h1'],['/finance/tro/sale/','#tro-hero-title']] as const){
       await visit(page,path)
@@ -952,7 +954,7 @@ for(const theme of ['light','dark'] as const){
    await visit(page,'/wallet/?lang=fr')
    await expect(page.locator('.xa-cockpit-hero')).toBeVisible()
    await expect(page.locator('html')).toHaveAttribute('data-theme',theme)
-   await expect(page.locator('main')).toHaveCSS('background-color','rgb(13, 9, 21)')
+   await expect(page.locator('main')).toHaveCSS('background-color',theme==='dark'?'rgb(8, 9, 17)':'rgb(13, 9, 21)')
    const colors=await page.evaluate(()=>[
     '.xa-cockpit-title-row h1','.xa-cockpit-ai h2','.xa-cockpit-agent-text strong',
     '.xa-cockpit-agent-text small','.xa-cockpit-notice','.xa-wallet-views button',
