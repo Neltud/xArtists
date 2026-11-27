@@ -157,6 +157,16 @@ async function tx(f){
 }
 async function reserve(wallet,media){
   return tx(async c=>{
+    // Dedicated free Studio pilot: reserve capacity BEFORE calling any pin provider.
+    // Count failed/uncertain rows too: they may already have consumed provider space.
+    // Never reset this budget automatically or by creating more wallets.
+    if(process.env.STUDIO_FREE_PILOT==='1'){
+      await c.query("SELECT pg_advisory_xact_lock(hashtext('xartists-studio-free-capacity-v1'))")
+      const capacity=await c.query("SELECT count(*)::int AS n,coalesce(sum(bytes),0)::bigint AS bytes FROM public.xartists_studio_media")
+      const used=capacity.rows[0]
+      if(Number(used.n)>=100||Number(used.bytes)+media.bytes>200*1024*1024)
+        throw fail('studio_free_capacity_reached',429)
+    }
     await c.query('SELECT pg_advisory_xact_lock(hashtext($1))',[wallet])
     const count=await c.query("SELECT count(*)::int AS n FROM xartists_studio_media WHERE wallet=$1 AND created_at > NOW() - INTERVAL '24 hours'",[wallet])
     if(Number(count.rows[0].n)>=MAX_UPLOADS_DAY)throw fail('daily_upload_quota_exhausted',429)
