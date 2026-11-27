@@ -34,6 +34,7 @@ export default function StudioPage() {
   const nfts = account.nfts || []
   const listLive = canListOwnedNft()
   const agentMint = canBuyAgent()
+  const [mediaSelection,setMediaSelection]=useState<{file:File;description:string}|null>(null)
   const [picked, setPicked] = useState<string | null>(null)
   const [name, setName] = useState('Atelier')
   const [ticker, setTicker] = useState('ATELIER')
@@ -131,7 +132,7 @@ export default function StudioPage() {
 
   return (
     <div className="xa-creator-studio xa-creator-studio-v2 animate-fade-in mx-auto max-w-3xl space-y-8 px-4 pb-28 pt-6 sm:px-7">
-      <StudioVisualWorkspace title={nftName} onTitle={setNftName} onAdvanced={()=>advancedRef.current?.setAttribute('open','' )}/>
+      <StudioVisualWorkspace title={nftName} onTitle={setNftName} onAdvanced={()=>advancedRef.current?.setAttribute('open','' )} onPrepare={(file,description)=>{setMediaSelection({file,description});advancedRef.current?.setAttribute('open','');window.requestAnimationFrame(()=>document.getElementById('xa-studio-mint')?.scrollIntoView({block:'start'}))}}/>
       <details className="xa-studio-advanced" ref={advancedRef}>
         <summary><strong>{c('simpleStudioAdvancedTitle')}</strong><span>{c('simpleStudioAdvancedDesc')}</span></summary>
       <div className="xa-studio-technical">
@@ -155,7 +156,7 @@ export default function StudioPage() {
           placeholder={xaLocalize("Nom de l’œuvre")}
           maxLength={50}
         />
-        <CreatorMediaUpload title={nftName} onReady={pin => {
+        <CreatorMediaUpload title={nftName} selection={mediaSelection} onReady={pin => {
           setPinnedMedia(pin)
           setNftMediaUri(pin?.mediaUri || '')
         }} />
