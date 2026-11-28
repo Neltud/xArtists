@@ -54,6 +54,7 @@ jobs:
           await esbuild.build({
             stdin:{contents:"export {default} from './deploy/neon/studio/index.mjs'; export {createStudioHandler} from './deploy/neon/studio/handler.mjs';",sourcefile:'studio-compact-entry.mjs',resolveDir:process.cwd()},
             bundle:true,platform:'node',target:'node24',format:'esm',minify:true,legalComments:'inline',
+            nodePaths:[resolve('services/access-api/node_modules')],
             outfile:'dist/compact/deploy/neon/studio/index.mjs',
             external:['pg-native','cloudflare:sockets'],
             banner:{js:"import{createRequire as ___cr}from'module';import{fileURLToPath as ___f}from'url';import{dirname as ___d}from'path';const require=___cr(import.meta.url);const __filename=___f(import.meta.url);const __dirname=___d(__filename);"},
