@@ -1,5 +1,12 @@
 # ACTIVE_CONTEXT — xArtists / xOrus
 
+## Retrait de la console publique Vellum — 28 novembre 2026
+
+- Retrait de la console statique `/vellum/` : page d’état uniquement, aucun formulaire, journal local, calcul de plafond ou moteur public. Suppression du fichier public `engine.mjs`. Les packages et pipelines internes restent intacts.
+- Réintroduction uniquement après validation d’un parser FR/EN (espaces, NBSP, virgules), seuils par devise sans conversion USD inventée et couverture navigateur verte. Signature et exécution restent interdites.
+- Le retrait ne constitue ni une activation de commerce ni une preuve de correction du parser interne. La preuve de publication Pages sera vérifiée séparément.
+- Reproduction du retrait décrit par l’opérateur : le commit local `94a67e87` n’est pas accessible sur GitHub au moment de ce correctif. Les notes historiques ci-dessous ne décrivent pas l’état courant de la console.
+
 ## Vellum command — 28 novembre 2026 (~05:40 UTC)
 
 - Sonde lecture seule. Pages **0.139.0** sert `2d4138cb` (140 routes, `lia_live_trading=false`, construit `2026-11-27T20:08:27Z`). Hub xOrus HTTP 200, source `293417d9`, stance **ABSTAIN**, exécution / signature / custody / paiement **fermés**, 0 wallet. `api.xartists.art` **NXDOMAIN**.
