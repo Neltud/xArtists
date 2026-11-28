@@ -1,0 +1,38 @@
+name: Studio — explicit public receipt (no mint)
+on:
+  workflow_dispatch:
+    inputs:
+      expected_source:
+        description: Exact SHA reported by the active Neon deployment
+        required: true
+        type: string
+      mode:
+        description: Read-only by default; optional one synthetic image consumes pilot quota
+        type: choice
+        default: READ_ONLY
+        options:
+          - READ_ONLY
+          - PUBLISH_ONE_SYNTHETIC_IMAGE
+permissions:
+  contents: read
+concurrency:
+  group: studio-public-receipt
+  cancel-in-progress: false
+jobs:
+  receipt:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      STUDIO_CANARY_MODE: ${{ inputs.mode }}
+      STUDIO_EXPECTED_SOURCE: ${{ inputs.expected_source }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+      - run: npm ci --omit=dev --prefix services/access-api
+      - run: node --test scripts/ops/studio-public-receipt.test.mjs
+      - run: node scripts/ops/studio-public-receipt.mjs
