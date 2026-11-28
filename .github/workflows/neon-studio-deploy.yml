@@ -1,27 +1,100 @@
-name: Studio Neon — deploy disabled (operator only)
+name: Studio Neon — protected release
 on:
   workflow_dispatch:
+    inputs:
+      mode:
+        description: Bootstrap disabled, or update code only
+        type: choice
+        options: [bootstrap, update]
+        default: bootstrap
+        required: true
+      expected_deployment_id:
+        description: Required for update; blank for bootstrap
+        type: string
+        required: false
 permissions:
   contents: read
 concurrency:
   group: studio-neon-first-deploy
   cancel-in-progress: false
 jobs:
+  build:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: ci-only
+          POSTGRES_DB: studio
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      TEST_STUDIO_DATABASE_URL: postgresql://postgres:ci-only@127.0.0.1:5432/studio
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+      - run: npm ci --omit=dev --prefix services/access-api
+      - run: psql "$TEST_STUDIO_DATABASE_URL" -v ON_ERROR_STOP=1 -f deploy/neon/studio/schema.sql
+      - run: node --test deploy/neon/studio/handler.test.mjs
+      - run: python3 scripts/ops/test-deploy-neon-studio.py
+      - run: python3 scripts/ops/package-neon-studio.py
+      - run: python3 scripts/ops/deploy-neon-studio.py dist/neon-studio.zip --expected-source "$GITHUB_SHA"
+      - name: Smoke exact packaged runtime
+        run: |
+          mkdir -p /tmp/studio-release
+          unzip -q dist/neon-studio.zip -d /tmp/studio-release
+          cd /tmp/studio-release
+          node --input-type=module -e "import app from './index.mjs';const h=await (await app.fetch(new Request('https://studio.example/health'))).json();if(h.source_sha!==process.env.GITHUB_SHA||h.studio_upload_enabled!==false||h.commerce_enabled!==false)process.exit(1)"
+      - run: sha256sum dist/neon-studio.zip > dist/neon-studio.sha256
+      - uses: actions/upload-artifact@v7
+        with:
+          name: studio-reviewed-bundle
+          path: |
+            dist/neon-studio.zip
+            dist/neon-studio.sha256
+          retention-days: 30
   deploy:
+    needs: build
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment: studio-neon
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-node@v6
         with:
-          node-version: '24'
-      - run: npm ci --omit=dev --prefix services/access-api
-      - run: node --test deploy/neon/studio/handler.test.mjs
-      - run: python3 scripts/ops/package-neon-studio.py
-      - run: python3 scripts/ops/deploy-neon-studio.py dist/neon-studio.zip --expected-source "$GITHUB_SHA"
-      - name: First deployment only; uploads and commerce remain off
+          persist-credentials: false
+      - uses: actions/download-artifact@v7
+        with:
+          name: studio-reviewed-bundle
+          path: dist
+      - run: sha256sum --check dist/neon-studio.sha256
+      - name: Release only the reviewed bundle
         env:
           NEON_API_KEY: ${{ secrets.NEON_STUDIO_API_KEY }}
-        run: python3 scripts/ops/deploy-neon-studio.py dist/neon-studio.zip --expected-source "$GITHUB_SHA" --deploy-disabled
+          MODE: ${{ inputs.mode }}
+          EXPECTED_ID: ${{ inputs.expected_deployment_id }}
+        run: |
+          set -euo pipefail
+          args=(dist/neon-studio.zip --expected-source "$GITHUB_SHA" --receipt dist/neon-studio-receipt.json)
+          case "$MODE" in
+            bootstrap) [[ -z "$EXPECTED_ID" ]]; args+=(--deploy-disabled) ;;
+            update) [[ "$EXPECTED_ID" =~ ^[1-9][0-9]*$ ]]; args+=(--update-code --expected-deployment-id "$EXPECTED_ID") ;;
+            *) exit 1 ;;
+          esac
+          python3 scripts/ops/deploy-neon-studio.py "${args[@]}"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: studio-deployment-receipt
+          path: dist/neon-studio-receipt.json
+          retention-days: 30
