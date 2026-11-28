@@ -1,17 +1,15 @@
 """
-Sub-agent factory — LIA creates Vellum sub-agents from a user prompt
-and prepares a sellable marketplace listing (concept → product).
+Sub-agent factory — prepares local draft specifications from user prompts.
 
 Flow:
   1. User prompt (dApp Studio / API)
   2. LIA normalizes → SubAgentSpec (template, cadence, risk, price)
   3. Persist catalog entry (data/agents_catalog.json)
-  4. Optional: enqueue Vellum workflow clone (paper)
+  4. No automatic provisioning or external workflow
   5. On agents_marketplace SC live: listAgent (seller = creator or LIA)
   6. Fulfillment after buy: limited API key + NFT badge + receipt
 
-Does not deploy Vellum nodes by itself without secrets; emits a
-machine-readable job for the Vellum orchestrator.
+No provider provisioning or execution is supported by this factory.
 """
 from __future__ import annotations
 
@@ -27,7 +25,7 @@ from typing import Any, Optional
 _ROOT = Path(__file__).resolve().parents[2]
 CATALOG_PATH = _ROOT / "data" / "agents_catalog.json"
 
-# Template library — maps intent keywords → Vellum workflow kind
+# Template library — local draft classifications.
 TEMPLATES: dict[str, dict[str, Any]] = {
     "momentum": {
         "workflow": "lia_sleeve_mom",
@@ -105,7 +103,7 @@ class SubAgentSpec:
     description: str
     status: str  # draft | listed | sold | retired
     created_at: float
-    vellum_job: dict[str, Any] = field(default_factory=dict)
+    provisioning: dict[str, Any] = field(default_factory=dict)
     tags: list[str] = field(default_factory=list)
     fulfillment: dict[str, Any] = field(default_factory=dict)
 
@@ -144,19 +142,7 @@ def create_subagent_from_prompt(
     aid = _agent_id(prompt, creator)
     display = name or f"xArtists {tid.replace('_', ' ').title()} · {aid[-6:]}"
 
-    job = {
-        "action": "provision_subagent",
-        "workflow": tpl["workflow"],
-        "template": tid,
-        "prompt": prompt[:2000],
-        "cadence_min": tpl["cadence_min"],
-        "env": {
-            "LIA_LIVE_TRADING": "0",
-            "AGENT_ID": aid,
-            "PARENT": "LIA",
-        },
-        "note": "Vellum clones workflow template; no live trading until micro proof + pack policy",
-    }
+    job = {"status": "not_configured", "execution_authorized": False}
 
     spec = SubAgentSpec(
         agent_id=aid,
@@ -172,11 +158,11 @@ def create_subagent_from_prompt(
         description=str(tpl["description"]),
         status="draft",
         created_at=time.time(),
-        vellum_job=job,
-        tags=[tid, "xartists", "vellum"],
+        provisioning=job,
+        tags=[tid, "xartists"],
         fulfillment={
-            "on_buy": ["api_key_limited", "nft_badge", "receipt"],
-            "slot_vellum": True,
+            "status": "not_configured",
+            "delivery_authorized": False,
         },
     )
 

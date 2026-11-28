@@ -33,8 +33,8 @@ export default function CreateSubAgentForm() {
       creator: connected && address ? address : 'anonymous',
       product: 'lia_subagent_pack',
       not: 'greensmoke_forecast_agent',
-      pricing: 'lia_vellum_sets_price_for_margin',
-      note: 'Vellum lia.agents.vellum_provision — list after agents_marketplace live',
+      pricing: 'draft_creator_estimate',
+      note: 'Brouillon local : aucun agent provisionné, aucun listing ni paiement.',
     }
     try {
       localStorage.setItem('xartists_subagent_intent', JSON.stringify(intent))
@@ -42,7 +42,7 @@ export default function CreateSubAgentForm() {
       /* ignore */
     }
     setMsg(
-      `Intent ${eur} € enregistré (défaut catalogue ${PACK_PRICE_EUR.list} €). ≠ GreenSmoke. List on-chain après deploy.`
+      `Brouillon local enregistré (${eur} € estimés). Aucun agent déployé ou mis en vente.`
     )
   }
 
