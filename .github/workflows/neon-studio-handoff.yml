@@ -65,7 +65,7 @@ jobs:
                 if(!a.importer.endsWith('/services/access-api/src/siwx.mjs'))throw Error('Unexpected SDK importer')
                 return {path:'sdk-narrow',namespace:'studio-sdk'}
               })
-              b.onLoad({filter:/.*/,namespace:'studio-sdk'},()=>({contents:"import a from "+JSON.stringify(sdk+'/address.js')+"; import m from "+JSON.stringify(sdk+'/message.js')+"; export default {Address:a.Address,Message:m.Message,MessageComputer:m.MessageComputer};",loader:'js',resolveDir:process.cwd()}))
+              b.onLoad({filter:/.*/,namespace:'studio-sdk'},()=>({contents:"import {Address} from "+JSON.stringify(sdk+'/address.js')+"; import {Message,MessageComputer} from "+JSON.stringify(sdk+'/message.js')+"; export default {Address,Message,MessageComputer};",loader:'js',resolveDir:process.cwd()}))
               b.onResolve({filter:/^keccak$/},()=>({path:keccak}))
             }}]
           })
