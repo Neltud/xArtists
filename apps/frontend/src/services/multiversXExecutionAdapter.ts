@@ -1,8 +1,7 @@
 /**
- * MultiversXExecutionAdapter — exécution réelle appelée DEPUIS Vellum workflows.
+ * MultiversXExecutionAdapter — adaptateur indépendant de transaction.
  *
- * Vellum = orchestration IA (app.vellum.ai), PAS une chaîne / DEX / relayer.
- * Les swaps s’exécutent sur MultiversX (xExchange, OneDex), pas « sur Vellum ».
+ * Les swaps s’exécutent sur MultiversX. Aucun service externe n'est connecté ici.
  *
  * Ne retourne JAMAIS un succès factice sans provider injecté.
  */

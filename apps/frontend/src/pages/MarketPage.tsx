@@ -180,9 +180,9 @@ export default function MarketPage() {
               </ul>
             </section>
             <section className="rounded-2xl border border-white/[0.07] bg-zinc-950/50 p-5 space-y-2">
-              <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-500">{xaRender("Board Vellum (public)")}</p>
+              <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-500">{xaRender("Synthèse xOrus")}</p>
               <ul className="space-y-1.5">
-                {xaRender(snap.vellumBrief.map((line, i) => (
+                {xaRender(snap.xorusBrief.map((line, i) => (
                   <li key={i} className="text-[13px] text-zinc-300 flex gap-2">
                     <span className="text-zinc-600">—</span>
                     <span>{xaRender(line)}</span>
