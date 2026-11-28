@@ -11,6 +11,7 @@ if (typeof releaseVersion !== 'string' || !/^\d+\.\d+\.\d+$/.test(releaseVersion
   throw new Error('Invalid root Release Please version')
 }
 if (!/^[a-f0-9]{40}$/.test(sha)) throw new Error('Cannot identify the source commit')
+if (typeof release.xorus_live_trading !== 'boolean') throw new Error('Invalid xOrus trading status')
 writeFileSync('dist/build-info.json', JSON.stringify({
   schema_version: 1,
   renderer: 'sites-v3',
@@ -19,7 +20,7 @@ writeFileSync('dist/build-info.json', JSON.stringify({
   source_sha: sha,
   presentation_source_sha: '8a607c8831234fe738a091a5a4caf325811c1b5b',
   base_url: release.base_path,
-  lia_live_trading: release.lia_live_trading,
+  xorus_live_trading: release.xorus_live_trading,
   public_route_count: release.routes.length,
   built_at: new Date().toISOString(),
   workflow_run_url: process.env.GITHUB_RUN_ID

@@ -1,8 +1,8 @@
 /**
  * Journal d’intents + suivi signature xPortal.
- * Live = VITE_LIA_LIVE_TRADING=1 · toujours user-sign, jamais PEM autonome.
+ * Live = VITE_XORUS_LIVE_TRADING=1 · toujours user-sign, jamais PEM autonome.
  */
-import { LIA_GUARDS, LIA_LIVE_TRADING } from '../config/liaConfig'
+import { LIA_GUARDS, XORUS_LIVE_TRADING } from '../config/liaConfig'
 import { prepareIntentTx, describeTx } from './buildIntentTx'
 import { loadIntentFeed, type FeedItem } from './intentFeed'
 
@@ -71,8 +71,8 @@ function feedItemToEntry(f: FeedItem): JournalEntry {
     status: 'paper',
     at: f.at,
     updatedAt: Date.now(),
-    paper: !LIA_LIVE_TRADING,
-    liveTrading: LIA_LIVE_TRADING,
+    paper: !XORUS_LIVE_TRADING,
+    liveTrading: XORUS_LIVE_TRADING,
   }
 }
 
@@ -107,8 +107,8 @@ export function ensureBootstrapIntent(): JournalEntry {
     status: 'paper',
     at: Date.now(),
     updatedAt: Date.now(),
-    paper: !LIA_LIVE_TRADING,
-    liveTrading: LIA_LIVE_TRADING,
+    paper: !XORUS_LIVE_TRADING,
+    liveTrading: XORUS_LIVE_TRADING,
   }
   all.push(entry)
   save(all)
@@ -117,7 +117,7 @@ export function ensureBootstrapIntent(): JournalEntry {
 
 export function loadJournal(limit = 20): JournalEntry[] {
   let entries = syncFeedIntoJournal()
-  if (LIA_LIVE_TRADING && entries.length === 0) {
+  if (XORUS_LIVE_TRADING && entries.length === 0) {
     ensureBootstrapIntent()
     entries = loadRaw()
   }
@@ -194,7 +194,7 @@ export type UserSignPayload = {
  */
 export function buildUserSignPayload(entry: JournalEntry): UserSignPayload {
   const summary = `${entry.action} · ${entry.amount} ${entry.assetId}`
-  if (!LIA_LIVE_TRADING) {
+  if (!XORUS_LIVE_TRADING) {
     return {
       intentId: entry.id,
       mode: 'paper',

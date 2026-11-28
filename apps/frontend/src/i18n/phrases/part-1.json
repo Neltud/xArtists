@@ -2039,15 +2039,15 @@
     "无待处理的 HITL 提案",
     "لا مقترحات HITL معلقة"
   ],
-  "Pages is static — UI approval records intent + copies ops command. Broadcast still needs LIA_LIVE_TRADING=1 + executor.": [
-    "Pages est statique — l’approbation enregistre l’intention et copie la commande ops. La diffusion exige encore LIA_LIVE_TRADING=1 et l’exécuteur.",
-    "Pages is static — UI approval records intent + copies ops command. Broadcast still needs LIA_LIVE_TRADING=1 + executor.",
-    "Pages es estático — la aprobación registra la intención y copia el comando operativo. La difusión aún requiere LIA_LIVE_TRADING=1 y el ejecutor.",
-    "Pages ist statisch — UI-Freigabe speichert die Absicht und kopiert den Betriebsbefehl. Senden erfordert weiterhin LIA_LIVE_TRADING=1 und den Executor.",
-    "Pages статичен — одобрение сохраняет намерение и копирует команду операций. Для отправки нужны LIA_LIVE_TRADING=1 и исполнитель.",
-    "Pages статичний — схвалення зберігає намір і копіює операційну команду. Для надсилання потрібні LIA_LIVE_TRADING=1 і виконавець.",
-    "Pages 为静态站点 — 界面批准会记录意图并复制运维命令。广播仍需 LIA_LIVE_TRADING=1 和执行器。",
-    "Pages ثابت — تسجل الموافقة النية وتنسخ أمر العمليات. لا يزال البث يتطلب LIA_LIVE_TRADING=1 ومنفذاً."
+  "Pages is static — UI approval records intent + copies ops command. Broadcast still needs XORUS_LIVE_TRADING=1 + executor.": [
+    "Pages est statique — l’approbation enregistre l’intention et copie la commande ops. La diffusion exige encore XORUS_LIVE_TRADING=1 et l’exécuteur.",
+    "Pages is static — UI approval records intent + copies ops command. Broadcast still needs XORUS_LIVE_TRADING=1 + executor.",
+    "Pages es estático — la aprobación registra la intención y copia el comando operativo. La difusión aún requiere XORUS_LIVE_TRADING=1 y el ejecutor.",
+    "Pages ist statisch — UI-Freigabe speichert die Absicht und kopiert den Betriebsbefehl. Senden erfordert weiterhin XORUS_LIVE_TRADING=1 und den Executor.",
+    "Pages статичен — одобрение сохраняет намерение и копирует команду операций. Для отправки нужны XORUS_LIVE_TRADING=1 и исполнитель.",
+    "Pages статичний — схвалення зберігає намір і копіює операційну команду. Для надсилання потрібні XORUS_LIVE_TRADING=1 і виконавець.",
+    "Pages 为静态站点 — 界面批准会记录意图并复制运维命令。广播仍需 XORUS_LIVE_TRADING=1 和执行器。",
+    "Pages ثابت — تسجل الموافقة النية وتنسخ أمر العمليات. لا يزال البث يتطلب XORUS_LIVE_TRADING=1 ومنفذاً."
   ],
   "Net performance": [
     "Performance nette",

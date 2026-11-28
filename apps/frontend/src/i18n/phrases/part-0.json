@@ -1969,15 +1969,15 @@
     "链上权益参考指标",
     "مؤشر رأس المال على السلسلة"
   ],
-  "Display only · trading remains gated (LIA_LIVE_TRADING=0)": [
-    "Affichage seul · trading soumis aux restrictions (LIA_LIVE_TRADING=0)",
-    "Display only · trading remains gated (LIA_LIVE_TRADING=0)",
-    "Solo visualización · trading restringido (LIA_LIVE_TRADING=0)",
-    "Nur Anzeige · Handel bleibt gesperrt (LIA_LIVE_TRADING=0)",
-    "Только отображение · торговля ограничена (LIA_LIVE_TRADING=0)",
-    "Лише відображення · торгівлю обмежено (LIA_LIVE_TRADING=0)",
-    "仅展示 · 交易仍受准入限制（LIA_LIVE_TRADING=0）",
-    "عرض فقط · التداول مقيّد (LIA_LIVE_TRADING=0)"
+  "Display only · trading remains gated (XORUS_LIVE_TRADING=0)": [
+    "Affichage seul · trading soumis aux restrictions (XORUS_LIVE_TRADING=0)",
+    "Display only · trading remains gated (XORUS_LIVE_TRADING=0)",
+    "Solo visualización · trading restringido (XORUS_LIVE_TRADING=0)",
+    "Nur Anzeige · Handel bleibt gesperrt (XORUS_LIVE_TRADING=0)",
+    "Только отображение · торговля ограничена (XORUS_LIVE_TRADING=0)",
+    "Лише відображення · торгівлю обмежено (XORUS_LIVE_TRADING=0)",
+    "仅展示 · 交易仍受准入限制（XORUS_LIVE_TRADING=0）",
+    "عرض فقط · التداول مقيّد (XORUS_LIVE_TRADING=0)"
   ],
   "Intelligence feed · paper": [
     "Flux d’intelligence · simulation",

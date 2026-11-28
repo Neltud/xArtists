@@ -103,7 +103,7 @@ export const SOUL_MAINNET_GATES = [
   { id: 'paper_stable', label: 'Paper SoulRouter ≥ 30j sans anomaly log', done: false },
   { id: 'hatom_first', label: 'Hatom live LIA micro-proofs OK (priorité MVX)', done: false },
   { id: 'no_user_funds', label: 'UI user : pas de dépôt jusqu’à flag SOUL_USER_FUNDS=1', done: true },
-  { id: 'lia_flag', label: 'SOUL_ENABLED=mainnet + LIA_LIVE_TRADING gates séparés', done: false },
+  { id: 'lia_flag', label: 'SOUL_ENABLED=mainnet + XORUS_LIVE_TRADING gates séparés', done: false },
 ] as const
 
 export const SOUL = {

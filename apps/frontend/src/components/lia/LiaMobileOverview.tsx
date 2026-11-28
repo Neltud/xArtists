@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AGENT_PACKS } from '../../config/agentPacks'
-import { LIA_BADGE, LIA_LIVE_TRADING } from '../../config/liaConfig'
+import { LIA_BADGE, XORUS_LIVE_TRADING } from '../../config/liaConfig'
 import { fetchLiaHubStatus, type LiaHubStatus } from '../../lia/hubStatus'
 import { fetchLiaStatus, type LiaStatusV1 } from '../../lia/liaStatus'
 import { assessTelemetrySource } from '../../lia/telemetryTruth.mjs'
@@ -58,7 +58,7 @@ export default function LiaMobileOverview() {
   const hubFresh = !hubSource.is_stale && hubSource.data_mode === 'paper'
   const modelFresh = !modelSource.is_stale && fresh
   const shadowFresh = !paperSource.is_stale && fresh
-  const mode = LIA_LIVE_TRADING || status?.LIA_LIVE_TRADING === 1
+  const mode = XORUS_LIVE_TRADING || status?.XORUS_LIVE_TRADING === 1
     ? 'Unverified execution flag — no independent trading proof; read-only'
     : 'Paper / shadow — no autonomous live execution'
   const pnl = shadowFresh ? status?.shadow?.shadow_pnl_usd : null

@@ -30,7 +30,7 @@ jobs:
         run: node --test tests/xorus-public-routes.test.mjs tests/sculpture-lab-glb-flow.test.mjs
       - name: Frontend release, routes, i18n and build
         env:
-          VITE_LIA_LIVE_TRADING: '0'
+          VITE_XORUS_LIVE_TRADING: '0'
           VITE_PAYBOX_ENABLED: 'false'
           VITE_GENESIS_COMMERCIAL_GO: '0'
         run: |

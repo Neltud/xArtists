@@ -4,14 +4,14 @@ import { readFileSync } from 'node:fs'
 
 const read = path => readFileSync(new URL(path, import.meta.url), 'utf8')
 
-test('light is default before React mounts, with a persisted dark choice', () => {
+test('cyberpunk dark is default before React mounts, with a persisted light choice', () => {
   const html = read('../index.html')
   const state = read('../src/experience/state.tsx')
   const shell = read('../src/experience/Shell.tsx')
   const css = read('../src/experience/experience.css')
-  assert.match(html, /<html lang="fr" data-theme="light">/)
-  assert.match(html, /localStorage.getItem\("xa-theme"\) === "dark" \? "dark" : "light"/)
-  assert.match(state, /stored\('xa-theme'\)==='dark'\?'dark':'light'/)
+  assert.match(html, /<html lang="fr" data-theme="dark">/)
+  assert.match(html, /localStorage.getItem\("xa-theme"\) === "light" \? "light" : "dark"/)
+  assert.match(state, /stored\('xa-theme'\)==='light'\?'light':'dark'/)
   assert.match(state, /classList.toggle\('dark',theme==='dark'\)/)
   assert.match(shell, /xa-theme-toggle/)
   assert.match(read('../src/styles/soul-tokens.css'), /html\[data-theme="dark"\]/)

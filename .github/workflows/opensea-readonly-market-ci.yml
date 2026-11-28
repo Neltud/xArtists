@@ -31,7 +31,7 @@ jobs:
     timeout-minutes: 8
     env:
       OPEN_SEA_API_KEY: ''
-      LIA_LIVE_TRADING: '0'
+      XORUS_LIVE_TRADING: '0'
       PAYBOX_CHECKOUT_ENABLED: '0'
       MINT_LIVE_ENABLED: 'false'
     steps:
@@ -51,7 +51,7 @@ jobs:
     timeout-minutes: 15
     env:
       VITE_GENESIS_COMMERCIAL_GO: '0'
-      VITE_LIA_LIVE_TRADING: '0'
+      VITE_XORUS_LIVE_TRADING: '0'
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v4

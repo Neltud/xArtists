@@ -74,7 +74,7 @@ export interface LIAStatus {
       effective_leverage?: number
     }
   }
-  LIA_LIVE_TRADING?: number | string
+  XORUS_LIVE_TRADING?: number | string
 }
 
 export interface XArtistsData {
@@ -199,7 +199,7 @@ export function MultiversXProvider({ children }: { children: ReactNode }) {
           market: v.market || { fear_greed_index: 50, guard_status: 'OK' },
           cycle: v.cycle || { report_sent: false, summary: '' },
           orchestrator: v.orchestrator,
-          LIA_LIVE_TRADING: v.LIA_LIVE_TRADING,
+          XORUS_LIVE_TRADING: v.XORUS_LIVE_TRADING,
         })
         if (checkStale(v.timestamp || v.updated)) stale = true
       }

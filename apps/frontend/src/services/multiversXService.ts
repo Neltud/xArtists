@@ -29,7 +29,7 @@ const ENDPOINTS: Record<NetworkMode, { api: string; gateway: string; explorer: s
 
 function liveTradingEnabled(): boolean {
   try {
-    return import.meta.env.VITE_LIA_LIVE_TRADING === '1'
+    return import.meta.env.VITE_XORUS_LIVE_TRADING === '1'
   } catch {
     return false
   }

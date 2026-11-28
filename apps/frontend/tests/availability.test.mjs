@@ -66,7 +66,7 @@ test('every canonical route and alias is emitted as real HTML, including mobile 
     const html = '<html><head><title>Generic xArtists</title><meta name="description" content="generic" /></head><body>sites-v3-release</body></html>'
     await fs.writeFile(path.join(root, 'dist/index.html'), html)
     const plugin = publicAvailabilityPlugin()
-    plugin.configResolved({ root, build: { outDir: 'dist' }, base: '/xArtists/', env: { VITE_LIA_LIVE_TRADING: '0' } })
+    plugin.configResolved({ root, build: { outDir: 'dist' }, base: '/xArtists/', env: { VITE_XORUS_LIVE_TRADING: '1', VITE_LIA_LIVE_TRADING: '1' } })
     await plugin.closeBundle()
     assert.equal(await fs.readFile(path.join(root, 'dist/workspace/wallet/index.html'), 'utf8'), html)
     assert.equal(await fs.readFile(path.join(root, 'dist/wallet/index.html'), 'utf8'), html)
@@ -78,7 +78,7 @@ test('every canonical route and alias is emitted as real HTML, including mobile 
       }
     }
     assert((await fs.readFile(path.join(root, 'dist/404.html'), 'utf8')).includes('_xa_route'))
-    assert.equal(JSON.parse(await fs.readFile(path.join(root, 'dist/dapp-release.json'), 'utf8')).lia_live_trading, false)
+    assert.equal(JSON.parse(await fs.readFile(path.join(root, 'dist/dapp-release.json'), 'utf8')).xorus_live_trading, false)
   } finally { await fs.rm(root, { recursive: true, force: true }) }
 })
 

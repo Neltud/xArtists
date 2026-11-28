@@ -1,3 +1,4 @@
+import {isTradingDisabled} from '../../packages/core/tradingStatus.mjs'
 /**
  * Short-lived GitHub OIDC proof -> Render API, then ephemeral GITHUB_TOKEN
  * -> dry-run mint workflow. No long-lived PAT, no mainnet, no synthetic paid order.
@@ -36,7 +37,7 @@ assert.equal(health.ok, true)
 assert.equal(health.mint_dry_run, true)
 assert.equal(health.mint_live_enabled, false)
 assert.equal(health.mint_micro_price, false)
-assert.equal(String(health.lia_live_trading), '0')
+assert.equal(isTradingDisabled(health), true)
 assert.equal(health.tro_solana_bridge, 'off')
 
 if (health.mint_oidc_pull_enabled !== true) {

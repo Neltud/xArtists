@@ -53,7 +53,7 @@ test('signed PayBox callback, concurrency and restart use one durable Postgres o
     GITHUB_TOKEN: '',
     MINT_DRY_RUN: '1',
     MINT_LIVE_ENABLED: '0',
-    LIA_LIVE_TRADING: '0',
+    XORUS_LIVE_TRADING: '0',
   }
   const sign = data => crypto.sign(
     'RSA-SHA256', Buffer.from(data, 'utf8'), privateKey,
@@ -92,7 +92,7 @@ test('signed PayBox callback, concurrency and restart use one durable Postgres o
     assert.equal(health.mint_dispatch_enabled, false)
     assert.equal(health.mint_dry_run, true)
     assert.equal(health.mint_live_enabled, false)
-    assert.equal(health.lia_live_trading, '0')
+    assert.equal(health.xorus_live_trading, '0')
 
     const unsigned = await send(server, data)
     assert.equal(unsigned.status, 400)

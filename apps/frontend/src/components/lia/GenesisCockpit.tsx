@@ -60,7 +60,7 @@ export default function GenesisCockpit() {
         <p className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 font-medium">
           {xaRender("Genesis cockpit ")}</p>
         <span className="text-[10px] text-zinc-600">
-          {xaRender("Shadow default · HITL for chain · LIA_LIVE_TRADING=0 ")}</span>
+          {xaRender("Shadow default · HITL for chain · XORUS_LIVE_TRADING=0 ")}</span>
       </div>
 
       <div className="flex gap-1 p-0.5 rounded-full border border-white/10 w-fit">

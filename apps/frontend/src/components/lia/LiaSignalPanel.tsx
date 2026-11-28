@@ -6,7 +6,7 @@ import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import LiaRibbonOverlay from './LiaRibbonOverlay'
 import { loadJournal, markAwaitingSignature, buildUserSignPayload } from '../../lia/intentJournal'
-import { LIA_BADGE, LIA_LIVE_TRADING } from '../../config/liaConfig'
+import { LIA_BADGE, XORUS_LIVE_TRADING } from '../../config/liaConfig'
 import { useWallet } from '../../context/WalletContext'
 import { requestOpenConnect } from '../../lib/walletEvents'
 import { useI18n } from '../../i18n/I18nContext'
@@ -63,7 +63,7 @@ export default function LiaSignalPanel() {
           <h3 className="text-sm font-semibold text-white">{xaRender("Arbitrage paper · non-custodial")}</h3>
         </div>
         <span className="text-[10px] text-emerald-200/90 border border-emerald-500/25 rounded-full px-2 py-0.5">
-          {xaRender("LIVE_TRADING=")}{xaRender(LIA_LIVE_TRADING ? 1 : 0)}
+          {xaRender("LIVE_TRADING=")}{xaRender(XORUS_LIVE_TRADING ? 1 : 0)}
         </span>
       </div>
 

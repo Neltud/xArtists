@@ -449,15 +449,15 @@
     "限量产品 · 模拟结账 · 非投资",
     "منتجات محدودة · دفع محاكى · ليس استثمارًا"
   ],
-  "Prix live lecture · LIA_LIVE_TRADING=0": [
-    "Lecture des prix en direct · LIA_LIVE_TRADING=0",
-    "Read-only live prices · LIA_LIVE_TRADING=0",
-    "Precios en directo de solo lectura · LIA_LIVE_TRADING=0",
-    "Live-Preise nur lesend · LIA_LIVE_TRADING=0",
-    "Чтение цен в реальном времени · LIA_LIVE_TRADING=0",
-    "Читання цін у реальному часі · LIA_LIVE_TRADING=0",
-    "实时价格只读 · LIA_LIVE_TRADING=0",
-    "أسعار مباشرة للقراءة فقط · LIA_LIVE_TRADING=0"
+  "Prix live lecture · XORUS_LIVE_TRADING=0": [
+    "Lecture des prix en direct · XORUS_LIVE_TRADING=0",
+    "Read-only live prices · XORUS_LIVE_TRADING=0",
+    "Precios en directo de solo lectura · XORUS_LIVE_TRADING=0",
+    "Live-Preise nur lesend · XORUS_LIVE_TRADING=0",
+    "Чтение цен в реальном времени · XORUS_LIVE_TRADING=0",
+    "Читання цін у реальному часі · XORUS_LIVE_TRADING=0",
+    "实时价格只读 · XORUS_LIVE_TRADING=0",
+    "أسعار مباشرة للقراءة فقط · XORUS_LIVE_TRADING=0"
   ],
   "Grille dégressive · SC venue-split après audit": [
     "Grille dégressive · SC venue-split après audit",

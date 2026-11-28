@@ -33,5 +33,5 @@ test('editorial preview and roadmap never become financial permission',()=>{
  const readiness=read('experience/publicReadiness.ts')
  for(const id of ['studio','gallery-builder','agents','lia','account'])assert.match(readiness,new RegExp("(?:'"+id+"'|"+id+"): 'preview'"))
  for(const id of ['trading','staking','liquidity','hatom','burnify','sale'])assert.match(readiness,new RegExp("(?:'"+id+"'|"+id+"): 'roadmap'"))
- assert.doesNotMatch(read('experience/softLaunch.ts')+read('experience/Pages.tsx')+read('experience/Shell.tsx'),/paybox_checkout_enabled\s*=\s*true|mint_live_enabled\s*=\s*true|LIA_LIVE_TRADING\s*=\s*1/)
+ assert.doesNotMatch(read('experience/softLaunch.ts')+read('experience/Pages.tsx')+read('experience/Shell.tsx'),/paybox_checkout_enabled\s*=\s*true|mint_live_enabled\s*=\s*true|XORUS_LIVE_TRADING\s*=\s*1/)
 })

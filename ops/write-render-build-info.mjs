@@ -16,7 +16,7 @@ export function createRenderBuildInfo({ commit, release, stampedAt = new Date().
   }
   if (
     !release || release.schema_version !== 1 || release.base_path !== '/xArtists/' ||
-    typeof release.lia_live_trading !== 'boolean' ||
+    typeof release.xorus_live_trading !== 'boolean' ||
     !Array.isArray(release.routes) || release.routes.length === 0 ||
     release.routes.some(route => typeof route !== 'string' || !/^\/(?:[a-z0-9_-]+\/?)*$/i.test(route))
   ) {
@@ -28,7 +28,7 @@ export function createRenderBuildInfo({ commit, release, stampedAt = new Date().
     renderer: 'sites-v3',
     source_sha: commit,
     base_url: '/xArtists/',
-    lia_live_trading: release.lia_live_trading,
+    xorus_live_trading: release.xorus_live_trading,
     public_route_count: release.routes.length,
     stamped_at: stampedAt,
     stamp_source: 'render-runtime',

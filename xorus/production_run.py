@@ -6,7 +6,7 @@ Phases (paper only):
   3. optional dual external briefs (Grok + ChatGPT) when provided by caller/CI
   4. mirror note for frontend public/data (caller commits; this module does not git push)
 
-Never sets LIA_LIVE_TRADING, never signs, never mints.
+Never sets XORUS_LIVE_TRADING, never signs, never mints.
 """
 from __future__ import annotations
 
@@ -35,8 +35,9 @@ def _write(path: Path, doc: dict[str, Any]) -> None:
 
 def run(*, publish: bool = True) -> dict[str, Any]:
     # Refuse any accidental live env from legacy LIA tooling.
-    if os.environ.get("LIA_LIVE_TRADING", "0").strip() in ("1", "true", "TRUE", "yes"):
-        raise RuntimeError("LIA_LIVE_TRADING must not be set; xOrus is paper-only")
+    if any(os.environ.get(key, "0").strip().lower() in ("1", "true", "yes")
+           for key in ("XORUS_LIVE_TRADING", "LIA_LIVE_TRADING")):
+        raise RuntimeError("XORUS_LIVE_TRADING requires a certified executor; this analysis worker cannot trade")
 
     board = run_xorus()
     report = seal(

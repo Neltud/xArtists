@@ -8,18 +8,35 @@ from __future__ import annotations
 
 import json
 import sys
+import time
+import urllib.error
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 API = "https://api.multiversx.com"
+# Gateway blips must not be reported as a code change. Real mismatches are not retried.
+TRANSIENT_HTTP = {408, 429, 500, 502, 503, 504}
+CODEHASH_ATTEMPTS = 4
 
 
 def fetch_codehash(addr: str) -> str | None:
     url = f"{API}/accounts/{addr}"
-    with urllib.request.urlopen(url, timeout=30) as r:
-        data = json.loads(r.read().decode())
+    for attempt in range(CODEHASH_ATTEMPTS):
+        try:
+            with urllib.request.urlopen(url, timeout=30) as r:
+                data = json.loads(r.read().decode())
+            break
+        except urllib.error.HTTPError as exc:
+            if exc.code not in TRANSIENT_HTTP or attempt == CODEHASH_ATTEMPTS - 1:
+                raise
+            print(f"codehash transient HTTP {exc.code} for {addr} ({attempt + 1}/{CODEHASH_ATTEMPTS})", file=sys.stderr)
+        except (urllib.error.URLError, TimeoutError, ConnectionError) as exc:
+            if attempt == CODEHASH_ATTEMPTS - 1:
+                raise
+            print(f"codehash transient {type(exc).__name__} for {addr} ({attempt + 1}/{CODEHASH_ATTEMPTS})", file=sys.stderr)
+        time.sleep(min(8, 2 ** attempt))
     h = data.get("codeHash")
     if not h or not isinstance(h, str) or len(h) < 8:
         return None

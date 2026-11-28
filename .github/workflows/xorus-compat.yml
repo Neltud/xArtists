@@ -24,7 +24,7 @@ jobs:
       - name: Run Xorus alias and Chorus paper invariants on the same SHA (offline)
         env:
           PYTHONPATH: ${{ github.workspace }}
-          LIA_LIVE_TRADING: '0'
+          XORUS_LIVE_TRADING: '0'
         run: |
           python3 -m unittest discover -s tests -p 'test_xorus_alias.py' -v
           python3 -m unittest discover -s tests -p 'test_chorus_paper_safety.py' -v

@@ -27,5 +27,5 @@ test('readiness remains visible on module cards and advanced directory filters',
  assert.match(pages,/StageBadge stage=\{publicStage\(m.id\)\}/)
  assert.match(pages,/xa-directory-stage-controls/)
  assert.match(pages,/PUBLIC_STAGE_ORDER/)
- assert.doesNotMatch(shell+pages,/mint_live_enabled\s*=\s*true|paybox_checkout_enabled\s*=\s*true|LIA_LIVE_TRADING\s*=\s*1/)
+ assert.doesNotMatch(shell+pages,/mint_live_enabled\s*=\s*true|paybox_checkout_enabled\s*=\s*true|XORUS_LIVE_TRADING\s*=\s*1/)
 })

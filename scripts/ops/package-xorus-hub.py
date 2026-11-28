@@ -6,9 +6,15 @@ import zipfile
 
 root = Path(__file__).resolve().parents[2]
 source = root / 'deploy/neon/xorus-hub'
-modules = ['index.mjs', 'hub.mjs', 'registry.mjs', 'probes.mjs', 'postgres.mjs', 'network-agents.mjs', 'risk-policy.mjs', 'reference-quotes.mjs', 'paper-store.mjs', 'shared/paper-ledger.mjs', 'package.json']
+modules = ['index.mjs', 'hub.mjs', 'registry.mjs', 'probes.mjs', 'postgres.mjs', 'network-agents.mjs', 'risk-policy.mjs', 'reference-quotes.mjs', 'paper-store.mjs', 'shared/paper-ledger.mjs', 'shared/pilotCeilings.mjs', 'package.json']
+# Repo re-exports stay for local tests. The image must contain the canonical modules, not paths outside the zip.
+canonical = {
+    'shared/paper-ledger.mjs': root / 'packages/core/src/paper-ledger.mjs',
+    'shared/pilotCeilings.mjs': root / 'packages/core/src/pilotCeilings.mjs',
+}
 changed = subprocess.check_output(['git', 'status', '--porcelain', '--untracked-files=normal', '--',
-                                   'deploy/neon/xorus-hub', 'scripts/ops/package-xorus-hub.py'], cwd=root, text=True)
+                                   'deploy/neon/xorus-hub', 'packages/core/src/paper-ledger.mjs',
+                                   'packages/core/src/pilotCeilings.mjs', 'scripts/ops/package-xorus-hub.py'], cwd=root, text=True)
 if changed.strip():
     raise SystemExit('Commit runtime and packaging changes before packaging; source provenance must be exact')
 source_sha = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip()
@@ -20,7 +26,7 @@ archive.parent.mkdir(exist_ok=True)
 with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED) as bundle:
     bundle.writestr('build-meta.mjs', f'export const PACKAGED_SOURCE_SHA = "{source_sha}"\n')
     for name in modules:
-        bundle.write(source / name, name)
+        bundle.write(canonical.get(name, source / name), name)
     for path in sorted(dependencies.rglob('*')):
         if not path.is_file() or path.is_symlink():
             continue

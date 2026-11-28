@@ -11,7 +11,7 @@ export type RealityMode = 'simulation' | 'live' | 'loading'
 function detectMode(connected: boolean, canSign: boolean, loading?: boolean): RealityMode {
   if (loading) return 'loading'
   const envLive =
-    typeof import.meta !== 'undefined' && import.meta.env?.VITE_LIA_LIVE_TRADING === '1'
+    typeof import.meta !== 'undefined' && import.meta.env?.VITE_XORUS_LIVE_TRADING === '1'
   if (envLive && connected && canSign) return 'live'
   return 'simulation'
 }

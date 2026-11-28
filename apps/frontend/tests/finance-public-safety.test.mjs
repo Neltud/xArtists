@@ -33,7 +33,7 @@ test('RWA paper values, custody and certificates cannot be represented as verifi
   assert.match(rwa,/Exemple éditorial · pas de mise en vente certifiée/)
   assert.match(rwa,/Garde physique : non vérifiée/)
   assert.match(rwa,/Valeur fictive indicative/)
-  assert.doesNotMatch(rwa,/Catalog empty — run rwa_evaluator|LIA_LIVE_TRADING=0/)
+  assert.doesNotMatch(rwa,/Catalog empty — run rwa_evaluator|XORUS_LIVE_TRADING=0/)
 })
 
 test('status page defaults to visitor-first with operator metrics behind an explicit toggle',()=>{

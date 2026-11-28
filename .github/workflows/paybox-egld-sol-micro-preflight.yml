@@ -35,7 +35,7 @@ jobs:
       MINT_DISPATCH_ENABLED: '0'
       MINT_DRY_RUN: '1'
       MINT_LIVE_ENABLED: '0'
-      LIA_LIVE_TRADING: '0'
+      XORUS_LIVE_TRADING: '0'
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v5
@@ -77,7 +77,7 @@ jobs:
           assert h.get('mint_dispatch_enabled') is False
           assert h.get('mint_dry_run') is True
           assert h.get('mint_live_enabled') is False
-          assert str(h.get('lia_live_trading')) == '0'
+          assert all(str(v) == '0' for k, v in h.items() if k in ('xorus_live_trading', 'lia_live_trading')) and any(k in h for k in ('xorus_live_trading', 'lia_live_trading'))
           assert h.get('tro_solana_bridge') == 'off'
           print('Render commercial NO-GO verified')
           PY

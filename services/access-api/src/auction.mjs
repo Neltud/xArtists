@@ -20,7 +20,7 @@ export function auctionConfig(env = process.env) {
     !paymentModes.some(mode => ['prod', 'production'].includes(mode)) &&
     String(env.PAYBOX_CHECKOUT_ENABLED || '') !== '1' &&
     String(env.MINT_LIVE_ENABLED || '') !== '1' &&
-    String(env.LIA_LIVE_TRADING || '') !== '1'
+    String(env.XORUS_LIVE_TRADING || '') !== '1'
   return {
     enabled,
     demo_only: true,

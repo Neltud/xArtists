@@ -31,8 +31,8 @@ jobs:
     timeout-minutes: 25
     env:
       WORLD_RIGHTS_YOUTUBE_ENABLED: '0'
-      LIA_LIVE_TRADING: '0'
-      VITE_LIA_LIVE_TRADING: '0'
+      XORUS_LIVE_TRADING: '0'
+      VITE_XORUS_LIVE_TRADING: '0'
       VITE_PAYBOX_ENABLED: 'false'
     steps:
       - uses: actions/checkout@v4

@@ -18,6 +18,9 @@ on:
       - 'lia/xorus/**'
       - 'lia/chorus/**'
       - 'packages/core/src/xorusAnalysisContract.mjs'
+      - 'packages/core/src/paper-ledger.mjs'
+      - 'packages/core/src/pilotCeilings.mjs'
+      - 'packages/core/tradingStatus.mjs'
   workflow_dispatch:
 
 permissions:
@@ -36,7 +39,7 @@ jobs:
       - name: Verify bundled analysis and API contract without a network or secrets
         run: |
           docker run --rm --network none --read-only -w /opt --entrypoint python3 xartists-shared-render:ci \
-            -S -B -c 'from lia.xorus.analysis_cycle import run_analysis_cycle; r=run_analysis_cycle(fetch_bytes=lambda: b"[]"); assert r["schema"]=="xorus_analysis/v2"; assert r["coverage"]["signals_analyzed"]==0; print("offline analysis image PASS")'
+            -S -B -c 'from xorus.analysis_cycle import run_analysis_cycle; r=run_analysis_cycle(fetch_bytes=lambda: b"[]"); assert r["schema"]=="xorus_analysis/v2"; assert r["coverage"]["signals_analyzed"]==0; print("offline analysis image PASS")'
           docker run --rm --network none --read-only --entrypoint node xartists-shared-render:ci \
             --input-type=module -e 'import {createXorusAnalysisService} from "/opt/xartists/access-api/src/xorusAnalysis.mjs"; const out=await createXorusAnalysisService({enabled:false}).read(); if(out.error!=="analysis_disabled") process.exit(1); console.log("shared API contract PASS")'
 
@@ -52,7 +55,7 @@ jobs:
             -e XARTISTS_ROLE=api -e PORT=8787 -e RENDER_GIT_COMMIT="${GITHUB_SHA}" \
             -e PAYBOX_CHECKOUT_ENABLED=0 -e MINT_DISPATCH_ENABLED=0 \
             -e MINT_DRY_RUN=1 -e MINT_LIVE_ENABLED=0 \
-            -e LIA_LIVE_TRADING=0 \
+            -e XORUS_LIVE_TRADING=0 \
             -p 18787:8787 xartists-shared-render:ci
           trap 'docker logs xa-api-role || true; docker rm -f xa-api-role xa-frontend-role xa-frontend-unstamped >/dev/null 2>&1 || true' EXIT
           ready_front=0
@@ -90,7 +93,7 @@ jobs:
           assert h.get('mint_dispatch_enabled') is False
           assert h.get('mint_dry_run') is True
           assert h.get('mint_live_enabled') is False
-          assert str(h.get('lia_live_trading')) == '0'
+          assert all(str(v) == '0' for k, v in h.items() if k in ('xorus_live_trading', 'lia_live_trading')) and any(k in h for k in ('xorus_live_trading', 'lia_live_trading'))
           assert h.get('tro_solana_bridge') == 'off'
           print('Dual role PASS: frontend HTML /xArtists; independent JSON API /health; all financial gates OFF')
           PY
@@ -111,7 +114,7 @@ jobs:
           assert stamp['stamp_source'] == 'render-runtime'
           assert stamp['base_url'] == '/xArtists/'
           assert stamp['public_route_count'] > 50
-          assert stamp['lia_live_trading'] is False
+          assert stamp['xorus_live_trading'] is False
           assert 'built_at' not in stamp
           print('Render stamp PASS: JSON identity matches checkout, not fake HTML')
           with urlopen('http://127.0.0.1:18080/xArtists/', timeout=5) as r:

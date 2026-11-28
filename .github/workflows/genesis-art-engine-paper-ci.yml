@@ -20,8 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:
-      LIA_LIVE_TRADING: '0'
-      VITE_LIA_LIVE_TRADING: '0'
+      XORUS_LIVE_TRADING: '0'
+      VITE_XORUS_LIVE_TRADING: '0'
       CREATOR_MEDIA_UPLOAD_ENABLED: '0'
     defaults:
       run:

@@ -18,7 +18,7 @@ function runFixture(version) {
     copyFileSync(original, join(dir, 'scripts', 'write-build-info.mjs'))
     writeFileSync(join(root, '.release-please-manifest.json'), JSON.stringify({ '.': version }))
     writeFileSync(join(dir, 'dist', 'dapp-release.json'), JSON.stringify({
-      lia_live_trading: false, routes: ['/', '/marketplace'],
+      xorus_live_trading: false, routes: ['/', '/marketplace'],
     }))
     let result = null
     let rejected = false
@@ -44,7 +44,7 @@ test('release stamp comes from root Release Please manifest and Git SHA', () => 
   assert.equal(result.version_source, '.release-please-manifest.json')
   assert.equal(result.source_sha, 'a'.repeat(40))
   assert.equal(result.public_route_count, 2)
-  assert.equal(result.lia_live_trading, false)
+  assert.equal(result.xorus_live_trading, false)
 })
 
 test('invalid and missing release versions fail closed without output', () => {
@@ -63,7 +63,7 @@ test('Pages workflow checks stamped version against authoritative release manife
   assert.match(workflow, /Verify deployed Pages serves EXACT source SHA/)
   assert.match(workflow, /\.source_sha == \$sha/)
   assert.match(workflow, /Pages did not serve this exact commit SHA/)
-  assert.match(workflow, /VITE_LIA_LIVE_TRADING:/)
+  assert.match(workflow, /VITE_XORUS_LIVE_TRADING:/)
   assert.match(workflow, /VITE_PAYBOX_ENABLED:/)
 })
 
@@ -76,5 +76,5 @@ test('Scheduled Pages watchdog is read-only and detects competing docs publisher
   assert.match(watchdog, /last successful Vite build/)
   assert.match(watchdog, /Source = GitHub Actions, not main\/docs/)
   assert.match(watchdog, /auction marketplace tro\/sale offres/)
-  assert.doesNotMatch(watchdog, /actions\/deploy-pages|PAYBOX_CHECKOUT_ENABLED=1|MINT_LIVE_ENABLED=1|LIA_LIVE_TRADING=1/)
+  assert.doesNotMatch(watchdog, /actions\/deploy-pages|PAYBOX_CHECKOUT_ENABLED=1|MINT_LIVE_ENABLED=1|XORUS_LIVE_TRADING=1/)
 })

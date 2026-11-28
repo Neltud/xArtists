@@ -34,7 +34,7 @@ test.before(async () => {
     env: {
       ...process.env, PORT: '0', ACCESS_JWT_SECRET: secret,
       REQUIRE_SIWX: '1', EGLD_EUR_RATE: '10',
-      LIA_LIVE_TRADING: '0', PAYBOX_CHECKOUT_ENABLED: '0',
+      XORUS_LIVE_TRADING: '0', PAYBOX_CHECKOUT_ENABLED: '0',
       MINT_LIVE_ENABLED: 'false', CORS_ORIGIN: origin,
       NODE_ENV: 'test',
     },

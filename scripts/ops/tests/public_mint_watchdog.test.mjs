@@ -8,7 +8,7 @@ function fixture() {
       ok: true, service: 'access-api', orders_backend: 'postgres',
       paybox_checkout_enabled: false, mint_dispatch_enabled: false,
       mint_live_enabled: false, mint_dry_run: true,
-      lia_live_trading: '0', tro_solana_bridge: 'off',
+      xorus_live_trading: '0', tro_solana_bridge: 'off',
       auction_enabled: false, auction_settle: false,
     },
     orders: { ok: true, backend: 'postgres', table_ready: true },
@@ -16,7 +16,7 @@ function fixture() {
     frontend: {
       renderer: 'sites-v3', source_sha: 'a'.repeat(40),
       base_url: '/xArtists/', public_route_count: 116,
-      lia_live_trading: false,
+      xorus_live_trading: false,
     },
   }
 }
@@ -49,7 +49,7 @@ test('commercial or chain-activity flags must remain closed', () => {
     { mint_dispatch_enabled: true },
     { mint_live_enabled: true },
     { mint_dry_run: false },
-    { lia_live_trading: '1' },
+    { xorus_live_trading: '1' },
     { tro_solana_bridge: 'live' },
     { auction_enabled: true },
     { auction_settle: true },
@@ -68,7 +68,7 @@ test('invalid SPA fallback, wrong source identity and undercounted routes fail',
     { base_url: '/' },
     { public_route_count: 115 },
     { public_route_count: '116' },
-    { lia_live_trading: true },
+    { xorus_live_trading: true },
   ]
   for (const change of changes) {
     const data = fixture()

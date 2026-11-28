@@ -7,7 +7,7 @@ const base={
   site:{source_sha:sha},
   api:{source_sha:sha,ok:true,service:'access-api'},
   health:{ok:true,service:'access-api',walletless_account_session_enabled:false,
-    paybox_checkout_enabled:false,mint_live_enabled:false,lia_live_trading:'0'},
+    paybox_checkout_enabled:false,mint_live_enabled:false,xorus_live_trading:'0'},
   catalog:{ok:true,schema:'xartists_public_commercial_catalog/v1',
     walletless_account_session_enabled:false,billing_checkout_enabled:false,
     mint_enabled:false},
@@ -48,9 +48,9 @@ test('mismatched stamps and suspicious financial flags are never accepted as liv
 })
 test('execution flags in boolean, numeric or environment form raise a safety alert',()=>{
   const scenarios=[
-    {health:{lia_live_trading:1}},
-    {health:{lia_live_trading:true}},
-    {health:{lia_live_trading:'true'}},
+    {health:{xorus_live_trading:1}},
+    {health:{xorus_live_trading:true}},
+    {health:{xorus_live_trading:'true'}},
     {health:{paybox_checkout_enabled:1}},
     {health:{mint_live_enabled:'1'}},
     {health:{mint_dry_run:false}},
@@ -71,7 +71,7 @@ test('execution flags in boolean, numeric or environment form raise a safety ale
     assert.equal(row(r,'market').state,'blocked')
   }
   const nonLive=interpretReleaseEvidence({
-    ...base,health:{...base.health,lia_live_trading:0,mint_dry_run:true},
+    ...base,health:{...base.health,xorus_live_trading:0,mint_dry_run:true},
     catalog:{...base.catalog,sale_open:false},
   })
   assert.equal(nonLive.unsafeFlagReported,false)

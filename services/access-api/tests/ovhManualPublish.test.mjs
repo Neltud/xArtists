@@ -44,7 +44,7 @@ test('remote OVH deploy uses exact detached SHA, private env, TLS and no mint/pa
   assert.match(script,/health\.studio_media_upload!=="off"/)
   assert.doesNotMatch(script,/sudo |ssh-keyscan|onrender\.com|docker compose down -v|XARTISTS_STUDIO_UPLOAD_APPROVED=1|\bpsql\b|\bmigrate\b|\bALTER TABLE\b/)
   assert.match(overlay,/XARTISTS_SOURCE_SHA:\s*\$\{XARTISTS_SOURCE_SHA:\?/)
-  for(const flag of ['MINT_LIVE_ENABLED','STRIPE_LIVE_CHECKOUT_ENABLED','PAYBOX_CHECKOUT_ENABLED','LIA_LIVE_TRADING']){
+  for(const flag of ['MINT_LIVE_ENABLED','STRIPE_LIVE_CHECKOUT_ENABLED','PAYBOX_CHECKOUT_ENABLED','XORUS_LIVE_TRADING']){
     assert.ok(base.includes(flag+': "0"'),flag)
   }
 })

@@ -20,8 +20,8 @@ concurrency:
 
 env:
   CI: 'true'
-  LIA_LIVE_TRADING: '0'
-  VITE_LIA_LIVE_TRADING: '0'
+  XORUS_LIVE_TRADING: '0'
+  VITE_XORUS_LIVE_TRADING: '0'
   VITE_PAYBOX_ENABLED: 'false'
 
 jobs:

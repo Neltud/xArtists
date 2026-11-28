@@ -128,7 +128,7 @@ jobs:
           print('API safety flags:', {k: h.get(k) for k in (
               'ok', 'paybox_mode', 'orders_backend',
               'mint_dispatch_enabled', 'mint_dry_run', 'mint_live_enabled',
-              'lia_live_trading', 'signals_daily', 'tro_solana_bridge',
+              'xorus_live_trading', 'signals_daily', 'tro_solana_bridge',
               'studio_media_upload', 'physical_works',
           )})
 
@@ -143,12 +143,12 @@ jobs:
           assert h.get('mint_dry_run') is True, 'mint no longer dry-run'
           assert h.get('mint_live_enabled') is False, 'live mint enabled'
           assert type(h.get('mint_dispatch_enabled')) is bool, 'dispatch status unknown'
-          assert str(h.get('lia_live_trading')) == '0', 'live trading enabled or unknown'
+          assert all(str(v) == '0' for k, v in h.items() if k in ('xorus_live_trading', 'lia_live_trading')) and any(k in h for k in ('xorus_live_trading', 'lia_live_trading')), 'live trading enabled or unknown'
           assert h.get('tro_solana_bridge') == 'off', 'Solana bridge enabled or unknown'
           assert h.get('studio_media_upload') == 'off', 'Studio upload enabled or unknown'
           assert h.get('physical_works') == 'off', 'physical commerce enabled or unknown'
           assert lia.get('paper') is True, 'LIA paper mode not confirmed'
-          assert str(lia.get('LIA_LIVE_TRADING')) == '0', 'LIA trading unsafe or unknown'
+          assert str(lia.get('XORUS_LIVE_TRADING', lia.get('LIA_LIVE_TRADING'))) == '0', 'LIA trading unsafe or unknown'
 
           print('GO public smoke OK — public surfaces, DB read-only readiness and safety flags verified')
           PY

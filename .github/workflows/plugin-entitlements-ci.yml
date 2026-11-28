@@ -21,7 +21,7 @@ jobs:
     timeout-minutes: 5
     env:
       PLUGIN_ENTITLEMENTS_ENABLED: '0'
-      VITE_LIA_LIVE_TRADING: '0'
+      VITE_XORUS_LIVE_TRADING: '0'
       VITE_PAYBOX_ENABLED: 'false'
     steps:
       - uses: actions/checkout@v7

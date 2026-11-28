@@ -43,13 +43,13 @@ jobs:
 
       - name: Verify pinned codeHashes (mainnet read-only)
         env:
-          LIA_LIVE_TRADING: '0'
+          XORUS_LIVE_TRADING: '0'
         run: |
           python3 scripts/verify_pinned_codehashes.py
 
       - name: Fast regression (single process)
         env:
-          LIA_LIVE_TRADING: '0'
+          XORUS_LIVE_TRADING: '0'
           PYTHONPATH: ${{ github.workspace }}
           REGRESSION_MODE: fast
           REGRESSION_QUIET: '0'

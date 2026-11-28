@@ -9,7 +9,7 @@ const COMMIT = '8656139477fce4b951b49d3d29f04421666ebab6'
 const release = () => ({
   schema_version: 1,
   base_path: '/xArtists/',
-  lia_live_trading: false,
+  xorus_live_trading: false,
   routes: ['/', '/marketplace', '/auction', '/offres', '/packs/pulse'],
 })
 
@@ -17,7 +17,7 @@ test('stamps the exact Render commit and the built manifest, never claims built_
   const stamp = createRenderBuildInfo({ commit: COMMIT, release: release(), stampedAt: '2026-11-05T07:40:00.000Z' })
   assert.equal(stamp.source_sha, COMMIT)
   assert.equal(stamp.public_route_count, 5)
-  assert.equal(stamp.lia_live_trading, false)
+  assert.equal(stamp.xorus_live_trading, false)
   assert.equal(stamp.stamp_source, 'render-runtime')
   assert.equal(stamp.stamped_at, '2026-11-05T07:40:00.000Z')
   assert.equal(Object.hasOwn(stamp, 'built_at'), false)
@@ -35,7 +35,7 @@ test('denies wrong base, missing routes, malformed routes and nonboolean live fl
     { ...release(), base_path: '/' },
     { ...release(), routes: [] },
     { ...release(), routes: ['/../../secret'] },
-    { ...release(), lia_live_trading: 'false' },
+    { ...release(), xorus_live_trading: 'false' },
     { ...release(), schema_version: 0 },
   ]
   for (const manifest of variants) {

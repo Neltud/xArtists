@@ -39,15 +39,15 @@
     "已锁定",
     "مقفل"
   ],
-  "LIA_LIVE_TRADING=": [
-    "LIA_LIVE_TRADING=",
-    "LIA_LIVE_TRADING=",
-    "LIA_LIVE_TRADING=",
-    "LIA_LIVE_TRADING=",
-    "LIA_LIVE_TRADING=",
-    "LIA_LIVE_TRADING=",
-    "LIA_LIVE_TRADING=",
-    "LIA_LIVE_TRADING="
+  "XORUS_LIVE_TRADING=": [
+    "XORUS_LIVE_TRADING=",
+    "XORUS_LIVE_TRADING=",
+    "XORUS_LIVE_TRADING=",
+    "XORUS_LIVE_TRADING=",
+    "XORUS_LIVE_TRADING=",
+    "XORUS_LIVE_TRADING=",
+    "XORUS_LIVE_TRADING=",
+    "XORUS_LIVE_TRADING="
   ],
   "Wallet LIA ops attendu :": [
     "Wallet LIA ops attendu :",
@@ -1939,15 +1939,15 @@
     "已锁定",
     "مقفل"
   ],
-  "Shadow default · HITL for chain · LIA_LIVE_TRADING=0": [
-    "Shadow par défaut · validation humaine pour la chaîne · LIA_LIVE_TRADING=0",
-    "Shadow by default · HITL for chain · LIA_LIVE_TRADING=0",
-    "Shadow por defecto · validación humana en cadena · LIA_LIVE_TRADING=0",
-    "Shadow als Standard · menschliche Freigabe für die Blockchain · LIA_LIVE_TRADING=0",
-    "Shadow по умолчанию · контроль человека для блокчейна · LIA_LIVE_TRADING=0",
-    "Shadow за замовчуванням · контроль людини для блокчейну · LIA_LIVE_TRADING=0",
-    "默认 Shadow · 链上操作需人工介入 · LIA_LIVE_TRADING=0",
-    "Shadow افتراضيًا · إشراف بشري للسلسلة · LIA_LIVE_TRADING=0"
+  "Shadow default · HITL for chain · XORUS_LIVE_TRADING=0": [
+    "Shadow par défaut · validation humaine pour la chaîne · XORUS_LIVE_TRADING=0",
+    "Shadow by default · HITL for chain · XORUS_LIVE_TRADING=0",
+    "Shadow por defecto · validación humana en cadena · XORUS_LIVE_TRADING=0",
+    "Shadow als Standard · menschliche Freigabe für die Blockchain · XORUS_LIVE_TRADING=0",
+    "Shadow по умолчанию · контроль человека для блокчейна · XORUS_LIVE_TRADING=0",
+    "Shadow за замовчуванням · контроль людини для блокчейну · XORUS_LIVE_TRADING=0",
+    "默认 Shadow · 链上操作需人工介入 · XORUS_LIVE_TRADING=0",
+    "Shadow افتراضيًا · إشراف بشري للسلسلة · XORUS_LIVE_TRADING=0"
   ],
   "Holder terminal": [
     "Terminal détenteur",
@@ -2079,15 +2079,15 @@
     "就绪 · 尚未广播",
     "جاهز · دون بث"
   ],
-  "Requires LIA_LIVE_TRADING=1 + ops executor": [
-    "Nécessite LIA_LIVE_TRADING=1 et l’exécuteur ops",
-    "Requires LIA_LIVE_TRADING=1 + ops executor",
-    "Requiere LIA_LIVE_TRADING=1 + ejecutor ops",
-    "Erfordert LIA_LIVE_TRADING=1 + Betriebsausführer",
-    "Требуются LIA_LIVE_TRADING=1 и операционный исполнитель",
-    "Потрібні LIA_LIVE_TRADING=1 та операційний виконавець",
-    "需要 LIA_LIVE_TRADING=1 + 运营执行器",
-    "يتطلب LIA_LIVE_TRADING=1 + منفّذ العمليات"
+  "Requires XORUS_LIVE_TRADING=1 + ops executor": [
+    "Nécessite XORUS_LIVE_TRADING=1 et l’exécuteur ops",
+    "Requires XORUS_LIVE_TRADING=1 + ops executor",
+    "Requiere XORUS_LIVE_TRADING=1 + ejecutor ops",
+    "Erfordert XORUS_LIVE_TRADING=1 + Betriebsausführer",
+    "Требуются XORUS_LIVE_TRADING=1 и операционный исполнитель",
+    "Потрібні XORUS_LIVE_TRADING=1 та операційний виконавець",
+    "需要 XORUS_LIVE_TRADING=1 + 运营执行器",
+    "يتطلب XORUS_LIVE_TRADING=1 + منفّذ العمليات"
   ],
   "Sprint jour": [
     "Sprint du jour",
@@ -3319,15 +3319,15 @@
     "发货：",
     "الشحن:"
   ],
-  "Paper valuations · physical logistics simulated · LIA_LIVE_TRADING=0": [
-    "Valorisations simulées · logistique physique simulée · LIA_LIVE_TRADING=0",
-    "Paper valuations · physical logistics simulated · LIA_LIVE_TRADING=0",
-    "Valoraciones simuladas · logística física simulada · LIA_LIVE_TRADING=0",
-    "Simulierte Bewertungen · physische Logistik simuliert · LIA_LIVE_TRADING=0",
-    "Симулированные оценки · физическая логистика симулируется · LIA_LIVE_TRADING=0",
-    "Симульовані оцінки · фізична логістика симулюється · LIA_LIVE_TRADING=0",
-    "模拟估值 · 实体物流为模拟 · LIA_LIVE_TRADING=0",
-    "تقييمات محاكاة · لوجستيات مادية محاكاة · LIA_LIVE_TRADING=0"
+  "Paper valuations · physical logistics simulated · XORUS_LIVE_TRADING=0": [
+    "Valorisations simulées · logistique physique simulée · XORUS_LIVE_TRADING=0",
+    "Paper valuations · physical logistics simulated · XORUS_LIVE_TRADING=0",
+    "Valoraciones simuladas · logística física simulada · XORUS_LIVE_TRADING=0",
+    "Simulierte Bewertungen · physische Logistik simuliert · XORUS_LIVE_TRADING=0",
+    "Симулированные оценки · физическая логистика симулируется · XORUS_LIVE_TRADING=0",
+    "Симульовані оцінки · фізична логістика симулюється · XORUS_LIVE_TRADING=0",
+    "模拟估值 · 实体物流为模拟 · XORUS_LIVE_TRADING=0",
+    "تقييمات محاكاة · لوجستيات مادية محاكاة · XORUS_LIVE_TRADING=0"
   ],
   "email": [
     "e-mail",

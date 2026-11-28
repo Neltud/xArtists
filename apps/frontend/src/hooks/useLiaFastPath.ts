@@ -16,7 +16,7 @@ export type GuardianSnap = {
 
 export type FastPathDoc = {
   updated?: string
-  LIA_LIVE_TRADING?: number | string
+  XORUS_LIVE_TRADING?: number | string
   orchestrator?: {
     live_trading?: boolean
     agent_action?: string
@@ -93,7 +93,7 @@ export function useLiaFastPath() {
 
   const g = doc?.orchestrator?.guardian
   const live =
-    doc?.orchestrator?.live_trading === true || String(doc?.LIA_LIVE_TRADING ?? '0') === '1'
+    doc?.orchestrator?.live_trading === true || String(doc?.XORUS_LIVE_TRADING ?? '0') === '1'
 
   return {
     doc,

@@ -14,7 +14,7 @@ const health={
   stripe_live_checkout_enabled:false,paybox_checkout_enabled:false,
   auction_enabled:false,auction_demo_writes_enabled:false,
   walletless_account_session_enabled:false,xorus_private_analysis_enabled:false,
-  studio_media_upload:'off',lia_live_trading:'0',
+  studio_media_upload:'off',xorus_live_trading:'0',
   tro_solana_bridge:'off',opensea_order_execution_enabled:false,
   auction_settle:false,
 }
@@ -72,7 +72,7 @@ test('all transaction, upload and account gates must remain OFF, not merely abse
     {walletless_account_session_enabled:true},
     {xorus_private_analysis_enabled:true},
     {studio_media_upload:'pinata_ipfs'},
-    {lia_live_trading:'1'}, {require_siwx:false},
+    {xorus_live_trading:'1'}, {require_siwx:false},
     {tro_solana_bridge:'live'}, {opensea_order_execution_enabled:true},
     {auction_settle:true},{mint_live_enabled:undefined},
   ]){

@@ -42,7 +42,7 @@ export function Home(){
      <span className="xa-home-artwork-caption"><span>Line Up #03</span><Icon name="diagonal" size={15}/></span>
     </a>
    </div><Link to="/wallet" className="xa-home-personal"><Icon name="wallet" size={30}/><strong>{c('navWallet')}</strong><span>{c('navWalletDesc')}</span><span className="xa-text-link">{c('open')}<Icon name="arrow" size={17}/></span></Link></section>
-  <section className="xa-home-world-launch"><div><strong>Art World</strong><small>7 × 3D · xArtists</small></div><Link to="/explore/museum" aria-label={c('museum')}>{c('museum')}<Icon name="arrow" size={17}/></Link></section>
+  <section className="xa-home-world-launch" aria-labelledby="xa-world-launch-title"><div><p className="xa-eyebrow">xArtists · 3D</p><strong id="xa-world-launch-title">Art World</strong><small>7 × 3D · xArtists</small><Link to="/explore/museum" aria-label={c('museum')}>{c('museum')}<Icon name="arrow" size={17}/></Link></div><div className="xa-world-portal" aria-hidden="true"><span/><span/><span/><span/><span/><i/></div></section>
   <section className="xa-first-journeys" aria-labelledby="xa-first-what"><div className="xa-first-heading"><h2 id="xa-first-what">{c('navHomeChoose')}</h2><Link to="/guide" className="xa-text-link">{c('help')}<Icon name="arrow" size={16}/></Link></div>
    <ul className="xa-first-tiles">{PRIMARY_AREAS.map((area,i)=><li key={area.id}><Link className="xa-first-tile" to={area.to}><span className="xa-first-tile-top"><Icon name={area.icon} size={24}/><span>0{i+1}</span></span><strong>{c(area.label)}</strong><span className="xa-first-tile-desc">{c(area.description)}</span><span className="xa-first-tile-bottom">{c('open')}<Icon name="arrow" size={17}/></span></Link></li>)}</ul>
   </section>

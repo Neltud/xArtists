@@ -14,7 +14,7 @@ test('auction configuration advertises volatile storage and requires explicit sa
   assert.equal(auctionConfig({ ...sandbox, PAYBOX_MODE: 'prod' }).demo_writes_enabled, false)
   assert.equal(auctionConfig({ ...sandbox, PAYBOX_CHECKOUT_ENABLED: '1' }).demo_writes_enabled, false)
   assert.equal(auctionConfig({ ...sandbox, MINT_LIVE_ENABLED: '1' }).demo_writes_enabled, false)
-  assert.equal(auctionConfig({ ...sandbox, LIA_LIVE_TRADING: '1' }).demo_writes_enabled, false)
+  assert.equal(auctionConfig({ ...sandbox, XORUS_LIVE_TRADING: '1' }).demo_writes_enabled, false)
 })
 
 test('HTTP auction routes are mounted, disabled by default and health is truthful', async () => {
@@ -52,7 +52,7 @@ test('enabling auction reads cannot expose write routes without a second demo ga
 test('sandbox demo writes still require authenticated wallet seller', async () => {
   const server = await startServer({ AUCTION_ENABLED: '1', AUCTION_ENV: 'sandbox',
     AUCTION_DEMO_WRITES_ENABLED: '1', PAYBOX_MODE: 'preprod',
-    PAYBOX_CHECKOUT_ENABLED: '0', MINT_LIVE_ENABLED: '0', LIA_LIVE_TRADING: '0' })
+    PAYBOX_CHECKOUT_ENABLED: '0', MINT_LIVE_ENABLED: '0', XORUS_LIVE_TRADING: '0' })
   try {
     const cfg = await (await fetch(server.base + '/v1/auction/config')).json()
     assert.equal(cfg.demo_writes_enabled, true)

@@ -56,7 +56,7 @@ test('Homepage displays truthful independent chain & fiat states', () => {
   }
   assert.match(pages, /to="\/marketplace\?tab=opensea"/)
   assert.match(pages, /to="\/offres"/)
-  assert.doesNotMatch(pages.slice(pages.indexOf('export function Home()'), pages.indexOf('export function GroupPage')), /paybox_checkout_enabled=true|LIA_LIVE_TRADING=1|mint_live_enabled=true/)
+  assert.doesNotMatch(pages.slice(pages.indexOf('export function Home()'), pages.indexOf('export function GroupPage')), /paybox_checkout_enabled=true|XORUS_LIVE_TRADING=1|mint_live_enabled=true/)
 })
 
 test('Responsive entry uses semantic sections, landmark links, and reduced-motion support', () => {

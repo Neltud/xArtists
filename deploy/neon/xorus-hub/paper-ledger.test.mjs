@@ -132,7 +132,7 @@ test('failed commits roll back and release the connection, never returning a suc
 
 test('HTTP paper routes authenticate before SQL, bound input and refuse wrong database targets',async()=>{
   const token='t'.repeat(48),auth={authorization:'Bearer '+token,'content-type':'application/json'}
-  const env={NEON_BRANCH_ID:'br-steep-sun-bab7l93p',XORUS_HUB_TARGET_CONFIRMED:'orange-dust-23862418',XORUS_HUB_OPERATOR_TOKEN:token,LIA_LIVE_TRADING:'1'}
+  const env={NEON_BRANCH_ID:'br-steep-sun-bab7l93p',XORUS_HUB_TARGET_CONFIRMED:'orange-dust-23862418',XORUS_HUB_OPERATOR_TOKEN:token,XORUS_LIVE_TRADING:'1'}
   const fail=()=>assert.fail('unexpected external work')
   const hub=createHub({env,paperStore:createPaperStore(transactionalPool(),{clock:()=>NOW}),fetchImpl:fail,clock:()=>NOW})
   const call=(path,options)=>hub.fetch(new Request('https://hub.invalid/v1/xorus/'+path,options))

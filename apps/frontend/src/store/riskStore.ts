@@ -78,7 +78,7 @@ export function useRiskStore(): RiskState {
 
 export function bindRiskFromStatus(doc: {
   updated?: string
-  LIA_LIVE_TRADING?: number | string
+  XORUS_LIVE_TRADING?: number | string
   orchestrator?: {
     live_trading?: boolean
     mode?: string
@@ -99,7 +99,7 @@ export function bindRiskFromStatus(doc: {
   }
   const g = doc.orchestrator?.guardian
   const live =
-    doc.orchestrator?.live_trading === true || String(doc.LIA_LIVE_TRADING ?? '0') === '1'
+    doc.orchestrator?.live_trading === true || String(doc.XORUS_LIVE_TRADING ?? '0') === '1'
   setRiskState({
     killState: (g?.kill_state || 'ARMED').toUpperCase(),
     allow: g?.allow !== false,

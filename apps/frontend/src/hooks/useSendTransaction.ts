@@ -5,7 +5,7 @@ import { bootstrapSendTx } from '../providers/bootstrapSendTx'
 import { logTxFailure, shouldForcePaper } from '../lib/txLog'
 import { forcePaperMode } from '../lib/appMode'
 import { empireTxError } from '../store/empireStore'
-import { LIA_LIVE_TRADING } from '../config/liaConfig'
+import { XORUS_LIVE_TRADING } from '../config/liaConfig'
 
 interface TransactionDisplayInfo {
   processingMessage?: string
@@ -27,7 +27,7 @@ function handleFail(action: string, msg: string, sessionId?: string | null): Sen
   return { sessionId: null, error: msg }
 }
 
-/** Send MultiversX TX — LIA ops autorisé seulement si LIA_LIVE_TRADING=1 (xPortal). */
+/** Send MultiversX TX — LIA ops autorisé seulement si XORUS_LIVE_TRADING=1 (xPortal). */
 export const useSendTransaction = () => {
   const { connected, address, method } = useWallet()
   const {network}=useWalletNetwork()
@@ -44,10 +44,10 @@ export const useSendTransaction = () => {
     }
 
     const isLiaOps = address && address.toLowerCase() === LIA_WALLET.toLowerCase()
-    if (isLiaOps && !LIA_LIVE_TRADING) {
+    if (isLiaOps && !XORUS_LIVE_TRADING) {
       return handleFail(
         action,
-        'Wallet protocole LIA interdit en mode paper. Active VITE_LIA_LIVE_TRADING=1 pour signer en ops xPortal.',
+        'Wallet protocole LIA interdit en mode paper. Active VITE_XORUS_LIVE_TRADING=1 pour signer en ops xPortal.',
       )
     }
 

@@ -1969,15 +1969,15 @@
     "USDC",
     "USDC"
   ],
-  "SHADOW MODE / SIMULATED DATA · LIA_LIVE_TRADING=0 · Beta toggle locked": [
-    "MODE SIMULATION / DONNÉES SIMULÉES · LIA_LIVE_TRADING=0 · bascule bêta verrouillée",
-    "SHADOW MODE / SIMULATED DATA · LIA_LIVE_TRADING=0 · Beta toggle locked",
-    "MODO SIMULACIÓN / DATOS SIMULADOS · LIA_LIVE_TRADING=0 · interruptor beta bloqueado",
-    "SIMULATIONSMODUS / SIMULIERTE DATEN · LIA_LIVE_TRADING=0 · Beta-Schalter gesperrt",
-    "ТЕНЕВОЙ РЕЖИМ / СИМУЛИРОВАННЫЕ ДАННЫЕ · LIA_LIVE_TRADING=0 · переключатель бета заблокирован",
-    "ТІНЬОВИЙ РЕЖИМ / СИМУЛЬОВАНІ ДАНІ · LIA_LIVE_TRADING=0 · перемикач бета заблоковано",
-    "影子模式 / 模拟数据 · LIA_LIVE_TRADING=0 · 测试开关已锁定",
-    "وضع الظل / بيانات محاكاة · LIA_LIVE_TRADING=0 · مفتاح النسخة التجريبية مقفل"
+  "SHADOW MODE / SIMULATED DATA · XORUS_LIVE_TRADING=0 · Beta toggle locked": [
+    "MODE SIMULATION / DONNÉES SIMULÉES · XORUS_LIVE_TRADING=0 · bascule bêta verrouillée",
+    "SHADOW MODE / SIMULATED DATA · XORUS_LIVE_TRADING=0 · Beta toggle locked",
+    "MODO SIMULACIÓN / DATOS SIMULADOS · XORUS_LIVE_TRADING=0 · interruptor beta bloqueado",
+    "SIMULATIONSMODUS / SIMULIERTE DATEN · XORUS_LIVE_TRADING=0 · Beta-Schalter gesperrt",
+    "ТЕНЕВОЙ РЕЖИМ / СИМУЛИРОВАННЫЕ ДАННЫЕ · XORUS_LIVE_TRADING=0 · переключатель бета заблокирован",
+    "ТІНЬОВИЙ РЕЖИМ / СИМУЛЬОВАНІ ДАНІ · XORUS_LIVE_TRADING=0 · перемикач бета заблоковано",
+    "影子模式 / 模拟数据 · XORUS_LIVE_TRADING=0 · 测试开关已锁定",
+    "وضع الظل / بيانات محاكاة · XORUS_LIVE_TRADING=0 · مفتاح النسخة التجريبية مقفل"
   ],
   "Intent log": [
     "Journal des intentions",

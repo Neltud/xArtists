@@ -3,6 +3,7 @@
  * "observed" means an endpoint answered; it NEVER grants signing, money,
  * trading, mint, mailbox or commercial rights.
  */
+import {isTradingEnabled} from '../../../../packages/core/tradingStatus.mjs'
 const SHA=/^[a-f0-9]{40}$/
 const shaOf=x=>typeof x?.source_sha==='string'&&SHA.test(x.source_sha)?x.source_sha:null
 const asObject=x=>x&&typeof x==='object'&&!Array.isArray(x)?x:null
@@ -27,7 +28,7 @@ export function interpretReleaseEvidence(input={}) {
     (healthValid&&(
       enabled(health.paybox_checkout_enabled)||
       enabled(health.mint_live_enabled)||
-      enabled(health.lia_live_trading)||
+      isTradingEnabled(health)||
       health.mint_dry_run===false||
       enabled(health.auction_enabled)
     ))||
