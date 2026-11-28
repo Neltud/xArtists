@@ -5,6 +5,7 @@ import {createChallengeStore} from './store.mjs'
 let store=null
 if(targetReady(process.env)&&process.env.DATABASE_URL){
  const pool=new pg.Pool({connectionString:process.env.DATABASE_URL,ssl:{rejectUnauthorized:true},max:2,connectionTimeoutMillis:4000,idleTimeoutMillis:1000,statement_timeout:5000})
+ pool.on('error',()=>{})
  store=createChallengeStore(pool)
 }
 let sourceSha=null

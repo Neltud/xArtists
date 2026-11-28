@@ -4,6 +4,7 @@
  * Disabled without explicit config. Requires persistent PG quota and an approved storage provider.
  */
 import crypto from 'node:crypto'
+import {isDeepStrictEqual} from 'node:util'
 import { signJwt, verifyJwt } from './verifyAccess.mjs'
 import { erdToPubkey } from './siwx.mjs'
 import { kuboConfigured,kuboAddFile } from './studioKubo.mjs'
@@ -140,7 +141,9 @@ async function db(){
   if(!pool){
     const {default:pg}=await import('pg')
     pool=new pg.Pool({connectionString:process.env.DATABASE_URL,
-      ssl:process.env.PGSSL==='0'?false:{rejectUnauthorized:true},max:3})
+      ssl:process.env.PGSSL==='0'?false:{rejectUnauthorized:true},max:3,connectionTimeoutMillis:4000,idleTimeoutMillis:10000,statement_timeout:5000})
+    // Idle managed Postgres connections may be evicted; do not crash the isolate.
+    pool.on('error',()=>{})
   }
   return pool
 }
@@ -155,8 +158,8 @@ async function tx(f){
     return result
   }catch(e){await client.query('ROLLBACK').catch(()=>{});throw e}finally{client.release()}
 }
-async function reserve(wallet,media){
-  return tx(async c=>{
+async function reserve(wallet,media,dbTx=tx){
+  return dbTx(async c=>{
     // Dedicated free Studio pilot: reserve capacity BEFORE calling any pin provider.
     // Count failed/uncertain rows too: they may already have consumed provider space.
     // Never reset this budget automatically or by creating more wallets.
@@ -168,10 +171,15 @@ async function reserve(wallet,media){
         throw fail('studio_free_capacity_reached',429)
     }
     await c.query('SELECT pg_advisory_xact_lock(hashtext($1))',[wallet])
+    if(process.env.STUDIO_FREE_PILOT==='1'){
+      const unresolved=await c.query("SELECT id FROM public.xartists_studio_media WHERE wallet=$1 AND sha256=$2 AND status IN ('reserved','metadata_pinning') LIMIT 1",[wallet,media.sha256])
+      if(unresolved.rows.length)throw fail('media_pin_result_unknown_reconcile',409)
+    }
     const count=await c.query("SELECT count(*)::int AS n FROM xartists_studio_media WHERE wallet=$1 AND created_at > NOW() - INTERVAL '24 hours'",[wallet])
     if(Number(count.rows[0].n)>=MAX_UPLOADS_DAY)throw fail('daily_upload_quota_exhausted',429)
     const id=crypto.randomUUID()
-    await c.query("INSERT INTO xartists_studio_media(id,wallet,mime,bytes,status) VALUES($1,$2,$3,$4,'reserved')",[id,wallet,media.mime,media.bytes])
+    if(process.env.STUDIO_FREE_PILOT==='1')await c.query("INSERT INTO xartists_studio_media(id,wallet,mime,bytes,sha256,status) VALUES($1,$2,$3,$4,$5,'reserved')",[id,wallet,media.mime,media.bytes,media.sha256])
+    else await c.query("INSERT INTO xartists_studio_media(id,wallet,mime,bytes,status) VALUES($1,$2,$3,$4,'reserved')",[id,wallet,media.mime,media.bytes])
     return id
   })
 }
@@ -179,13 +187,41 @@ export function safePinataCid(value){
   if(typeof value!=='string'||!CID.test(value))throw fail('pinata_cid_invalid',502)
   return value
 }
-export async function uploadStudioMedia(media,wallet,request=fetch){
+/** Pilot-only readback. A fixed public gateway is not a durability guarantee.
+ * No provider credentials are sent; redirects and oversized responses fail closed.
+ */
+export async function readStudioIpfs(cid,filename,maxBytes,request=fetch){
+  safePinataCid(cid)
+  if(filename!==null&&!/^artwork-[a-f0-9]{24}\.(jpg|png|webp)$/.test(filename))throw fail('media_readback_unverified',503)
+  const url='https://ipfs.io/ipfs/'+cid+(filename?'/'+filename:'')
+  const response=await request(url,{method:'GET',redirect:'error',headers:{Accept:'*/*'},signal:AbortSignal.timeout(20000)})
+  if(!response.ok||!response.body)throw fail('media_readback_unverified',503)
+  const chunks=[];let total=0
+  for await(const chunk of response.body){
+    total+=chunk.byteLength
+    if(total>maxBytes)throw fail('media_readback_unverified',503)
+    chunks.push(Buffer.from(chunk))
+  }
+  return Buffer.concat(chunks)
+}
+export async function verifyStudioMediaReadback(cid,filename,check,request=fetch){
+  const raw=await readStudioIpfs(cid,filename,check.bytes,request)
+  if(raw.length!==check.bytes||digest(raw)!==check.sha256)throw fail('media_readback_unverified',503)
+}
+export async function verifyStudioMetadataReadback(cid,content,request=fetch){
+  const raw=await readStudioIpfs(cid,null,16384,request)
+  if(!isDeepStrictEqual(JSON.parse(raw.toString('utf8')),content))throw fail('media_readback_unverified',503)
+}
+export async function uploadStudioMedia(media,wallet,request=fetch,dbTx=tx){
   erdToPubkey(wallet)
   const check=validateCreatorMedia(media.buffer,media.mime)
   if(!studioMediaConfig().enabled)throw fail('studio_media_upload_disabled',503)
   if(check.mime==='model/gltf-binary'&&!studioMediaConfig().modelEnabled)
     throw fail('studio_glb_upload_disabled',503)
-  const uploadId=await reserve(wallet,check)
+  const pilot=process.env.STUDIO_FREE_PILOT==='1'
+  if(pilot&&(!['image/jpeg','image/png','image/webp'].includes(check.mime)||check.bytes>2*1024*1024))throw fail('media_size_invalid',413)
+  const uploadId=await reserve(wallet,check,dbTx)
+  try{
   const filename='artwork-'+check.sha256.slice(0,24)+'.'+check.ext
   let cid
   if(studioMediaConfig().provider==='kubo_ipfs'){
@@ -207,9 +243,20 @@ export async function uploadStudioMedia(media,wallet,request=fetch){
   }
   // wrapWithDirectory preserves an extension for the MultiversX media indexer.
   const uri='ipfs://'+cid+'/'+filename
-  await tx(c=>c.query("UPDATE xartists_studio_media SET status='pinned',sha256=$2,uri=$3 WHERE id=$1 AND wallet=$4",
+  if(pilot){
+    // Retain the provider receipt for reconciliation even if readback fails.
+    const receipt=await dbTx(c=>c.query("UPDATE xartists_studio_media SET uri=$2 WHERE id=$1 AND wallet=$3 AND status='reserved'",[uploadId,uri,wallet]))
+    if(receipt.rowCount!==1)throw fail('media_commit_conflict',409)
+    await verifyStudioMediaReadback(cid,filename,check,request)
+  }
+  const saved=await dbTx(c=>c.query("UPDATE xartists_studio_media SET status='pinned',sha256=$2,uri=$3 WHERE id=$1 AND wallet=$4 AND status='reserved'",
     [uploadId,check.sha256,uri,wallet]))
+  if(saved.rowCount!==1)throw fail('media_commit_conflict',409)
   return {uploadId,uri,cid,mime:check.mime,bytes:check.bytes,sha256:check.sha256}
+  }catch(error){
+    if(pilot)throw fail('media_pin_result_unknown_reconcile',503)
+    throw error
+  }
 }
 export function createStudioMetadata(row,body,wallet,previewRow=null){
   if(row.wallet!==wallet||row.status!=='pinned'||!row.uri||!SHA64.test(row.sha256))
@@ -307,12 +354,13 @@ export async function pinStudioMetadata(wallet,body,request=fetch,dbTx=tx){
       }catch{throw fail('metadata_pin_result_unknown_reconcile',503)}
       if(!res.ok){
         // A definite rejection is the only condition eligible for an operator retry.
-        definitivelyRejected=true
+        definitivelyRejected=process.env.STUDIO_FREE_PILOT!=='1'||[400,401,403,413,415,422].includes(res.status)
         throw fail('pinata_metadata_failed',502)
       }
       const response=await res.json().catch(()=>({}))
       cid=safePinataCid(response.IpfsHash)
     }
+    if(process.env.STUDIO_FREE_PILOT==='1')await verifyStudioMetadataReadback(cid,content,request)
     const metadataUri='ipfs://'+cid
     const saved=await dbTx(c=>c.query(
       "UPDATE xartists_studio_media SET metadata_uri=$2,metadata_sha256=$3,status='pinned' WHERE id=$1 AND wallet=$4 AND status='metadata_pinning' AND metadata_uri IS NULL",
