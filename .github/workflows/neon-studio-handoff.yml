@@ -1,4 +1,4 @@
-name: Studio Neon — one-time reviewed connector handoff
+name: Studio Neon — compact reviewed connector handoff
 on:
   push:
     branches: [ops/neon-studio-handoff-20261128]
@@ -41,6 +41,75 @@ jobs:
       - run: python3 scripts/ops/test-deploy-neon-studio.py
       - run: python3 scripts/ops/package-neon-studio.py
       - run: python3 scripts/ops/deploy-neon-studio.py dist/neon-studio.zip --expected-source c0719b88b0328626c2cd34497d313b30bcc27e43
+      - name: Install lockfile-pinned bundler
+        run: npm ci --prefix apps/frontend --legacy-peer-deps --ignore-scripts
+      - name: Build a compact Node 24 bundle from the same reviewed source
+        run: |
+          mkdir -p dist/compact/deploy/neon/studio
+          node --input-type=module <<'JS'
+          import esbuild from './apps/frontend/node_modules/esbuild/lib/main.js'
+          import {resolve} from 'node:path'
+          const sdk=resolve('services/access-api/node_modules/@multiversx/sdk-core/out')
+          const keccak=resolve('services/access-api/node_modules/keccak/js.js')
+          await esbuild.build({
+            stdin:{contents:"export {default} from './deploy/neon/studio/index.mjs'; export {createStudioHandler} from './deploy/neon/studio/handler.mjs';",sourcefile:'studio-compact-entry.mjs',resolveDir:process.cwd()},
+            bundle:true,platform:'node',target:'node24',format:'esm',minify:true,legalComments:'inline',
+            outfile:'dist/compact/deploy/neon/studio/index.mjs',
+            external:['pg-native','cloudflare:sockets'],
+            banner:{js:"import{createRequire as ___cr}from'module';import{fileURLToPath as ___f}from'url';import{dirname as ___d}from'path';const require=___cr(import.meta.url);const __filename=___f(import.meta.url);const __dirname=___d(__filename);"},
+            plugins:[{name:'narrow-sdk-exports',setup(b){
+              // These are the exact three official SDK exports used by siwx.mjs.
+              // Use the SDK's own portable keccak fallback, not a new implementation.
+              b.onResolve({filter:/^@multiversx\/sdk-core$/},a=>{
+                if(!a.importer.endsWith('/services/access-api/src/siwx.mjs'))throw Error('Unexpected SDK importer')
+                return {path:'sdk-narrow',namespace:'studio-sdk'}
+              })
+              b.onLoad({filter:/.*/,namespace:'studio-sdk'},()=>({contents:"import a from "+JSON.stringify(sdk+'/address.js')+"; import m from "+JSON.stringify(sdk+'/message.js')+"; export default {Address:a.Address,Message:m.Message,MessageComputer:m.MessageComputer};",loader:'js',resolveDir:process.cwd()}))
+              b.onResolve({filter:/^keccak$/},()=>({path:keccak}))
+            }}]
+          })
+          JS
+          printf '%s\n' "export {default,createStudioHandler} from './deploy/neon/studio/index.mjs'" > dist/compact/index.mjs
+          printf '%s\n' '{"source_sha":"c0719b88b0328626c2cd34497d313b30bcc27e43"}' > dist/compact/build-meta.json
+          python3 - <<'PY'
+          import pathlib,zipfile
+          root=pathlib.Path('dist/compact')
+          licenses=[]
+          for p in pathlib.Path('services/access-api/node_modules').rglob('*'):
+              if p.is_file() and p.name.lower().startswith(('license','licence','copying','notice')) and p.stat().st_size<100000:
+                  licenses.append(str(p.relative_to('services/access-api/node_modules'))+'\n'+p.read_text(errors='replace'))
+          (root/'THIRD_PARTY_LICENSES.txt').write_text('\n\n'.join(sorted(licenses)))
+          with zipfile.ZipFile('dist/neon-studio-compact.zip','w',zipfile.ZIP_DEFLATED,compresslevel=9) as z:
+              for p in sorted(root.rglob('*')):
+                  if p.is_file(): z.write(p,p.relative_to(root))
+          PY
+      - name: Smoke the compact bundle with an official SDK signature and one-use challenge
+        run: |
+          mkdir -p /tmp/studio-compact
+          unzip -q dist/neon-studio-compact.zip -d /tmp/studio-compact
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict'
+          import {createRequire} from 'node:module'
+          import {generateKeyPairSync,sign} from 'node:crypto'
+          import app,{createStudioHandler} from '/tmp/studio-compact/index.mjs'
+          const require=createRequire(process.cwd()+'/services/access-api/package.json')
+          const {Address,Message,MessageComputer}=require('@multiversx/sdk-core')
+          const keys=generateKeyPairSync('ed25519'),computer=new MessageComputer()
+          const address=new Address(keys.publicKey.export({type:'spki',format:'der'}).subarray(-32)).toBech32()
+          const health=await (await app.fetch(new Request('https://studio.example/health'))).json()
+          assert.equal(health.source_sha,'c0719b88b0328626c2cd34497d313b30bcc27e43')
+          assert.equal(health.studio_upload_enabled,false)
+          const env={NEON_BRANCH_ID:'br-sparkling-breeze-bh8gp2jl',XARTISTS_STUDIO_PROJECT_CONFIRMED:'shy-tooth-63227941',STUDIO_FREE_PILOT:'1',STUDIO_IPFS_PROVIDER:'pinata',CREATOR_MEDIA_UPLOAD_ENABLED:'1',XARTISTS_STUDIO_UPLOAD_APPROVED:'1',DATABASE_URL:'fixture',PINATA_JWT:'test-only-not-real-'.repeat(4),ACCESS_JWT_SECRET:'test-only-not-real-'.repeat(4)}
+          const rows=new Map()
+          const h=createStudioHandler({env,preflight:async()=>({ok:true}),store:{ready:async()=>true,issue:async v=>{rows.set(v.nonce,v)},consume:async v=>{const row=rows.get(v.nonce);if(!row||row.address!==v.address||row.message!==v.message)return false;rows.delete(v.nonce);return true}}})
+          const call=(path,body)=>h.fetch(new Request('https://studio.example/v1/studio/media/'+path,{method:'POST',headers:{origin:'https://xartists.art','content-type':'application/json'},body:JSON.stringify(body)}))
+          const challenge=await (await call('challenge',{address})).json()
+          assert.ok(challenge.nonce)
+          const proof={address,nonce:challenge.nonce,message:challenge.message,signature:sign(null,computer.computeBytesForSigning(new Message({data:Buffer.from(challenge.message)})),keys.privateKey).toString('hex')}
+          assert.equal((await call('session',{...proof,signature:'0'.repeat(128)})).status,401)
+          assert.ok((await (await call('session',proof)).json()).token)
+          assert.equal((await call('session',proof)).status,401)
+          JS
       - name: Verify the exact disabled runtime
         run: |
           mkdir -p /tmp/studio-handoff
@@ -51,15 +120,15 @@ jobs:
         run: |
           python3 - <<'PY'
           import hashlib,json,pathlib
-          p=pathlib.Path('dist/neon-studio.zip')
+          p=pathlib.Path('dist/neon-studio-compact.zip')
           data=p.read_bytes()
-          if len(data)>8*1024*1024: raise SystemExit('Handoff package too large')
-          print('STUDIO_HANDOFF_MANIFEST '+json.dumps({'source_sha':'c0719b88b0328626c2cd34497d313b30bcc27e43','sha256':hashlib.sha256(data).hexdigest(),'bytes':len(data),'parts':12}))
+          if len(data)>1536*1024: raise SystemExit('Handoff package too large')
+          print('STUDIO_HANDOFF_MANIFEST '+json.dumps({'source_sha':'c0719b88b0328626c2cd34497d313b30bcc27e43','sha256':hashlib.sha256(data).hexdigest(),'bytes':len(data),'parts':6}))
           PY
       - uses: actions/upload-artifact@v7
         with:
           name: studio-handoff-source
-          path: dist/neon-studio.zip
+          path: dist/neon-studio-compact.zip
           retention-days: 1
   transfer:
     needs: package
@@ -68,7 +137,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        part: [0,1,2,3,4,5,6,7,8,9,10,11]
+        part: [0,1,2,3,4,5]
     steps:
       - uses: actions/download-artifact@v7
         with:
@@ -80,11 +149,11 @@ jobs:
         run: |
           python3 - <<'PY'
           import base64,hashlib,os,pathlib
-          data=pathlib.Path('dist/neon-studio.zip').read_bytes()
-          if len(data)>8*1024*1024: raise SystemExit('Handoff package too large')
+          data=pathlib.Path('dist/neon-studio-compact.zip').read_bytes()
+          if len(data)>1536*1024: raise SystemExit('Handoff package too large')
           part=int(os.environ['PART'])
           # Bound log lines and use equally sized, 3-byte-aligned segments.
-          stride=((len(data)+35)//36)*3
+          stride=((len(data)+17)//18)*3
           segment=data[part*stride:(part+1)*stride]
           if not segment: raise SystemExit('Empty fragment')
           encoded=base64.b64encode(segment).decode('ascii')
