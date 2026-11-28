@@ -1139,7 +1139,7 @@ test('Wallet Standard consent reads only Solana assets and revocation clears eve
  await page.route('https://api.mainnet-beta.solana.com/**',async route=>{
   const r=route.request().postDataJSON();methods.push(r.method)
   const result=r.method==='getBalance'?{value:1234567890}
-   :r.method==='getTokenAccountsByOwner'?{value:[{account:{owner:'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',data:{parsed:{info:{owner:address,mint,tokenAmount:{amount:'1',decimals:0}}}}}}]}
+   :r.method==='getTokenAccountsByOwner'?{value:[{pubkey:mint,account:{owner:'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',data:{parsed:{info:{owner:address,mint,tokenAmount:{amount:'1',decimals:0}}}}}}]}
    :r.method==='getMultipleAccounts'?{value:[{owner:'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',data:{parsed:{type:'mint',info:{isInitialized:true,supply:'1',decimals:0}}}}]}
    :null
   expect(result,'only read-only RPC methods are allowed').not.toBeNull()
@@ -1153,6 +1153,12 @@ test('Wallet Standard consent reads only Solana assets and revocation clears eve
  await expect(page.locator('.xa-cockpit-metrics strong').first()).toHaveText('1.23456789')
  await expect(page.locator('.xa-wallet-address')).toHaveText(address)
  await page.locator('.xa-wallet-views').getByRole('button',{name:'NFT',exact:true}).click()
+ await expect(page.locator('.xa-solana-asset')).toHaveCount(1)
+ await expect(page.locator('.xa-solana-asset strong')).toHaveText('SPL 1/1')
+ const search=page.locator('.xa-solana-filter input')
+ await search.fill('not-found')
+ await expect(page.locator('.xa-solana-asset')).toHaveCount(0)
+ await search.fill(mint)
  await expect(page.locator('.xa-solana-asset')).toHaveCount(1)
  expect(methods.sort()).toEqual(['getBalance','getMultipleAccounts','getTokenAccountsByOwner'].sort())
  expect(await page.evaluate(()=>(window as any).__solanaSigns)).toBe(0)
