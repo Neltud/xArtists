@@ -16,7 +16,6 @@ type Desk = {
 
 const BASE = import.meta.env.BASE_URL
 const DESK_URL = `${BASE}data/desk_last.json`
-const RUN_URL = `${BASE}data/vellum_last_run.json`
 
 function stanceColor(s: string) {
   if (s === 'BULL') return 'text-green-400'
@@ -24,7 +23,7 @@ function stanceColor(s: string) {
   return 'text-gray-400'
 }
 
-/** Paper desk debate — prefers desk_last.json (pipeline 1.3), falls back to vellum_last_run. */
+/** Desk en lecture seule, sans source de secours obsolète. */
 export default function DeskPanel() {
   const [desk, setDesk] = useState<Desk | null>(null)
   const [fuseSrc, setFuseSrc] = useState<string | null>(null)
@@ -39,13 +38,6 @@ export default function DeskPanel() {
         const r1 = await fetch(`${DESK_URL}?t=${Date.now()}`, { cache: 'no-store' })
         if (r1.ok) {
           const j = await r1.json()
-          deskObj = (j?.desk as Desk) || null
-          fuse = j?.fuse?.source || null
-        }
-        if (!deskObj) {
-          const r2 = await fetch(`${RUN_URL}?t=${Date.now()}`, { cache: 'no-store' })
-          if (!r2.ok) throw new Error(`HTTP ${r2.status}`)
-          const j = await r2.json()
           deskObj = (j?.desk as Desk) || null
           fuse = j?.fuse?.source || null
         }
@@ -66,8 +58,7 @@ export default function DeskPanel() {
   if (err && !desk) {
     return (
       <div className="card mb-4 border-gray-600/30 text-xs text-gray-500">
-        {xaRender("Desk LIA : données absentes (")}{xaRender(err)}{xaRender("). Pipeline 1.3 :")}{xaRender(' ')}
-        <code>python -m lia.vellum.pipeline</code>
+        {xaRender("Desk : données indisponibles (")}{xaRender(err)}{xaRender(").")}
       </div>
     )
   }

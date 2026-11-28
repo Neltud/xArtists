@@ -25,7 +25,6 @@ jobs:
           PYTHONPATH: ${{ github.workspace }}
         run: |
           python -m lia.shadow.sprint || true
-          python -m lia.vellum.publish_lia_status || true
 
       - name: Commit data if changed
         run: |
@@ -33,8 +32,7 @@ jobs:
           git config user.email "bot@xartists.local"
           git add data/lia_paper_legs.json data/lia_shadow_export.json data/lia_shadow_sprint.json \
             apps/frontend/public/data/lia_shadow_export.json apps/frontend/public/data/lia_shadow_sprint.json \
-            apps/frontend/public/data/lia_status.json data/lia_status.json \
-            docs/data/lia_shadow_export.json docs/data/lia_status.json 2>/dev/null || true
+            docs/data/lia_shadow_export.json 2>/dev/null || true
           if git diff --staged --quiet; then
             echo "No shadow data changes"
           else

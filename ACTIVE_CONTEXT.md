@@ -1,5 +1,9 @@
 # ACTIVE_CONTEXT — xArtists / xOrus
 
+## Arrêt définitif du fournisseur Vellum.ai — 28 novembre 2026
+
+Décision propriétaire : abandon du fournisseur, sans remplaçant fictif. Le moteur d'intentions et le proxy dédiés sont retirés; le journal 8008 ne transmet plus rien, les tâches RAG restent locales et les lectures de secours obsolètes sont supprimées. Les contrats, données historiques, services xOrus et Studio sont indépendants. Les anciens documents ci-dessous ne sont pas des consignes opérationnelles. Ne pas réintroduire ce fournisseur. Révocation des clés externes et vérification des éventuels services hébergés restent des opérations d'administration distinctes.
+
 ## Retrait de la console publique Vellum — 28 novembre 2026
 
 - Retrait de la console statique `/vellum/` : page d’état uniquement, aucun formulaire, journal local, calcul de plafond ou moteur public. Suppression du fichier public `engine.mjs`. Les packages et pipelines internes restent intacts.

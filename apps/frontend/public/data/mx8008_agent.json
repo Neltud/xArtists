@@ -3,7 +3,7 @@
   "name": "Agent MX-8008",
   "codename": "Execution Sentinel",
   "mode": "paper",
-  "role": "Route lia-intent → journal local + workflow Vellum xartists-8008-intents; pairs with MX-8004",
+  "role": "Journal local des intentions uniquement",
   "parent": "mx-8004",
   "capabilities": [
     "watch_intents",
@@ -17,7 +17,6 @@
     "guardian_caps",
     "journal_settle"
   ],
-  "pem": "Vellum-owned only — never in git",
-  "status": "bridge_live",
-  "note": "Browser bridge active · set VITE_VELLUM_8008_WEBHOOK for remote Vellum POST"
+  "status": "local_only",
+  "note": "Aucun transfert distant, aucune signature ou exécution."
 }

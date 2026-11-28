@@ -1,5 +1,5 @@
 import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
-/** MX-8008 Execution Sentinel — bridge lia-intent → Vellum journal */
+/** MX-8008 — journal local uniquement. */
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import SupernovaStatusBadge from './SupernovaStatusBadge'
@@ -48,10 +48,6 @@ export default function Agent8008Panel() {
     }
   }, [])
 
-  const webhook =
-    typeof import.meta.env.VITE_VELLUM_8008_WEBHOOK === 'string' &&
-    import.meta.env.VITE_VELLUM_8008_WEBHOOK.length > 0
-
   return (
     <section className="rounded-2xl border border-sky-500/25 bg-gradient-to-br from-zinc-950 to-sky-950/25 p-4 space-y-3">
       <div className="flex flex-wrap items-start justify-between gap-2">
@@ -62,8 +58,7 @@ export default function Agent8008Panel() {
             {xaRender(agent?.codename || AGENT_8008.codename)}
           </h2>
           <p className="text-[12px] text-zinc-500 mt-1 max-w-md">
-            {xaRender(agent?.role ||
-              'Route lia-intent → journal + workflow Vellum xartists-8008-intents · PEM Vellum only')}
+            {xaRender('Journal local des intentions, sans transmission ni transaction.')}
           </p>
         </div>
         <SupernovaStatusBadge />
@@ -81,14 +76,11 @@ export default function Agent8008Panel() {
       </div>
 
       <p className="text-[11px] text-zinc-600">
-        {xaRender("Status: ")}<span className="text-zinc-400">{xaRender(agent?.status || 'bridge_live')}</span>
+        {xaRender("Status: ")}<span className="text-zinc-400">{xaRender('local_only')}</span>
         {xaRender(' · ')}
         {xaRender("Mode: ")}<span className="text-zinc-400">{xaRender(agent?.mode || 'paper')}</span>
         {xaRender(' · ')}
-        {xaRender("Vellum webhook:")}{xaRender(' ')}
-        <span className={webhook ? 'text-emerald-400' : 'text-amber-400/90'}>
-          {xaRender(webhook ? 'configuré' : 'local journal only')}
-        </span>
+        {xaRender('Journal local uniquement')}
       </p>
 
       <div className="rounded-xl border border-white/10 bg-black/30 p-2.5 space-y-1.5">
@@ -100,7 +92,7 @@ export default function Agent8008Panel() {
             {xaRender(journal.slice(0, 6).map((j, i) => (
               <li key={i} className="text-[11px] text-zinc-400 flex justify-between gap-2">
                 <span className="text-zinc-200 truncate">{xaRender(j.type)}</span>
-                <span className="shrink-0 text-zinc-600">{xaRender(j.vellum)}</span>
+                <span className="shrink-0 text-zinc-600">{xaRender(j.delivery)}</span>
               </li>
             )))}
           </ul>

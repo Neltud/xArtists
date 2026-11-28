@@ -1,18 +1,12 @@
 name: RAG Ingestion (ATC → TCA)
 
-# Extract chunks from knowledge/rag/** and optionally POST to Vellum/LIA webhook.
+# Extract chunks from knowledge/rag/** into a local curation artifact.
 on:
   push:
     branches: [main]
     paths:
       - "knowledge/rag/**"
   workflow_dispatch:
-    inputs:
-      dry_run:
-        description: "Skip webhook (local validation only)"
-        required: false
-        default: "false"
-        type: string
 
 permissions:
   contents: read
@@ -21,10 +15,6 @@ jobs:
   ingest:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    env:
-      RAG_INGEST_WEBHOOK_URL: ${{ secrets.RAG_INGEST_WEBHOOK_URL }}
-      DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
-
     steps:
       - uses: actions/checkout@v7
 
@@ -91,23 +81,6 @@ jobs:
           name: lia-curation-chunks
           path: knowledge/rag/lia_curation/
           retention-days: 14
-
-      - name: POST to Vellum / LIA webhook (optional)
-        if: env.RAG_INGEST_WEBHOOK_URL != '' && env.DRY_RUN != 'true'
-        run: |
-          set -euo pipefail
-          if [ ! -f knowledge/rag/lia_curation/ingested_chunks.jsonl ]; then
-            echo "no chunks file — skip"
-            exit 0
-          fi
-          # Send as NDJSON body; consumer is expected to be LIA Engine / Vellum ingest endpoint
-          curl -sS -X POST "${RAG_INGEST_WEBHOOK_URL}" \
-            -H "Content-Type: application/x-ndjson" \
-            -H "X-Source: xArtists-rag-ingestion" \
-            -H "X-Repo: ${{ github.repository }}" \
-            -H "X-Sha: ${{ github.sha }}" \
-            --data-binary @knowledge/rag/lia_curation/ingested_chunks.jsonl \
-            -w "\nHTTP %{http_code}\n" || echo "webhook failed (non-fatal)"
 
       - name: Summary
         run: |
