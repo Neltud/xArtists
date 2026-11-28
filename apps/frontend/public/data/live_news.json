@@ -1,56 +1,56 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-27T16:12:46.295Z",
+  "updatedAt": "2026-11-28T01:07:56.864Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1795795965835",
-      "timestamp": "16:12",
+      "id": "egld-1795828076495",
+      "timestamp": "01:07",
       "source": "EGLD",
       "title": "Cotation publique · $2.29 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
-      "id": "rss-CoinTelegraph-0-1795790454000",
-      "timestamp": "14:40",
-      "source": "CoinTelegraph",
-      "title": "What was Coinbase worth while Nasdaq was closed?",
-      "link": "https://cointelegraph.com/news/what-was-coinbase-worth-while-nasdaq-was-closed?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1795787040000",
-      "timestamp": "13:44",
-      "source": "CoinTelegraph",
-      "title": "Binance to launch tokenized IPO program after regulatory approval: Yi He",
-      "link": "https://cointelegraph.com/news/binance-ipo-program-regulatory-approval-yi-he?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1795786106000",
-      "timestamp": "13:28",
+      "id": "rss-CoinTelegraph-0-1795817571000",
+      "timestamp": "22:12",
       "source": "CoinTelegraph",
       "title": "Here’s what happened in crypto today",
       "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-3-1795783194000",
-      "timestamp": "12:39",
+      "id": "rss-CoinTelegraph-1-1795814129000",
+      "timestamp": "21:15",
       "source": "CoinTelegraph",
-      "title": "Brazil’s stock exchange pushes stablecoin launch back to 2027",
-      "link": "https://cointelegraph.com/news/brazil-b3-stablecoin-tokenization-launch-2027?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+      "title": "Franklin Templeton makes room for HYPE in crypto index ETF",
+      "link": "https://cointelegraph.com/news/franklin-templeton-hype-crypto-index-etf?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-4-1795782000000",
-      "timestamp": "12:20",
+      "id": "rss-CoinTelegraph-2-1795807380000",
+      "timestamp": "19:23",
       "source": "CoinTelegraph",
-      "title": "Austria-supervised crypto firms report 20.4B euros in H1 trading volume",
-      "link": "https://cointelegraph.com/news/austria-supervised-crypto-firms-report-204b-h1-volume?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+      "title": "Bitcoin whales pile into BTC despite shrinking profit cushion",
+      "link": "https://cointelegraph.com/markets/bitcoin-whales-pile-btc-despite-shrinking-profit-cushion?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-5-1795778068000",
-      "timestamp": "11:14",
+      "id": "rss-CoinTelegraph-3-1795801043000",
+      "timestamp": "17:37",
       "source": "CoinTelegraph",
-      "title": "Bitcoin supply metric hits 11-year low as new ‘capitulation’ signal arrives",
-      "link": "https://cointelegraph.com/markets/bitcoin-supply-metric-new-capitulation-signal?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+      "title": "China sets March 2027 rollout for blockchain identity regulations",
+      "link": "https://cointelegraph.com/news/china-march-2027-rollout-blockchain-identity-regulations?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1795798131000",
+      "timestamp": "16:48",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin price drops below $59K as Anthropic joins tech stock rebound",
+      "link": "https://cointelegraph.com/markets/bitcoin-price-below-59k-anthropic-tech-stock-rebound?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1795790454000",
+      "timestamp": "14:40",
+      "source": "CoinTelegraph",
+      "title": "What was Coinbase worth while Nasdaq was closed?",
+      "link": "https://cointelegraph.com/news/what-was-coinbase-worth-while-nasdaq-was-closed?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "rss-CoinDesk-0-1795785550000",
@@ -72,6 +72,41 @@
       "source": "CoinDesk",
       "title": "Bitcoin on course to end seven-week losing streak while trailing stock rebound",
       "link": "https://www.coindesk.com/markets/2026/11/27/bitcoin-on-course-to-end-seven-week-losing-streak-while-trailing-stock-rebound"
+    },
+    {
+      "id": "rss-CoinDesk-3-1795779277000",
+      "timestamp": "11:34",
+      "source": "CoinDesk",
+      "title": "Live updates: Bitcoin's Thanksgiving gains prove fleeting",
+      "link": "https://www.coindesk.com/tech/2026/11/27/live-news-bitcoin-rebounds-above-usd61-000-as-ai-stocks-lead-premarket-gains"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1795787040000",
+      "timestamp": "13:44",
+      "source": "CoinTelegraph",
+      "title": "Binance to launch tokenized IPO program after regulatory approval: Yi He",
+      "link": "https://cointelegraph.com/news/binance-ipo-program-regulatory-approval-yi-he?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-3-1795783194000",
+      "timestamp": "12:39",
+      "source": "CoinTelegraph",
+      "title": "Brazil’s stock exchange pushes stablecoin launch back to 2027",
+      "link": "https://cointelegraph.com/news/brazil-b3-stablecoin-tokenization-launch-2027?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-4-1795782000000",
+      "timestamp": "12:20",
+      "source": "CoinTelegraph",
+      "title": "Austria-supervised crypto firms report 20.4B euros in H1 trading volume",
+      "link": "https://cointelegraph.com/news/austria-supervised-crypto-firms-report-204b-h1-volume?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-5-1795778068000",
+      "timestamp": "11:14",
+      "source": "CoinTelegraph",
+      "title": "Bitcoin supply metric hits 11-year low as new ‘capitulation’ signal arrives",
+      "link": "https://cointelegraph.com/markets/bitcoin-supply-metric-new-capitulation-signal?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
       "id": "rss-CoinDesk-3-1795779277000",
@@ -163,41 +198,6 @@
       "source": "CoinTelegraph",
       "title": "Japan weighs tighter oversight of DeFi, self-custodial wallets",
       "link": "https://cointelegraph.com/news/japan-tighter-oversight-defi-self-custodial-wallets?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1795717591000",
-      "timestamp": "18:26",
-      "source": "CoinTelegraph",
-      "title": "Spain moves to grant financial watchdog power to freeze crypto accounts",
-      "link": "https://cointelegraph.com/news/spain-moves-grant-financial-watchdog-power-freeze-crypto-accounts?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1795714793000",
-      "timestamp": "17:39",
-      "source": "CoinTelegraph",
-      "title": "Crypto on notice as hawkish Fed risks December ‘meltdown’",
-      "link": "https://cointelegraph.com/markets/crypto-hawkish-fed-risks-december-meltdown?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1795711244000",
-      "timestamp": "16:40",
-      "source": "CoinTelegraph",
-      "title": "BIS chief Pablo Hernández de Cos set to become next ECB president: FT",
-      "link": "https://cointelegraph.com/news/bis-chief-pablo-hernndez-de-cos-next-ecb-president?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1795707907000",
-      "timestamp": "15:45",
-      "source": "CoinTelegraph",
-      "title": "How EU brokers could lose access to Kyrgyz crypto exchanges",
-      "link": "https://cointelegraph.com/news/how-eu-brokers-could-lose-access-to-kyrgyz-crypto-exchanges?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1795700876000",
-      "timestamp": "13:47",
-      "source": "CoinTelegraph",
-      "title": "Nasdaq exec pushes for common EU rules on tokenized securities",
-      "link": "https://cointelegraph.com/news/nasdaq-exec-eu-wide-legal-framework-tokenized-securities?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
