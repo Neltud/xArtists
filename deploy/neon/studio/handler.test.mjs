@@ -55,3 +55,14 @@ test('Postgres schema and one-use challenge are real and race-safe',{skip:!proce
   assert.equal(both.filter(Boolean).length,1)
  }finally{await pool.end()}
 })
+
+test('health reports only the packaged source identity, not credentials',async()=>{
+ const sourceSha='a'.repeat(40),h=createStudioHandler({env:{},sourceSha})
+ const r=await call(h,'/health')
+ assert.equal(r.status,200)
+ const data=await r.json()
+ assert.equal(data.source_sha,sourceSha)
+ assert.equal(data.studio_upload_enabled,false)
+ assert.equal(data.commerce_enabled,false)
+ assert.equal(data.mint_requires_artist_signature,true)
+})

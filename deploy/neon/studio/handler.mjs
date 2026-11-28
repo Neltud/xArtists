@@ -35,7 +35,7 @@ async function smallJson(request){
  return body
 }
 export function createStudioHandler({env=process.env,store=null,preflight=checkStudioIpfsReadiness,
- now=Date.now,verify=verifyErdSignature,validateAddress=erdToPubkey,
+ sourceSha=null,now=Date.now,verify=verifyErdSignature,validateAddress=erdToPubkey,
  readMedia=readCreatorMedia,upload=uploadStudioMedia,pin=pinStudioMetadata}={}){
  let cached=null,inFlight=null
  const readiness=async()=>{
@@ -51,7 +51,7 @@ export function createStudioHandler({env=process.env,store=null,preflight=checkS
   if(request.headers.has('origin')&&!ORIGINS.has(request.headers.get('origin')))return out({ok:false,error:'origin_not_allowed'},403)
   const path=new URL(request.url).pathname
   if(request.method==='OPTIONS')return out(null,204)
-  if((request.method==='GET'||request.method==='HEAD')&&path==='/health')return out({ok:true,service:'xartists-studio-neon',studio_upload_enabled:await readiness(),mint_requires_artist_signature:true,commerce_enabled:false},200)
+  if((request.method==='GET'||request.method==='HEAD')&&path==='/health')return out({ok:true,service:'xartists-studio-neon',source_sha:sourceSha,studio_upload_enabled:await readiness(),mint_requires_artist_signature:true,commerce_enabled:false},200)
   if((request.method==='GET'||request.method==='HEAD')&&path==='/v1/studio/media/config'){
    const enabled=await readiness()
    return out({ok:true,enabled,provider:enabled?'pinata_ipfs':'disabled',modelEnabled:false,maxImageMiB:2,maxVideoMiB:0,maxAudioMiB:0,maxModelMiB:0,pilot_images_only:true,mint_requires_artist_signature:true},200)
