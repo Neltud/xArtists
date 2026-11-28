@@ -15,7 +15,7 @@ test('public analytics serves actual source-backed xOrus decision, not simulated
   assert.match(analytics,/Les anciens tableaux de scores construits à partir de prix fictifs ont été retirés/)
   assert.doesNotMatch(analytics,/import MatrixBoard|<MatrixBoard/)
   assert.match(desk,/data\/xorus_board\.json/)
-  assert.match(desk,/ABSTAIN|S’ABSTENIR/)
+  assert.match(desk,/Cautious analysis|Analyse prudente/)
   assert.match(desk,/parseMultiversxEconomics/)
   assert.match(desk,/to="\/explore\/analytics"/)
   assert.doesNotMatch(desk,/to="\/market"/)

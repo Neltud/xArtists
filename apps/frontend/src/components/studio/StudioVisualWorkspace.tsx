@@ -85,7 +85,7 @@ export default function StudioVisualWorkspace({title,onTitle,onAdvanced,onPrepar
  const active=items.find(x=>x.id===selected)??items[0]
  return <section className="xa-visual-studio" aria-label={c('navStudio')}>
   <header className="xa-visual-studio-top">
-   <h1>{c('navStudio')}</h1>
+   <h2 className="text-xl font-semibold">{c('navStudio')}</h2>
    <nav className="xa-visual-studio-tabs" aria-label={c('navStudio')}>
     <span aria-current="page">{c('navArtwork')}</span>
     <Link to="/create/gallery">{c('navExhibitions')}</Link>

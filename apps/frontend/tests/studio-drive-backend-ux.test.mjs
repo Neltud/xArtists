@@ -8,7 +8,7 @@ const factory=read('../src/pages/NftDistributorPage.tsx')
 const rights=read('../src/pages/WorldRightsPage.tsx')
 
 test('Studio starts with direct local-media selection instead of Drive instructions',()=>{
- assert.match(studio,/Importer une image, une vidéo ou une musique/)
+ assert.match(studio,/Créer mon NFT/)
  assert.ok(studio.indexOf('id="xa-studio-mint"') < studio.indexOf('<MainnetJourney'), 'file picker should appear first')
  assert.doesNotMatch(studio,/Google Drive/i)
  assert.match(studio,/to="\/marketplace"/)
@@ -17,7 +17,7 @@ test('Studio starts with direct local-media selection instead of Drive instructi
  assert.match(studio,/canListOwnedNft\(\)/)
 })
 test('IPFS readiness retry reads config only and never enables uploads itself',()=>{
- assert.match(media,/Retester la connexion IPFS/)
+ assert.match(media,/Réessayer/)
  assert.match(media,/statusRetry/)
  assert.match(media,/\/v1\/studio\/media\/config/)
  assert.match(media,/window\.setTimeout\(\(\)=>c\.abort\(\),12000\)/)

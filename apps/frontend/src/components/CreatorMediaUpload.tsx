@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useWallet } from '../context/WalletContext'
 import { signAccessMessage } from '../lib/signAccessMessage'
 import { getAccessApiBase } from '../lib/stripe'
+import {selectStudioApiBase,STUDIO_CANDIDATE_ORIGIN,pilotConfigReady,pilotAcceptsFile} from '../lib/studioApi'
 import StudioGlbPreview from './StudioGlbPreview'
 
 type Pinned={mediaUri:string;metadataUri:string;attributes:string;title:string}
@@ -16,7 +17,7 @@ const allowed:Record<string,number>={
   'model/gltf-binary':32*1024*1024,
 }
 async function postJson(base:string,path:string,body:unknown,token?:string){
-  const r=await fetch(base+path,{method:'POST',headers:{'Content-Type':'application/json',
+  const r=await fetch(base+path,{method:'POST',redirect:'error',headers:{'Content-Type':'application/json',
     ...(token?{Authorization:'Bearer '+token}:{})},body:JSON.stringify(body)})
   const j=await r.json().catch(()=>({error:'server_response_invalid'}))
   if(!r.ok)throw new Error(String(j.error||'HTTP '+r.status))
@@ -27,6 +28,8 @@ const studioMediaErrors:Record<string,string>={
   metadata_pinning_in_progress:'Une publication des métadonnées est déjà en cours. Réessayez après vérification de son état.',
   metadata_pinning_in_progress_or_complete:'La publication est en cours ou déjà terminée. Vérifiez son état avant de recommencer.',
   metadata_pin_result_unknown_reconcile:'Réponse IPFS incertaine : les métadonnées peuvent déjà être publiques. Ne recommencez pas l’upload avant une vérification de l’opérateur.',
+  studio_free_capacity_reached:'La capacité du service est atteinte. Réessayez après réouverture des envois.',
+  studio_challenge_quota_reached:'Limite de connexions atteinte. Réessayez ultérieurement.',
   daily_upload_quota_exhausted:'Quota de huit publications sur 24 heures atteint pour ce wallet.',
   pinata_service_unavailable:'Pinata ne répond pas actuellement. Aucun mint n’a été créé.',
   kubo_service_unavailable:'Le nœud IPFS privé ne répond pas. Aucun mint n’a été créé.',
@@ -48,7 +51,8 @@ const explainStudioMediaError=(error:unknown)=>{
 }
 export default function CreatorMediaUpload({title,onReady,selection}:Props){
   const {connected,address,method}=useWallet()
-  const base=getAccessApiBase()
+  const base=selectStudioApiBase(import.meta.env?.VITE_STUDIO_API_BASE,getAccessApiBase())
+  const pilot=base===STUDIO_CANDIDATE_ORIGIN
   const [enabled,setEnabled]=useState<boolean|null>(null)
   const [statusRetry,setStatusRetry]=useState(0)
   const [modelEnabled,setModelEnabled]=useState(false)
@@ -94,13 +98,13 @@ export default function CreatorMediaUpload({title,onReady,selection}:Props){
     setEnabled(null)
     setModelEnabled(false)
     setProvider(null)
-    fetch(base+'/v1/studio/media/config',{signal:c.signal,cache:'no-store'})
+    fetch(base+'/v1/studio/media/config',{signal:c.signal,cache:'no-store',redirect:'error'})
       .then(async r=>r.ok?r.json():null)
-      .then(j=>{if(!c.signal.aborted){setEnabled(j?.enabled===true);setModelEnabled(j?.modelEnabled===true);setProvider(j?.enabled===true&&['pinata_ipfs','kubo_ipfs'].includes(j?.provider)?j.provider:null)}})
+      .then(j=>{if(!c.signal.aborted){const ready=pilot?pilotConfigReady(j):j?.enabled===true;setEnabled(ready);setModelEnabled(!pilot&&j?.modelEnabled===true);setProvider(ready&&['pinata_ipfs','kubo_ipfs'].includes(j?.provider)?j.provider:null)}})
       .catch(()=>{if(!c.signal.aborted){setEnabled(false);setModelEnabled(false)}})
       .finally(()=>{window.clearTimeout(timeout);if(active && c.signal.aborted)setEnabled(false)})
     return ()=>{active=false;window.clearTimeout(timeout);c.abort()}
-  },[base,statusRetry])
+  },[base,statusRetry,pilot])
   const pick=(next:File|null)=>{
     // File providers may return an empty/generic MIME. The server still verifies file bytes.
     const inferred = next && (next.type==='' || next.type==='application/octet-stream')
@@ -133,6 +137,7 @@ export default function CreatorMediaUpload({title,onReady,selection}:Props){
   const pin=async()=>{
     if(pending||needsReconciliation)return
     setError('')
+    if(pilot&&file&&!pilotAcceptsFile(file)){setError('Choisissez une image JPG, PNG ou WebP de 2 Mo maximum.');return}
     if(!file||!allowed[file.type]){setError('Choisissez une image, une vidéo ou une musique (ou un modèle 3D GLB).');return}
     if(file.type==='model/gltf-binary' && (!posterFile || !['image/jpeg','image/png','image/webp'].includes(posterFile.type) || posterFile.size<1 || posterFile.size>16*1024*1024)) {
       setError('Choisissez une image de couverture JPG, PNG ou WebP de 16 Mio maximum pour ce GLB.');return
@@ -158,7 +163,7 @@ export default function CreatorMediaUpload({title,onReady,selection}:Props){
       if(!stillCurrent())return
       if(!session.token)throw new Error('Session artiste non créée.')
       const uploadResponse=await fetch(base+'/v1/studio/media/upload',{
-        method:'POST',headers:{Authorization:'Bearer '+session.token,'Content-Type':chosenFile.type},
+        method:'POST',redirect:'error',headers:{Authorization:'Bearer '+session.token,'Content-Type':chosenFile.type,...(pilot?{'X-Studio-Rights':'accepted'}:{})},
         body:chosenFile,
       })
       const data=await uploadResponse.json().catch(()=>({error:'upload_response_invalid'}))
@@ -169,7 +174,7 @@ export default function CreatorMediaUpload({title,onReady,selection}:Props){
       if(chosenFile.type==='model/gltf-binary') {
         if(!chosenPoster)throw new Error('Image de couverture manquante.')
         const posterResponse=await fetch(base+'/v1/studio/media/upload',{
-          method:'POST',headers:{Authorization:'Bearer '+session.token,'Content-Type':chosenPoster.type},
+          method:'POST',redirect:'error',headers:{Authorization:'Bearer '+session.token,'Content-Type':chosenPoster.type},
           body:chosenPoster,
         })
         const poster=await posterResponse.json().catch(()=>({error:'upload_response_invalid'}))
@@ -202,23 +207,21 @@ export default function CreatorMediaUpload({title,onReady,selection}:Props){
     <div className="space-y-3 rounded-xl border border-cyan-500/20 bg-cyan-500/[0.04] p-3 sm:p-4">
       <div>
         <h3 className="font-semibold text-white text-sm">Choisir mon fichier</h3>
-        <p className="text-xs text-zinc-400 mt-1">Image JPG/PNG/WebP (16 Mio), vidéo MP4 (48 Mio), musique MP3 (24 Mio), WAV/FLAC (48 Mio) ou 3D GLB (32 Mio).
-          Les fichiers sont publiés sur IPFS uniquement après signature de connexion et confirmation.</p>
+        <p className="text-xs text-zinc-400 mt-1">{pilot?'Image JPG, PNG ou WebP (2 Mo maximum).':'Image, vidéo, musique ou modèle 3D.'} Votre fichier reste privé sur votre appareil avant confirmation.</p>
+        {!pilot&&<details className="text-xs text-zinc-400 mt-1"><summary>Formats et tailles acceptés</summary><p>JPG/PNG/WebP (16 Mo), MP4 (48 Mo), MP3 (24 Mo), WAV/FLAC (48 Mo), GLB (32 Mo).</p></details>}
       </div>
       {enabled===null&&<p role="status" className="rounded-lg border border-white/15 p-3 text-xs text-zinc-300">
-        Vérification du service d’upload… Aucun fichier n’est transmis pendant cette étape.
+        Vérification de la disponibilité de l’envoi…
       </p>}
       {enabled===false&&<p role="status" className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 text-xs leading-relaxed text-amber-100">
-        Publication IPFS indisponible : le fichier sélectionné reste uniquement sur votre appareil.
-        L’aperçu local n’est pas un fichier publié, une transaction ou un NFT minté.
+        L’envoi de fichiers est momentanément indisponible. Vous pouvez préparer votre œuvre, mais aucun NFT ne sera créé à cette étape.
         <button type="button" className="mt-2 inline-flex min-h-[44px] items-center rounded-lg border border-amber-400/40 px-3 py-2 text-xs font-semibold"
-          onClick={()=>setStatusRetry(n=>n+1)}>Retester la connexion IPFS</button>
-        Pour préparer une œuvre, utilisez une URI IPFS/HTTPS que vous hébergez vous-même ;
-        ne signez aucune transaction avant d’avoir vérifié le média, les droits et la collection.
+          onClick={()=>setStatusRetry(n=>n+1)}>Réessayer</button>
       </p>}
+      {pilot&&file&&!pilotAcceptsFile(file)&&<p role="alert" className="text-xs text-amber-200">Choisissez une image compatible de 2 Mo maximum pour continuer.</p>}
       <label className="block text-xs text-zinc-300">
-        {file?'Remplacer le fichier':'Image, vidéo ou musique (ou fichier 3D)'}
-        <input type="file" accept=".jpg,.jpeg,.png,.webp,.mp4,.mp3,.wav,.flac,.glb,image/jpeg,image/png,image/webp,video/mp4,audio/mpeg,audio/wav,audio/flac,model/gltf-binary"
+        {file?'Remplacer le fichier':pilot?'Choisir une image':'Image, vidéo ou musique (ou fichier 3D)'}
+        <input type="file" accept={pilot?'.jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp':'.jpg,.jpeg,.png,.webp,.mp4,.mp3,.wav,.flac,.glb,image/jpeg,image/png,image/webp,video/mp4,audio/mpeg,audio/wav,audio/flac,model/gltf-binary'}
           className="mt-1 block w-full rounded-lg border border-white/10 p-2 text-xs text-white"
           onChange={e=>pick(e.target.files?.[0]||null)}/>
       </label>
@@ -246,7 +249,7 @@ export default function CreatorMediaUpload({title,onReady,selection}:Props){
             </>
           : <img src={preview} alt="Aperçu local avant publication IPFS" className="max-h-64 w-full rounded-lg object-contain bg-black"/>}
         <p className="break-all text-xs text-zinc-400">{file.name} · {(file.size/1048576).toFixed(2)} Mo</p>
-        <p className="text-xs text-zinc-400">Aperçu local uniquement : aucune publication IPFS ni création de NFT.</p>
+        <p className="text-xs text-zinc-400">Aperçu local uniquement : votre fichier n’a pas encore été envoyé.</p>
       </div>}
       <label className="block text-xs text-zinc-300">
         Description publique du NFT (facultative)
@@ -258,24 +261,25 @@ export default function CreatorMediaUpload({title,onReady,selection}:Props){
       <label className="flex items-start gap-2 text-xs leading-relaxed text-zinc-300">
         <input type="checkbox" checked={rights} onChange={e=>{revision.current+=1;setRights(e.target.checked);setPinned(null);onReady(null)}}
           className="mt-0.5" />
-        Je possède les droits de reproduire et publier ce média. Je comprends qu'une publication
-        IPFS et un NFT ne sont pas automatiquement supprimables.
+        Je possède les droits de publier cette œuvre. Je comprends que sa publication et son NFT ne pourront pas forcément être supprimés.
       </label>
+      {!connected&&<p className="text-sm">Connectez votre wallet xPortal pour envoyer votre œuvre.</p>}
       <button type="button" className="btn-primary text-sm min-h-[44px] disabled:opacity-50"
-        disabled={!enabled||pending||needsReconciliation||!file||!rights||!connected||method!=='xportal'||(file.type==='model/gltf-binary'&&(!modelEnabled||!posterFile))}
+        disabled={!enabled||pending||needsReconciliation||!file||!rights||!connected||method!=='xportal'||(pilot&&!!file&&!pilotAcceptsFile(file))||(file.type==='model/gltf-binary'&&(!modelEnabled||!posterFile))}
         onClick={()=>void pin()}>
-        {pending?'Publication média + métadonnées IPFS…':'Publier sur IPFS et préparer le mint'}
+        {pending?'Envoi en cours…':'Envoyer mon œuvre'}
       </button>
-      {file?.type==='model/gltf-binary'&&!modelEnabled&&<p role="status" className="text-xs text-amber-200">Publication du GLB verrouillée : le backend exige le drapeau séparé STUDIO_GLB_UPLOAD_ENABLED=1. Le média n’est pas envoyé.</p>}
+      {file?.type==='model/gltf-binary'&&!modelEnabled&&<p role="status" className="text-xs text-amber-200">L’envoi des modèles 3D n’est pas encore disponible.</p>}
       {pinned&&!stale&&<div role="status" className="space-y-1 rounded-lg border border-amber-500/30 bg-amber-500/5 p-2 text-xs text-amber-100">
-        <p className="font-semibold">{provider==='kubo_ipfs'?'Le nœud IPFS xArtists a annoncé l’épinglage du média et des métadonnées.':'Pinata a annoncé l’épinglage du média et des métadonnées.'} Le NFT n'est PAS encore minté.</p>
+        <p className="font-semibold">Œuvre envoyée. Confirmez ensuite la création du NFT dans votre wallet.</p>
+        <details><summary>Détails de publication et vérifications</summary><p>{provider==='kubo_ipfs'?'Le nœud IPFS xArtists a annoncé l’épinglage du média et des métadonnées.':'Pinata a annoncé l’épinglage du média et des métadonnées.'} Le NFT n'est PAS encore minté.</p>
         <p className="break-all">Média : {pinned.mediaUri}</p>
         <p className="break-all">Métadonnées : {pinned.metadataUri}</p>
         <p>Preuve de conservation non certifiée : la réponse IPFS ne prouve ni récupération indépendante des octets, ni seconde copie chez un autre nœud IPFS, ni archivage.</p>
-        <p>Avant une signature mainnet, vérifier les fichiers et leurs empreintes SHA-256 sur des passerelles indépendantes ainsi que la collection, le destinataire et les frais. Un mint reste une action distincte signée dans votre wallet.</p>
+        <p>Avant une signature mainnet, vérifier les fichiers et leurs empreintes SHA-256 sur des passerelles indépendantes ainsi que la collection, le destinataire et les frais. Un mint reste une action distincte signée dans votre wallet.</p></details>
       </div>}
       {needsReconciliation&&<p role="status" className="text-xs text-amber-200">
-        Publication suspendue pour ce fichier : une réponse du nœud IPFS est incertaine.
+        Publication suspendue pour ce fichier : la confirmation de l’envoi est incertaine.
         Une vérification de l’opérateur est requise avant tout nouvel essai.
       </p>}
       {stale&&<p className="text-xs text-amber-200">Le titre a changé depuis l'upload. Republiez les métadonnées avant de minter.</p>}

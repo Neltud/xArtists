@@ -63,7 +63,7 @@ async function harness({hold='challenge'}={}) {
   fileInput.files=transfer.files
   await React.act(async()=>fileInput.dispatchEvent(new window.Event('change',{bubbles:true})))
   await React.act(async()=>host.querySelector('input[type=checkbox]').click())
-  const button=[...host.querySelectorAll('button')].find(b=>b.textContent.includes('Publier sur IPFS'))
+  const button=[...host.querySelectorAll('button')].find(b=>b.textContent.includes('Envoyer mon œuvre'))
   assert.equal(button.disabled,false)
   return {calls,signed,ready,render,unmount,
     start:async()=>React.act(async()=>button.click()),
