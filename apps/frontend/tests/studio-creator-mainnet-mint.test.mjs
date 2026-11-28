@@ -75,3 +75,19 @@ test('Draft cannot be silently reused by a different wallet',()=>{
     assert.equal(creator.loadStudioCollection('erd1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq'),null)
   }finally{globalThis.localStorage=old}
 })
+
+test('mint confirmation requires exact data, receiver, value and a recent timestamp, not just sender',async()=>{
+ const before=globalThis.fetch
+ const data='ESDTNFTCreate@fixture',at=Date.now(),hash='b'.repeat(64)
+ const valid={sender:artist,receiver:artist,value:'0',data:Buffer.from(data).toString('base64'),timestamp:Math.ceil(at/1000),status:'success'}
+ try{
+  for(const patch of [{receiver:'other'},{value:'1'},{data:Buffer.from('ESDTNFTCreate@other').toString('base64')},{timestamp:Math.floor(at/1000)-300}]){
+   globalThis.fetch=async()=>({ok:true,json:async()=>({...valid,...patch})})
+   assert.equal(await creator.verifyArtistTransaction(hash,artist,1,{data,at}),'pending')
+  }
+  globalThis.fetch=async()=>({ok:true,json:async()=>valid})
+  assert.equal(await creator.verifyArtistTransaction(hash,artist,1,{data,at}),'confirmed')
+  globalThis.fetch=async()=>({ok:true,json:async()=>({...valid,status:'fail'})})
+  assert.equal(await creator.verifyArtistTransaction(hash,artist,1,{data,at}),'failed')
+ }finally{globalThis.fetch=before}
+})
