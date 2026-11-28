@@ -36,7 +36,9 @@
  * @property {string|null} unit
  */
 
-export const PAPER_ORDER_CAP_USD = 5;
+// Separate nominal test limits, not FX equivalents, prices or live budgets.
+export const PAPER_CAPS=Object.freeze({usd:5,eur:5,usdc:5,egld:0.2,tro:100});
+export const PAPER_ORDER_CAP_USD=PAPER_CAPS.usd;
 
 const RAILS = /** @type {Rail[]} */ ([
   {
@@ -88,33 +90,41 @@ export function fold(value) {
     .trim();
 }
 
-/**
- * @param {string} raw
- * @returns {{ amount: number|null, unit: string|null }}
- */
-export function readAmount(raw) {
-  const match = fold(raw).match(/(\d+(?:[.,]\d+)?)\s*(eur|euro|€|usd|usdc|egld|tro)?/);
-  if (!match) return { amount: null, unit: null };
-  const amount = Number(match[1].replace(",", "."));
-  if (!Number.isFinite(amount)) return { amount: null, unit: null };
-  const token = match[2] || null;
-  const unit = token === "euro" || token === "€" ? "eur" : token;
-  return { amount, unit };
-}
+const EMPTY_AMOUNT=Object.freeze({amount:null,unit:null});
+const suffixUnit=/^\s*(usdc|usd|euros?|eur|dollars?|egld|tro|€|\$)(?![\p{L}\p{N}_])/u;
+const prefixUnit=/(?:^|[\s(])(usdc|usd|euros?|eur|dollars?|egld|tro|€|\$)\s*$/u;
+const canonicalUnit=token=>token==='€'||/^euros?$/.test(token)?'eur':token==='$'||/^dollars?$/.test(token)?'usd':token;
 
-/**
- * @param {string} folded
- * @param {number|null} amount
- * @param {string|null} unit
- */
-function exceedsPaperCap(folded, amount, unit) {
-  if (amount == null) return /(tout|all|entier|entiere)/.test(folded);
-  if (unit === "eur" || unit === "usd" || unit === "usdc" || unit == null) {
-    return amount > PAPER_ORDER_CAP_USD;
-  }
-  if (unit === "egld") return amount > 0.2;
-  if (unit === "tro") return amount > 100;
-  return false;
+/** Conservative single-amount grammar; ambiguous grouping or missing units abstain. */
+function parseAmount(raw){
+  const text=fold(raw).replace(/[\u00a0\u202f]/g,' ');
+  const invalid=()=>({kind:'invalid',...EMPTY_AMOUNT});
+  const matches=[...text.matchAll(/[+-]?\d(?:[\d., \t]*\d)?/g)];
+  if(matches.length===0)return {kind:'absent',...EMPTY_AMOUNT};
+  if(matches.length!==1)return invalid();
+  const match=matches[0],digits=match[0],before=text.slice(0,match.index),after=text.slice(match.index+digits.length);
+  if(!/^(?:\d+|\d{1,3}(?:[ \t]\d{3})+)(?:[.,]\d{1,8})?$/.test(digits))return invalid();
+  if(/[-+.,]$/.test(before.trimEnd())||/^[.,]/.test(after))return invalid();
+  const prefix=prefixUnit.exec(before)?.[1],suffix=suffixUnit.exec(after)?.[1];
+  if(!prefix&&!suffix)return invalid();
+  if(prefix&&suffix&&canonicalUnit(prefix)!==canonicalUnit(suffix))return invalid();
+  if(/\p{L}$/u.test(before)&&!prefix)return invalid();
+  if(/^[\p{L}\p{N}_]/u.test(after)&&!suffix)return invalid();
+  const compact=digits.replace(/[ \t]/g,''),parts=compact.split(/[.,]/);
+  // 1,000 / 1.000 can mean one or one thousand; do not guess locale.
+  if(parts.length===2&&parts[1].length===3&&parts[0]!=='0'&&parts[0].length<=3)return invalid();
+  if(parts[0].length>12)return invalid();
+  const amount=Number(compact.replace(',','.'));
+  const unit=canonicalUnit(prefix||suffix);
+  if(!Number.isFinite(amount)||amount<=0||!Object.hasOwn(PAPER_CAPS,unit))return invalid();
+  return {kind:'valid',amount,unit};
+}
+export function readAmount(raw){
+  const {amount,unit}=parseAmount(raw);
+  return {amount,unit};
+}
+function exceedsPaperCap(amount,unit){
+  return amount!==null&&unit!==null&&Object.hasOwn(PAPER_CAPS,unit)&&amount>PAPER_CAPS[unit];
 }
 
 /**
@@ -136,7 +146,8 @@ function vaultFor(kind) {
 export function planIntent(raw, now = Date.now()) {
   const text = raw.trim();
   const folded = fold(text);
-  const { amount, unit } = readAmount(text);
+  const parsedAmount=parseAmount(text);
+  const { amount, unit } = parsedAmount;
   const base = {
     id: `vellum-${now.toString(36)}`,
     raw: text,
@@ -157,7 +168,7 @@ export function planIntent(raw, now = Date.now()) {
       steps: ["Saisir une intention en français ou en anglais."],
       guardian: { stance: "ABSTAIN", reason: "Rien à classer." },
       vault: "none",
-      capNote: "Plafond pilote de référence : 5 USD. Budget live : 0.",
+      capNote: "Seuils papier par unité. Budget live : 0.",
     };
   }
 
@@ -198,7 +209,7 @@ export function planIntent(raw, now = Date.now()) {
   else if (/(swap|echang|convert|convertir)/.test(folded)) kind = "swap";
   else if (/(achet|buy|on-?ramp|moonpay|apple pay|google pay|\bfiat\b|\beuros?\b|\beur\b|€)/.test(folded)) kind = "onramp";
 
-  const over = exceedsPaperCap(folded, amount, unit);
+  const over = exceedsPaperCap(amount,unit);
 
   if (kind === "abstain") {
     return finish(base, {
@@ -212,23 +223,32 @@ export function planIntent(raw, now = Date.now()) {
       ],
       guardian: { stance: "ABSTAIN", reason: "Hors grammaire d’intention." },
       vault: "none",
-      capNote: "Plafond pilote de référence : 5 USD.",
+      capNote: "Seuils papier par unité. Aucune conversion FX.",
     });
   }
 
+  if(kind!=='status'&&kind!=='circuit_breaker'&&(parsedAmount.kind==='invalid'||(parsedAmount.kind==='absent'&&['onramp','swap','stake'].includes(kind))||/\b(?:tout|tous|all|entier|entiere)\b/.test(folded))){
+    return finish(base,{
+      kind,verdict:'abstain',title:'Montant à préciser',
+      summary:'Montant absent, ambigu, non positif ou unité non reconnue. Aucune conversion supposée.',
+      steps:['Indiquer un montant unique et son unité explicite.','Aucune signature ni exécution.'],
+      guardian:{stance:'ABSTAIN',reason:'Montant non admissible dans la grammaire papier.'},
+      vault:'none',capNote:'Seuils nominaux distincts par unité. Budget live : 0.',
+    });
+  }
   if (over && kind !== "status" && kind !== "circuit_breaker") {
     return finish(base, {
       kind,
       verdict: "veto",
       title: "Veto Guardian — plafond pilote",
-      summary: "Le montant dépasse le plafond de référence (5 USD, 0,2 EGLD ou 100 TRO). Rien n’est préparé pour exécution.",
+      summary: 'Le montant dépasse le seuil papier de '+PAPER_CAPS[unit]+' '+unit.toUpperCase()+'. Aucune conversion de devise ni exécution.',
       steps: [
         "Réduire l’intention sous le plafond papier.",
         "Même sous le plafond, cette console ne signe pas.",
       ],
       guardian: { stance: "VETO", reason: "Dépassement du plafond pilote. Le plafond n’est pas une perte maximale garantie." },
       vault: "cold",
-      capNote: "Référence xOrus : ordre 5 USD, budget live 0.",
+      capNote: 'Seuil de test propre à '+unit.toUpperCase()+'. Budget live : 0.',
     });
   }
 
@@ -257,11 +277,11 @@ function finish(base, patch) {
 const COPY = {
   status: {
     title: "Statut des rails",
-    summary: "Lecture seule. Aucun rail de paiement, de mint ou de trading n’est ouvert.",
+    summary: "Configuration de test interne uniquement ; ceci ne constitue pas un état des services en production.",
     reason: "Demande d’état, pas d’ordre.",
     steps: [
-      "Pages publiques : vitrine papier, pas un GO commerce.",
-      "xOrus : stance ABSTAIN, exécution fermée, 0 wallet lié par le hub.",
+      "Console publique Vellum retirée.",
+      "Aucune donnée live n’est consultée par ce moteur.",
       "Bloquants humains : session xPortal (#506), cycle marketplace (#428), réception mail (#341).",
     ],
   },
@@ -297,7 +317,7 @@ const COPY = {
   },
   rebalance: {
     title: "Préparation de rééquilibrage",
-    summary: "Hatom, xExchange, Polygon et Ethereum sont des pistes. Aucun écart de prix n’est affiché.",
+    summary: "Les protocoles éventuels restent des pistes internes non certifiées. Aucun écart de prix n’est affiché.",
     reason: "Orchestration papier. Une piste n’est pas une liquidité prouvée.",
     steps: [
       "Ne pas choisir une route sans quote frais et sans sortie possible.",

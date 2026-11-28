@@ -58,3 +58,50 @@ test("unknown language abstains", () => {
 test("amount reader accepts french decimals", () => {
   assert.deepEqual(readAmount("acheter 4,5 euros"), { amount: 4.5, unit: "eur" });
 });
+
+test("single explicit amounts support French/English decimal separators and spaces",()=>{
+  for(const [text,amount,unit] of [
+    ["Swap 4 USDC en EGLD",4,"usdc"],
+    ["Acheter 4,50 euros",4.5,"eur"],
+    ["Buy $4.50",4.5,"usd"],
+    ["Acheter € 4,50",4.5,"eur"],
+    ["Swap 0,125 EGLD en TRO",0.125,"egld"],
+    ["Swap 1\u00a0000,50 USDC",1000.5,"usdc"],
+    ["Acheter 1\u202f000 EUR",1000,"eur"],
+    ["Stake 20 TRO",20,"tro"],
+  ])assert.deepEqual(readAmount(text),{amount,unit},text);
+});
+test("ambiguous, unknown, multiple or non-positive values abstain",()=>{
+  for(const text of [
+    "Swap 4 USDT en EGLD","Swap 4 en EGLD","Swap 4,5 USDcoin",
+    "Acheter 1,000 EUR","Buy 1.000 USD","Swap 1,000.50 USD",
+    "Swap -4 USDC","Swap +4 USDC","Swap 0 USDC","Swap 1e3 USDC",
+    "Swap 4 USDC et 3 EGLD","Swap 4 5 USDC","Acheter 4",
+    "Swap USD 4 USDC","Swap 4..5 USDC","Swap USDC","Swap 4. USDC",
+  ]){
+    const p=planIntent(text);
+    assert.equal(p.verdict,"abstain",text);
+    assert.equal(p.executionAuthorized,false);
+    assert.equal(p.signingAuthorized,false);
+  }
+});
+test("nominal limits are independent per unit and never convert currencies",()=>{
+  for(const [unit,below,above] of [["USD","5","5.01"],["EUR","5","5.01"],["USDC","5","5.01"],["EGLD","0.2","0.21"],["TRO","100","101"]]){
+    const within=planIntent("Swap "+below+" "+unit);
+    const over=planIntent("Swap "+above+" "+unit);
+    assert.equal(within.verdict,"paper_plan",unit);
+    assert.equal(over.verdict,"veto",unit);
+    assert.match(over.capNote,new RegExp(unit));
+    for(const plan of [within,over]){
+      assert.equal(plan.executionAuthorized,false);
+      assert.equal(plan.signingAuthorized,false);
+    }
+  }
+});
+test("read-only status does not invent a quote or live state",()=>{
+ const p=planIntent("Status");
+ assert.equal(p.verdict,"paper_plan");
+ assert.match(p.summary,/ne constitue pas un état/);
+ assert.equal(p.executionAuthorized,false);
+ assert.equal(p.signingAuthorized,false);
+});
