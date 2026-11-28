@@ -96,7 +96,7 @@ export default function LightningAgentPanel({ compact = false }: { compact?: boo
       </div>
 
       <p className="text-[10px] text-zinc-600 mt-3 border-t border-white/5 pt-2">
-        {xaRender("Policy xArtists : front = doc/status only · Vellum ops peut brancher le MCP · flag")}{xaRender(' ')}
+        {xaRender("xArtists : documentation et état en lecture seule · aucun MCP d’exécution configuré · flag")}{xaRender(' ')}
         <code className="text-zinc-500">{doc?.xartists_policy?.live_flag || 'LIGHTNING_AGENT_LIVE'}</code>{xaRender(' ')}
         {xaRender("· trésorerie Lightning séparée du wallet EGLD LIA. ")}</p>
     </div>

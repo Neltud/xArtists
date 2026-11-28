@@ -29,7 +29,7 @@ export default function StudioPaperMintCard(props: Props) {
     <div className="card space-y-4 mb-4 border border-emerald-500/20 bg-emerald-500/[0.04]">
       <h2 className="font-bold text-emerald-200">{xaRender("Mint paper E2E (local)")}</h2>
       <p className="text-xs text-zinc-500">
-        {xaRender("Certificat local + intent STUDIO_MINT_PAPER → journal 8008 / Vellum. Pas de tx on-chain tant que SC mint OFF. ")}</p>
+        {xaRender("Certificat local + intent STUDIO_MINT_PAPER → journal local 8008. Pas de tx on-chain tant que SC mint OFF. ")}</p>
       <button
         type="button"
         className="btn-primary w-full text-sm"

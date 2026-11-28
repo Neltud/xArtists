@@ -49,7 +49,7 @@ export default function PaperSoulScore({ compact = false }: { compact?: boolean 
           <p className="text-[10px] text-zinc-500 mt-0.5">
             {xaRender("Pas un SBT on-chain — score local jusqu’à credentials MVX ")}</p>
         </div>
-        <span className="text-[10px] uppercase tracking-wider text-cyan-400/80">{xaRender("vellum-ready")}</span>
+        <span className="text-[10px] uppercase tracking-wider text-cyan-400/80">{xaRender("papier uniquement")}</span>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-6 items-center">

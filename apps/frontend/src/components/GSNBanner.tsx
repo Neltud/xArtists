@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 
 /**
  * GreenSmoke Network — EXTERNAL forecast feed only.
- * NOT LIA/Vellum agent packs for sale on xArtists marketplace.
+ * NOT xArtists agent packs for sale on xArtists marketplace.
  */
 
 const LOCAL_URL = `${import.meta.env.BASE_URL}data/greensmoke_forecasts.json`
@@ -164,7 +164,7 @@ export default function GSNBanner() {
         </div>
         <p className="text-[11px] text-gray-500 mb-2">
           {xaRender("Prévisions GSN affichées à titre informatif. Les ")}<strong className="text-gray-400">{xaRender("packs agents LIA")}</strong>{xaRender(' ')}
-          {xaRender("(Vellum / marketplace xArtists) sont un produit séparé. ")}</p>
+          {xaRender("(marketplace xArtists) sont un produit séparé. ")}</p>
         <p className="text-xs text-gray-400 mb-2">{xaRender(sig.recommended_action || 'Feed GSN chargé')}</p>
         {xaRender(marqueeItems.length > 0 && (
           <div className="relative overflow-hidden">

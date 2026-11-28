@@ -67,7 +67,7 @@ export default function GuardianStatusPanel({ compact = false }: { compact?: boo
   if (err && !doc) {
     return (
       <div className="card mb-4 text-xs text-amber-400/90 border-amber-500/20">
-        {xaRender("Guardian status : ")}{xaRender(err)}{xaRender(". Vellum : ")}<code>python -m lia.vellum.orchestrator</code>
+        {xaRender("Guardian status : ")}{xaRender(err)}{xaRender(". Source indisponible.")}
       </div>
     )
   }

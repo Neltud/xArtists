@@ -1,6 +1,6 @@
 import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
- * Ops social — checklist manuelle (Zapier / Vellum). Aucune clé ici.
+ * Ops social — checklist manuelle (Zapier). Aucune clé ici.
  */
 export default function SocialOpsStrip() {
   return (
@@ -9,7 +9,6 @@ export default function SocialOpsStrip() {
       <ol className="list-decimal pl-4 space-y-0.5">
         <li>{xaRender("Zapier : connecter X (OAuth) — à faire dans ton compte Zapier")}</li>
         <li>{xaRender("Zap : Schedule 30 min → LLM → Create Tweet")}</li>
-        <li>{xaRender("Ou Vellum cron 30 min → vault secrets X / Catch Hook Zapier")}</li>
       </ol>
       <p className="mt-2 text-[10px] text-zinc-600">
         {xaRender("Grok automation = drafts only. Aucun token X dans le front. ")}</p>

@@ -44,7 +44,7 @@ export default function LiaMobileOverview() {
   }, now)
   const hubSource = assessTelemetrySource({
     source_ts: hub?.ts ?? null, published_at: hub?.ts ?? null,
-    provider: 'lia_hub_status.json (Vellum mirror)', data_mode: hub?.paper === true ? 'paper' : 'unknown',
+    provider: 'lia_hub_status.json (historique)', data_mode: hub?.paper === true ? 'paper' : 'unknown',
   }, now)
   const modelSource = assessTelemetrySource({
     source_ts: status?.mindset?.vellum_ts ?? null, published_at: status?.ts ?? null,

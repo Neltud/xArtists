@@ -1,11 +1,11 @@
 /**
- * Politique trésorerie LIA (Vellum) — publique, exécution gardée.
+ * Politique historique de trésorerie LIA — publique, exécution gardée.
  *
  * Règle produit : le solde USDC (ou équivalent stable) du wallet LIA doit
  * dépasser MIN_USDC_DEPLOY avant toute intention de placement on-chain.
  * Chaîne 1 = MultiversX · puis Solana · Soul ($SO lend/stake) quand mainnet public.
  *
- * LIVE_TRADING / signatures restent hors front GitHub Pages (Vellum + Guardian).
+ * LIVE_TRADING / signatures restent hors front GitHub Pages.
  */
 
 import { LIA_WALLET } from './links'
@@ -69,7 +69,7 @@ export function liaDeployStatus(usdcBalance: number): {
     deficit,
     wallet: LIA_WALLET,
     message: armed
-      ? `Solde ≥ ${MIN_USDC_DEPLOY} USDC — politique placement armée (exécution Vellum/Guardian).`
+      ? `Solde ≥ ${MIN_USDC_DEPLOY} USDC — seuil indicatif atteint ; aucune exécution autorisée.`
       : `En attente : ${deficit.toFixed(2)} USDC manquants avant placement (seuil ${MIN_USDC_DEPLOY}).`,
   }
 }

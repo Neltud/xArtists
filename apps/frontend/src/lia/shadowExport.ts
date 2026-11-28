@@ -38,7 +38,7 @@ export function buildShadowSnapshot(egldUsd = 0): ShadowSnapshot {
   }
 }
 
-/** Persist last export for optional paste into Vellum / debug */
+/** Persist last export for local debugging */
 const EXPORT_KEY = 'xartists_lia_shadow_export_v1'
 
 export function persistShadowExport(egldUsd = 0): ShadowSnapshot {

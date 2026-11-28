@@ -1,4 +1,4 @@
-/** Load optional server-published hub status (Vellum mirror). */
+/** Load optional server-published hub status (historical snapshot). */
 
 export type LiaHubStatus = {
   ts?: string

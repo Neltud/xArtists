@@ -1,6 +1,6 @@
 /**
  * GreenSmoke Network (GSN) — partner agent economy on MultiversX.
- * Future-ready aliases so UI / board / Vellum can rename without scatter.
+ * Future-ready aliases so UI / board can rename without scatter.
  *
  * xArtists remains the product brand; GSN is the signal / agent-network layer.
  * @see https://app.greensmoke.network/

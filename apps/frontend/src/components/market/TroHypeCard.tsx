@@ -65,7 +65,7 @@ export default function TroHypeCard() {
       </div>
 
       <p className="text-[11px] text-zinc-600 leading-relaxed">
-        {xaRender("Score paper (on-chain MultiversX + social placeholder). Pas un signal d’achat. Vellum/X = couche séparée. ")}</p>
+        {xaRender("Score paper (on-chain MultiversX + social placeholder). Pas un signal d’achat. ")}</p>
     </section>
   )
 }

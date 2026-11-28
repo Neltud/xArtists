@@ -1,5 +1,5 @@
 /**
- * Frontend price hook — reads published oracle JSON (Vellum / board publish)
+ * Frontend price hook — reads published oracle JSON (board publish)
  * and optional live MultiversX economics API.
  */
 import { useCallback, useEffect, useState } from 'react'
