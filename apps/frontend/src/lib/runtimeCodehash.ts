@@ -9,8 +9,6 @@ import { UNLOCK_JOBS, type UnlockKey } from '../config/contracts'
 
 export type { UnlockKey }
 
-const STORAGE = 'xartists_runtime_codehash_v6'
-
 type Cache = Partial<Record<UnlockKey, boolean>> & {
   slotBalance?: number
   /** Epoch ms of last successful full refresh write */
@@ -21,22 +19,17 @@ type Cache = Partial<Record<UnlockKey, boolean>> & {
   jobsFp?: string
 }
 
-function readCache(): Cache {
-  try {
-    const raw = sessionStorage.getItem(STORAGE)
-    if (!raw) return {}
-    return JSON.parse(raw) as Cache
-  } catch {
-    return {}
-  }
-}
-
+// Readiness is an in-memory observation, never hydrated from editable browser
+// storage. This is a UI gate, not a substitute for on-chain authorization.
+let currentCache: Cache = {}
+function readCache(): Cache { return currentCache }
 function writeCache(c: Cache) {
+  currentCache = Object.freeze({...c})
+}
+function notify(cache: Cache) {
   try {
-    sessionStorage.setItem(STORAGE, JSON.stringify(c))
-  } catch {
-    /* */
-  }
+    window.dispatchEvent(new CustomEvent('xartists-codehash', { detail: {...cache} }))
+  } catch { /* non-browser runtime */ }
 }
 
 /** Max age for a positive observation (ms). Stale cache never opens gates. */
@@ -52,9 +45,10 @@ function jobsFingerprint(): string {
  */
 export function runtimeCodehashOk(key: UnlockKey): boolean {
   const c = readCache()
-  if (!c.refreshedAt || typeof c.refreshedAt !== 'number') return false
-  if (Date.now() - c.refreshedAt > RUNTIME_CODEHASH_MAX_AGE_MS) return false
-  if (c.jobsFp && c.jobsFp !== jobsFingerprint()) return false
+  if (!Number.isFinite(c.refreshedAt) || !c.refreshedAt) return false
+  const age = Date.now() - c.refreshedAt
+  if (age < 0 || age > RUNTIME_CODEHASH_MAX_AGE_MS) return false
+  if (c.jobsFp !== jobsFingerprint()) return false
   return c[key] === true
 }
 
@@ -63,7 +57,7 @@ export function runtimeSlotBalance(): number {
 }
 
 export function runtimeUnlockSnapshot(): Cache {
-  return readCache()
+  return {...readCache()}
 }
 
 export function runtimeRefreshGeneration(): number {
@@ -72,19 +66,26 @@ export function runtimeRefreshGeneration(): number {
 
 async function fetchAccount(
   addr: string,
-): Promise<{ codeHash?: string; balance?: string; isPayable?: boolean } | null> {
+): Promise<{ address?: string; codeHash?: string; code?: string; balance?: string; isPayable?: boolean } | null> {
   if (!addr?.startsWith('erd1')) return null
+  // Older mobile WebViews support AbortController but not AbortSignal.timeout.
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), 8000)
   try {
-    const r = await fetch(`https://api.multiversx.com/accounts/${addr}`, { cache: 'no-store' })
+    const r = await fetch(`https://api.multiversx.com/accounts/${addr}`, { cache: 'no-store', redirect: 'error', signal: controller.signal })
     if (!r.ok) return null
-    return (await r.json()) as { codeHash?: string; balance?: string; isPayable?: boolean }
+    const account = await r.json()
+    if (!account || account.address !== addr || typeof account.code !== 'string' || !account.code) return null
+    return account
   } catch {
     return null
+  } finally {
+    clearTimeout(timer)
   }
 }
 
 function matchHash(expected: string, got?: string): boolean {
-  if (!got || !expected) return false
+  if (typeof got !== 'string' || !got || !expected) return false
   return got === expected || got.replace(/=+$/, '') === expected.replace(/=+$/, '')
 }
 
@@ -96,8 +97,9 @@ function matchHash(expected: string, got?: string): boolean {
 export async function refreshRuntimeCodehashes(): Promise<Cache> {
   const prev = readCache()
   const generation = Number(prev.generation || 0) + 1
-  // Claim generation immediately so concurrent older fetches cannot win the write race
-  writeCache({ ...prev, generation })
+  // Close old observations immediately while new verification is pending.
+  writeCache({ generation, jobsFp: jobsFingerprint() })
+  notify(readCache())
   const cache: Cache = { generation, refreshedAt: Date.now(), jobsFp: jobsFingerprint() }
 
   await Promise.all(
@@ -127,16 +129,12 @@ export async function refreshRuntimeCodehashes(): Promise<Cache> {
   // Discard if a newer refresh already committed (stale success must not erase recent failure)
   const latest = readCache()
   if (Number(latest.generation || 0) > generation) {
-    return latest
+    return {...latest}
   }
   writeCache(cache)
-  try {
-    window.dispatchEvent(new CustomEvent('xartists-codehash', { detail: cache }))
-  } catch {
-    /* */
-  }
+  notify(readCache())
   if (cache.slot) {
     console.info('[xArtists] SMART-UNLOCK slot REAL — codeHash OK · bal', cache.slotBalance)
   }
-  return cache
+  return {...readCache()}
 }
