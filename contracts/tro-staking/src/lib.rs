@@ -59,7 +59,8 @@ pub trait TroStaking {
 
     #[endpoint(unstake)]
     fn unstake(&self, amount: BigUint) {
-        require!(!self.paused().get(), "paused");
+        // Pause stops new deposits, not recovery of the owner's principal.
+
         require!(amount > 0, "zero");
         let caller = self.blockchain().get_caller();
         let bal = self.staked(&caller).get();
