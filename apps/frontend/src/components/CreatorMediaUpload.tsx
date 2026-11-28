@@ -7,6 +7,7 @@ import { signAccessMessage } from '../lib/signAccessMessage'
 import { getAccessApiBase } from '../lib/stripe'
 import {selectStudioApiBase,STUDIO_CANDIDATE_ORIGIN,pilotConfigReady,pilotAcceptsFile} from '../lib/studioApi'
 import StudioGlbPreview from './StudioGlbPreview'
+import {optimizeStudioJpeg,studioJpegOptimizationEligible} from '../lib/studioJpeg'
 
 type Pinned={mediaUri:string;metadataUri:string;attributes:string;title:string}
 type Props={title:string;onReady:(pin:Pinned|null)=>void;selection?:{file:File;description:string}|null}
@@ -59,6 +60,9 @@ export default function CreatorMediaUpload({title,onReady,selection}:Props){
   const [modelEnabled,setModelEnabled]=useState(false)
   const [provider,setProvider]=useState<'pinata_ipfs'|'kubo_ipfs'|null>(null)
   const [file,setFile]=useState<File|null>(null)
+  const [optimizing,setOptimizing]=useState(false)
+  const [optimizationNote,setOptimizationNote]=useState('')
+  const optimizationRunning=useRef(false)
   const [preview,setPreview]=useState('')
   const [posterFile,setPosterFile]=useState<File|null>(null)
   const [posterPreview,setPosterPreview]=useState('')
@@ -124,7 +128,7 @@ export default function CreatorMediaUpload({title,onReady,selection}:Props){
       ? new File([next],next.name,{type:inferred,lastModified:next.lastModified})
       : next
     revision.current+=1
-    setError('');setFile(chosen);setPosterFile(null);setPinned(null);onReady(null)
+    setError('');setOptimizationNote('');setRights(false);setFile(chosen);setPosterFile(null);setPinned(null);onReady(null)
     setNeedsReconciliation(false)
     if(chosen && (!allowed[chosen.type]||chosen.size<=0||chosen.size>allowed[chosen.type])){
       setFile(null)
@@ -141,8 +145,20 @@ export default function CreatorMediaUpload({title,onReady,selection}:Props){
     setDescription(selection.description.slice(0,800))
     setRights(false)
   },[selection])
+  const preparePhoto=async()=>{
+    if(!pilot||!file||pending||pinned||needsReconciliation||optimizationRunning.current||!studioJpegOptimizationEligible(file))return
+    const attempt=++revision.current,original=file
+    optimizationRunning.current=true;setOptimizing(true);setError('')
+    try{
+      const optimized=await optimizeStudioJpeg(original)
+      if(revision.current!==attempt)return
+      pick(optimized)
+      setOptimizationNote('Copie JPEG préparée : '+(original.size/1048576).toFixed(2)+' → '+(optimized.size/1048576).toFixed(2)+' Mo. Vérifiez son aperçu. Votre original reste inchangé sur votre appareil.')
+    }catch(error){if(revision.current===attempt)setError(error instanceof Error?error.message:'Optimisation indisponible.')}
+    finally{optimizationRunning.current=false;setOptimizing(false)}
+  }
   const pin=async()=>{
-    if(running.current||pending||needsReconciliation||pinned)return
+    if(running.current||pending||needsReconciliation||pinned||optimizationRunning.current)return
     setError('')
     if(pilot&&file&&!pilotAcceptsFile(file)){setError('Choisissez une image JPG, PNG ou WebP de 2 Mo maximum.');return}
     if(!file||!allowed[file.type]){setError('Choisissez une image, une vidéo ou une musique (ou un modèle 3D GLB).');return}
@@ -229,12 +245,14 @@ export default function CreatorMediaUpload({title,onReady,selection}:Props){
         <button type="button" className="mt-2 inline-flex min-h-[44px] items-center rounded-lg border border-amber-400/40 px-3 py-2 text-xs font-semibold"
           onClick={()=>setStatusRetry(n=>n+1)} disabled={pending}>Réessayer</button>
       </div>}
-      {pilot&&file&&!pilotAcceptsFile(file)&&<p role="alert" className="text-xs text-amber-200">Choisissez une image compatible de 2 Mo maximum pour continuer.</p>}
+      {pilot&&file&&!pilotAcceptsFile(file)&&<div className="space-y-2"><p role="alert" className="text-xs text-amber-200">Choisissez une image compatible de 2 Mo maximum pour continuer.</p>
+        {studioJpegOptimizationEligible(file)&&!needsReconciliation&&<><p className="text-xs text-zinc-400">Préparer une copie JPEG plus légère sur votre appareil (dimensions et qualité réduites, métadonnées EXIF non conservées). Aucun envoi automatique.</p><button type="button" className="btn-secondary w-full min-h-[44px]" disabled={optimizing||pending} onClick={()=>void preparePhoto()}>{optimizing?'Préparation de la copie…':'Préparer une copie de ma photo'}</button></>}</div>}
+      {optimizationNote&&<p role="status" className="text-xs text-zinc-300">{optimizationNote}</p>}
       <label htmlFor={pickerId} className="xa-studio-photo-picker">
         <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="32" height="32"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="m3 16 6-6 7 7M15 7v6m-3-3h6"/></svg>
         <span className="font-semibold">{file?'Remplacer le fichier':pilot?'Ajouter ma photo':'Image, vidéo ou musique (ou fichier 3D)'}</span>
         <span className="text-xs">Depuis votre appareil</span>
-        <input id={pickerId} type="file" disabled={pending} accept={pilot?'.jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp':'.jpg,.jpeg,.png,.webp,.mp4,.mp3,.wav,.flac,.glb,image/jpeg,image/png,image/webp,video/mp4,audio/mpeg,audio/wav,audio/flac,model/gltf-binary'}
+        <input id={pickerId} type="file" disabled={pending||optimizing} accept={pilot?'.jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp':'.jpg,.jpeg,.png,.webp,.mp4,.mp3,.wav,.flac,.glb,image/jpeg,image/png,image/webp,video/mp4,audio/mpeg,audio/wav,audio/flac,model/gltf-binary'}
           className="xa-studio-photo-input"
           onChange={e=>pick(e.target.files?.[0]||null)}/>
       </label>
@@ -278,7 +296,7 @@ export default function CreatorMediaUpload({title,onReady,selection}:Props){
       </label>
       {!connected&&<p className="text-sm">Connectez votre wallet xPortal pour envoyer votre œuvre.</p>}
       <button type="button" className="btn-primary w-full text-sm min-h-[48px] disabled:opacity-50"
-        disabled={!enabled||pending||needsReconciliation||!!pinned||!file||!rights||!connected||method!=='xportal'||(pilot&&!!file&&!pilotAcceptsFile(file))||(file.type==='model/gltf-binary'&&(!modelEnabled||!posterFile))}
+        disabled={!enabled||pending||optimizing||needsReconciliation||!!pinned||!file||!rights||!connected||method!=='xportal'||(pilot&&!!file&&!pilotAcceptsFile(file))||(file.type==='model/gltf-binary'&&(!modelEnabled||!posterFile))}
         onClick={()=>void pin()}>
         {pending?'Envoi en cours…':pinned?'Œuvre prête':'Envoyer mon œuvre'}
       </button>
