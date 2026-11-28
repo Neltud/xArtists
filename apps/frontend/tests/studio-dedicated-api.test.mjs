@@ -35,3 +35,22 @@ test('Pages uses only the verified dedicated Studio origin without secret or Ren
   const line=workflow.split('\n').find(l=>l.trim().startsWith('VITE_STUDIO_API_BASE:'))
   assert.equal(line?.trim(),'VITE_STUDIO_API_BASE: '+origin)
 })
+
+test('JPEG optimization is optional, local, bounded and never auto-publishes',()=>{
+ const entry=new URL('../src/lib/studioJpeg.ts',import.meta.url).pathname
+ const result=buildSync({entryPoints:[entry],bundle:true,format:'cjs',platform:'node',write:false})
+ const api={exports:{}}
+ new Function('module','exports',result.outputFiles[0].text)(api,api.exports)
+ const {studioJpegOptimizationEligible:eligible,studioJpegDimensions:dimensions}=api.exports
+ assert.equal(eligible({type:'image/jpeg',size:2097153}),true)
+ for(const f of [{type:'image/png',size:2097153},{type:'image/jpeg',size:2097152},{type:'image/jpeg',size:16777217}])assert.equal(eligible(f),false)
+ assert.deepEqual(dimensions(4000,3000,2048),{width:2048,height:1536})
+ assert.deepEqual(dimensions(640,480,2048),{width:640,height:480})
+ assert.throws(()=>dimensions(10000,10000,2048))
+ const src=readFileSync(new URL('../src/lib/studioJpeg.ts',import.meta.url),'utf8')
+ assert.doesNotMatch(src,/\bfetch\s*\(/)
+ const media=readFileSync(new URL('../src/components/CreatorMediaUpload.tsx',import.meta.url),'utf8')
+ assert.match(media,/onClick=\{\(\)=>void preparePhoto\(\)\}/)
+ assert.match(media,/Votre original reste inchangé/)
+ assert.match(media,/setRights\(false\);setFile\(chosen\)/)
+})
