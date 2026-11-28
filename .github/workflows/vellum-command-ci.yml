@@ -26,6 +26,6 @@ jobs:
         run: |
           test ! -e apps/frontend/public/vellum/engine.mjs
           grep -F 'Console Vellum retirée' apps/frontend/public/vellum/index.html
-          if grep -Ei '<(script|form|input|button|iframe)([[:space:]>])|planIntent|localStorage|engine\.mjs|on[a-z]+=' apps/frontend/public/vellum/index.html; then
+          if grep -Ei '<(script|form|input|button|iframe)([[:space:]>])|planIntent|localStorage|engine\.mjs|[[:space:]]on[a-z]+[[:space:]]*=' apps/frontend/public/vellum/index.html; then
             echo 'Unexpected interactive public console'; exit 1
           fi
