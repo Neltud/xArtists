@@ -27,6 +27,7 @@ const studioMediaErrors:Record<string,string>={
   metadata_immutable_request_mismatch:'Les métadonnées déjà publiées sont immuables. Sélectionnez à nouveau votre fichier pour créer une nouvelle publication.',
   metadata_pinning_in_progress:'Une publication des métadonnées est déjà en cours. Réessayez après vérification de son état.',
   metadata_pinning_in_progress_or_complete:'La publication est en cours ou déjà terminée. Vérifiez son état avant de recommencer.',
+  media_pin_result_unknown_reconcile:'La publication de cette œuvre doit être vérifiée par xArtists. Ne la renvoyez pas pour le moment.',
   metadata_pin_result_unknown_reconcile:'La publication est en cours de vérification. Ne renvoyez pas le fichier avant confirmation de xArtists.',
   studio_free_capacity_reached:'La capacité du service est atteinte. Réessayez après réouverture des envois.',
   studio_challenge_quota_reached:'Limite de connexions atteinte. Réessayez ultérieurement.',
@@ -195,7 +196,7 @@ export default function CreatorMediaUpload({title,onReady,selection}:Props){
     }catch(e){
       if(stillCurrent()){
         const code=e instanceof Error?e.message:''
-        if(code==='metadata_pin_result_unknown_reconcile')
+        if(code==='metadata_pin_result_unknown_reconcile'||code==='media_pin_result_unknown_reconcile')
           setNeedsReconciliation(true)
         setError(explainStudioMediaError(e))
       }
