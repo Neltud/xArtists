@@ -18,7 +18,7 @@ function reader({supply='1',decimals=0,foreignOwner=false,fail=false,unsafeBalan
   assert.equal(options.method,'POST')
   if(fail)return {ok:false,status:503}
   const result=request.method==='getBalance'?{value:unsafeBalance?Number.MAX_SAFE_INTEGER+1:1234567890}
-   :request.method==='getTokenAccountsByOwner'?{value:[{account:{owner:SPL_TOKEN_PROGRAM,data:{parsed:{info:{owner:foreignOwner?mint:owner,mint,tokenAmount:{amount:'1',decimals}}}}}}]}
+   :request.method==='getTokenAccountsByOwner'?{value:[{pubkey:mint,account:{owner:SPL_TOKEN_PROGRAM,data:{parsed:{info:{owner:foreignOwner?mint:owner,mint,tokenAmount:{amount:'1',decimals}}}}}}]}
    :{value:[{owner:SPL_TOKEN_PROGRAM,data:{parsed:{type:'mint',info:{isInitialized:true,decimals,supply}}}}]}
   return {ok:true,json:async()=>({jsonrpc:'2.0',id:request.id,result})}
  }}
@@ -44,4 +44,27 @@ test('SPL and SOL amounts preserve atomic precision beyond safe floating point',
  assert.equal(formatSolanaUnits('0',9),'0')
  assert.equal(formatSolanaUnits('1',0),'1')
  assert.equal(formatSolanaUnits('-1',9),'—')
+})
+
+test('multiple classic SPL token accounts aggregate by mint without losing atomic precision',async()=>{
+ const rows=[
+  {pubkey:owner,account:{owner:SPL_TOKEN_PROGRAM,data:{parsed:{info:{owner,mint,tokenAmount:{amount:'9007199254740993',decimals:6}}}}}},
+  {pubkey:mint,account:{owner:SPL_TOKEN_PROGRAM,data:{parsed:{info:{owner,mint,tokenAmount:{amount:'7',decimals:6}}}}}},
+ ]
+ const fetchImpl=async(url,o)=>{const q=JSON.parse(o.body);assert.equal(o.redirect,'error');const result=q.method==='getBalance'?{value:0}:{value:[...rows,rows[0]]};return {ok:true,json:async()=>({id:q.id,result})}}
+ const data=await readSolanaPortfolio(owner,{fetchImpl})
+ assert.deepEqual(data.tokens,[{mint,amount:'9007199254741000',decimals:6,nft:false}])
+ assert.equal(data.nfts.length,0)
+ rows[1].account.data.parsed.info.tokenAmount.decimals=7
+ await assert.rejects(readSolanaPortfolio(owner,{fetchImpl}),/conflicting_mint_decimals/)
+})
+test('duplicate token account with contradictory content is rejected; malformed rows flag incomplete inventory',async()=>{
+ const row={pubkey:mint,account:{owner:SPL_TOKEN_PROGRAM,data:{parsed:{info:{owner,mint,tokenAmount:{amount:'2',decimals:0}}}}}}
+ let rows=[row,{...row,account:{...row.account,data:{parsed:{info:{...row.account.data.parsed.info,tokenAmount:{amount:'3',decimals:0}}}}}}]
+ const fetchImpl=async(url,o)=>{const q=JSON.parse(o.body);return {ok:true,json:async()=>({id:q.id,result:q.method==='getBalance'?{value:0}:{value:rows}})}}
+ await assert.rejects(readSolanaPortfolio(owner,{fetchImpl}),/conflicting_token_account/)
+ rows=[row,{...row,pubkey:'invalid'}]
+ const data=await readSolanaPortfolio(owner,{fetchImpl})
+ assert.equal(data.limited,true)
+ assert.equal(data.tokens.length,1)
 })

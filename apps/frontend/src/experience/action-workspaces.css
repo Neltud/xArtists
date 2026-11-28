@@ -193,3 +193,15 @@
 .xa-agents-discovery>.xa-intelligence-hero h1,.xa-agents-discovery>.xa-intelligence-hero p{color:#fff}
 .xa-agents-discovery>.xa-intelligence-hero .xa-intelligence-status{background:#ffffff15;color:#fff;border-color:#b996e1}
 @media(max-width:600px){.xa-ref-v2[data-area="wallet"] .xa-wallet-cockpit .xa-cockpit-hero{padding:14px}.xa-group-ecosystem .xa-module-grid .xa-module-card{min-height:116px;padding:14px}.xa-dao-page .xa-task-empty{padding:15px}.xa-agents-discovery>.xa-intelligence-hero{padding:14px}}
+
+/* Wallet inventory: consistent violet selection and accessible local filtering. */
+.xa-network-switch button[aria-pressed="true"]{background:var(--xa-accent-soft,var(--xa-panel2));border-radius:8px;box-shadow:inset 0 0 0 1px var(--xa-accent)}
+.xa-solana-filter{display:flex;align-items:end;gap:12px;margin:0 0 10px;flex-wrap:wrap}
+.xa-solana-filter label{display:grid;gap:5px;flex:1;min-width:0;color:var(--xa-text);font-size:12px;font-weight:600}
+.xa-solana-filter input{width:100%;min-width:0;min-height:44px;background:var(--xa-panel);color:var(--xa-text);border:1px solid var(--xa-border-strong,var(--xa-border));border-radius:10px;padding:10px 12px;font:inherit}
+.xa-solana-filter input:focus-visible,.xa-solana-asset:focus-visible{outline:2px solid var(--xa-accent);outline-offset:3px}
+.xa-solana-filter>span{font-size:12px;color:var(--xa-muted);font-variant-numeric:tabular-nums;padding-bottom:12px}
+.xa-solana-asset{border-radius:10px;min-height:58px}
+.xa-solana-asset:hover{background:var(--xa-panel2)}
+@media(max-width:480px){.xa-solana-asset{gap:9px;padding-inline:8px}.xa-solana-asset b{font-size:12px}}
+@media(prefers-reduced-motion:reduce){.xa-solana-asset,.xa-solana-filter input{transition:none}}

@@ -10,12 +10,15 @@ import Icon from '../experience/Icon'
 import {useI18n} from '../i18n/I18nContext'
 
 export function SolanaAssetRows({data,kind}:{data:SolanaPortfolio;kind:'tokens'|'nft'}){
- const n=useNetworkCopy(),items=kind==='nft'?data.nfts:data.tokens.filter(t=>!t.nft)
+ const n=useNetworkCopy(),[query,setQuery]=useState(''),items=kind==='nft'?data.nfts:data.tokens.filter(t=>!t.nft)
+ const q=query.trim(),visible=items.filter(asset=>!q||asset.mint.includes(q))
  return <div className="xa-solana-assets">
-  {items.length===0?<p className="xa-cockpit-notice">{n('emptyAssets')}</p>:items.map(asset=><a key={asset.mint} href={'https://explorer.solana.com/address/'+asset.mint} rel="noopener noreferrer" target="_blank" className="xa-solana-asset">
-   <Icon name={asset.nft?'image':'coin'} size={24}/><span><strong>{asset.nft?'NFT SPL':'SPL'}</strong><small>{asset.mint.slice(0,8)}…{asset.mint.slice(-8)}</small></span><b>{formatSolanaUnits(asset.amount,asset.decimals)}</b><Icon name="external" size={16}/>
+  <div className="xa-solana-filter"><label>{n('mint')}<input type="search" value={query} onChange={event=>setQuery(event.target.value)} placeholder={n('search')} autoComplete="off" spellCheck={false} maxLength={44}/></label><span aria-live="polite">{visible.length} / {items.length}</span></div>
+  <p className="xa-network-note">{n('classicSplScope')}</p>
+  {visible.length===0?<p className="xa-cockpit-notice">{items.length===0?n('emptyAssets'):n('noResults')}</p>:visible.map(asset=><a key={asset.mint} href={'https://explorer.solana.com/address/'+asset.mint} rel="noopener noreferrer" target="_blank" className="xa-solana-asset">
+   <Icon name={asset.nft?'image':'coin'} size={24}/><span><strong>{asset.nft?'SPL 1/1':'SPL'}</strong><small>{asset.mint.slice(0,8)}…{asset.mint.slice(-8)}</small></span><b>{formatSolanaUnits(asset.amount,asset.decimals)}</b><Icon name="external" size={16}/>
   </a>)}
-  {data.limited&&<p className="xa-network-note">{n('readLimit')}</p>}
+  {data.limited&&<p role="status" className="xa-network-note">{n('readLimit')}</p>}
  </div>
 }
 export default function SolanaWalletWorkspace(){
