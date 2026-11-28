@@ -22,7 +22,7 @@ test('address paste remains read-only and a signer is still required',()=>{
 })
 
 test('public service-status route labels xOrus, not retired LIA',()=>{
-  assert.ok(status.includes('to="/xorus">xOrus · Paper'))
+  assert.ok(status.includes('to="/xorus">xOrus · Observations mainnet'))
   assert.ok(!status.includes('to="/lia">'))
 })
 
