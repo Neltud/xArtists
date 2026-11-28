@@ -1,5 +1,5 @@
 /**
- * Aggregator client — data/lia_status.json (Vellum / Pages).
+ * Aggregator client — data/lia_status.json (historical Pages data).
  * Same contract as future GET /api/lia/status.
  */
 

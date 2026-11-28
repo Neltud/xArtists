@@ -71,7 +71,7 @@ export default function LiaBoardPanel() {
     return (
       <div className="card mb-6 text-sm text-amber-400">
         {xaRender("Board LIA: données absentes (")}{xaRender(err)}{xaRender("). Après rebuild Pages les seeds")}{xaRender(' ')}
-        <code>public/data/lia_board.json</code> {xaRender(" doivent servir. Vellum:")}{xaRender(' ')}
+        <code>public/data/lia_board.json</code> {xaRender(" doivent servir. Publication interne :")}{xaRender(' ')}
         <code>python -m lia.board.publish</code>
       </div>
     )

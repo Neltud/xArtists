@@ -54,7 +54,7 @@ function CommanderStrip() {
 
       {xaRender(fast.err && !fast.doc && (
         <p className="text-xs text-amber-400/90 mt-2">
-          {xaRender("Fast path offline — ")}{xaRender(fast.err)}{xaRender(". Publish : ")}<code>python -m lia.vellum.production_run</code>
+          {xaRender("Fast path offline — ")}{xaRender(fast.err)}{xaRender(". Source indisponible.")}
         </p>
       ))}
     </section>

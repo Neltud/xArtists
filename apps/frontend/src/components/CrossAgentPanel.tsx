@@ -1,6 +1,6 @@
 import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
- * CrossAgentPanel — Grok ↔ LIA (Vellum) bridge transparency
+ * CrossAgentPanel — Cross-agent status
  * Reads public mirrored JSON only (no secrets).
  */
 import { useEffect, useState } from 'react'
@@ -113,7 +113,7 @@ export default function CrossAgentPanel() {
         <h2 className="text-lg font-bold mb-1">{xaRender("Grok ↔ LIA bridge")}</h2>
         <p className="text-xs text-zinc-500">
           {xaRender("Pas encore de CrossScore — lance un cycle")}{xaRender(' ')}
-          <code className="text-zinc-400">lia.vellum.grok_mcp_ingest</code> {xaRender(" ou le serveur MCP. ")}</p>
+          {xaRender("Source non disponible. ")}</p>
       </div>
     )
   }

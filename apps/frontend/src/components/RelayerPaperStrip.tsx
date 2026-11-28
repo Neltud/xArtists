@@ -33,7 +33,7 @@ export default function RelayerPaperStrip() {
       </div>
       <p className="text-[11px] text-zinc-500 mb-2">
         {xaRender("Décimales imposées : ")}<strong className="text-zinc-300">{xaRender("18 ETH")}</strong> ·{xaRender(' ')}
-        <strong className="text-zinc-300">{xaRender("6 MVX")}</strong>{xaRender(". Nonce tracking paper. Broadcast mainnet = Vellum + fonds + audit. ")}</p>
+        <strong className="text-zinc-300">{xaRender("6 MVX")}</strong>{xaRender(". Nonce tracking paper. Aucune diffusion mainnet depuis ce panneau. ")}</p>
       <div className="flex flex-wrap gap-2 text-[11px]">
         <Link to="/entity" className="text-violet-300 underline">
           {xaRender("Entité ")}</Link>

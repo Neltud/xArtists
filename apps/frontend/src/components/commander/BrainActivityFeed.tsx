@@ -48,7 +48,7 @@ function BrainActivityFeed({ desk, agentAction, mode, err }: Props) {
   if (err && !desk && !brain) {
     return (
       <div className="card mb-4 border-gray-600/30 text-xs text-gray-500">
-        {xaRender("Brain feed offline (")}{xaRender(err)}{xaRender("). Vellum : ")}<code>python -m lia.vellum.production_run</code>
+        {xaRender("Brain feed offline (")}{xaRender(err)}{xaRender("). Source indisponible.")}
       </div>
     )
   }

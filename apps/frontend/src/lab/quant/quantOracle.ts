@@ -60,7 +60,7 @@ export class QuantOracle {
 
   /**
    * Hype score 0–1 : volume proxy + placeholder social.
-   * Vellum / X API = couche payante séparée (pas dans ce stub).
+   * No external social provider connected.
    */
   async getHypeScore(assetId: string): Promise<HypeScore> {
     let onchain = 0.4
@@ -77,7 +77,7 @@ export class QuantOracle {
     } catch {
       /* keep default */
     }
-    // Social slot reserved for Vellum / X — neutral weight in demo
+    // Social slot unconfigured — neutral weight in demo
     const social = 0.5
     const score = Math.round((onchain * 0.65 + social * 0.35) * 100) / 100
     return {
