@@ -10,18 +10,19 @@ import {
   buildIssueNftCollectionTx, buildSetNftCreateRoleTx, buildEsdtNftCreateTx,
   isValidTicker, isValidCollectionId, fetchArtistCollectionProof,
   verifyArtistTransaction, saveStudioCollection, loadStudioCollection,
-  type StudioCollectionRecord,
+  loadStudioMintReceipt,saveStudioMintReceipt,
+  type StudioCollectionRecord,type StudioMintReceipt,
 } from '../lib/studioOnChainMint'
 
 type StudioSession = {
-  key: string; active: boolean; busy: boolean; collection: StudioCollectionRecord | null
+  key: string; active: boolean; busy: boolean; collection: StudioCollectionRecord | null; mintReceipt:StudioMintReceipt|null
 }
 type StudioState = {
   session: StudioSession; pending: boolean; error: string | null;
-  lastTx: string | null; collection: StudioCollectionRecord | null
+  lastTx: string | null; collection: StudioCollectionRecord | null; mintReceipt:StudioMintReceipt|null
 }
 const initialState = (session: StudioSession): StudioState => ({
-  session, pending: false, error: null, lastTx: null, collection: session.collection,
+  session, pending: false, error: null, lastTx: null, collection: session.collection,mintReceipt:session.mintReceipt,
 })
 const SESSION_CHANGED = 'La session wallet a changé ou le Studio a été fermé. Opération interrompue ; si une transaction a déjà été signée, vérifie son état sur Explorer.'
 
@@ -35,6 +36,7 @@ export function useStudioMintTx() {
   if (!live.current || live.current.key !== key) live.current = {
     key, active: true, busy: false,
     collection: connected && address ? loadStudioCollection(address) : null,
+    mintReceipt:connected&&address?loadStudioMintReceipt(address):null,
   }
   const session = live.current
   const [state, setState] = useState(() => initialState(session))
@@ -52,7 +54,7 @@ export function useStudioMintTx() {
 
   type Attempt = {
     wallet: string; ensureCurrent: () => void;
-    submit: (transaction: unknown, display: Parameters<typeof send>[1]) => ReturnType<typeof send>;
+    submit: (transaction: unknown, display: Parameters<typeof send>[1], onSubmitted?:(reference:string)=>void) => ReturnType<typeof send>;
     remember: (record: StudioCollectionRecord) => void;
     showTransaction: (id: string | null) => void;
   }
@@ -74,10 +76,11 @@ export function useStudioMintTx() {
     try {
       const result = await operation({
         wallet:address!, ensureCurrent,
-        submit:async (transaction, display) => {
+        submit:async (transaction, display,onSubmitted) => {
           ensureCurrent()
           const result = await send([transaction], display)
           submitted = result.sessionId
+          if(submitted)onSubmitted?.(submitted)
           ensureCurrent()
           if (result.error) throw new Error(result.error)
           return result
@@ -149,22 +152,64 @@ export function useStudioMintTx() {
   const createNft = useCallback((opts: {
     tokenIdentifier:string; name:string; royaltiesPct:number; attributes:string; uris:string[]
   }) => execute(async attempt => {
+    if(loadStudioMintReceipt(attempt.wallet))throw new Error('Une création NFT est déjà consignée. Vérifie son état avant une nouvelle création.')
     const proof = await fetchArtistCollectionProof(opts.tokenIdentifier.trim(), attempt.wallet)
     attempt.ensureCurrent()
     if (!proof.hasCreateRole) throw new Error(
       'Le rôle ESDTRoleNFTCreate n’est pas confirmé pour ce wallet. Attends ou attribue le rôle avant de minter.')
     const draft = buildEsdtNftCreateTx(opts)
+    const at=Date.now()
+    const record=(reference:string,status:StudioMintReceipt['status']):StudioMintReceipt=>({wallet:attempt.wallet,reference,data:draft.data,at,status})
     const res = await attempt.submit({...draft,receiver:attempt.wallet}, {
       processingMessage:'Mint NFT · '+opts.name,
       successMessage:'Mint soumis. Confirme la réussite sur Explorer.',
       errorMessage:'Échec ESDTNFTCreate',
+    },reference=>{
+      const receipt=record(reference,'pending')
+      saveStudioMintReceipt(attempt.wallet,receipt)
+      update(session,{mintReceipt:receipt})
     })
-    const state = await verifyArtistTransaction(res.sessionId, attempt.wallet)
+    const state = await verifyArtistTransaction(res.sessionId, attempt.wallet,6,{data:draft.data,at})
     attempt.ensureCurrent()
-    if (state === 'failed') throw new Error('Le mint a échoué sur MultiversX.')
+    if(state==='failed'){
+      saveStudioMintReceipt(attempt.wallet,null);update(session,{mintReceipt:null})
+      throw new Error('Le mint a échoué sur MultiversX.')
+    }
+    if(state==='confirmed'&&res.sessionId){
+      const receipt=record(res.sessionId,'confirmed')
+      saveStudioMintReceipt(attempt.wallet,receipt);update(session,{mintReceipt:receipt})
+    }
     attempt.showTransaction(res.sessionId)
     return {confirmed:state==='confirmed',sessionId:res.sessionId}
-  }), [execute])
+  }), [execute,session,update])
+
+  // An entered hash must match this wallet and exact mint. No write/sign call.
+  const recheckMint=useCallback((hash?:string)=>execute(async attempt=>{
+    const receipt=loadStudioMintReceipt(attempt.wallet)
+    if(!receipt||receipt.status!=='pending')throw new Error('Aucun mint en attente de vérification.')
+    const reference=hash?.trim()||receipt.reference
+    if(!/^[a-f0-9]{64}$/i.test(reference))throw new Error('Copie le hash de 64 caractères depuis ton historique xPortal ou Explorer.')
+    const state=await verifyArtistTransaction(reference,attempt.wallet,1,{data:receipt.data,at:receipt.at})
+    attempt.ensureCurrent()
+    if(state==='pending')throw new Error('Transaction non confirmée ou différente de cette création. Aucun nouvel envoi.')
+    if(state==='failed'){
+      saveStudioMintReceipt(attempt.wallet,null);update(session,{mintReceipt:null})
+      attempt.showTransaction(reference)
+      return {confirmed:false,failed:true}
+    }
+    const next={...receipt,reference,status:'confirmed' as const}
+    saveStudioMintReceipt(attempt.wallet,next);update(session,{mintReceipt:next})
+    attempt.showTransaction(reference)
+    return {confirmed:true,failed:false}
+  }),[execute,session,update])
+  const startAnotherMint=useCallback(()=>{
+    if(!address||!current(session)||session.busy)return false
+    const receipt=loadStudioMintReceipt(address)
+    if(!receipt||receipt.status!=='confirmed')return false
+    saveStudioMintReceipt(address,null)
+    update(session,{mintReceipt:null,lastTx:null,error:null})
+    return true
+  },[address,session,current,update])
 
   const setCollection = useCallback((record: StudioCollectionRecord | null) => {
     if (!connected || (record && record.walletAddress !== address)) return
@@ -172,7 +217,7 @@ export function useStudioMintTx() {
   }, [session, connected, address, update])
   const view = state.session === session ? state : initialState(session)
   return {
-    issueCollection, setCreateRole, createNft, setCollection,
+    issueCollection, setCreateRole, createNft, setCollection,recheckMint,startAnotherMint,mintReceipt:view.mintReceipt,
     pending:view.pending, error:view.error, lastTx:view.lastTx, collection:view.collection,
     canSign:connected&&canAttemptSign&&method!=='paste_readonly'&&method!=='pem',
   }

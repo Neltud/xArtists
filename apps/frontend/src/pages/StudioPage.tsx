@@ -190,17 +190,34 @@ export default function StudioPage() {
           </label>
           <div className="flex flex-wrap gap-2">
             <a href="#xa-studio-collections" onClick={()=>advancedRef.current?.setAttribute('open','')} className="btn-secondary text-sm">Créer ou gérer ma collection</a>
-            {activeCollectionId&&<button type="button" disabled={mint.pending||!mint.canSign} onClick={()=>void runRole()} className="btn-secondary text-sm">Vérifier mes droits de création</button>}
+            {activeCollectionId&&<button type="button" disabled={mint.pending||!mint.canSign} onClick={()=>void runRole()} className="btn-secondary text-sm">Autoriser la création (si nécessaire)</button>}
           </div>
         </>}
+        <p className="text-xs text-[color:var(--xa-text-secondary)]">1 NFT · Royalties 5 % · Les frais réseau sont confirmés dans votre wallet.</p>
         <button
           type="button"
           className="btn-primary w-full text-sm min-h-[48px]"
-          disabled={mint.pending || !activeCollectionId || !nftMediaUri.trim() || !mint.canSign}
+          disabled={mint.pending || !!mint.mintReceipt || !activeCollectionId || !nftMediaUri.trim() || !mint.canSign}
           onClick={() => void runMint()}
         >
           {xaRender(mint.pending ? 'Signature…' : 'Signer la création NFT')}
         </button>
+        {mint.mintReceipt?.status==='pending'&&<div className="space-y-2 rounded-xl border border-[color:var(--xa-border)] p-3" role="status">
+          <strong>Création soumise · vérification nécessaire</strong>
+          <p className="text-sm text-[color:var(--xa-text-secondary)]">Ne signez pas une seconde fois. Retrouvez la transaction dans xPortal ou Explorer.</p>
+          <form onSubmit={event=>{event.preventDefault();const hash=String(new FormData(event.currentTarget).get('mintHash')||'');void mint.recheckMint(hash)}}>
+            <label className="block text-xs">Hash de transaction (si différent de la référence)
+              <input name="mintHash" maxLength={64} defaultValue={/^[a-f0-9]{64}$/i.test(mint.mintReceipt.reference)?mint.mintReceipt.reference:''} placeholder="Hash Explorer" className="mt-1 w-full rounded-lg border border-[color:var(--xa-border)] bg-[color:var(--xa-bg-elevated)] p-2 text-sm"/>
+            </label>
+            <button type="submit" className="btn-secondary mt-2 w-full min-h-[44px]" disabled={mint.pending}>Vérifier sur MultiversX</button>
+          </form>
+        </div>}
+        {mint.mintReceipt?.status==='confirmed'&&<div className="space-y-2 rounded-xl border border-[color:var(--xa-border)] p-3" role="status">
+          <strong>NFT créé · transaction confirmée</strong>
+          <a className="block underline text-sm" href={'https://explorer.multiversx.com/transactions/'+mint.mintReceipt.reference} target="_blank" rel="noopener noreferrer">Voir la transaction confirmée</a>
+          <Link className="btn-primary w-full text-sm" to="/marketplace#xa-market-sell">Mettre en vente mon NFT</Link>
+          <button type="button" className="btn-secondary w-full text-sm" disabled={mint.pending} onClick={()=>{if(mint.startAnotherMint()){setNftName('');setNftMediaUri('');setPinnedMedia(null)}}}>Préparer un autre NFT</button>
+        </div>}
         {mint.lastTx && <p className="break-all text-xs text-cyan-900 dark:text-cyan-100">Référence de transaction : {mint.lastTx}
           {/^[a-f0-9]{64}$/i.test(mint.lastTx) && <a
             href={'https://explorer.multiversx.com/transactions/' + mint.lastTx}

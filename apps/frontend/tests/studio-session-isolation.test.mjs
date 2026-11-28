@@ -35,14 +35,16 @@ function loadHook(wallet, api, send) {
 
 async function harness(overrides={}) {
   const wallet={current:{connected:true,address:A,method:'xportal',canAttemptSign:true}}
-  const sent=[],saved=[]
+  const sent=[],saved=[],receipts=new Map()
   const api={
+    loadStudioMintReceipt:wallet=>receipts.get(wallet)||null,
+    saveStudioMintReceipt:(wallet,receipt)=>receipts.set(wallet,receipt),
     loadStudioCollection:address=>address?{name:address,ticker:'ART',walletAddress:address,at:1}:null,
     saveStudioCollection:record=>saved.push(record),
     isValidTicker:()=>true,isValidCollectionId:()=>true,
     buildIssueNftCollectionTx:()=>({receiver:'system',value:'50000000000000000'}),
     buildSetNftCreateRoleTx:()=>({receiver:'system',value:'0'}),
-    buildEsdtNftCreateTx:()=>({receiver:'__SENDER__',value:'0'}),
+    buildEsdtNftCreateTx:()=>({receiver:'__SENDER__',value:'0',data:'ESDTNFTCreate@fixture'}),
     fetchArtistCollectionProof:async()=>({owner:A,hasCreateRole:true}),
     verifyArtistTransaction:async()=> 'confirmed',
     ...overrides,
@@ -58,7 +60,7 @@ async function harness(overrides={}) {
     await React.act(async()=>root.render(React.createElement(Probe)))
   }
   await render({})
-  return {api,sent,saved,render,get current(){return latest},
+  return {api,sent,saved,receipts,render,get current(){return latest},
     close:async()=>{await React.act(async()=>root.unmount());host.remove()}}
 }
 
@@ -163,7 +165,7 @@ test('disconnect and read-only mode hide signing capability and previous transac
 test('a late signer response keeps its transaction reference but never verifies it for another session',async()=>{
   const signature=deferred()
   let wallet={current:{connected:true,address:A,method:'xportal',canAttemptSign:true}}
-  const api={loadStudioCollection:()=>null,saveStudioCollection:()=>assert.fail('stale draft saved'),
+  const api={loadStudioCollection:()=>null,loadStudioMintReceipt:()=>null,saveStudioCollection:()=>assert.fail('stale draft saved'),
     isValidTicker:()=>true,buildIssueNftCollectionTx:()=>({}),
     verifyArtistTransaction:()=>assert.fail('stale transaction read')}
   const useHook=loadHook(wallet,api,()=>signature.promise)
@@ -199,4 +201,40 @@ test('same-account rerenders preserve a valid attempt; role proof and wallet rej
     await React.act(async()=>{await h.current.issueCollection('Sculpture','ART')})
     assert.equal(h.sent.length,1,'the failed lookup must release the operation lock')
   } finally {await h.close()}
+})
+
+test('a submitted mint remains blocked on the same wallet after an unconfirmed receipt and wallet reconnect',async()=>{
+ let result='pending'
+ const h=await harness({verifyArtistTransaction:async()=>result})
+ try{
+  await React.act(async()=>{await h.current.createNft(opts)})
+  assert.equal(h.sent.length,1)
+  assert.equal(h.current.mintReceipt.status,'pending')
+  await h.render({address:B});await h.render({address:A})
+  assert.equal(h.current.mintReceipt.reference,hash)
+  await React.act(async()=>{assert.equal((await h.current.createNft(opts)).ok,false)})
+  assert.equal(h.sent.length,1)
+  await React.act(async()=>{assert.equal((await h.current.recheckMint(hash)).ok,false)})
+  assert.equal(h.current.mintReceipt.status,'pending')
+  result='confirmed'
+  await React.act(async()=>{assert.equal((await h.current.recheckMint(hash)).confirmed,true)})
+  assert.equal(h.current.mintReceipt.status,'confirmed')
+  assert.equal(h.sent.length,1)
+  await React.act(async()=>{assert.equal(h.current.startAnotherMint(),true)})
+  assert.equal(h.current.mintReceipt,null)
+ }finally{await h.close()}
+})
+test('late accepted mint reference stays bound to original wallet without touching the new wallet UI',async()=>{
+ const v=deferred()
+ const h=await harness({verifyArtistTransaction:()=>v.promise})
+ let first
+ try{
+  await React.act(async()=>{first=h.current.createNft(opts)})
+  await h.render({address:B})
+  assert.equal(h.current.mintReceipt,null)
+  await React.act(async()=>v.resolve('confirmed'))
+  assert.equal((await first).ok,false)
+  assert.equal(h.receipts.get(A).status,'pending')
+  assert.equal(h.receipts.has(B),false)
+ }finally{await h.close()}
 })

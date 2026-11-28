@@ -104,16 +104,43 @@ export async function fetchArtistCollectionProof(id:string, wallet:string):Promi
       r.roles?.includes('ESDTRoleNFTCreate')===true)}
 }
 
+/** Wallet-scoped local receipt; never a signature or on-chain proof. */
+export type StudioMintReceipt={wallet:string;reference:string;data:string;at:number;status:'pending'|'confirmed'}
+const MINT_RECEIPT_PREFIX='xartists_studio_mint_receipt_v1:'
+const receiptMemory=new Map<string,StudioMintReceipt|null>()
+const receiptKey=(wallet:string)=>MINT_RECEIPT_PREFIX+wallet.toLowerCase()
+export function loadStudioMintReceipt(wallet:string):StudioMintReceipt|null{
+  const key=receiptKey(wallet)
+  if(receiptMemory.has(key))return receiptMemory.get(key)??null
+  try{
+    const row=JSON.parse(localStorage.getItem(key)||'null') as StudioMintReceipt|null
+    if(row&&row.wallet===wallet&&typeof row.reference==='string'&&typeof row.data==='string'&&row.data.startsWith('ESDTNFTCreate@')&&Number.isFinite(row.at)&&['pending','confirmed'].includes(row.status))return row
+  }catch{/* local storage may be unavailable */}
+  return null
+}
+export function saveStudioMintReceipt(wallet:string,row:StudioMintReceipt|null){
+  const key=receiptKey(wallet)
+  receiptMemory.set(key,row)
+  try{if(row)localStorage.setItem(key,JSON.stringify(row));else localStorage.removeItem(key)}catch{/* in-memory fallback only */}
+}
+export type StudioExpectedMint={data:string;at:number}
+export function matchesStudioMint(j:{sender?:string;receiver?:string;value?:string|number;data?:string;timestamp?:number},wallet:string,expected:StudioExpectedMint):boolean{
+  try{
+    return j.sender?.toLowerCase()===wallet.toLowerCase()&&j.receiver?.toLowerCase()===wallet.toLowerCase()&&String(j.value)==='0'&&typeof j.data==='string'&&atob(j.data)===expected.data&&typeof j.timestamp==='number'&&Number.isFinite(j.timestamp)&&j.timestamp*1000>=expected.at-120000
+  }catch{return false}
+}
+
 /** A broadcast or wallet hook redirect is NEVER proof of a minted NFT. */
 export async function verifyArtistTransaction(
-  hash:string|null, wallet:string, attempts=6
+  hash:string|null, wallet:string, attempts=6, expected?:StudioExpectedMint
 ):Promise<'confirmed'|'pending'|'failed'> {
   if (!hash || !/^[a-f0-9]{64}$/i.test(hash)) return 'pending'
   for(let i=0;i<attempts;i++){
     try{
-      const response=await fetch(API+'/transactions/'+hash,{cache:'no-store'})
+      const response=await fetch(API+'/transactions/'+hash,{cache:'no-store',redirect:'error',signal:AbortSignal.timeout(8000)})
       if(response.ok){
-        const j=await response.json() as {sender?:string;status?:string}
+        const j=await response.json() as {sender?:string;receiver?:string;value?:string;data?:string;timestamp?:number;status?:string}
+        if(expected&&!matchesStudioMint(j,wallet,expected))return 'pending'
         if(j.sender?.toLowerCase()!==wallet.toLowerCase()) return 'failed'
         if(j.status==='success') return 'confirmed'
         if(['fail','failed','invalid'].includes(String(j.status)))return 'failed'
