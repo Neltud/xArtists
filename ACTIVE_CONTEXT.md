@@ -1,5 +1,16 @@
 # ACTIVE_CONTEXT — xArtists / xOrus
 
+## Vellum command — 28 novembre 2026 (~05:40 UTC)
+
+- Sonde lecture seule. Pages **0.139.0** sert `2d4138cb` (140 routes, `lia_live_trading=false`, construit `2026-11-27T20:08:27Z`). Hub xOrus HTTP 200, source `293417d9`, stance **ABSTAIN**, exécution / signature / custody / paiement **fermés**, 0 wallet. `api.xartists.art` **NXDOMAIN**.
+- Tranche de code, **pas un GO** : `packages/vellum-command` traduit une intention en plan papier. Plafond pilote 5 USD. Vidage, signature immédiate et dépassement sont des vetos. `executionAuthorized=false`. Page statique `/vellum/` après le prochain déploiement Pages. Aucun quote, aucun rendement affiché.
+- Veille : MultiversX opérationnel au 27 nov. xPortal route ses swaps via Pegaroute (26 nov) — adaptateur externe, pas le nôtre. WalletConnect provider dApp toujours en série 5 ; le correctif amont 6.2.0 n’est pas mergé.
+- Bloquants humains inchangés : [#506](https://github.com/Neltud/xArtists/issues/506), [#428](https://github.com/Neltud/xArtists/issues/428), [#341](https://github.com/Neltud/xArtists/issues/341).
+- Interdit : `LIA_LIVE_TRADING`, `paybox_checkout_enabled`, mint public, assisted POST, annonce de commerce ouvert.
+
+Preuve : [`docs/ops/VELLUM_COMMAND_2026-11-28.md`](docs/ops/VELLUM_COMMAND_2026-11-28.md).
+
+
 ## Sonde et suite — 25 novembre 2026 (~05:40 UTC)
 
 - Lecture publique seulement. Pages **0.139.0** sert `c051d986` (workspaces MultiversX/Solana, build `2026-11-24T16:26:50Z`, `lia_live_trading=false`, 140 routes). Le tip `main` a ensuite reçu des commits data ; ils ne sont pas le SHA Pages.
