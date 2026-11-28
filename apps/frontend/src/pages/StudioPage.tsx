@@ -151,7 +151,8 @@ export default function StudioPage() {
       <header className="space-y-2"><h1 className="section-title display">Studio · Créer un NFT</h1><p className="text-sm text-[color:var(--xa-text-secondary)]">Ajoutez votre photo. xArtists prépare et héberge votre œuvre ; vous confirmez la création dans votre wallet.</p></header>
       <section id="xa-studio-mint" className="card xa-studio-workflow space-y-3">
         <h2 className="text-sm font-semibold text-[color:var(--xa-text)]">{xaRender("Créer mon NFT")}</h2>
-        <p className="text-sm"><strong>{xaRender("Tarif cible : 0,90 € HT par NFT")}</strong> · {xaRender("Hébergement standard, publication et métadonnées inclus. Frais blockchain en plus, affichés avant signature. Estimation non facturée à ce stade.")}</p>
+        <div className="xa-studio-price"><div><p className="text-xs text-[color:var(--xa-text-secondary)]">{xaRender("Création à l’unité")}</p><strong className="xa-studio-price-value">{xaRender("0,90 € HT")}</strong><p className="text-xs">{xaRender("Tarif cible : 0,90 € HT par NFT")}</p></div><div className="text-xs text-[color:var(--xa-text-secondary)]">{xaRender("Hébergement standard, publication et métadonnées inclus. Frais blockchain en plus, affichés avant signature. Estimation non facturée à ce stade.")}</div></div>
+        <ol className="xa-studio-journey" aria-label="Votre parcours de création"><li>1 · Œuvre</li><li>2 · Collection</li><li>3 · Signature</li></ol>
         <label className="block text-sm font-medium" htmlFor="xa-studio-nft-name">
           Nom de l’œuvre
         </label>
@@ -194,7 +195,7 @@ export default function StudioPage() {
         </>}
         <button
           type="button"
-          className="btn-primary text-sm"
+          className="btn-primary w-full text-sm min-h-[48px]"
           disabled={mint.pending || !activeCollectionId || !nftMediaUri.trim() || !mint.canSign}
           onClick={() => void runMint()}
         >

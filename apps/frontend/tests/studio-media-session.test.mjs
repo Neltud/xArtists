@@ -65,7 +65,7 @@ async function harness({hold='challenge'}={}) {
   await React.act(async()=>host.querySelector('input[type=checkbox]').click())
   const button=[...host.querySelectorAll('button')].find(b=>b.textContent.includes('Envoyer mon œuvre'))
   assert.equal(button.disabled,false)
-  return {calls,signed,ready,render,unmount,
+  return {calls,signed,ready,render,unmount,host,button,
     start:async()=>React.act(async()=>button.click()),
     release:async data=>React.act(async()=>waiting.resolve(data)),
     close:async()=>{
@@ -117,4 +117,28 @@ test('a file response after unmount cannot initiate a second publication of meta
     assert.equal(h.calls.some(p=>p.endsWith('/metadata')),false)
     assert.equal(h.ready.filter(Boolean).length,0)
   } finally {await h.close()}
+})
+
+test('successful preparation is not submitted twice and reports no local-only preview',async()=>{
+ const h=await harness({hold:'none'})
+ try{
+  await h.start()
+  assert.equal(h.calls.filter(p=>p.endsWith('/upload')).length,1)
+  assert.equal(h.calls.filter(p=>p.endsWith('/metadata')).length,1)
+  assert.equal(h.button.disabled,true)
+  assert.match(h.host.textContent,/Œuvre prête/)
+  await h.start()
+  assert.equal(h.calls.filter(p=>p.endsWith('/upload')).length,1)
+ }finally{await h.close()}
+})
+test('upload reports the current stage and prevents editing during an outstanding publication',async()=>{
+ const h=await harness({hold:'upload'})
+ try{
+  await h.start()
+  assert.match(h.host.textContent,/Envoi et vérification de votre œuvre/)
+  assert.equal(h.host.querySelector('input[type=file]').disabled,true)
+  assert.equal(h.host.querySelector('textarea').disabled,true)
+  await h.release(response({uploadId:'upload',uri:'ipfs://media'}))
+  assert.equal(h.button.disabled,true)
+ }finally{await h.close()}
 })
