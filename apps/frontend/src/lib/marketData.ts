@@ -1,5 +1,5 @@
 /**
- * Marché public — A + B corr · C funding · D brief Vellum · E events.
+ * Marché public — A + B corr · C funding · D synthèse xOrus · E events.
  */
 import { parseFreshMarketAssets, parseFreshFearGreed, parseFreshFundingQuote } from './marketEvidence.mjs'
 
@@ -58,7 +58,7 @@ export type MarketSnapshot = {
   funding: FundingRow[]
   events: MarketEvent[]
   liaBrief: string[]
-  vellumBrief: string[]
+  xorusBrief: string[]
   updatedAt: string
   source: 'live' | 'cache' | 'fallback'
 }
@@ -255,7 +255,7 @@ function liaBriefFrom(
 }
 
 /** D — xOrus public summary, no speculative legacy allocation. */
-function vellumPublicBrief(
+function xorusPublicBrief(
   fng: FearGreed,
   regime: MarketRegime,
   corr: { symbols: string[]; matrix: number[][] },
@@ -315,7 +315,7 @@ export async function loadMarketSnapshot(): Promise<MarketSnapshot> {
     funding,
     events,
     liaBrief: liaBriefFrom(fng, regime, assets, funding),
-    vellumBrief: vellumPublicBrief(fng, regime, corr, events),
+    xorusBrief: xorusPublicBrief(fng, regime, corr, events),
     updatedAt: new Date(Math.min(...observedTimes)).toISOString(),
     source: 'live',
   }

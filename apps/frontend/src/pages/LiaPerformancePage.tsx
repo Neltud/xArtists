@@ -1,6 +1,6 @@
 import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /**
- * LIA Performance & Agents — Vellum exécute (PEM Vellum), Grok propose.
+ * LIA Performance & Agents — lecture seule.
  * Supernova live + MX-8008 + trésorerie lecture seule.
  */
 import { Link } from 'react-router-dom'
@@ -18,12 +18,12 @@ const PIPELINE = [
   {
     id: '8008',
     title: 'Agent 8008',
-    body: 'lia-intent → journal + workflow Vellum xartists-8008-intents.',
+    body: 'Journal local des intentions uniquement.',
   },
   {
-    id: 'vellum',
-    title: 'Vellum exécute',
-    body: 'PEM Vellum uniquement · micro-tx après GO_LIVE.',
+    id: 'execution',
+    title: 'Exécution désactivée',
+    body: 'Aucun moteur d’exécution externe configuré.',
   },
   {
     id: 'settle',
@@ -56,8 +56,7 @@ export default function LiaPerformancePage() {
         </div>
         <h1 className="text-3xl font-semibold tracking-tight text-white">{xaRender("Performance & exécution")}</h1>
         <p className="text-sm text-zinc-400 leading-relaxed max-w-xl">
-          {xaRender("Tous les trades ops passent par ")}<strong className="text-zinc-300">{xaRender("Vellum")}</strong> {xaRender(" avec")}{xaRender(" ")}
-          <strong className="text-zinc-300">{xaRender("PEM Vellum")}</strong>{xaRender(". MX-8008 route les intents. Design FX + SFX (dock son). ")}</p>
+          {xaRender("MX-8008 conserve uniquement les intentions locales. Aucune exécution automatique.")}</p>
       </header>
 
       <Phase4ReadinessBanner />

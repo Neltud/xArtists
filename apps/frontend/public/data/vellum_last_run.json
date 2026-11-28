@@ -1,9 +1,0 @@
-{
-  "ts": "2026-11-11T17:40:00Z",
-  "ok": false,
-  "live": false,
-  "engine": "chorus",
-  "errors": ["Vellum runtime retired. See data/chorus_board.json"],
-  "git_sha": "main",
-  "note": "Chorus is the paper swarm. This file is a tombstone so old clients stop waiting on Vellum."
-}

@@ -20,12 +20,7 @@ echo ""
 echo "[1/6] Pages — trigger Actions deploy-pages OR:"
 echo "  cd apps/frontend && npm ci && npm run build"
 echo ""
-echo "[2/6] Vellum next_run..."
-if command -v python3 >/dev/null; then
-  python3 -m lia.vellum.next_run || python3 -m lia.board.publish || echo "(publish partial — check deps)"
-else
-  echo "python3 missing — run on Vellum host"
-fi
+echo "[2/6] Review the independently published xOrus status (read-only)"
 
 echo ""
 echo "[3/6] Deploy SC — requires PEM + EGLD:"

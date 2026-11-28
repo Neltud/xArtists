@@ -1,12 +1,12 @@
 """
-Vellum / Actions node: deploy xArtists SCs using PEM from environment secret.
+Legacy manual Actions deployment helper; no external workflow provider.
 
 Secrets (vault only):
   LIA_WALLET_PEM | LIA_WALLET_PEM_PATH | PEM
 
 Env:
   LIA_MVX_PROXY, LIA_CHAIN_ID (D|T|1), FEE_BPS, DEPLOY_CONTRACT
-  VELLUM_DEPLOY_DRY=1 — build only
+  SC_DEPLOY_DRY=1 — build only
   TRO_TOKEN — default TRO-94c925 (init tro-staking)
 
 Never log the PEM. Never write PEM to git.
@@ -22,12 +22,12 @@ import time
 from pathlib import Path
 from typing import Any
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[1]
 PROXY = os.getenv("LIA_MVX_PROXY") or os.getenv("PROXY") or "https://gateway.multiversx.com"
 CHAIN = str(os.getenv("LIA_CHAIN_ID") or os.getenv("CHAIN") or "1")
 FEE_BPS = os.getenv("FEE_BPS", "300")
 WHICH = os.getenv("DEPLOY_CONTRACT", "all")
-DRY = os.getenv("VELLUM_DEPLOY_DRY", "0").strip() in ("1", "true", "TRUE", "yes")
+DRY = os.getenv("SC_DEPLOY_DRY", "0").strip() in ("1", "true", "TRUE", "yes")
 TRO_TOKEN = os.getenv("TRO_TOKEN", "TRO-94c925")
 
 
@@ -104,7 +104,7 @@ def deploy_contract(name: str, pem: str) -> dict[str, Any]:
             "name": name,
             "dry": True,
             "wasm": wasm,
-            "note": "VELLUM_DEPLOY_DRY=1 — no --send",
+            "note": "SC_DEPLOY_DRY=1 — no --send",
         }
 
     cmd = [
@@ -196,7 +196,7 @@ def run() -> dict[str, Any]:
             contracts["slot_casino"] = addresses["slot-casino"]
 
         data["updated"] = _ts()
-        data["deployed_via"] = "vellum/deploy_scs_node"
+        data["deployed_via"] = "scripts/deploy_contracts_legacy"
         data["dry"] = DRY
         data["chain"] = chain
         data["network"] = {"1": "mainnet", "D": "devnet", "T": "testnet"}.get(chain, chain)
@@ -231,7 +231,7 @@ def run() -> dict[str, Any]:
                 "Never commit PEM",
             ],
         }
-        out = ROOT / "data" / "vellum_deploy_scs.json"
+        out = ROOT / "data" / "sc_deployment_report.json"
         try:
             out.write_text(json.dumps(report, indent=2, default=str), encoding="utf-8")
             report["wrote"] = str(out)

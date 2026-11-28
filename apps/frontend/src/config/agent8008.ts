@@ -1,5 +1,5 @@
 /**
- * Agent 8008 — intents Vellum / ops (paper → micro-tx quand SC ON).
+ * Agent 8008 — journal local, sans transaction.
  */
 
 export const AGENT_8008 = {
@@ -9,7 +9,6 @@ export const AGENT_8008 = {
   role: 'router_intents',
   description: 'Route les intents LIA vers workflows. Paper par défaut.',
   endpoints: {
-    vellumWorkflow: 'xartists-8008-intents',
     mcp: null as string | null,
   },
   intents: [
@@ -49,8 +48,8 @@ export function dispatch8008(intent: Agent8008Intent, payload: Record<string, un
         lip: {
           type: intent,
           agent: AGENT_8008.id,
-          paper: true,
           ...payload,
+          paper: true,
           raw: (payload.raw as string) || `${intent} via 8008`,
         },
       },

@@ -33,16 +33,6 @@ export function useLiaSlowPath() {
           deskObj = (j?.desk as DeskPayload) || null
           fuse = j?.fuse?.source || null
         }
-        if (!deskObj) {
-          const r2 = await fetch(`${BASE}data/vellum_last_run.json?t=${Date.now()}`, {
-            cache: 'no-store',
-          })
-          if (r2.ok) {
-            const j = await r2.json()
-            deskObj = (j?.desk as DeskPayload) || null
-            fuse = j?.fuse?.source || null
-          }
-        }
         if (!cancelled) {
           setDesk(deskObj)
           setFuseSrc(fuse)

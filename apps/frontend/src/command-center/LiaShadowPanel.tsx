@@ -29,7 +29,6 @@ import {
   type KpiSnapshot,
 } from '../lia/stvp'
 import { usePulse } from '../hooks/usePulse'
-import { fetchVellumLastRun, type VellumLastRun } from '../lia/vellumBridge'
 
 function fmt(n: number, d = 2): string {
   if (!Number.isFinite(n)) return '—'
@@ -46,7 +45,6 @@ export default function LiaShadowPanel() {
   const [stvp, setStvp] = useState<StvpState>(() => loadStvp())
   const [kpi, setKpi] = useState<KpiSnapshot | null>(null)
   const [busy, setBusy] = useState(false)
-  const [vellum, setVellum] = useState<VellumLastRun | null>(null)
 
   const refreshLedger = useCallback(() => {
     setBal(loadShadowBalances())
@@ -97,7 +95,6 @@ export default function LiaShadowPanel() {
 
   useEffect(() => {
     void refreshPrice()
-    void fetchVellumLastRun().then(setVellum)
   }, [refreshPrice])
 
   const onStartStvp = () => {
@@ -138,19 +135,6 @@ export default function LiaShadowPanel() {
         <span className="rounded-full border border-cyan-500/30 px-2 py-0.5 text-[10px] text-cyan-200">
           {xaRender("PAPER ")}</span>
       </header>
-
-      {xaRender(vellum && (
-        <div className="rounded-xl border border-white/10 bg-black/30 px-3 py-2 text-[11px] text-zinc-400">
-          <p className="text-zinc-500">{xaRender("Vellum last run")}</p>
-          <p className="text-zinc-200">
-            {xaRender(vellum.ts || '—')} {xaRender(" · mode ")}{xaRender(vellum.summary?.mode || '—')} ·{xaRender(' ')}
-            {xaRender(vellum.summary?.ok === false ? 'steps failed' : 'ok')} {xaRender(" · live=")}{xaRender(String(!!vellum.live))}
-          </p>
-          {xaRender(!!vellum.summary?.failed_steps?.length && (
-            <p className="text-amber-200/80 mt-0.5">{xaRender("fail: ")}{xaRender(vellum.summary.failed_steps.join(', '))}</p>
-          ))}
-        </div>
-      ))}
 
       <div className="grid sm:grid-cols-3 gap-2 text-[12px]">
         <div className="rounded-xl border border-white/10 bg-black/30 px-3 py-2">

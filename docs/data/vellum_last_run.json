@@ -1,7 +1,0 @@
-{
-  "ts": "2026-10-07T15:40:00Z",
-  "ok": false,
-  "errors": ["awaiting Vellum orchestrator next_run"],
-  "git_sha": "main",
-  "note": "Front published CommandWall fix + handoff doc. Brain must run publish pipeline."
-}

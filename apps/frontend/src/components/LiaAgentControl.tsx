@@ -5,7 +5,6 @@ import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phra
  */
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { fetchVellumLastRun, type VellumLastRun } from '../lia/vellumStatus'
 import { fetchLiaHubStatus, type LiaHubStatus } from '../lia/hubStatus'
 import { fetchLiaStatus, type LiaStatusV1 } from '../lia/liaStatus'
 
@@ -14,13 +13,12 @@ const API = 'https://api.multiversx.com'
 const TRO_ID = 'TRO-94c925'
 
 type Balances = { egld: number | null; tro: number | null }
-type SignalLine = { ts: string; source: 'Gemini' | 'Grok' | 'Vellum' | 'System'; text: string }
+type SignalLine = { ts: string; source: 'System'; text: string }
 
 type Props = { compact?: boolean }
 
 export default function LiaAgentControl({ compact = false }: Props) {
   const [bal, setBal] = useState<Balances>({ egld: null, tro: null })
-  const [vellum, setVellum] = useState<VellumLastRun | null>(null)
   const [hub, setHub] = useState<LiaHubStatus | null>(null)
   const [status, setStatus] = useState<LiaStatusV1 | null>(null)
   const [signals, setSignals] = useState<SignalLine[]>([])
@@ -29,14 +27,13 @@ export default function LiaAgentControl({ compact = false }: Props) {
   const refresh = useCallback(async () => {
     setLoading(true)
     try {
-      const [egldR, troR, v, h, st] = await Promise.all([
+      const [egldR, troR, h, st] = await Promise.all([
         fetch(`${API}/accounts/${LIA_WALLET}`, { cache: 'no-store' })
           .then(r => (r.ok ? r.json() : null))
           .catch(() => null),
         fetch(`${API}/accounts/${LIA_WALLET}/tokens/${TRO_ID}`, { cache: 'no-store' })
           .then(r => (r.ok ? r.json() : null))
           .catch(() => null),
-        fetchVellumLastRun().catch(() => null),
         fetchLiaHubStatus().catch(() => null),
         fetchLiaStatus().catch(() => null),
       ])
@@ -47,32 +44,11 @@ export default function LiaAgentControl({ compact = false }: Props) {
           ? Number(troR.balance) / 10 ** (Number(troR.decimals) || 18)
           : null
       setBal({ egld, tro })
-      setVellum(v)
       setHub(h)
       setStatus(st)
 
       const lines: SignalLine[] = []
       const now = new Date().toISOString().slice(11, 19)
-      if (v?.live) {
-        const mode = v.summary?.mode || (v.summary?.ok ? 'ok' : 'run')
-        lines.push({ ts: now, source: 'Vellum', text: `Pipeline live · ${mode}` })
-      } else {
-        lines.push({
-          ts: now,
-          source: 'Vellum',
-          text: 'Orchestration paper — dernier run offline ou en attente',
-        })
-      }
-      lines.push({
-        ts: now,
-        source: 'Gemini',
-        text: 'Analyse contextuelle RWA / sentiment marché (lecture seule)',
-      })
-      lines.push({
-        ts: now,
-        source: 'Grok',
-        text: 'Vérocité code & live data MultiversX — health check DeFi',
-      })
       if (h) {
         lines.push({
           ts: now,
@@ -106,7 +82,7 @@ export default function LiaAgentControl({ compact = false }: Props) {
           <h3 className="text-base font-semibold text-white">{xaRender("Orchestration Multi-IA")}</h3>
           {xaRender(!compact && (
             <p className="text-[12px] text-zinc-400 mt-1 leading-relaxed">
-              {xaRender("Vellum + Gemini (contexte) + Grok (live data) · objectifs paper réalistes ")}</p>
+              {xaRender("État des services reçus, sans exécution automatique.")}</p>
           ))}
         </div>
         <button
@@ -155,13 +131,7 @@ export default function LiaAgentControl({ compact = false }: Props) {
               <span className="shrink-0 mono text-zinc-600">{xaRender(s.ts)}</span>
               <span
                 className={`shrink-0 font-semibold ${
-                  s.source === 'Grok'
-                    ? 'text-violet-300'
-                    : s.source === 'Gemini'
-                      ? 'text-sky-300'
-                      : s.source === 'Vellum'
-                        ? 'text-emerald-300'
-                        : 'text-zinc-400'
+                  'text-zinc-400'
                 }`}
               >
                 {xaRender(s.source)}
@@ -175,13 +145,6 @@ export default function LiaAgentControl({ compact = false }: Props) {
 
       <div className="rounded-xl border border-white/10 bg-black/40 p-3 space-y-1.5">
         <p className="text-[10px] text-zinc-500 uppercase tracking-wider">{xaRender("Pipelines & sync")}</p>
-        <p className="text-[12px] text-zinc-300">
-          {xaRender("Vellum ·")}{xaRender(' ')}
-          <span className={vellum?.live ? 'text-emerald-300' : 'text-amber-200'}>
-            {xaRender(vellum?.live ? 'LIVE' : 'paper / offline')}
-          </span>
-          {xaRender(vellum?.summary?.mode ? ` · ${vellum.summary.mode}` : '')}
-        </p>
         <p className="text-[12px] text-zinc-300">
           {xaRender("Hub LIA ·")}{xaRender(' ')}
           <span className={hub ? 'text-emerald-300' : 'text-zinc-500'}>
@@ -211,7 +174,7 @@ export default function LiaAgentControl({ compact = false }: Props) {
             <Link to="/lia" className="btn-secondary text-[11px] px-2 py-1">
               {xaRender("Hub LIA ")}</Link>
             <Link to="/studio" className="btn-secondary text-[11px] px-2 py-1">
-              {xaRender("Studio Phygital ")}</Link>
+              {xaRender("Studio ")}</Link>
             <Link to="/command-center" className="btn-secondary text-[11px] px-2 py-1">
               {xaRender("Command Center ")}</Link>
           </div>
