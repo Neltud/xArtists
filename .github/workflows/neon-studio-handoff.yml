@@ -1,0 +1,94 @@
+name: Studio Neon — one-time reviewed connector handoff
+on:
+  push:
+    branches: [ops/neon-studio-handoff-20261128]
+    paths: ['.github/workflows/neon-studio-handoff.yml']
+permissions:
+  contents: read
+concurrency:
+  group: studio-connector-handoff
+  cancel-in-progress: false
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: ci-only
+          POSTGRES_DB: studio
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      TEST_STUDIO_DATABASE_URL: postgresql://postgres:ci-only@127.0.0.1:5432/studio
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: c0719b88b0328626c2cd34497d313b30bcc27e43
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+      - run: npm ci --omit=dev --prefix services/access-api
+      - run: psql "$TEST_STUDIO_DATABASE_URL" -v ON_ERROR_STOP=1 -f deploy/neon/studio/schema.sql
+      - run: node --test deploy/neon/studio/handler.test.mjs services/access-api/tests/creator-media-pilot-readback.test.mjs
+      - run: python3 scripts/ops/test-deploy-neon-studio.py
+      - run: python3 scripts/ops/package-neon-studio.py
+      - run: python3 scripts/ops/deploy-neon-studio.py dist/neon-studio.zip --expected-source c0719b88b0328626c2cd34497d313b30bcc27e43
+      - name: Verify the exact disabled runtime
+        run: |
+          mkdir -p /tmp/studio-handoff
+          unzip -q dist/neon-studio.zip -d /tmp/studio-handoff
+          cd /tmp/studio-handoff
+          node --input-type=module -e "import app from './index.mjs';const h=await (await app.fetch(new Request('https://studio.example/health'))).json();if(h.source_sha!=='c0719b88b0328626c2cd34497d313b30bcc27e43'||h.studio_upload_enabled!==false||h.commerce_enabled!==false)process.exit(1)"
+      - name: Create non-secret transfer manifest
+        run: |
+          python3 - <<'PY'
+          import hashlib,json,pathlib
+          p=pathlib.Path('dist/neon-studio.zip')
+          data=p.read_bytes()
+          if len(data)>8*1024*1024: raise SystemExit('Handoff package too large')
+          print('STUDIO_HANDOFF_MANIFEST '+json.dumps({'source_sha':'c0719b88b0328626c2cd34497d313b30bcc27e43','sha256':hashlib.sha256(data).hexdigest(),'bytes':len(data),'parts':12}))
+          PY
+      - uses: actions/upload-artifact@v7
+        with:
+          name: studio-handoff-source
+          path: dist/neon-studio.zip
+          retention-days: 1
+  transfer:
+    needs: package
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        part: [0,1,2,3,4,5,6,7,8,9,10,11]
+    steps:
+      - uses: actions/download-artifact@v7
+        with:
+          name: studio-handoff-source
+          path: dist
+      - name: Emit one bounded public-code fragment
+        env:
+          PART: ${{ matrix.part }}
+        run: |
+          python3 - <<'PY'
+          import base64,hashlib,os,pathlib
+          data=pathlib.Path('dist/neon-studio.zip').read_bytes()
+          if len(data)>8*1024*1024: raise SystemExit('Handoff package too large')
+          part=int(os.environ['PART'])
+          # Bound log lines and use equally sized, 3-byte-aligned segments.
+          stride=((len(data)+35)//36)*3
+          segment=data[part*stride:(part+1)*stride]
+          if not segment: raise SystemExit('Empty fragment')
+          encoded=base64.b64encode(segment).decode('ascii')
+          print(f'STUDIO_HANDOFF_PART {part} {len(segment)} {hashlib.sha256(segment).hexdigest()}')
+          for pos in range(0,len(encoded),4096):
+              print(f'STUDIO_HANDOFF_DATA {part} {pos} {encoded[pos:pos+4096]}')
+          PY
