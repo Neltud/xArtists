@@ -100,6 +100,7 @@ jobs:
           # Only the independently verified self-managed API is eligible. Unknown/Render URLs fail closed.
           VITE_ACCESS_API_BASE: ${{ vars.VITE_ACCESS_API_BASE == 'https://api.xartists.art' && vars.VITE_ACCESS_API_BASE || '' }}
           # Public Neon Auth URL, deliberately unset until production identity and DB preflight.
+          VITE_STUDIO_API_BASE: ${{ vars.VITE_STUDIO_API_BASE || '' }}
           VITE_NEON_AUTH_URL: ${{ vars.VITE_NEON_AUTH_URL || '' }}
           # The existing GitHub Pages custom domain (configured separately in Settings → Pages).
           VITE_DAPP_URL: https://xartists.art/

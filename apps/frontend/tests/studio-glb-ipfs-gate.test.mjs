@@ -10,7 +10,7 @@ test('GLB models have a separate server-mediated upload gate and local-only sele
   assert.match(ui,/model\/gltf-binary/)
   assert.match(ui,/32\*1024\*1024/)
   assert.match(ui,/modelEnabled/)
-  assert.match(ui,/setModelEnabled\(j\?\.modelEnabled===true\)/)
+  assert.match(ui,/setModelEnabled\(!pilot&&j\?\.modelEnabled===true\)/)
   assert.match(ui,/file\.type==='model\/gltf-binary'&&!modelEnabled/)
   assert.match(ui,/<StudioGlbPreview file=\{file\}\/>/)
   assert.match(modelPreview,/checkLocalGlb\(bytes\)/)

@@ -1,6 +1,7 @@
 import {localizeChild as xaLocalize, renderChild as xaRender} from '../i18n/phraseRuntime'
 /** Packs Agents — Genesis limited · œuvres série Tuduri. */
 import { useEffect, useRef, useState } from 'react'
+import LiveAssetTape from '../components/LiveAssetTape'
 import XorusAgentEvidence from '../components/intelligence/XorusAgentEvidence'
 import { useI18n } from '../i18n/I18nContext'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -50,6 +51,7 @@ export default function Agents() {
           ? 'Lecture seule · aucun ordre automatique.'
           : 'Read only · no automated orders.'}</p>
       </header>
+      <LiveAssetTape/>
       <section className="space-y-4" aria-label={fr ? 'Les trois rôles' : 'Three agent roles'}>
         <h2 className="text-xl font-semibold">{fr ? 'Que pouvez-vous découvrir ?' : 'What can you explore?'}</h2>
         <div className="xa-intelligence-cards">

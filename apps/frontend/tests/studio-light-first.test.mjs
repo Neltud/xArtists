@@ -25,7 +25,7 @@ test('novice workflow distinguishes signed on-chain mint from IPFS upload',()=>{
   assert.match(source,/Signature/)
   assert.match(source,/Signer la création NFT/)
   assert.match(media,/Le NFT n'est PAS encore minté/)
-  assert.match(media,/Publication IPFS indisponible/)
+  assert.match(media,/L’envoi de fichiers est momentanément indisponible/)
 })
 
 test('ambiguous Pinata metadata publication cannot silently re-arm upload',()=>{

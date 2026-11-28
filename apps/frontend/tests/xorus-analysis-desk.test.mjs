@@ -111,7 +111,7 @@ test('a report claiming raw data delivery never renders analysis findings',async
   try{
     assert.match(h.panel().textContent,/Rapport indisponible ou non conforme/)
     assert.equal(h.panel().querySelectorAll('article').length,0)
-    assert.match(h.host.textContent,/S’ABSTENIR/)
+    assert.match(h.host.textContent,/Analyse prudente/)
   }finally{await h.close()}
 })
 
