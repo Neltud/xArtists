@@ -1,49 +1,91 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-28T11:23:43.039Z",
+  "updatedAt": "2026-11-28T19:34:57.188Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1795865022694",
-      "timestamp": "11:23",
+      "id": "egld-1795894496767",
+      "timestamp": "19:34",
       "source": "EGLD",
-      "title": "Cotation publique · $2.22 (API MultiversX economics)",
+      "title": "Cotation publique · $2.20 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
-      "id": "rss-CoinTelegraph-0-1795861860000",
+      "id": "rss-CoinTelegraph-0-1795874100000",
+      "timestamp": "13:55",
+      "source": "CoinTelegraph",
+      "title": "Here’s what happened in crypto today",
+      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1795872480000",
+      "timestamp": "13:28",
+      "source": "CoinTelegraph",
+      "title": "Justin Sun calls for Trump family-linked WLFI token to be delisted",
+      "link": "https://cointelegraph.com/news/justin-sun-calls-for-trump-family-linked-wlfi-token-to-be-delisted?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1795861860000",
       "timestamp": "10:31",
       "source": "CoinTelegraph",
       "title": "ASEAN+3 agrees on initiative to explore crypto payments cooperation",
       "link": "https://cointelegraph.com/news/asean3-agrees-on-initiative-to-explore-crypto-payments-cooperation?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-1-1795851780000",
+      "id": "rss-CoinTelegraph-3-1795851780000",
       "timestamp": "07:43",
       "source": "CoinTelegraph",
       "title": "Binance plans Asia hub in Bhutan, receives preliminary approval",
       "link": "https://cointelegraph.com/news/binance-receives-in-principle-approval-plans-asia-hub-in-bhutan?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-2-1795817571000",
-      "timestamp": "22:12",
-      "source": "CoinTelegraph",
-      "title": "Here’s what happened in crypto today",
-      "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-3-1795814129000",
+      "id": "rss-CoinTelegraph-4-1795814129000",
       "timestamp": "21:15",
       "source": "CoinTelegraph",
       "title": "Franklin Templeton makes room for HYPE in crypto index ETF",
       "link": "https://cointelegraph.com/news/franklin-templeton-hype-crypto-index-etf?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-4-1795807380000",
+      "id": "rss-CoinTelegraph-5-1795807380000",
       "timestamp": "19:23",
       "source": "CoinTelegraph",
       "title": "Bitcoin whales pile into BTC despite shrinking profit cushion",
       "link": "https://cointelegraph.com/markets/bitcoin-whales-pile-btc-despite-shrinking-profit-cushion?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1795892771000",
+      "timestamp": "19:06",
+      "source": "CoinDesk",
+      "title": "Latvia's central bank pushes back on bitcoin reserve plans, takes cautious line on tokenization",
+      "link": "https://www.coindesk.com/business/2026/11/28/latvia-s-central-bank-pushes-back-on-bitcoin-reserve-plans-takes-cautious-line-on-tokenization"
+    },
+    {
+      "id": "rss-CoinDesk-1-1795881714000",
+      "timestamp": "16:01",
+      "source": "CoinDesk",
+      "title": "Tether adds $10 million in Bitdeer stock after holding through an 87% drop",
+      "link": "https://www.coindesk.com/business/2026/11/28/tether-adds-usd10-million-in-bitdeer-stock-after-holding-through-an-87-drop"
+    },
+    {
+      "id": "rss-CoinDesk-2-1795874400000",
+      "timestamp": "14:00",
+      "source": "CoinDesk",
+      "title": "Bybit’s $1.4 billion hack postmortem is ready. You won’t get to see it.",
+      "link": "https://www.coindesk.com/business/2026/11/28/bybit-s-usd1-4-billion-hack-postmortem-is-ready-you-won-t-get-to-see-it"
+    },
+    {
+      "id": "rss-CoinDesk-3-1795870938000",
+      "timestamp": "13:02",
+      "source": "CoinDesk",
+      "title": "Bitcoin not delivering: The bear market has digital asset veteran questioning BTC's value",
+      "link": "https://www.coindesk.com/markets/2026/11/28/bitcoin-not-delivering-the-bear-market-has-digital-asset-veteran-questioning-btc-s-value"
+    },
+    {
+      "id": "egld-1795865022694",
+      "timestamp": "11:23",
+      "source": "EGLD",
+      "title": "Cotation publique · $2.22 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
     },
     {
       "id": "rss-CoinTelegraph-5-1795801043000",
@@ -156,48 +198,6 @@
       "source": "CoinTelegraph",
       "title": "AI is driving a flood of crypto bug reports. Now it’s helping sort them",
       "link": "https://cointelegraph.com/news/ai-driving-flood-of-crypto-bug-reports-now-helping-sort-them?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-1-1795739739000",
-      "timestamp": "00:35",
-      "source": "CoinTelegraph",
-      "title": "Privacy coins face diverging fortunes as KuCoin moves to drop Monero",
-      "link": "https://cointelegraph.com/news/privacy-coins-kucoin-drop-monero-grayscale-zcash?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-2-1795732786000",
-      "timestamp": "22:39",
-      "source": "CoinTelegraph",
-      "title": "‘Very racist’ Netflix SBF series, BitMart’s $319M shortfall: Asia Express",
-      "link": "https://cointelegraph.com/magazine/very-racist-netflix-sbf-series-bitmarts-319m-shortfall-asia-express?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-4-1795729363000",
-      "timestamp": "21:42",
-      "source": "CoinTelegraph",
-      "title": "BNB Chain details new layer-1 for trading, private finance and AI",
-      "link": "https://cointelegraph.com/news/bnb-chain-details-new-layer-1-trading-private-finance-ai?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinTelegraph-5-1795728827000",
-      "timestamp": "21:33",
-      "source": "CoinTelegraph",
-      "title": "Binance completes withdrawal recovery four weeks after $6.3B hack",
-      "link": "https://cointelegraph.com/news/binance-completes-withdrawal-recovery-four-weeks-after-63b-hack?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1795714200000",
-      "timestamp": "17:30",
-      "source": "CoinDesk",
-      "title": "A tiny payment can expose the IP address behind a bitcoin wallet, developer finds",
-      "link": "https://www.coindesk.com/tech/2026/11/26/a-tiny-payment-can-expose-the-ip-address-behind-a-bitcoin-wallet-developer-finds"
-    },
-    {
-      "id": "rss-CoinDesk-1-1795711823000",
-      "timestamp": "16:50",
-      "source": "CoinDesk",
-      "title": "Bitcoin’s dormant supply rises, a behavior seen during previous bear-market bottoming phases",
-      "link": "https://www.coindesk.com/markets/2026/11/26/bitcoin-s-dormant-supply-rises-a-behavior-seen-during-previous-bear-market-bottoming-phases"
     }
   ]
 }
