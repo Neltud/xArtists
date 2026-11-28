@@ -22,5 +22,10 @@ jobs:
           node-version: "22"
       - name: Paper intent engine
         run: node --test packages/vellum-command/engine.test.mjs
-      - name: Public engine matches the package
-        run: cmp packages/vellum-command/engine.mjs apps/frontend/public/vellum/engine.mjs
+      - name: Public retirement gate
+        run: |
+          test ! -e apps/frontend/public/vellum/engine.mjs
+          grep -F 'Console Vellum retirée' apps/frontend/public/vellum/index.html
+          if grep -Ei '<(script|form|input|button|iframe)([[:space:]>])|planIntent|localStorage|engine\.mjs|[[:space:]]on[a-z]+[[:space:]]*=' apps/frontend/public/vellum/index.html; then
+            echo 'Unexpected interactive public console'; exit 1
+          fi
