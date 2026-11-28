@@ -62,7 +62,7 @@ export default function GoLivePage() {
   const scItems: Item[] = [
     {
       id: 'market',
-      label: 'Marketplace list / buy',
+      label: 'Marketplace — autorisation générale (hors annonces vérifiées individuellement)',
       ok: marketOk,
       href: `https://explorer.multiversx.com/accounts/${MAINNET_ADDRESSES.nft_marketplace}`,
     },
@@ -110,19 +110,20 @@ export default function GoLivePage() {
         <p className="section-label">État public · xArtists</p>
         <h1 className="text-2xl font-semibold text-white">Disponibilité des services</h1>
         <p className="max-w-2xl text-sm leading-7 text-zinc-300">
-          Les œuvres et modules de xArtists se visitent librement. Le checkout, les
-          enchères réelles, la livraison NFT automatisée, le bridge Solana et le
-          trading autonome ne sont pas ouverts au public.
+          Les œuvres et les espaces 3D se visitent librement. Les annonces NFT MultiversX
+          vérifiées peuvent être achetées avec un wallet ; les détenteurs éligibles
+          peuvent déposer leurs NFT. Les autres parcours financiers restent soumis
+          à leurs validations propres.
         </p>
         <p role="status" className="rounded-xl border border-amber-400/25 bg-amber-400/10 p-4 text-sm leading-6 text-amber-100">
-          Mode découverte et démonstration uniquement. Un contrat présent sur la
-          blockchain ou un solde de trésorerie ne signifie pas qu’un service
-          marchand est homologué ni que les fonds des visiteurs sont acceptés.
+          Mainnet MultiversX : mise en vente et achat NFT sous contrôle individuel.
+          Un contrat déployé, son codeHash ou un solde ne prouvent pas à eux seuls
+          que les autres services financiers sont prêts.
         </p>
         <nav aria-label="Parcours publics" className="flex flex-wrap gap-3">
           <Link className="btn-secondary inline-flex min-h-[44px] items-center px-4 text-sm" to="/marketplace">Marketplace</Link>
           <Link className="btn-secondary inline-flex min-h-[44px] items-center px-4 text-sm" to="/studio">Studio</Link>
-          <Link className="btn-secondary inline-flex min-h-[44px] items-center px-4 text-sm" to="/xorus">xOrus · Paper</Link>
+          <Link className="btn-secondary inline-flex min-h-[44px] items-center px-4 text-sm" to="/xorus">xOrus · Observations mainnet</Link>
         </nav>
       </header>
       <PublicReleaseEvidence />

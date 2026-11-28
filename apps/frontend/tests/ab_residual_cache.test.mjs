@@ -1,64 +1,83 @@
-/**
- * Residual A: cache TTL, jobsFp, generation race — mirrors runtimeCodehash rules.
- * (Node has no sessionStorage/contracts; pure logic tests stay faithful to module semantics.)
- */
+/** Test the actual compiled readiness module, not a second implementation. */
 import assert from 'node:assert/strict'
-import { test } from 'node:test'
-
-const MAX_AGE = 5 * 60 * 1000
-
-function runtimeOk(cache, key, now, jobsFp) {
-  if (!cache.refreshedAt || typeof cache.refreshedAt !== 'number') return false
-  if (now - cache.refreshedAt > MAX_AGE) return false
-  if (cache.jobsFp && cache.jobsFp !== jobsFp) return false
-  return cache[key] === true
+import {test} from 'node:test'
+import {buildSync} from 'esbuild'
+const job={key:'marketplace',addr:'erd1'+'q'.repeat(58),expected:'expected-hash'}
+const jobs=[{...job}]
+const code=buildSync({entryPoints:[new URL('../src/lib/runtimeCodehash.ts',import.meta.url).pathname],bundle:true,write:false,platform:'node',format:'cjs',external:['../config/contracts'],logLevel:'silent'}).outputFiles[0].text
+function fresh(){
+ const module={exports:{}}
+ new Function('require','module','exports',code)(id=>{assert.equal(id,'../config/contracts');return {UNLOCK_JOBS:jobs}},module,module.exports)
+ return module.exports
 }
-
-/** Simulate commit guard used in refreshRuntimeCodehashes */
-function commitIfNewest(store, incoming) {
-  const latest = store.current || {}
-  if (Number(latest.generation || 0) > Number(incoming.generation || 0)) {
-    return store.current
+const ok=(changes={})=>({ok:true,json:async()=>({address:job.addr,code:'abcd',codeHash:job.expected,isPayable:true,...changes})})
+test('real readiness rejects stale/future observations, configuration changes, and mutable snapshots',async()=>{
+ const api=fresh(),oldFetch=globalThis.fetch,oldNow=Date.now
+ let now=1_000_000
+ Date.now=()=>now
+ globalThis.fetch=async()=>ok()
+ try{
+  assert.equal(api.runtimeCodehashOk('marketplace'),false)
+  const snapshot=await api.refreshRuntimeCodehashes()
+  assert.equal(api.runtimeCodehashOk('marketplace'),true)
+  snapshot.marketplace=false
+  api.runtimeUnlockSnapshot().marketplace=false
+  assert.equal(api.runtimeCodehashOk('marketplace'),true)
+  jobs[0].expected='different'
+  assert.equal(api.runtimeCodehashOk('marketplace'),false)
+  jobs[0].expected=job.expected
+  now=999999
+  assert.equal(api.runtimeCodehashOk('marketplace'),false)
+  now=1_300_001
+  assert.equal(api.runtimeCodehashOk('marketplace'),false)
+ }finally{jobs[0]={...job};globalThis.fetch=oldFetch;Date.now=oldNow}
+})
+test('refresh immediately closes prior authorization and older successes cannot overwrite newer failures',async()=>{
+ const api=fresh(),oldFetch=globalThis.fetch
+ let resolve
+ try{
+  globalThis.fetch=async()=>ok()
+  await api.refreshRuntimeCodehashes()
+  assert.equal(api.runtimeCodehashOk('marketplace'),true)
+  globalThis.fetch=()=>new Promise(r=>{resolve=r})
+  const slow=api.refreshRuntimeCodehashes()
+  assert.equal(api.runtimeCodehashOk('marketplace'),false)
+  globalThis.fetch=async()=>({ok:false})
+  await api.refreshRuntimeCodehashes()
+  resolve(ok())
+  await slow
+  assert.equal(api.runtimeCodehashOk('marketplace'),false)
+  assert.equal(api.runtimeRefreshGeneration(),3)
+ }finally{globalThis.fetch=oldFetch}
+})
+test('account identity, deployed code, hash and payable metadata are required',async()=>{
+ const api=fresh(),oldFetch=globalThis.fetch
+ try{
+  for(const changes of [{address:'wrong'},{code:''},{codeHash:'wrong'},{codeHash:42},{isPayable:false},{isPayable:undefined}]){
+   globalThis.fetch=async()=>ok(changes)
+   await api.refreshRuntimeCodehashes()
+   assert.equal(api.runtimeCodehashOk('marketplace'),false)
   }
-  store.current = incoming
-  return incoming
-}
-
-test('observation older than max age is closed', () => {
-  const now = 1_000_000
-  const cache = { refreshedAt: now - MAX_AGE - 1, marketplace: true, jobsFp: 'fp1' }
-  assert.equal(runtimeOk(cache, 'marketplace', now, 'fp1'), false)
+  globalThis.fetch=async()=>ok()
+  await api.refreshRuntimeCodehashes()
+  assert.equal(api.runtimeCodehashOk('marketplace'),true)
+ }finally{globalThis.fetch=oldFetch}
 })
 
-test('fresh observation with matching fingerprint is open', () => {
-  const now = 1_000_000
-  const cache = { refreshedAt: now - 1000, marketplace: true, jobsFp: 'fp1' }
-  assert.equal(runtimeOk(cache, 'marketplace', now, 'fp1'), true)
-})
-
-test('address/hash fingerprint change closes gate', () => {
-  const now = 1_000_000
-  const cache = { refreshedAt: now - 1000, marketplace: true, jobsFp: 'old-addr' }
-  assert.equal(runtimeOk(cache, 'marketplace', now, 'new-addr'), false)
-})
-
-test('prior true does not survive failed refresh generation', () => {
-  let cache = { generation: 1, refreshedAt: 100, marketplace: true, jobsFp: 'fp' }
-  assert.equal(runtimeOk(cache, 'marketplace', 200, 'fp'), true)
-  cache = { generation: 2, refreshedAt: 300, marketplace: false, jobsFp: 'fp' }
-  assert.equal(runtimeOk(cache, 'marketplace', 400, 'fp'), false)
-})
-
-test('stale in-flight success cannot overwrite newer failure', () => {
-  const store = { current: null }
-  commitIfNewest(store, { generation: 3, refreshedAt: 300, marketplace: false, jobsFp: 'fp' })
-  const after = commitIfNewest(store, {
-    generation: 2,
-    refreshedAt: 200,
-    marketplace: true,
-    jobsFp: 'fp',
-  })
-  assert.equal(after.generation, 3)
-  assert.equal(after.marketplace, false)
-  assert.equal(runtimeOk(store.current, 'marketplace', 400, 'fp'), false)
+test('readiness stays compatible with WebViews without AbortSignal.timeout',async()=>{
+ const api=fresh(),oldFetch=globalThis.fetch
+ const descriptor=Object.getOwnPropertyDescriptor(AbortSignal,'timeout')
+ let signal
+ try{
+  Object.defineProperty(AbortSignal,'timeout',{configurable:true,value:undefined})
+  globalThis.fetch=async(_url,options)=>{signal=options.signal;return ok()}
+  await api.refreshRuntimeCodehashes()
+  assert.ok(signal instanceof AbortSignal)
+  assert.equal(signal.aborted,false)
+  assert.equal(api.runtimeCodehashOk('marketplace'),true)
+ }finally{
+  if(descriptor)Object.defineProperty(AbortSignal,'timeout',descriptor)
+  else delete AbortSignal.timeout
+  globalThis.fetch=oldFetch
+ }
 })
