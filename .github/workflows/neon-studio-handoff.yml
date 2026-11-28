@@ -53,7 +53,7 @@ jobs:
           const keccak=resolve('services/access-api/node_modules/keccak/js.js')
           await esbuild.build({
             stdin:{contents:"export {default} from './deploy/neon/studio/index.mjs'; export {createStudioHandler} from './deploy/neon/studio/handler.mjs';",sourcefile:'studio-compact-entry.mjs',resolveDir:process.cwd()},
-            bundle:true,platform:'node',target:'node24',format:'esm',minify:true,legalComments:'inline',
+            bundle:true,platform:'node',target:'node24',format:'esm',minifyIdentifiers:true,minifySyntax:true,minifyWhitespace:false,legalComments:'inline',
             nodePaths:[resolve('services/access-api/node_modules')],
             outfile:'dist/compact/deploy/neon/studio/index.mjs',
             external:['pg-native','cloudflare:sockets'],
@@ -92,7 +92,8 @@ jobs:
           import assert from 'node:assert/strict'
           import {createRequire} from 'node:module'
           import {generateKeyPairSync,sign} from 'node:crypto'
-          import app,{createStudioHandler} from '/tmp/studio-compact/index.mjs'
+          let app,createStudioHandler
+          try {({default:app,createStudioHandler}=await import('/tmp/studio-compact/index.mjs'))}catch(error){console.error('COMPACT_IMPORT_FAILED',error.name,error.message);process.exit(1)}
           const require=createRequire(process.cwd()+'/services/access-api/package.json')
           const {Address,Message,MessageComputer}=require('@multiversx/sdk-core')
           const keys=generateKeyPairSync('ed25519'),computer=new MessageComputer()
