@@ -27,16 +27,16 @@ const studioMediaErrors:Record<string,string>={
   metadata_immutable_request_mismatch:'Les métadonnées déjà publiées sont immuables. Sélectionnez à nouveau votre fichier pour créer une nouvelle publication.',
   metadata_pinning_in_progress:'Une publication des métadonnées est déjà en cours. Réessayez après vérification de son état.',
   metadata_pinning_in_progress_or_complete:'La publication est en cours ou déjà terminée. Vérifiez son état avant de recommencer.',
-  metadata_pin_result_unknown_reconcile:'Réponse IPFS incertaine : les métadonnées peuvent déjà être publiques. Ne recommencez pas l’upload avant une vérification de l’opérateur.',
+  metadata_pin_result_unknown_reconcile:'La publication est en cours de vérification. Ne renvoyez pas le fichier avant confirmation de xArtists.',
   studio_free_capacity_reached:'La capacité du service est atteinte. Réessayez après réouverture des envois.',
   studio_challenge_quota_reached:'Limite de connexions atteinte. Réessayez ultérieurement.',
   daily_upload_quota_exhausted:'Quota de huit publications sur 24 heures atteint pour ce wallet.',
   pinata_service_unavailable:'Pinata ne répond pas actuellement. Aucun mint n’a été créé.',
-  kubo_service_unavailable:'Le nœud IPFS privé ne répond pas. Aucun mint n’a été créé.',
-  kubo_add_failed:'Le nœud IPFS a refusé la publication du fichier.',
-  kubo_result_invalid:'Le nœud IPFS a renvoyé un CID ou une réponse invalide.',
-  kubo_readback_unverified:'Le fichier publié ne correspond pas à la copie relue sur le nœud IPFS. Publication interrompue.',
-  studio_upload_not_configured:'Le service IPFS sécurisé n’est pas encore activé sur le serveur.',
+  kubo_service_unavailable:'Le service d’hébergement ne répond pas. Aucun NFT n’a été créé.',
+  kubo_add_failed:'Le service d’hébergement a refusé le fichier.',
+  kubo_result_invalid:'La réponse du service de publication est invalide.',
+  kubo_readback_unverified:'La vérification du fichier a échoué. Publication interrompue.',
+  studio_upload_not_configured:'Le service de publication est momentanément indisponible.',
   studio_glb_upload_disabled:'L’upload GLB nécessite une validation opérateur supplémentaire. Il reste désactivé.',
   glb_external_resource_forbidden:'Le GLB doit contenir ses données et textures sans URI externes.',
   glb_header_invalid:'GLB invalide : en-tête ou longueur incorrects.',
@@ -142,7 +142,7 @@ export default function CreatorMediaUpload({title,onReady,selection}:Props){
     if(file.type==='model/gltf-binary' && (!posterFile || !['image/jpeg','image/png','image/webp'].includes(posterFile.type) || posterFile.size<1 || posterFile.size>16*1024*1024)) {
       setError('Choisissez une image de couverture JPG, PNG ou WebP de 16 Mio maximum pour ce GLB.');return
     }
-    if(!base||!enabled){setError('Upload non activé côté serveur : stockage IPFS et PostgreSQL vérifiés requis.');return}
+    if(!base||!enabled){setError('L’envoi de votre œuvre est momentanément indisponible. Aucun paiement ni NFT créé.');return}
     if(file.type==='model/gltf-binary'&&!modelEnabled){setError('Upload GLB désactivé côté serveur : contrôle opérateur requis.');return}
     if(!connected||!address||method!=='xportal'){setError('Connexion xPortal et signature requises.');return}
     if(title.trim().length<2||title.trim().length>50){setError('Titre de 2 à 50 caractères requis.');return}
@@ -168,7 +168,7 @@ export default function CreatorMediaUpload({title,onReady,selection}:Props){
       })
       const data=await uploadResponse.json().catch(()=>({error:'upload_response_invalid'}))
       if(!stillCurrent())return
-      if(!uploadResponse.ok)throw new Error(data.error||'Erreur upload IPFS.')
+      if(!uploadResponse.ok)throw new Error(data.error||'Impossible d’envoyer votre œuvre.')
       if(!data.uploadId||!data.uri)throw new Error('Upload non confirmé par le serveur.')
       let previewUploadId: string | undefined
       if(chosenFile.type==='model/gltf-binary') {
@@ -179,7 +179,7 @@ export default function CreatorMediaUpload({title,onReady,selection}:Props){
         })
         const poster=await posterResponse.json().catch(()=>({error:'upload_response_invalid'}))
         if(!stillCurrent())return
-        if(!posterResponse.ok)throw new Error(poster.error||'Échec de publication de la couverture IPFS.')
+        if(!posterResponse.ok)throw new Error(poster.error||'Impossible de publier l’image de couverture.')
         if(!poster.uploadId||!poster.uri)throw new Error('Épinglage de la couverture non confirmé.')
         previewUploadId=poster.uploadId
       }
@@ -188,7 +188,7 @@ export default function CreatorMediaUpload({title,onReady,selection}:Props){
       },session.token)
       if(!stillCurrent())return
       if(!meta.mediaUri||!meta.metadataUri||!meta.attributes)
-        throw new Error('Métadonnées IPFS non confirmées.')
+        throw new Error('Publication non confirmée.')
       const result={mediaUri:meta.mediaUri as string,metadataUri:meta.metadataUri as string,
         attributes:meta.attributes as string,title:chosenTitle}
       setPinned(result);onReady(result)
@@ -247,7 +247,7 @@ export default function CreatorMediaUpload({title,onReady,selection}:Props){
               {posterPreview&&<img src={posterPreview} alt="Aperçu local de la couverture du modèle 3D" className="max-h-48 w-full rounded-lg object-contain bg-black" />}
               <p className="text-xs text-zinc-400">Le modèle GLB et son image de couverture seront deux fichiers épinglés séparément sur IPFS, puis liés dans un seul JSON de métadonnées. Deux uploads décomptés du quota journalier.</p>
             </>
-          : <img src={preview} alt="Aperçu local avant publication IPFS" className="max-h-64 w-full rounded-lg object-contain bg-black"/>}
+          : <img src={preview} alt="Aperçu de votre œuvre" className="max-h-64 w-full rounded-lg object-contain bg-black"/>}
         <p className="break-all text-xs text-zinc-400">{file.name} · {(file.size/1048576).toFixed(2)} Mo</p>
         <p className="text-xs text-zinc-400">Aperçu local uniquement : votre fichier n’a pas encore été envoyé.</p>
       </div>}
@@ -282,7 +282,7 @@ export default function CreatorMediaUpload({title,onReady,selection}:Props){
         Publication suspendue pour ce fichier : la confirmation de l’envoi est incertaine.
         Une vérification de l’opérateur est requise avant tout nouvel essai.
       </p>}
-      {stale&&<p className="text-xs text-amber-200">Le titre a changé depuis l'upload. Republiez les métadonnées avant de minter.</p>}
+      {stale&&<p className="text-xs text-amber-200">Le titre a changé. Confirmez à nouveau la préparation avant de créer le NFT.</p>}
       {error&&<p role="alert" className="text-xs text-rose-200">{error}</p>}
     </div>
   )
