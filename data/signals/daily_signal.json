@@ -1,11 +1,11 @@
 {
   "schema": "xartists_daily_signal/v2",
-  "generated_at": "2026-11-27T17:52:01.442889+00:00",
-  "date": "2026-11-27",
+  "generated_at": "2026-11-28T16:38:56.726385+00:00",
+  "date": "2026-11-28",
   "regime": "defensive",
   "confidence": 0.6,
   "headline": "xOrus paper · ABSTAIN (paper_observation_only) · 7/120 signaux scores",
-  "summary": "Collecte publique EGLDUSDT 1h (last~2.2900). Briefs duals: grok_note + chatgpt_brief (poids ChatGPT <= 15%). Aucune execution automatique. Sentinel garde le veto.",
+  "summary": "Collecte publique EGLDUSDT 1h (last~2.1880). Briefs duals: grok_note + chatgpt_brief (poids ChatGPT <= 15%). Aucune execution automatique. Sentinel garde le veto.",
   "decision": {
     "stance": "ABSTAIN",
     "reason": "paper_observation_only"
@@ -24,15 +24,15 @@
   },
   "external": {
     "grok_note": {
-      "sha256": "b57ac98c1de9170577921923257bb79920d81b93a60e1094688d640009154f73",
+      "sha256": "3638ab716e3eb41a4d4c808b43116aede9ec4d61aa5d96f5e2f8675971b7a284",
       "llm_invoked": false,
-      "preview": "Paper brief (grok). Mode: observation only. No order, mint, or transfer.\nRegime: defensive. Instrument: EGLDUSDT 1h public tape.\nLast close observed: 2.2900 USDT (unverified provider observation).\nMultiversX economics price field present: 2.3 (context only).\nScored with public ev"
+      "preview": "Paper brief (grok). Mode: observation only. No order, mint, or transfer.\nRegime: defensive. Instrument: EGLDUSDT 1h public tape.\nLast close observed: 2.1880 USDT (unverified provider observation).\nMultiversX economics price field present: 2.19 (context only).\nScored with public e"
     },
     "chatgpt_brief": {
-      "sha256": "9e7573c7366c95c131b9cc544942b9e23c2793e8f98e189575663adf3c9ae348",
+      "sha256": "84ae08285a43106f9b3017c7ec78be94328cbeea31a2dbb3feb6af7bc1f49b6c",
       "llm_invoked": false,
       "weight_cap": 0.15,
-      "preview": "Paper brief (chatgpt). Mode: observation only. No order, mint, or transfer.\nRegime: defensive. Instrument: EGLDUSDT 1h public tape.\nLast close observed: 2.2900 USDT (unverified provider observation).\nMultiversX economics price field present: 2.3 (context only).\nScored with public"
+      "preview": "Paper brief (chatgpt). Mode: observation only. No order, mint, or transfer.\nRegime: defensive. Instrument: EGLDUSDT 1h public tape.\nLast close observed: 2.1880 USDT (unverified provider observation).\nMultiversX economics price field present: 2.19 (context only).\nScored with publi"
     }
   },
   "macro": {
@@ -58,5 +58,5 @@
   "disclaimer": "Contenu informatif / educatif. Pas un conseil financier. Aucune TX n'est declenchee par ce fichier. ChatGPT <= 15% ; Sentinel veto.",
   "source": "signals-worker/v2",
   "dual_reports_ref": "data/signals/daily_dual_reports.json",
-  "report_sha256": "f7bc66fadc4d5e51c16486246cc9346506a4bfd03bb1ab402af6dd3e0d5d32c5"
+  "report_sha256": "2c0949bfe507ab3541503224df53737d4b0aad9898b1b304948ba52c4b9c8ad9"
 }
