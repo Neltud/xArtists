@@ -1,0 +1,28 @@
+name: MultiversX custody — VM recovery tests (NO DEPLOY)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'contracts/nft-staking/**'
+      - 'contracts/tro-staking/**'
+      - 'contracts/agent-stake-escrow/**'
+      - '.github/workflows/custody-vm-ci.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  recovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        contract: [nft-staking, tro-staking, agent-stake-escrow]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: contracts/${{ matrix.contract }}
+      - name: Compile real contract and execute local VM tests
+        run: cargo test --manifest-path contracts/${{ matrix.contract }}/Cargo.toml --test paused_recovery -- --nocapture

@@ -81,7 +81,8 @@ pub trait AgentStakeEscrow {
 
     #[endpoint(closeStake)]
     fn close_stake(&self, stake_id: u64) {
-        require!(!self.paused().get(), "paused");
+        // Pause stops new deposits, not recovery of the owner's principal.
+
         require!(!self.stakes(stake_id).is_empty(), "not found");
         let mut s = self.stakes(stake_id).get();
         require!(s.active, "inactive");
