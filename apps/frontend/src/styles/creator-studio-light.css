@@ -89,3 +89,17 @@ html[data-theme="light"] .xa-studio-workflow .border-white\/15 {
     animation-duration: .01ms !important;
   }
 }
+
+/* Studio photo-first layout, scoped to the primary creation card. */
+.xa-creator-studio .xa-studio-price{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:1rem;align-items:center;border:1px solid var(--xa-border);border-radius:1rem;padding:1rem;background:var(--xa-surface)}
+.xa-creator-studio .xa-studio-price-value{display:block;font-size:clamp(1.65rem,5vw,2.4rem);line-height:1.15;letter-spacing:-.04em;color:var(--xa-text);font-variant-numeric:tabular-nums}
+.xa-creator-studio .xa-studio-journey{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.5rem;list-style:none;padding:0;margin:0;font-size:.75rem;color:var(--xa-text-secondary)}
+.xa-creator-studio .xa-studio-journey li{border-bottom:2px solid var(--xa-border);padding:.5rem 0;text-align:center}
+.xa-creator-studio .xa-studio-photo-panel{border:1px solid var(--xa-border);background:var(--xa-surface)}
+.xa-creator-studio .xa-studio-photo-picker{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.45rem;min-height:132px;border:1.5px dashed #9b76d1;border-radius:1rem;padding:1rem;background:rgba(139,92,246,.07);color:var(--xa-text);text-align:center;cursor:pointer}
+.xa-creator-studio .xa-studio-photo-picker:focus-within{outline:2px solid #a78bfa;outline-offset:3px}
+.xa-creator-studio .xa-studio-photo-input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.xa-creator-studio .xa-studio-photo-picker:has(input:disabled){opacity:.6;cursor:not-allowed}
+.xa-creator-studio .xa-studio-progress{display:flex;align-items:center;gap:.6rem;font-size:.82rem;color:var(--xa-text-secondary);padding:.5rem 0}
+.xa-creator-studio .xa-studio-progress-dot{width:.65rem;height:.65rem;flex:none;border-radius:50%;background:#a78bfa}
+@media(max-width:480px){.xa-creator-studio .xa-studio-price{grid-template-columns:1fr;gap:.55rem}}
