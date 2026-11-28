@@ -29,3 +29,9 @@ test('pilot permits only bounded image uploads and rejects other formats before 
   assert.match(src,/X-Studio-Rights/)
   assert.match(src,/redirect:'error'/)
 })
+
+test('Pages uses only the verified dedicated Studio origin without secret or Render fallback',()=>{
+  const workflow=readFileSync(new URL('../../../.github/workflows/static.yml',import.meta.url),'utf8')
+  const line=workflow.split('\n').find(l=>l.trim().startsWith('VITE_STUDIO_API_BASE:'))
+  assert.equal(line?.trim(),'VITE_STUDIO_API_BASE: '+origin)
+})

@@ -1,18 +1,13 @@
 name: Studio Neon — protected release
 on:
-  # First deployment is authorized by the reviewed main-branch change to this workflow.
-  # Only this file triggers a push bootstrap; ordinary content commits never do.
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/neon-studio-deploy.yml'
+  # Deployment 1 is active. No automatic bootstrap or replay on a main push.
   workflow_dispatch:
     inputs:
       mode:
         description: Bootstrap disabled, or update code only
         type: choice
         options: [bootstrap, update]
-        default: bootstrap
+        default: update
         required: true
       expected_deployment_id:
         description: Required for update; blank for bootstrap
@@ -88,7 +83,7 @@ jobs:
       - name: Release only the reviewed bundle
         env:
           NEON_API_KEY: ${{ secrets.NEON_STUDIO_API_KEY }}
-          MODE: ${{ github.event_name == 'push' && 'bootstrap' || inputs.mode }}
+          MODE: ${{ inputs.mode }}
           EXPECTED_ID: ${{ inputs.expected_deployment_id }}
         run: |
           set -euo pipefail

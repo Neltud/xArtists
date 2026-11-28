@@ -1,6 +1,6 @@
-/** Studio-only route. The candidate origin must match the Neon deployment receipt
- * before the operator configures VITE_STUDIO_API_BASE. Never use a wildcard or
- * fall back to another service after a dedicated route fails.
+/** Studio-only route. Verified deployment 1 on the dedicated Neon project.
+ * Pages pins this origin; local development may explicitly select it.
+ * Never use a wildcard or fall back after a dedicated route fails.
  */
 export const STUDIO_CANDIDATE_ORIGIN = 'https://br-sparkling-breeze-bh8gp2jl-studio.compute.c-10.eu-central-1.aws.neon.tech'
 export const STUDIO_PILOT_MAX_BYTES = 2 * 1024 * 1024
