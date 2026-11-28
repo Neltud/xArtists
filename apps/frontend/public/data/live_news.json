@@ -1,42 +1,91 @@
 {
   "version": 2,
-  "updatedAt": "2026-11-28T01:07:56.864Z",
+  "updatedAt": "2026-11-28T11:23:43.039Z",
   "note": "merge resilient — min 10 items; sanitize XSS; paper only.",
   "items": [
     {
-      "id": "egld-1795828076495",
-      "timestamp": "01:07",
+      "id": "egld-1795865022694",
+      "timestamp": "11:23",
       "source": "EGLD",
-      "title": "Cotation publique · $2.29 (API MultiversX economics)",
+      "title": "Cotation publique · $2.22 (API MultiversX economics)",
       "link": "https://explorer.multiversx.com/"
     },
     {
-      "id": "rss-CoinTelegraph-0-1795817571000",
+      "id": "rss-CoinTelegraph-0-1795861860000",
+      "timestamp": "10:31",
+      "source": "CoinTelegraph",
+      "title": "ASEAN+3 agrees on initiative to explore crypto payments cooperation",
+      "link": "https://cointelegraph.com/news/asean3-agrees-on-initiative-to-explore-crypto-payments-cooperation?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-1-1795851780000",
+      "timestamp": "07:43",
+      "source": "CoinTelegraph",
+      "title": "Binance plans Asia hub in Bhutan, receives preliminary approval",
+      "link": "https://cointelegraph.com/news/binance-receives-in-principle-approval-plans-asia-hub-in-bhutan?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinTelegraph-2-1795817571000",
       "timestamp": "22:12",
       "source": "CoinTelegraph",
       "title": "Here’s what happened in crypto today",
       "link": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-1-1795814129000",
+      "id": "rss-CoinTelegraph-3-1795814129000",
       "timestamp": "21:15",
       "source": "CoinTelegraph",
       "title": "Franklin Templeton makes room for HYPE in crypto index ETF",
       "link": "https://cointelegraph.com/news/franklin-templeton-hype-crypto-index-etf?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-2-1795807380000",
+      "id": "rss-CoinTelegraph-4-1795807380000",
       "timestamp": "19:23",
       "source": "CoinTelegraph",
       "title": "Bitcoin whales pile into BTC despite shrinking profit cushion",
       "link": "https://cointelegraph.com/markets/bitcoin-whales-pile-btc-despite-shrinking-profit-cushion?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     },
     {
-      "id": "rss-CoinTelegraph-3-1795801043000",
+      "id": "rss-CoinTelegraph-5-1795801043000",
       "timestamp": "17:37",
       "source": "CoinTelegraph",
       "title": "China sets March 2027 rollout for blockchain identity regulations",
       "link": "https://cointelegraph.com/news/china-march-2027-rollout-blockchain-identity-regulations?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+    },
+    {
+      "id": "rss-CoinDesk-0-1795858371000",
+      "timestamp": "09:32",
+      "source": "CoinDesk",
+      "title": "Trump-linked crypto token WLFI plunges 50% to record lows",
+      "link": "https://www.coindesk.com/markets/2026/11/28/trump-linked-crypto-token-wlfi-plunges-over-50"
+    },
+    {
+      "id": "rss-CoinDesk-1-1795785550000",
+      "timestamp": "13:19",
+      "source": "CoinDesk",
+      "title": "Kalshi turns to small businesses as legal battles threaten forecasts on sports",
+      "link": "https://www.coindesk.com/business/2026/11/27/kalshi-turns-to-small-businesses-as-legal-battles-threaten-forecasts-on-sports"
+    },
+    {
+      "id": "rss-CoinDesk-2-1795781767000",
+      "timestamp": "12:16",
+      "source": "CoinDesk",
+      "title": "Bitcoin 'death cross' is coming. Here's what happened after previous 13.",
+      "link": "https://www.coindesk.com/daybook-us/2026/11/27/bitcoin-death-cross-is-coming-here-s-what-happened-after-previous-13"
+    },
+    {
+      "id": "rss-CoinDesk-3-1795779947000",
+      "timestamp": "11:45",
+      "source": "CoinDesk",
+      "title": "Bitcoin on course to end seven-week losing streak while trailing stock rebound",
+      "link": "https://www.coindesk.com/markets/2026/11/27/bitcoin-on-course-to-end-seven-week-losing-streak-while-trailing-stock-rebound"
+    },
+    {
+      "id": "egld-1795828076495",
+      "timestamp": "01:07",
+      "source": "EGLD",
+      "title": "Cotation publique · $2.29 (API MultiversX economics)",
+      "link": "https://explorer.multiversx.com/"
     },
     {
       "id": "rss-CoinTelegraph-4-1795798131000",
@@ -51,27 +100,6 @@
       "source": "CoinTelegraph",
       "title": "What was Coinbase worth while Nasdaq was closed?",
       "link": "https://cointelegraph.com/news/what-was-coinbase-worth-while-nasdaq-was-closed?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-    },
-    {
-      "id": "rss-CoinDesk-0-1795785550000",
-      "timestamp": "13:19",
-      "source": "CoinDesk",
-      "title": "Kalshi turns to small businesses as legal battles threaten forecasts on sports",
-      "link": "https://www.coindesk.com/business/2026/11/27/kalshi-turns-to-small-businesses-as-legal-battles-threaten-forecasts-on-sports"
-    },
-    {
-      "id": "rss-CoinDesk-1-1795781767000",
-      "timestamp": "12:16",
-      "source": "CoinDesk",
-      "title": "Bitcoin 'death cross' is coming. Here's what happened after previous 13.",
-      "link": "https://www.coindesk.com/daybook-us/2026/11/27/bitcoin-death-cross-is-coming-here-s-what-happened-after-previous-13"
-    },
-    {
-      "id": "rss-CoinDesk-2-1795779947000",
-      "timestamp": "11:45",
-      "source": "CoinDesk",
-      "title": "Bitcoin on course to end seven-week losing streak while trailing stock rebound",
-      "link": "https://www.coindesk.com/markets/2026/11/27/bitcoin-on-course-to-end-seven-week-losing-streak-while-trailing-stock-rebound"
     },
     {
       "id": "rss-CoinDesk-3-1795779277000",
@@ -170,34 +198,6 @@
       "source": "CoinDesk",
       "title": "Bitcoin’s dormant supply rises, a behavior seen during previous bear-market bottoming phases",
       "link": "https://www.coindesk.com/markets/2026/11/26/bitcoin-s-dormant-supply-rises-a-behavior-seen-during-previous-bear-market-bottoming-phases"
-    },
-    {
-      "id": "rss-CoinDesk-2-1795707763000",
-      "timestamp": "15:42",
-      "source": "CoinDesk",
-      "title": "Crypto for Advisors: Four questions to ask before trusting a crypto exchange",
-      "link": "https://www.coindesk.com/coindesk-indices/2026/11/26/crypto-for-advisors-four-questions-to-ask-before-trusting-a-crypto-exchange"
-    },
-    {
-      "id": "rss-CoinDesk-3-1795701958000",
-      "timestamp": "14:05",
-      "source": "CoinDesk",
-      "title": "Spain gives anti-laundering unit power to freeze crypto accounts without a judge",
-      "link": "https://www.coindesk.com/business/2026/11/26/spain-gives-anti-laundering-unit-power-to-freeze-crypto-accounts-without-a-judge"
-    },
-    {
-      "id": "egld-1795726796335",
-      "timestamp": "20:59",
-      "source": "EGLD",
-      "title": "Cotation publique · $2.33 (API MultiversX economics)",
-      "link": "https://explorer.multiversx.com/"
-    },
-    {
-      "id": "rss-CoinTelegraph-0-1795723518000",
-      "timestamp": "20:05",
-      "source": "CoinTelegraph",
-      "title": "Japan weighs tighter oversight of DeFi, self-custodial wallets",
-      "link": "https://cointelegraph.com/news/japan-tighter-oversight-defi-self-custodial-wallets?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
     }
   ]
 }
