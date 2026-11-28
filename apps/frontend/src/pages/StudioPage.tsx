@@ -148,9 +148,10 @@ export default function StudioPage() {
 
   return (
     <div className="xa-creator-studio xa-creator-studio-v2 animate-fade-in mx-auto max-w-3xl space-y-8 px-4 pb-28 pt-6 sm:px-7">
-      <header className="space-y-2"><h1 className="section-title display">Studio · Créer un NFT</h1><p className="text-sm text-[color:var(--xa-text-secondary)]">Ajoutez votre œuvre, choisissez votre collection et confirmez dans votre wallet.</p></header>
+      <header className="space-y-2"><h1 className="section-title display">Studio · Créer un NFT</h1><p className="text-sm text-[color:var(--xa-text-secondary)]">Ajoutez votre photo. xArtists prépare et héberge votre œuvre ; vous confirmez la création dans votre wallet.</p></header>
       <section id="xa-studio-mint" className="card xa-studio-workflow space-y-3">
         <h2 className="text-sm font-semibold text-[color:var(--xa-text)]">{xaRender("Créer mon NFT")}</h2>
+        <p className="text-sm"><strong>{xaRender("Tarif cible : 0,90 € HT par NFT")}</strong> · {xaRender("Hébergement standard, publication et métadonnées inclus. Frais blockchain en plus, affichés avant signature. Estimation non facturée à ce stade.")}</p>
         <label className="block text-sm font-medium" htmlFor="xa-studio-nft-name">
           Nom de l’œuvre
         </label>
@@ -166,7 +167,7 @@ export default function StudioPage() {
           setPinnedMedia(pin)
           setNftMediaUri(pin?.mediaUri || '')
         }} />
-        <details className="text-sm"><summary>Options avancées : utiliser un fichier déjà hébergé</summary>
+        <details className="text-sm"><summary>Options avancées : réutiliser un média existant (facultatif)</summary>
         <label className="block text-sm text-[color:var(--xa-text-secondary)]">
           Adresse IPFS/HTTPS (facultative)
           <input
@@ -176,7 +177,7 @@ export default function StudioPage() {
             placeholder="ipfs://bafy.../artwork.png"
           />
         </label></details>
-        <p className="text-sm text-[color:var(--xa-text-secondary)]">Pour créer votre NFT, envoyez votre œuvre, choisissez votre collection puis confirmez dans xPortal.</p>
+        <p className="text-sm text-[color:var(--xa-text-secondary)]">Vous n’avez rien à héberger vous-même : envoyez votre œuvre, choisissez votre collection puis confirmez dans xPortal.</p>
         {!connected?<button type="button" className="btn-primary text-sm" onClick={requestOpenConnect}>Connecter mon wallet</button>:<>
           <label className="block text-sm">Ma collection
             <select className="mt-1 w-full rounded-lg border border-[color:var(--xa-border)] bg-[color:var(--xa-bg-elevated)] p-2 text-sm" value={activeCollectionId}
@@ -207,18 +208,18 @@ export default function StudioPage() {
         {xaRender(mint.error && <p className="text-sm text-amber-900 dark:text-amber-100">{xaRender(asText(mint.error))}</p>)}
       </section>
       <section aria-labelledby="xa-studio-estimate-title" className="card space-y-3">
-        <h2 id="xa-studio-estimate-title" className="section-title text-xl">{xaRender("Estimer la préparation de mes NFT")}</h2>
-        <p>{xaRender("Une œuvre physique photographiée ou un fichier numérique, à l’unité ou en collection. Même tarif xArtists sur Solana et MultiversX.")}</p>
+        <h2 id="xa-studio-estimate-title" className="section-title text-xl">{xaRender("Tarifs de création NFT")}</h2>
+        <p>{xaRender("Une œuvre physique photographiée ou un fichier numérique, à l’unité ou en collection. Même tarif cible sur Solana et MultiversX ; création Solana non disponible à ce stade.")}</p>
         <label className="block" htmlFor="xa-studio-estimate-quantity">{xaRender("Nombre de NFT (1 à 10 000)")}</label>
         <input id="xa-studio-estimate-quantity" type="number" min={1} max={10000} step={1}
           className="w-full rounded-lg border border-[color:var(--xa-border)] bg-[color:var(--xa-bg-elevated)] px-3 py-2"
           value={estimateQuantity} onChange={event => setEstimateQuantity(event.target.value)} />
         <p role="status">
           {estimateCents === null ? xaRender("Saisis un nombre entier entre 1 et 10 000.") : (
-            <>{xaRender("Préparation xArtists estimée (HT)")} <strong>{new Intl.NumberFormat(undefined, { style: 'currency', currency: 'EUR' }).format(estimateCents / 100)}</strong></>
+            <>{xaRender("Création xArtists estimée (HT)")} <strong>{new Intl.NumberFormat(undefined, { style: 'currency', currency: 'EUR' }).format(estimateCents / 100)}</strong></>
           )}
         </p>
-        <p className="text-sm">{xaRender("Estimation indicative pour des fichiers prêts à importer. Frais réseau et stockage en supplément. Les gros lots nécessitent une validation préalable.")}</p>
+        <p className="text-sm">{xaRender("Tarif cible comprenant la préparation, la publication décentralisée, les métadonnées et l’hébergement standard des fichiers compatibles. Frais blockchain en supplément. La capacité, la durée de conservation et les conditions des collections doivent être confirmées avant tout achat. Aucun paiement à cette étape.")}</p>
       </section>
       <details className="xa-studio-visual-options card"><summary><strong>Atelier visuel</strong><span>Préparer et prévisualiser mes œuvres</span></summary>
       <StudioVisualWorkspace title={nftName} onTitle={setNftName} onAdvanced={()=>document.getElementById('xa-studio-mint')?.scrollIntoView({block:'start'})} onPrepare={(file,description)=>{setMediaSelection({file,description});window.requestAnimationFrame(()=>document.getElementById('xa-studio-mint')?.scrollIntoView({block:'start'}))}}/>

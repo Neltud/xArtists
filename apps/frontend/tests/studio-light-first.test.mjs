@@ -34,3 +34,13 @@ test('ambiguous Pinata metadata publication cannot silently re-arm upload',()=>{
   assert.match(media,/pending\|\|needsReconciliation/)
   assert.match(media,/Publication suspendue pour ce fichier/)
 })
+
+test('standard hosting belongs to the target creation price, not a separate user task',()=>{
+  assert.match(source,/Tarif cible : 0,90 € HT par NFT/)
+  assert.match(source,/Hébergement standard, publication et métadonnées inclus/)
+  assert.match(source,/Aucun paiement à cette étape/)
+  assert.match(source,/durée de conservation/)
+  assert.doesNotMatch(source,/Frais réseau et stockage en supplément/)
+  assert.match(source,/Vous n’avez rien à héberger vous-même/)
+  assert.match(source,/création Solana non disponible à ce stade/)
+})
