@@ -1,0 +1,44 @@
+name: Studio Neon — public deployment receipt
+on:
+  push:
+    branches: [ops/neon-studio-public-smoke-20261128]
+    paths: ['.github/workflows/neon-studio-public-smoke.yml']
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Verify the actual disabled Studio deployment over HTTPS
+        run: |
+          python3 - <<'PY'
+          import json, urllib.request, urllib.error
+          BASE='https://br-sparkling-breeze-bh8gp2jl-studio.compute.c-10.eu-central-1.aws.neon.tech'
+          SOURCE='c0719b88b0328626c2cd34497d313b30bcc27e43'
+          ORIGIN='https://xartists.art'
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self,*args,**kw): return None
+          opener=urllib.request.build_opener(NoRedirect())
+          def call(path, status=200, origin=ORIGIN, method='GET', payload=None):
+              req=urllib.request.Request(BASE+path,method=method,data=payload,headers={'Origin':origin,'Content-Type':'application/json','Cache-Control':'no-cache'})
+              try: res=opener.open(req,timeout=20)
+              except urllib.error.HTTPError as error: res=error
+              with res:
+                  assert res.status==status,(path,res.status,status)
+                  assert res.headers.get('Access-Control-Allow-Origin')==(origin if origin==ORIGIN else None),path
+                  data=res.read(65536)
+              print(path, status, 'PASS')
+              return json.loads(data) if data else None
+          h=call('/health')
+          assert h=={'ok':True,'service':'xartists-studio-neon','source_sha':SOURCE,'studio_upload_enabled':False,'mint_requires_artist_signature':True,'commerce_enabled':False},h
+          c=call('/v1/studio/media/config')
+          assert c=={'ok':True,'enabled':False,'provider':'disabled','modelEnabled':False,'maxImageMiB':2,'maxVideoMiB':0,'maxAudioMiB':0,'maxModelMiB':0,'pilot_images_only':True,'mint_requires_artist_signature':True},c
+          call('/health',403,origin='https://invalid.example')
+          call('/v1/studio/media/upload',204,method='OPTIONS')
+          for path in ['challenge','session','upload','metadata']:
+              result=call('/v1/studio/media/'+path,503,method='POST',payload=b'{}')
+              assert result['error']=='studio_upload_not_configured',result
+          call('/v1/checkout',404)
+          print('STUDIO_PUBLIC_RECEIPT '+json.dumps({'source_sha':SOURCE,'deployment_id':1,'origin':BASE,'upload_enabled':False,'public_checks':9}))
+          PY
