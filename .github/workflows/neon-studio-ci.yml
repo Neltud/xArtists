@@ -9,6 +9,8 @@ on:
       - 'scripts/ops/package-neon-studio.py'
       - 'scripts/ops/deploy-neon-studio.py'
       - 'scripts/ops/test-deploy-neon-studio.py'
+      - 'scripts/ops/studio-public-receipt*.mjs'
+      - '.github/workflows/neon-studio-public-receipt.yml'
       - '.github/workflows/neon-studio-deploy.yml'
       - '.github/workflows/neon-studio-ci.yml'
   push:
@@ -48,6 +50,7 @@ jobs:
       - run: npm ci --omit=dev --prefix services/access-api
       - run: psql "$TEST_STUDIO_DATABASE_URL" -v ON_ERROR_STOP=1 -f deploy/neon/studio/schema.sql
       - run: node --test deploy/neon/studio/handler.test.mjs services/access-api/tests/creator-media-pilot-readback.test.mjs
+      - run: node --test scripts/ops/studio-public-receipt.test.mjs
       - run: python3 scripts/ops/test-deploy-neon-studio.py
       - run: python3 scripts/ops/package-neon-studio.py
       - run: python3 scripts/ops/deploy-neon-studio.py dist/neon-studio.zip --expected-source "$GITHUB_SHA"
